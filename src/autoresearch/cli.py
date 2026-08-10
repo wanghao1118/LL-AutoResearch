@@ -5,6 +5,14 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from .bench import (
+    match_benchmarks,
+    search_benchmarks,
+    understand_benchmark,
+    write_bench_card_report,
+    write_bench_evidence_block,
+)
+from .bench.catalog import list_seed_benches
 from .codex_review import apply_codex_review_to_output, write_codex_review_packet
 from .dashboard import load_artifacts, write_dashboard
 from .domain_profile import generate_domain_profile, save_domain_profile
@@ -14,6 +22,8 @@ from .synthesizer import build_synthesis, write_analysis_report
 from .utils import slugify
 
 app = typer.Typer(help="AutoResearch command line interface.", no_args_is_help=True)
+bench_app = typer.Typer(help="Benchmark evidence tools.", no_args_is_help=True)
+app.add_typer(bench_app, name="bench")
 console = Console()
 DEFAULT_OUTPUT_ROOT = Path("outputs")
 
@@ -84,6 +94,80 @@ def search(
     console.print(f"Gaps: {len(artifacts.gaps)}")
     console.print(f"Report: {output_dir / 'report.md'}")
     console.print(f"Dashboard: {output_dir / 'dashboard.html'}")
+
+
+@bench_app.command("list")
+def bench_list() -> None:
+    """List seed benchmarks available to the BenchCard MVP."""
+    for bench in list_seed_benches():
+        console.print(
+            f"[bold]{bench.bench_name}[/bold] "
+            f"({', '.join(bench.domain[:3])}) -> {', '.join(bench.evaluated_capabilities[:3])}"
+        )
+
+
+@bench_app.command("match")
+def bench_match(
+    weakness: str = typer.Argument(..., help="Research weakness to test against seed benchmarks."),
+    output_root: Path = typer.Option(  # noqa: B008
+        DEFAULT_OUTPUT_ROOT,
+        help="Directory for bench evidence artifacts.",
+    ),
+    limit: int = typer.Option(6, help="Number of related benchmark candidates to keep."),
+) -> None:
+    """Match a research weakness to benchmark evidence and benchmark weaknesses."""
+    block = match_benchmarks(weakness, limit=limit)
+    json_path, md_path = write_bench_evidence_block(block, output_root=output_root)
+    console.print("[bold green]Done[/bold green] wrote Bench evidence block")
+    console.print(f"Weakness: {weakness}")
+    console.print(f"Need new benchmark: {block.need_new_benchmark}")
+    console.print(f"Partial benches: {', '.join(block.partial_benches) or 'none'}")
+    console.print(f"Sufficient benches: {', '.join(block.sufficient_benches) or 'none'}")
+    console.print(f"JSON: {json_path}")
+    console.print(f"Markdown: {md_path}")
+
+
+@bench_app.command("understand")
+def bench_understand(
+    bench_name: str = typer.Argument(..., help="Benchmark name or alias to understand."),
+    output_root: Path = typer.Option(  # noqa: B008
+        DEFAULT_OUTPUT_ROOT,
+        help="Directory for bench understanding artifacts.",
+    ),
+) -> None:
+    """Generate a structured BenchCard and Chinese report for one seed benchmark."""
+    try:
+        bench = understand_benchmark(bench_name)
+    except ValueError as error:
+        console.print(f"[bold red]Error[/bold red] {error}")
+        raise typer.Exit(code=1) from error
+    json_path, md_path = write_bench_card_report(bench, output_root=output_root)
+    console.print("[bold green]Done[/bold green] wrote Bench understanding report")
+    console.print(f"Bench: {bench.bench_name}")
+    console.print(f"Capabilities: {', '.join(bench.evaluated_capabilities) or 'none'}")
+    console.print(f"Keywords: {', '.join([*bench.keywords, *bench.tags][:12]) or 'none'}")
+    console.print(f"JSON: {json_path}")
+    console.print(f"Markdown: {md_path}")
+
+
+@bench_app.command("search")
+def bench_search(
+    query: str = typer.Argument(..., help="Keyword query, e.g. openai, finance workflow, GUI recovery."),
+    limit: int = typer.Option(10, help="Number of matching benchmarks to show."),
+) -> None:
+    """Search seed benchmarks by domain, ability, metric, source, model, or weakness keyword."""
+    results = search_benchmarks(query, limit=limit)
+    console.print(f"[bold]Bench search[/bold]: {query}")
+    if not results:
+        console.print("No benchmark candidates found.")
+        return
+    for result in results:
+        console.print(
+            f"- [bold]{result.bench_name}[/bold] "
+            f"score={result.relevance_score} "
+            f"matched={', '.join(result.matched_keywords) or 'none'} "
+            f"domain={', '.join(result.domain[:3]) or 'none'}"
+        )
 
 
 @app.command()

@@ -329,6 +329,74 @@
     not part of this step
   - adjusted deployment to create the virtual environment with Python 3.11 on Ubuntu 22.04 ECS
 
+## 2026-08-10
+
+- Started the Bench module as an experimental branch/worktree:
+  - branch: `codex/bench-module-experiment`
+  - worktree: `/Users/zwx/Documents/文献阅读/AutoResearch-bench-module`
+  - purpose: keep Bench work isolated from the current main development tree while the module shape
+    is still being tested
+- Clarified the Bench module's role in the AutoResearch pipeline:
+  - Auto Search / MOC / Gap Finder discovers a research weakness
+  - Bench module answers whether existing benchmarks can verify that weakness
+  - if existing benchmarks are only partially aligned, the module identifies missing evaluation
+    dimensions and suggests whether a new benchmark slice is needed
+  - this makes Bench an evaluation-evidence layer, not a separate daily-paper or benchmark
+    recommendation product
+- Implemented Bench Evidence MVP:
+  - added `BenchCard`, `BenchSuitability`, and `BenchEvidenceBlock` schemas
+  - added a local seed benchmark catalog covering medical imaging, GUI agent, real-world workflow,
+    finance agent, spreadsheet workflow, and related benchmark families
+  - added rule-based weakness-to-requirement inference, such as medical, VLM/multimodal,
+    lesion-level evidence, temporal/change evaluation, GUI agent evaluation, failure recovery,
+    cross-benchmark comparability, finance, real-world workflow, and reproducible scoring
+  - added benchmark suitability judgments: `sufficient`, `partial`, and `insufficient`
+  - added Chinese Bench evidence reports that show which benchmark supports which requirement,
+    what remains missing, benchmark-level weaknesses, and whether a new benchmark is needed
+  - added CLI commands:
+    - `autoresearch bench list`
+    - `autoresearch bench match "<research weakness>"`
+- Example Bench Evidence result:
+  - input weakness: `medical VLM lacks lesion-level temporal reasoning`
+  - related benchmarks: `DeepLesion`, `RadGraph`, `MIMIC-CXR`
+  - conclusion: existing benchmarks are only partially aligned
+  - covered evidence: lesion-level / medical evidence can be partially supported
+  - remaining gap: VLM/multimodal evaluation and temporal/change evaluation
+  - report: `outputs/bench-match-medical-vlm-lacks-lesion-level-temporal-reasoning/bench_evidence_block.md`
+- Implemented Bench Understanding MVP v1:
+  - expanded `BenchCard` with fields for benchmark family, tags, HF dataset ids, paper URLs,
+    leaderboard URLs, task goal, input modalities, output format, understanding status, and source
+    confidence
+  - added `autoresearch bench understand <bench-name>` to generate a structured `bench_card.json`
+    and Chinese `bench_report.md` for a single seed benchmark
+  - added `autoresearch bench search "<keywords>"` to search seed benchmarks by domain, ability,
+    metric, source type, model organization, or weakness keyword
+  - added report sections aligned with the benchmark workflow discussed in meetings:
+    core positioning, concrete task/case, dataset schema, metrics and judge, model/result coverage,
+    suitable weaknesses, unsuitable weaknesses, benchmark weaknesses, and sources
+  - this version supports the "single benchmark understanding" and "macro keyword search" workflow
+    before adding automatic HF datasets / PDF / leaderboard extraction
+- Example Bench Understanding result:
+  - command: `autoresearch bench understand GDPval`
+  - report: `outputs/bench-understand-gdpval/bench_report.md`
+  - current conclusion: GDPval is useful for real-world professional deliverable evaluation, but
+    private tasks and expert-review cost limit fully reproducible benchmark comparison
+  - command: `autoresearch bench search "openai workflow"`
+  - top matches include `GDPval`, `SpreadsheetBench v2`, `OSWorld`, `GUI-RobustEval`, `FAB`, and
+    `AndroidWorld`
+- Current Bench module boundary:
+  - the catalog is still a local seed catalog, not yet automatically extracted from sources
+  - HF datasets case inspection is not implemented yet
+  - benchmark-paper PDF wrapping is not implemented yet
+  - leaderboard/model-result extraction is represented in the schema but not automatically crawled
+  - Bench MOC and cross-benchmark weakness discovery are the next research-facing steps
+- Bench module validation:
+  - `tests/test_bench_module.py`: `11` passed
+  - full test suite: `46` passed
+  - `ruff check .`: all checks passed
+  - warning note: PyMuPDF/SWIG deprecation warnings are environment-level warnings and not Bench
+    module failures
+
 ## Next
 
 - Add source-quality reporting: source -> core / adjacent / noise contribution counts.
@@ -337,3 +405,7 @@
 - Add query/source balancing so weak sources do not dominate runtime and source diversity is explicit.
 - Add Papers With Code / benchmark archive support as a dataset and benchmark source, not as a primary paper search source.
 - Add LitSearch-style evaluation for search/ranking quality.
+- Add HF datasets case inspection for Bench Understanding.
+- Add benchmark-paper PDF wrapping for task design, metrics, baseline, and limitation extraction.
+- Add leaderboard/model-result extraction for tracking which base models have evaluated each benchmark.
+- Add Bench MOC to compare related benchmarks and identify benchmark-level weaknesses.
