@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .schema import ComparisonMatrix, GapEvidence, ResearchOpportunity, SearchArtifacts, TopicMOC
+from .schema import (
+    ComparisonMatrix,
+    GapEvidence,
+    ResearchOpportunity,
+    SearchArtifacts,
+    TopicMOC,
+    WeaknessCard,
+)
 
 
 def _escape_cell(value: str) -> str:
@@ -105,8 +112,11 @@ def _write_source_coverage(artifacts: SearchArtifacts, output_dir: Path) -> Path
         oa_statuses[record.status] = oa_statuses.get(record.status, 0) + 1
 
     full_text_statuses: dict[str, int] = {}
+    full_text_providers: dict[str, int] = {}
     for record in artifacts.full_texts:
         full_text_statuses[record.status] = full_text_statuses.get(record.status, 0) + 1
+        if record.provider:
+            full_text_providers[record.provider] = full_text_providers.get(record.provider, 0) + 1
 
     lines = [
         f"# Source Coverage: {artifacts.topic}",
@@ -126,7 +136,21 @@ def _write_source_coverage(artifacts: SearchArtifacts, output_dir: Path) -> Path
 
     lines.extend(["", "## Full-Text / OA Coverage", ""])
     lines.append(f"- Full-text statuses: {full_text_statuses or 'not attempted'}")
+    lines.append(f"- Full-text providers: {full_text_providers or 'not attempted'}")
     lines.append(f"- Unpaywall statuses: {oa_statuses or 'not attempted'}")
+    lines.append("")
+
+    lines.extend(["## Paper Seed Library", ""])
+    if artifacts.seed_selection:
+        seed = artifacts.seed_selection
+        lines.append(f"- Status: {seed.status}")
+        lines.append(f"- Seed directory: `{seed.seed_dir}`")
+        if seed.topic_seed:
+            lines.append(f"- Topic seed: {seed.topic_seed.display_name} (`{seed.topic_seed.topic_id}`)")
+        lines.append(f"- Added queries: {_join(seed.added_queries)}")
+        lines.append(f"- Added papers: {seed.added_papers}")
+    else:
+        lines.append("- Paper seed library was not loaded.")
     lines.append("")
 
     lines.extend(["## Source Readiness Gate", ""])
@@ -332,6 +356,90 @@ def _write_weakness_report(artifacts: SearchArtifacts, output_dir: Path) -> Path
     return path
 
 
+def _write_weakness_completion(artifacts: SearchArtifacts, output_dir: Path) -> Path:
+    lines = [
+        f"# Weakness Evidence Completion: {artifacts.topic}",
+        "",
+        (
+            "This report is the user-facing verification layer. It should answer what was already "
+            "checked, what counter-evidence changed the claim, and what narrow weakness remains."
+        ),
+        "",
+        "## Search / Reading Scope",
+        "",
+        f"- Query count: {len(artifacts.query_plan.queries)}",
+        f"- Source executions: {len(artifacts.source_statuses)}",
+        f"- Ranked papers inspected: {len(artifacts.ranked_papers)}",
+        f"- Paper cards built: {len(artifacts.paper_cards)}",
+        f"- Full-text records attempted: {len(artifacts.full_texts)}",
+        f"- Full-text records read successfully: {sum(1 for record in artifacts.full_texts if record.status == 'ok')}",
+        "",
+        (
+            "> Current boundary: AutoResearch does not read all papers in a field. It collects from "
+            "configured sources, ranks the deduplicated candidates, then reads and verifies the "
+            "top-ranked subset."
+        ),
+        "",
+    ]
+    if not artifacts.weakness_cards:
+        lines.append("- No WeaknessCard results were generated.")
+    for idx, card in enumerate(artifacts.weakness_cards, start=1):
+        lines.extend(_weakness_card_lines(idx, card))
+    lines.append("")
+    path = output_dir / "weakness_completion.md"
+    path.write_text("\n".join(lines), encoding="utf-8")
+    return path
+
+
+def _weakness_card_lines(idx: int, card: WeaknessCard) -> list[str]:
+    lines = [
+        f"## Weakness {idx}: {card.weakness_statement}",
+        "",
+        f"- Verdict: `{card.verdict}`",
+        f"- Evidence quality: `{card.evidence_quality}`",
+        f"- Checked papers: {card.checked_papers}",
+        f"- Checked full texts: {card.checked_full_texts}",
+        f"- Checked sources: {card.checked_sources}",
+        f"- Checked sections: {_join(card.checked_sections, fallback='none')}",
+        f"- Conclusion: {card.conclusion}",
+        "",
+        "### Remaining Narrow Weakness",
+        "",
+        f"- {card.remaining_weakness}",
+        "",
+        "### Covered / Partially Solved Parts",
+        "",
+    ]
+    if card.covered_parts:
+        for part in card.covered_parts:
+            lines.append(f"- {part}")
+    else:
+        lines.append("- No clear counter-evidence coverage was found in this run.")
+    lines.extend(["", "### Missing Parts Still Supporting The Weakness", ""])
+    if card.missing_parts:
+        for part in card.missing_parts:
+            lines.append(f"- {part}")
+    else:
+        lines.append("- Missing parts were not explicit enough to isolate.")
+    lines.extend(["", "### Support Papers", ""])
+    if card.support_papers:
+        for title in card.support_papers:
+            lines.append(f"- {title}")
+    else:
+        lines.append("- No support papers were identified.")
+    lines.extend(["", "### Counter Papers", ""])
+    if card.counter_papers:
+        for title in card.counter_papers:
+            lines.append(f"- {title}")
+    else:
+        lines.append("- No counter papers were identified.")
+    lines.extend(["", "### Verification Queries Generated Internally", ""])
+    for query in card.verification_queries:
+        lines.append(f"- `{query}`")
+    lines.append("")
+    return lines
+
+
 def _write_gap_evidence_chains(artifacts: SearchArtifacts, output_dir: Path) -> Path:
     lines = [
         f"# Gap Evidence Chains: {artifacts.topic}",
@@ -449,6 +557,7 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
     topic_moc_path = _write_topic_moc(artifacts, output_dir)
     comparison_path = _write_comparison_matrix(artifacts.comparison_matrix, output_dir)
     weakness_path = _write_weakness_report(artifacts, output_dir)
+    weakness_completion_path = _write_weakness_completion(artifacts, output_dir)
     gap_chain_path = _write_gap_evidence_chains(artifacts, output_dir)
     opportunity_path = _write_research_opportunities(
         artifacts.research_opportunities,
@@ -488,6 +597,21 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
     for query in artifacts.query_plan.queries:
         lines.append(f"- `{query}`")
 
+    lines.extend(["", "## 1b. Paper Seed Library", ""])
+    if artifacts.seed_selection:
+        seed = artifacts.seed_selection
+        lines.append(f"- Status: `{seed.status}`")
+        lines.append(f"- Seed directory: `{seed.seed_dir}`")
+        if seed.topic_seed:
+            lines.append(f"- Matched topic: **{seed.topic_seed.display_name}** (`{seed.topic_seed.topic_id}`)")
+        lines.append(f"- Added seed queries: {_join(seed.added_queries)}")
+        lines.append(f"- Added seed papers: {seed.added_papers}")
+        for paper in seed.paper_seeds[:10]:
+            roles = ", ".join(paper.roles) if paper.roles else "n/a"
+            lines.append(f"  - **{paper.title}** ({roles}): {paper.why_seed}")
+    else:
+        lines.append("- Seed library was not loaded.")
+
     lines.extend(["", "## MOC-Style Research Artifacts", ""])
     lines.append(f"- Source coverage: `{source_coverage_path.name}`")
     if topic_moc_path:
@@ -497,6 +621,7 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
     lines.append(f"- Gap evidence chains: `{gap_chain_path.name}`")
     lines.append(f"- Research opportunities: `{opportunity_path.name}`")
     lines.append(f"- Weakness report: `{weakness_path.name}`")
+    lines.append(f"- Weakness evidence completion: `{weakness_completion_path.name}`")
     if artifacts.synthesis:
         lines.append("- LLM-style synthesis: `analysis_report.md`")
 
@@ -529,9 +654,10 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
             section_count = len(record.sections)
             lines.append(
                 f"- **{record.title}**: {record.status}, sections={section_count}, "
-                f"fetched_url={record.fetched_url or 'n/a'}"
+                f"provider={record.provider or 'n/a'}, fetched_url={record.fetched_url or 'n/a'}"
             )
             if record.error:
+                lines.append(f"  - failure_stage: {record.failure_stage or 'n/a'}")
                 lines.append(f"  - error: {record.error}")
     else:
         lines.append("- Full-text reading was not attempted.")

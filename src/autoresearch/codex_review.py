@@ -23,6 +23,7 @@ from .schema import (
 )
 from .synthesizer import write_analysis_report
 from .utils import clean_text
+from .weakness import ensure_weakness_cards
 
 
 class CodexMOCGroupResult(BaseModel):
@@ -534,6 +535,8 @@ def apply_codex_review(artifacts: SearchArtifacts, result: CodexReviewResult) ->
             for opportunity in result.opportunities
             if opportunity.research_question
         ]
+    artifacts.weakness_cards = []
+    ensure_weakness_cards(artifacts)
     return artifacts
 
 

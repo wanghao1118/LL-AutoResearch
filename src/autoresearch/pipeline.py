@@ -28,9 +28,11 @@ from .ranker import rank_papers
 from .reader import build_paper_cards
 from .report import write_report
 from .schema import PaperRecord, SearchArtifacts, SourceStatus
+from .seed_loader import extend_query_plan_with_seed, load_seed_selection, seed_records_to_papers
 from .source_health import evaluate_source_readiness
 from .synthesizer import build_synthesis, write_analysis_report
 from .utils import slugify
+from .weakness import build_weakness_cards
 
 Collector = Callable[[str, int], list[PaperRecord]]
 
@@ -68,9 +70,28 @@ def run_search(
         f"{domain_profile.domain_name} ({len(domain_profile.capability_dimensions)} capabilities)"
     )
     plan = plan_queries(topic, domain_profile)
+    seed_selection = load_seed_selection(topic, domain_profile)
+    if seed_selection.status == "ok":
+        plan = extend_query_plan_with_seed(plan, seed_selection)
+        console.print(
+            f"[cyan]seed[/cyan] {seed_selection.topic_seed.display_name if seed_selection.topic_seed else 'matched'}: "
+            f"{seed_selection.added_papers} papers, {len(seed_selection.added_queries)} queries"
+        )
+    elif seed_selection.status not in {"missing", "no_match"}:
+        console.print(f"[yellow]seed[/yellow] {seed_selection.status}: {seed_selection.error[:120]}")
     statuses: list[SourceStatus] = []
     warnings: list[str] = []
-    papers: list[PaperRecord] = []
+    seed_papers = seed_records_to_papers(seed_selection)
+    papers: list[PaperRecord] = list(seed_papers)
+    if seed_papers:
+        statuses.append(
+            SourceStatus(
+                source="paper_seed",
+                query=seed_selection.topic_seed.topic_id if seed_selection.topic_seed else topic,
+                status="ok",
+                raw_count=len(seed_papers),
+            )
+        )
     consecutive_failures: dict[str, int] = {}
 
     for query in plan.queries:
@@ -156,6 +177,15 @@ def run_search(
         profile=domain_profile,
     )
     source_readiness = evaluate_source_readiness(statuses, ranked, topic_moc)
+    weakness_cards = build_weakness_cards(
+        topic=topic,
+        gaps=gaps,
+        topic_moc=topic_moc,
+        comparison=comparison_matrix,
+        full_texts=list(full_texts.values()),
+        source_statuses=statuses,
+        profile=domain_profile,
+    )
     research_opportunities = build_research_opportunities(gaps, profile=domain_profile)
 
     artifacts = SearchArtifacts(
@@ -163,6 +193,7 @@ def run_search(
         domain_profile=domain_profile,
         query_plan=plan,
         source_statuses=statuses,
+        seed_selection=seed_selection,
         ranked_papers=ranked,
         full_texts=list(full_texts.values()),
         influences=list(influences.values()),
@@ -175,6 +206,7 @@ def run_search(
         topic_moc=topic_moc,
         comparison_matrix=comparison_matrix,
         gaps=gaps,
+        weakness_cards=weakness_cards,
         research_opportunities=research_opportunities,
         warnings=warnings,
     )

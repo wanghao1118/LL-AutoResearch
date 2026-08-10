@@ -54,6 +54,9 @@ def _artifact() -> SearchArtifacts:
         gaps=[
             GapEvidence(
                 gap="Temporal lesion reasoning is weakly covered.",
+                support_count=1,
+                counter_count=0,
+                total_papers=1,
                 evidence_chain=[
                     GapEvidenceStep(
                         paper_title="Temporal lesion VLM",
@@ -79,18 +82,21 @@ def test_write_dashboard_creates_static_html(tmp_path):
     assert path.name == "dashboard.html"
     assert "<html lang=\"zh-CN\">" in html
     assert "AutoResearch 调研看板" in html
-    assert "Gap 首页" in html
-    assert "首页先看三类 Gap" in html
-    assert "查看证据链" in html
+    assert "Weakness 首页" in html
+    assert "首页先看 Weakness 结论" in html
+    assert "证据补全" in html
     assert "支持论文依据" in html
     assert "反证 / 边界" in html
-    assert "MOC 怎么支持这个判断" in html
-    assert "下一步怎么验证" in html
+    assert "收窄后的 Weakness" in html
+    assert "已完成的证据补全范围" in html
     assert "证据池概览" in html
     assert "当前领域 Profile" in html
     assert "论文依据" in html
-    assert "Gap 证据链" in html
+    assert "Weakness 证据链" in html
     assert "判断来源" in html
+    assert "Seed 起点" in html
+    assert "Paper Seed 库" in html
+    assert "全文读取 Provider 状态" in html
     assert "证据层级分布" in html
     assert "核心证据" in html
     assert "相邻证据" in html
@@ -117,3 +123,4 @@ def test_load_artifacts_accepts_output_directory(tmp_path):
     loaded = load_artifacts(tmp_path)
 
     assert loaded.topic == "medical VLM temporal lesion change analysis"
+    assert loaded.weakness_cards

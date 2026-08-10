@@ -81,7 +81,7 @@ def search(
     console.print()
     console.print(f"[bold green]Done[/bold green] wrote artifacts to {output_dir}")
     console.print(f"Papers: {len(artifacts.ranked_papers)}")
-    console.print(f"Gaps: {len(artifacts.gaps)}")
+    console.print(f"Weaknesses: {len(artifacts.weakness_cards)}")
     console.print(f"Report: {output_dir / 'report.md'}")
     console.print(f"Dashboard: {output_dir / 'dashboard.html'}")
 
@@ -147,7 +147,7 @@ def codex_apply(
         output_dir=output_dir,
     )
     console.print("[bold green]Done[/bold green] applied Codex review")
-    console.print(f"Gaps: {len(artifacts.gaps)}")
+    console.print(f"Weaknesses: {len(artifacts.weakness_cards)}")
     console.print(f"Research opportunities: {len(artifacts.research_opportunities)}")
     console.print(f"Dashboard: {dashboard_path}")
 

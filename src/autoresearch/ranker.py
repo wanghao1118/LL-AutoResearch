@@ -101,6 +101,7 @@ SOURCE_WEIGHT = {
     "openreview": 0.1,
     "openalex": 0.08,
     "crossref": 0.06,
+    "paper_seed": 0.13,
 }
 
 

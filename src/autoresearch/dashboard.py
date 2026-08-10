@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from .schema import SearchArtifacts
+from .weakness import ensure_weakness_cards
 
 
 def _safe_json(artifacts: SearchArtifacts) -> str:
@@ -14,10 +15,13 @@ def load_artifacts(path: Path) -> SearchArtifacts:
     artifact_path = path
     if path.is_dir():
         artifact_path = path / "search_result.json"
-    return SearchArtifacts.model_validate_json(artifact_path.read_text(encoding="utf-8"))
+    return ensure_weakness_cards(
+        SearchArtifacts.model_validate_json(artifact_path.read_text(encoding="utf-8"))
+    )
 
 
 def write_dashboard(artifacts: SearchArtifacts, output_dir: Path) -> Path:
+    artifacts = ensure_weakness_cards(artifacts)
     output_dir.mkdir(parents=True, exist_ok=True)
     html = HTML_TEMPLATE.replace("__AUTORESEARCH_DATA__", _safe_json(artifacts))
     path = output_dir / "dashboard.html"
@@ -394,10 +398,10 @@ HTML_TEMPLATE = """<!doctype html>
         <p class="subtle" id="generatedAt"></p>
       </div>
       <div class="actions">
-        <button class="link-button" data-tab-go="mainline" type="button">Gap 首页</button>
+        <button class="link-button" data-tab-go="mainline" type="button">Weakness 首页</button>
         <button class="link-button" data-tab-go="papers" type="button">论文依据</button>
         <button class="link-button" data-tab-go="moc" type="button">MOC</button>
-        <button class="link-button" data-tab-go="gaps" type="button">证据链</button>
+        <button class="link-button" data-tab-go="gaps" type="button">Weakness 证据链</button>
       </div>
     </header>
 
@@ -406,11 +410,11 @@ HTML_TEMPLATE = """<!doctype html>
     <section class="llm-strip" id="llmStrip"></section>
 
     <nav class="tabs" aria-label="看板标签页">
-      <button class="tab-button active" data-tab="mainline">Gap 首页</button>
+      <button class="tab-button active" data-tab="mainline">Weakness 首页</button>
       <button class="tab-button" data-tab="papers">论文依据</button>
       <button class="tab-button" data-tab="moc">MOC</button>
-      <button class="tab-button" data-tab="gaps">证据链</button>
-      <button class="tab-button" data-tab="opportunities">研究方案</button>
+      <button class="tab-button" data-tab="gaps">Weakness 证据链</button>
+      <button class="tab-button" data-tab="opportunities">后续方向</button>
       <button class="tab-button" data-tab="overview">系统信息</button>
     </nav>
 
@@ -952,75 +956,138 @@ HTML_TEMPLATE = """<!doctype html>
       return { label: "证据偏弱", badge: "red" };
     };
 
+    const weaknessCards = () => (data.weakness_cards || []).slice(0, 3);
+
+    const verdictMeta = (value) => {
+      const map = {
+        valid: { label: "成立", badge: "teal" },
+        partially_valid: { label: "部分成立", badge: "amber" },
+        already_covered: { label: "已被覆盖", badge: "red" },
+        insufficient_evidence: { label: "证据不足", badge: "red" },
+      };
+      return map[String(value || "insufficient_evidence")] || map.insufficient_evidence;
+    };
+
+    const qualityMeta = (value) => {
+      const map = {
+        strong: { label: "强证据", badge: "teal" },
+        medium: { label: "中等证据", badge: "amber" },
+        weak: { label: "弱证据", badge: "red" },
+      };
+      return map[String(value || "weak")] || map.weak;
+    };
+
+    const fullTextProviderLabel = (value) => {
+      const map = {
+        pmc_xml: "PMC XML",
+        pmc_html: "PMC HTML",
+        arxiv_pdf: "arXiv PDF",
+        direct_pdf: "直接 PDF",
+        direct_html: "直接 HTML",
+      };
+      return map[String(value || "")] || (value || "未记录");
+    };
+
+    const seedSelection = () => data.seed_selection || {};
+
+    const listItems = (values, fallback = "暂无记录") => {
+      if (!Array.isArray(values) || values.length === 0) return `<p class="subtle">${esc(fallback)}</p>`;
+      return `<ol class="evidence-list">${values.map(value => `<li>${esc(zh(value))}</li>`).join("")}</ol>`;
+    };
+
+    const paperTitleItems = (values, fallback = "暂无记录") => {
+      if (!Array.isArray(values) || values.length === 0) return `<p class="subtle">${esc(fallback)}</p>`;
+      return `
+        <ol class="paper-list">
+          ${values.map(title => `
+            <li>
+              <strong>${esc(paperAlias(title))}</strong>
+              ${originalTitleLine(title)}
+            </li>
+          `).join("")}
+        </ol>
+      `;
+    };
+
+    const weaknessTitle = (card, index) => {
+      const statement = zh(card.weakness_statement || card.broad_problem || "");
+      return `Weakness ${index + 1}：${cleanTitle(statement, 72)}`;
+    };
+
+    const completionClaim = () => {
+      const cards = weaknessCards();
+      if (cards.length) {
+        const first = cards[0];
+        const meta = verdictMeta(first.verdict);
+        return `本轮系统已经完成一版证据补全：检查 ${first.checked_papers || 0} 篇入选论文、${first.checked_full_texts || 0} 篇全文、${first.checked_sources || 0} 类信息源。当前首要 Weakness 的结论是「${meta.label}」：${zh(first.remaining_weakness || first.conclusion || first.weakness_statement)}`;
+      }
+      const summary = String(data.synthesis?.executive_summary || "");
+      if (summary) return zh(summary);
+      return "当前还没有形成 WeaknessCard，需要先完成搜索、MOC 和证据链生成。";
+    };
+
     const bestOpportunity = () => {
       const items = data.research_opportunities || [];
       return items.find(item => !String(item.gap || "").toLowerCase().includes("autoresearch")) || items[0] || {};
     };
 
     const mainClaim = () => {
-      const summary = String(data.synthesis?.executive_summary || "");
-      if (summary && summary.includes("failure-conditioned")) {
-        return "本轮最稳的研究机会不是再做一个普通 GUI Agent，而是构建“按失败类型组织的 GUI 工作流评估”。已有论文已经在做长时程任务和恢复方法，但还缺少统一协议来分别评估失败检测、失败分类、恢复动作、恢复成本和最终完成。";
-      }
-      if (summary) return zh(summary);
-      const gaps = synthesizedGaps();
-      if (gaps[0]) return `当前最值得检查的研究缺口是：${gaps[0].gap}`;
-      return "当前还没有形成稳定主线，需要先补充核心论文和证据分层。";
+      return completionClaim();
     };
 
     const renderMainline = () => {
       const source = judgmentSource();
       const tiers = evidenceTierStats();
-      const gaps = researchGaps();
-      const opportunity = bestOpportunity();
       const corePapers = papersByTier("core", 5);
       const adjacentPapers = papersByTier("adjacent", 4);
       const noisePapers = papersByTier("noise", 4);
-      const gapCards = gaps.map((gap, idx) => {
-        const strength = gapStrength(gap);
-        const linkedOpportunity = opportunityForGap(gap, idx);
-        const mocItems = mocTakeawaysForGap(gap, idx);
-        const validationSteps = validationStepsForGap(gap, idx);
+      const cards = weaknessCards();
+      const weaknessHtml = cards.map((card, idx) => {
+        const verdict = verdictMeta(card.verdict);
+        const quality = qualityMeta(card.evidence_quality);
         return `
           <details class="card gap-focus-card">
             <summary>
               <div class="card-header">
                 <div>
-                  <h2>${esc(gapTitle(gap, idx))}</h2>
-                  <p class="subtle">${esc(zh(gap.judgment || "需要继续验证。"))}</p>
+                  <h2>${esc(weaknessTitle(card, idx))}</h2>
+                  <p class="subtle">${esc(zh(card.conclusion || card.remaining_weakness || "已生成证据补全判断。"))}</p>
                 </div>
-                <span class="badge ${strength.badge}">${esc(strength.label)}</span>
+                <div class="badge-row">
+                  <span class="badge ${verdict.badge}">${esc(verdict.label)}</span>
+                  <span class="badge ${quality.badge}">${esc(quality.label)}</span>
+                </div>
               </div>
               <dl class="kv">
-                <dt>置信度</dt><dd>${esc(gap.confidence ?? "n/a")}</dd>
-                <dt>一句话判断</dt><dd>${esc(zh(gap.judgment || "暂无"))}</dd>
+                <dt>已检查论文</dt><dd>${esc(card.checked_papers || 0)} 篇</dd>
+                <dt>已读全文</dt><dd>${esc(card.checked_full_texts || 0)} 篇</dd>
+                <dt>已覆盖信息源</dt><dd>${esc(card.checked_sources || 0)} 类</dd>
+                <dt>最终判断</dt><dd>${esc(verdict.label)}</dd>
               </dl>
             </summary>
             <div class="gap-detail-grid">
               <section class="gap-detail-box">
+                <h4>收窄后的 Weakness</h4>
+                <p>${esc(zh(card.remaining_weakness || card.weakness_statement))}</p>
+              </section>
+              <section class="gap-detail-box">
                 <h4>支持论文依据</h4>
-                ${paperRefList(gap.support, "暂无明确支持论文。")}
+                ${paperTitleItems(card.support_papers, "暂无明确支持论文。")}
               </section>
               <section class="gap-detail-box">
-                <h4>反证 / 边界</h4>
-                ${paperRefList(gap.counter, "暂无明确反证，但仍需要全文检查。")}
+                <h4>反证 / 已解决部分</h4>
+                ${paperTitleItems(card.counter_papers, "暂无明确反证论文。")}
+                ${card.covered_parts?.length ? `<h4 style="margin-top:12px;">已覆盖部分</h4>${listItems(card.covered_parts)}` : ""}
               </section>
               <section class="gap-detail-box">
-                <h4>MOC 怎么支持这个判断</h4>
-                <ol class="evidence-list">
-                  ${(mocItems.length ? mocItems : ["MOC 还需要进一步拆分问题空间。"]).map(item => `<li>${esc(zh(item))}</li>`).join("")}
-                </ol>
+                <h4>已完成的证据补全范围</h4>
+                <dl class="kv">
+                  <dt>章节</dt><dd>${join(card.checked_sections || [], "本轮未读到全文 section")}</dd>
+                  <dt>缺失点</dt><dd>${join(card.missing_parts || [], "未抽取到明确缺失点")}</dd>
+                </dl>
+                <h4 style="margin-top:12px;">系统生成的反证检索式</h4>
+                ${listItems(card.verification_queries || [], "暂无反证检索式。")}
               </section>
-              <section class="gap-detail-box">
-                <h4>下一步怎么验证</h4>
-                <ol class="evidence-list">
-                  ${(validationSteps.length ? validationSteps : [linkedOpportunity.proposed_method || "补全文实验、指标和失败案例证据。"]).map(item => `<li>${esc(zh(item))}</li>`).join("")}
-                </ol>
-              </section>
-            </div>
-            <div class="compact-note">
-              <strong>可转成的研究问题：</strong>${esc(zh(linkedOpportunity.research_question || "等待 Gap 收敛后生成研究问题。"))}<br>
-              <strong>方法设想：</strong>${esc(zh(linkedOpportunity.proposed_method || "暂无"))}
             </div>
           </details>
         `;
@@ -1030,21 +1097,22 @@ HTML_TEMPLATE = """<!doctype html>
         <article class="card verdict">
           <div class="card-header">
             <div>
-              <h2>首页先看三类 Gap</h2>
-              <p class="subtle">点击任意 Gap 卡片，可以看到它是怎么从论文、反证和 MOC 中推出来的。</p>
+              <h2>首页先看 Weakness 结论</h2>
+              <p class="subtle">每张卡片都经过一版证据补全：支持证据、反证、已解决部分和剩余窄弱点放在一起看。</p>
             </div>
             <span class="badge ${source.badge}">${esc(source.label)}</span>
           </div>
           <p>${esc(mainClaim())}</p>
           <dl class="kv">
             <dt>当前领域</dt><dd>${esc(data.domain_profile?.domain_name || topicLabel() || "未配置")}</dd>
+            <dt>Seed 起点</dt><dd>${esc(seedSelection().added_papers || 0)} 篇人工种子论文；${esc((seedSelection().added_queries || []).length)} 条扩展检索式</dd>
             <dt>证据分层</dt><dd>核心 ${tiers.core || 0}；相邻 ${tiers.adjacent || 0}；噪声 ${tiers.noise || 0}</dd>
-            <dt>阅读方式</dt><dd>先看三张 Gap 卡片，再展开看论文依据、正反证据和 MOC。</dd>
+            <dt>当前边界</dt><dd>系统不会读取整个领域所有论文；它会多源召回、排序、读 Top 子集，再给出本轮已完成检查范围。</dd>
           </dl>
         </article>
 
         <div class="gap-home-grid">
-          ${gapCards || `<div class="empty">暂无 Gap。</div>`}
+          ${weaknessHtml || `<div class="empty">暂无 WeaknessCard。</div>`}
         </div>
 
         <details class="card fold-card" style="margin-top:16px;">
@@ -1122,11 +1190,15 @@ HTML_TEMPLATE = """<!doctype html>
       const mocCount = data.topic_moc?.problem_spaces?.length || 0;
       const source = judgmentSource();
       const tiers = evidenceTierStats();
+      const seed = seedSelection();
+      const fullTextOk = (data.full_texts || []).filter(row => row.status === "ok").length;
       document.getElementById("topic").textContent = topicLabel() || "研究主题";
       document.getElementById("generatedAt").textContent = `生成时间：${data.generated_at || "未知"}`;
       document.getElementById("summaryGrid").innerHTML = [
         metric("就绪状态", statusLabel(readiness.status), `${readiness.ranked_papers || 0} 篇入选论文`),
         metric("论文", data.paper_cards?.length || 0, "结构化论文卡片"),
+        metric("Seed", seed.added_papers || 0, seed.topic_seed?.display_name || statusLabel(seed.status)),
+        metric("全文", `${fullTextOk}/${(data.full_texts || []).length}`, "provider 读取成功数"),
         metric("核心证据", tiers.core || 0, `相邻 ${tiers.adjacent || 0}；噪声 ${tiers.noise || 0}`),
         metric("MOC 空间", mocCount, "问题空间分组"),
         metric("Gap", data.gaps?.length || 0, "带证据的判断"),
@@ -1142,12 +1214,14 @@ HTML_TEMPLATE = """<!doctype html>
       const concepts = profile.core_concepts || [];
       const lenses = profile.gap_lenses || [];
       const source = judgmentSource();
+      const seed = seedSelection();
       document.getElementById("profileStrip").innerHTML = `
         <div>
           <strong>当前领域 Profile：${esc(profile.domain_name || "未配置")}</strong>
           <span class="badge ${source.badge}">当前判断来源：${esc(source.label)}</span>
           <span class="subtle">核心概念：${join(concepts.slice(0, 8), "未配置")}；能力维度：${join(capabilities.slice(0, 5), "未配置")}</span>
           <span class="subtle">Gap 视角：${join(lenses.slice(0, 6), "未配置")}</span>
+          <span class="subtle">Seed 库：${esc(seed.topic_seed?.display_name || statusLabel(seed.status) || "未匹配")}；种子论文 ${esc(seed.added_papers || 0)} 篇</span>
         </div>
         <button class="link-button" data-tab-go="overview" type="button">查看领域配置</button>
       `;
@@ -1213,6 +1287,25 @@ HTML_TEMPLATE = """<!doctype html>
           <td>${esc(translatedLlmError(row.error) || "无")}</td>
         </tr>
       `).join("");
+      const seed = seedSelection();
+      const seedRows = (seed.paper_seeds || []).map(row => `
+        <tr>
+          <td>${esc(paperAlias(row.title))}${originalTitleLine(row.title)}</td>
+          <td>${join(row.roles || [], "未记录")}</td>
+          <td>${join(row.datasets || [], "未记录")}</td>
+          <td>${esc(row.why_seed || "未记录")}</td>
+        </tr>
+      `).join("");
+      const fullTextRows = (data.full_texts || []).map(row => `
+        <tr>
+          <td>${esc(paperAlias(row.title))}${originalTitleLine(row.title)}</td>
+          <td><span class="badge ${badgeClass(row.status)}">${esc(statusLabel(row.status))}</span></td>
+          <td>${esc(fullTextProviderLabel(row.provider))}</td>
+          <td>${esc((row.sections || []).length)}</td>
+          <td>${esc(row.failure_stage || "无")}</td>
+          <td>${esc(row.error || "无")}</td>
+        </tr>
+      `).join("");
       document.getElementById("overview").innerHTML = `
         <div class="grid-2">
           <section>
@@ -1260,6 +1353,18 @@ HTML_TEMPLATE = """<!doctype html>
                 <dt>Gap 视角</dt><dd>${join(data.domain_profile?.gap_lenses || [])}</dd>
               </dl>
             </article>
+            <h2 style="margin-top:16px;">Paper Seed 库</h2>
+            <article class="card">
+              <dl class="kv">
+                <dt>匹配状态</dt><dd>${esc(statusLabel(seed.status))}</dd>
+                <dt>Seed Topic</dt><dd>${esc(seed.topic_seed?.display_name || "未匹配")}</dd>
+                <dt>扩展 Query</dt><dd>${join(seed.added_queries || [], "无")}</dd>
+                <dt>Seed 目录</dt><dd>${esc(seed.seed_dir || "未记录")}</dd>
+              </dl>
+            </article>
+            ${seedRows ? `<table style="margin-top:12px;"><thead><tr><th>Seed 论文</th><th>角色</th><th>数据集</th><th>为什么放入 Seed</th></tr></thead><tbody>${seedRows}</tbody></table>` : `<div class="empty">本轮没有匹配到 seed paper。</div>`}
+            <h2 style="margin-top:16px;">全文读取 Provider 状态</h2>
+            ${fullTextRows ? `<table><thead><tr><th>论文</th><th>状态</th><th>Provider</th><th>章节</th><th>失败阶段</th><th>错误/提示</th></tr></thead><tbody>${fullTextRows}</tbody></table>` : `<div class="empty">本次未尝试全文读取。</div>`}
             <h2 style="margin-top:16px;">LLM 抽取状态</h2>
             ${llmRows ? `<table><thead><tr><th>论文</th><th>状态</th><th>模型</th><th>更新字段</th><th>错误/提示</th></tr></thead><tbody>${llmRows}</tbody></table>` : `<div class="empty">本次未执行 LLM 抽取。</div>`}
           </section>

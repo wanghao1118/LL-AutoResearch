@@ -1,4 +1,4 @@
-from autoresearch.fulltext import split_sections
+from autoresearch.fulltext import _candidate_urls, _extract_jats_xml_text, split_sections
 from autoresearch.gap_finder import find_gaps
 from autoresearch.reader import build_paper_cards
 from autoresearch.schema import (
@@ -24,6 +24,37 @@ This is single-timepoint.
     )
 
     assert [section.heading for section in sections] == ["Abstract", "Methods", "Limitations"]
+
+
+def test_fulltext_candidates_prioritize_pmc_xml_before_pdf():
+    paper = PaperRecord(
+        title="PMC Paper",
+        pmcid="PMC123",
+        arxiv_id="2601.00001",
+        pdf_url="https://example.com/paper.pdf",
+    )
+
+    candidates = _candidate_urls(paper)
+
+    assert candidates[0] == "https://pmc.ncbi.nlm.nih.gov/articles/PMC123/?report=xml"
+    assert "https://arxiv.org/pdf/2601.00001" in candidates
+
+
+def test_jats_xml_extractor_keeps_section_headings():
+    text, sections = _extract_jats_xml_text(
+        b"""
+        <article>
+          <front><article-meta><abstract><p>We study lesion change.</p></abstract></article-meta></front>
+          <body>
+            <sec><title>Methods</title><p>We evaluate paired temporal reasoning.</p></sec>
+            <sec><title>Results</title><p>Accuracy improves.</p></sec>
+          </body>
+        </article>
+        """
+    )
+
+    assert "lesion change" in text
+    assert [section.heading for section in sections[:3]] == ["Abstract", "Methods", "Results"]
 
 
 def test_reader_uses_full_text_for_dataset_and_metric():

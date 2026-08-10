@@ -81,6 +81,50 @@ class PaperRecord(BaseModel):
     raw: dict[str, Any] = Field(default_factory=dict)
 
 
+class PaperSeedRecord(BaseModel):
+    title: str
+    year: int | None = None
+    doi: str = ""
+    arxiv_id: str = ""
+    pmid: str = ""
+    pmcid: str = ""
+    url: str = ""
+    pdf_url: str = ""
+    venue: str = ""
+    authors: list[str] = Field(default_factory=list)
+    topics: list[str] = Field(default_factory=list)
+    roles: list[str] = Field(default_factory=list)
+    why_seed: str = ""
+    known_claims: list[str] = Field(default_factory=list)
+    known_limitations: list[str] = Field(default_factory=list)
+    datasets: list[str] = Field(default_factory=list)
+    metrics: list[str] = Field(default_factory=list)
+    source: str = "paper_seed"
+    verified_by: str = "manual"
+
+
+class TopicSeed(BaseModel):
+    topic_id: str
+    display_name: str
+    aliases: list[str] = Field(default_factory=list)
+    core_queries: list[str] = Field(default_factory=list)
+    must_include_papers: list[str] = Field(default_factory=list)
+    benchmark_terms: list[str] = Field(default_factory=list)
+    weakness_lenses: list[str] = Field(default_factory=list)
+    notes: str = ""
+
+
+class SeedLibrarySelection(BaseModel):
+    seed_dir: str = ""
+    topic_seed: TopicSeed | None = None
+    paper_seeds: list[PaperSeedRecord] = Field(default_factory=list)
+    matched_topics: list[str] = Field(default_factory=list)
+    added_queries: list[str] = Field(default_factory=list)
+    added_papers: int = 0
+    status: str = "not_loaded"
+    error: str = ""
+
+
 class RankedPaper(BaseModel):
     paper: PaperRecord
     relevance_score: float
@@ -110,6 +154,10 @@ class FullTextRecord(BaseModel):
     raw_path: str = ""
     text_path: str = ""
     status: str = "not_attempted"
+    provider: str = ""
+    attempted_providers: list[str] = Field(default_factory=list)
+    attempted_urls: list[str] = Field(default_factory=list)
+    failure_stage: str = ""
     content_type: str = ""
     sections: list[TextSection] = Field(default_factory=list)
     error: str = ""
@@ -304,6 +352,30 @@ class GapEvidence(BaseModel):
     research_opportunity: str = ""
 
 
+class WeaknessCard(BaseModel):
+    weakness_statement: str
+    broad_problem: str = ""
+    remaining_weakness: str = ""
+    verdict: str = "insufficient_evidence"
+    evidence_quality: str = "weak"
+    evidence_quality_reasons: list[str] = Field(default_factory=list)
+    checked_papers: int = 0
+    checked_full_texts: int = 0
+    checked_sources: int = 0
+    checked_sections: list[str] = Field(default_factory=list)
+    support_papers: list[str] = Field(default_factory=list)
+    counter_papers: list[str] = Field(default_factory=list)
+    unclear_papers: list[str] = Field(default_factory=list)
+    support_snippets: list[EvidenceSnippet] = Field(default_factory=list)
+    counter_snippets: list[EvidenceSnippet] = Field(default_factory=list)
+    covered_parts: list[str] = Field(default_factory=list)
+    partially_solved_parts: list[str] = Field(default_factory=list)
+    missing_parts: list[str] = Field(default_factory=list)
+    moc_origin: list[str] = Field(default_factory=list)
+    verification_queries: list[str] = Field(default_factory=list)
+    conclusion: str = ""
+
+
 class ResearchOpportunity(BaseModel):
     gap: str
     research_question: str = ""
@@ -349,6 +421,7 @@ class SearchArtifacts(BaseModel):
     domain_profile: DomainProfile | None = None
     query_plan: QueryPlan
     source_statuses: list[SourceStatus]
+    seed_selection: SeedLibrarySelection | None = None
     ranked_papers: list[RankedPaper]
     full_texts: list[FullTextRecord] = Field(default_factory=list)
     influences: list[PaperInfluence] = Field(default_factory=list)
@@ -361,6 +434,7 @@ class SearchArtifacts(BaseModel):
     topic_moc: TopicMOC | None = None
     comparison_matrix: ComparisonMatrix | None = None
     gaps: list[GapEvidence]
+    weakness_cards: list[WeaknessCard] = Field(default_factory=list)
     research_opportunities: list[ResearchOpportunity] = Field(default_factory=list)
     synthesis: SynthesisReport | None = None
     warnings: list[str] = Field(default_factory=list)
@@ -377,6 +451,10 @@ class SearchArtifacts(BaseModel):
         if self.synthesis:
             (output_dir / "synthesis.json").write_text(
                 self.synthesis.model_dump_json(indent=2), encoding="utf-8"
+            )
+        if self.seed_selection:
+            (output_dir / "seed_selection.json").write_text(
+                self.seed_selection.model_dump_json(indent=2), encoding="utf-8"
             )
         (output_dir / "paper_cards.json").write_text(
             self.model_dump_json(include={"paper_cards"}, indent=2), encoding="utf-8"
@@ -410,6 +488,12 @@ class SearchArtifacts(BaseModel):
             )
         (output_dir / "gaps.json").write_text(
             "[" + ",\n".join(gap.model_dump_json(indent=2) for gap in self.gaps) + "]\n",
+            encoding="utf-8",
+        )
+        (output_dir / "weakness_cards.json").write_text(
+            "["
+            + ",\n".join(card.model_dump_json(indent=2) for card in self.weakness_cards)
+            + "]\n",
             encoding="utf-8",
         )
         (output_dir / "research_opportunities.json").write_text(

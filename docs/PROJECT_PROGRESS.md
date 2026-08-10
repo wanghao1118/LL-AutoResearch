@@ -329,11 +329,379 @@
     not part of this step
   - adjusted deployment to create the virtual environment with Python 3.11 on Ubuntu 22.04 ECS
 
+## 2026-08-10
+
+- Re-scoped the near-term project target from full Gap discovery to evidence-grounded Weakness
+  discovery:
+  - current target: `Search -> Paper Cards -> MOC -> Weakness Evidence Chain`
+  - deferred targets: `Weakness -> Gap -> Design -> Benchmark -> Writing`
+  - rationale: a weakness is easier to verify than a final research gap, and it can be inspected with
+    support evidence, counter-evidence, evidence quality, and next validation steps
+- Appendix: related AutoResearch / Research Agent projects and benchmarks surveyed for positioning:
+
+### Appendix A: Project Landscape
+
+This appendix records adjacent projects found during the AutoResearch positioning discussion. The
+main lesson is that many systems already cover literature search, scientific QA, idea generation,
+experiment execution, paper replication, and full paper drafting. AutoResearch should therefore avoid
+competing as a generic "automatic paper writer" and instead specialize in finding evidence-grounded
+weaknesses in a research area.
+
+| Project / System | Link | Main Focus | Relevance To AutoResearch |
+|---|---|---|---|
+| The AI Scientist | https://arxiv.org/abs/2408.06292 | End-to-end automated ML research: idea generation, code, experiments, figures, paper writing, and simulated review. | Important comparison point, but broader and more end-to-end than the current Weakness Finder target. |
+| The AI Scientist-v2 | https://arxiv.org/abs/2504.08066 | Workshop-level automated scientific discovery with more agentic search. | Shows the field is moving toward full-cycle autonomous research, but not specifically weakness evidence chains. |
+| AI-Researcher | https://arxiv.org/abs/2505.18705 | Autonomous scientific innovation from literature review and hypothesis generation to implementation and manuscript drafting. | Similar pipeline ambition; useful for understanding end-to-end claims and Scientist-Bench style evaluation. |
+| Agent Laboratory | https://arxiv.org/abs/2501.04227 | Research assistant pipeline with literature review, experimentation, and report writing. | Close workflow reference, but assumes the user already provides a research idea; our focus is finding weaknesses before idea design. |
+| Karpathy autoresearch | https://github.com/karpathy/autoresearch | Iterative experiment loop: modify code, run short experiments, keep improvements by metric. | Useful inspiration for evidence-preserving loops, but it optimizes a known scalar metric rather than discovering literature weaknesses. |
+| OpenResearcher | https://arxiv.org/html/2408.06941v1 | RAG-based scientific research assistant for literature search, filtering, QA, and self-refinement. | Relevant to the search and synthesis layer, but less focused on MOC-style weakness discovery. |
+| OpenScholar | https://arxiv.org/abs/2411.14199 | Retrieval-augmented scientific synthesis over a large open-access paper corpus with citation-backed answers. | Strong reference for citation-grounded literature synthesis and evidence attribution. |
+| Ai2 ScholarQA | https://allenai.org/blog/ai2-scholarqa | Scientific question answering and literature synthesis across multiple papers. | Useful baseline for citation-backed scientific QA. |
+| FutureHouse Crow / Falcon / Owl / Phoenix | https://www.futurehouse.org/research-announcements/launching-futurehouse-platform-ai-agents | Specialized science agents for retrieval, deep literature review, precedent checking, and chemistry workflows. | Strong product reference for task-specific research agents; Owl's "has anyone done X?" is especially relevant to counter-evidence search. |
+| Elicit | https://elicit.com/ | Literature review, screening, and structured data extraction for systematic reviews. | Product reference for paper search and extraction UI. |
+| SciSpace Deep Review | https://scispace.com/search | Agentic literature review and deep research over academic sources. | Product reference for large-scale literature collection and review generation. |
+| BioDiscoveryAgent | https://arxiv.org/abs/2405.17631 | Closed-loop biological experiment design and hypothesis-space navigation. | Domain-specific example of research automation beyond literature review. |
+
+### Appendix B: Benchmark Landscape
+
+The benchmark landscape is fragmented by research-stage capability. This is good news for
+AutoResearch: instead of inventing a full benchmark immediately, the project can first borrow
+evaluation ideas from literature discovery, citation grounding, limitation detection, idea generation,
+code execution, and reproducibility benchmarks.
+
+| Benchmark | Link | What It Measures | How It Informs AutoResearch |
+|---|---|---|---|
+| AutoResearchBench | https://arxiv.org/abs/2604.25256 | Autonomous scientific literature discovery through Deep Research and Wide Research tasks. | Best short-term reference for testing whether AutoResearch can find the right papers before claiming weaknesses. |
+| AstaBench | https://arxiv.org/abs/2510.21652 | Broad scientific research-agent ability across 2400+ problems and multiple research stages. | Holistic reference for scientific agent evaluation, tools, cost accounting, and controlled leaderboards. |
+| ScholarQABench | https://arxiv.org/abs/2411.14199 | Literature-search and citation-backed scientific synthesis. | Useful for evaluating whether weakness explanations are grounded in retrievable evidence. |
+| ResearchQA | https://arxiv.org/abs/2607.11074 | Citation-grounded QA over scientific papers, including lookup, comprehension, multi-hop, and adversarial questions. | Relevant to evidence quality: answers should cite passages and refuse unsupported claims. |
+| DeepResearch Bench | https://deepresearch-bench.github.io/ | PhD-level deep research tasks across many fields, with report quality and citation trustworthiness evaluation. | Useful for report-level evaluation, but broader than the current Weakness Finder scope. |
+| AI Idea Bench 2025 | https://arxiv.org/abs/2504.14191 | AI research idea generation using target papers and inspired works. | Later-stage reference for evaluating weakness-to-idea conversion after Weakness Finder is stable. |
+| IdeaBench | https://arxiv.org/html/2411.02429v1 | Research idea generation, novelty, feasibility, semantic similarity, and idea overlap. | Helps evaluate whether generated opportunities are novel and feasible, but should come after weakness validation. |
+| LiveIdeaBench | https://www.nature.com/articles/s41467-026-70245-1 | Scientific idea generation under divergent-thinking criteria. | Useful later for idea diversity, originality, feasibility, fluency, flexibility, and clarity. |
+| LIMITGEN | https://aclanthology.org/2025.acl-long.1009.pdf | Identification of critical limitations in scientific research papers. | Closest benchmark family to the new Weakness Finder target. |
+| FLAWS | https://arxiv.org/html/2511.21843v1 | Error identification and localization in scientific papers / reviews. | Useful for testing whether the system can find specific weaknesses rather than generic criticism. |
+| MLAgentBench | https://arxiv.org/abs/2310.03302 | ML experimentation agents that write code, run experiments, and improve models. | Later-stage reference if AutoResearch adds experiment execution. |
+| MLE-bench | https://openai.com/index/mle-bench/ | Machine-learning engineering over Kaggle-style competitions. | Later-stage benchmark for experiment and model-building capability. |
+| ResearchCodeBench | https://arxiv.org/html/2506.02314v1 | Implementing novel ML research contributions as executable code. | Later-stage reference for paper-to-code implementation, not current Weakness Finder. |
+| PaperBench | https://arxiv.org/abs/2504.01848 | Replicating 20 ICML 2024 papers from scratch with hierarchical rubrics. | Useful for future Auto Design / Auto Experiment, but too heavy for the current MVP. |
+| CORE-Bench | https://arxiv.org/abs/2409.11363 | Computational reproducibility across 90 papers and 270 tasks. | Important future reference for verifying whether claimed methods and evidence are reproducible. |
+| ScienceAgentBench | https://arxiv.org/abs/2410.05080 | Data-driven scientific discovery tasks extracted from peer-reviewed papers. | Reference for evaluating research workflow subtasks with executable outputs and expert validation. |
+| DiscoveryBench | https://arxiv.org/html/2407.01725v1 | Data-driven discovery from datasets, combining statistical analysis and semantic reasoning. | Relevant later if AutoResearch moves from weakness discovery to data-backed hypothesis validation. |
+| LABBench2 | https://arxiv.org/html/2604.09554v2 | Practical biology research tasks such as literature retrieval, figure/table understanding, protocols, and database access. | Domain-specific example of agentic research-task benchmarking. |
+| LifeSciBench | https://openai.com/index/introducing-life-sci-bench/ | Realistic life-science workflows across evidence handling, analysis, design, reasoning, validation, translation, and communication. | Useful example of workflow taxonomy design for a research-agent benchmark. |
+| AIRS-Bench | https://arxiv.org/abs/2602.06855 | Frontier AI research science-agent tasks across the research lifecycle. | Reference for full-lifecycle research-agent evaluation once the project goes beyond weakness discovery. |
+| SciAgentArena | https://arxiv.org/abs/2606.12736 | Real-world scientific research scenarios with stepwise verification and interactive evaluation. | Useful future reference for stepwise verification of agent research outputs. |
+
+### Appendix C: Positioning Decision
+
+- Near-term positioning:
+  - AutoResearch should become a `Weakness Finder`, not a full automatic paper-writing system.
+  - Its first useful output should be a ranked list of weaknesses with support papers, counter
+    papers, MOC origin, evidence quality, and validation steps.
+- Differentiation:
+  - Compared with search and QA systems, AutoResearch should focus on cross-paper weakness
+    judgment rather than answer generation.
+  - Compared with idea-generation benchmarks, AutoResearch should first prove that the weakness is
+    real before proposing ideas.
+  - Compared with experiment agents, AutoResearch should stop at research planning until the
+    weakness evidence chain is reliable.
+- Candidate future internal benchmark:
+  - `WeaknessBench-mini`
+  - input: a research direction plus a controlled paper set
+  - output: 3 candidate weaknesses with support evidence, counter-evidence, evidence quality, and
+    validation plan
+  - evaluation dimensions: specificity, evidence grounding, counter-evidence handling, novelty of
+    the weakness, and whether the weakness can be validated by a benchmark or ablation
+
+### Appendix D: Paper-Idea Analysis Pattern
+
+- IdeaBench-style retrospective insight:
+  - A high-quality paper's idea usually grows out of its cited reference set, not from an isolated
+    keyword search.
+  - IdeaBench evaluates whether an LLM can read the target paper's reference papers and generate an
+    idea comparable to the true target-paper idea.
+  - AutoResearch can borrow this pattern without becoming an idea-generation benchmark.
+- Proposed AutoResearch adaptation:
+  - input: a target paper or a research direction
+  - if a target paper is given, collect its reference papers first
+  - read only the reference set, then build paper cards, comparison tables, and a MOC
+  - infer the weaknesses that could motivate the target paper
+  - compare the inferred weaknesses/opportunities with the target paper's introduction,
+    motivation, and contribution
+- Why this matters:
+  - Reference sets are a cleaner field map than blind keyword search.
+  - They usually contain classic works, competing routes, datasets, benchmarks, metrics, and the
+    exact prior work the target paper positions against.
+  - This mode can validate whether AutoResearch is learning to recover research motivation from
+    prior literature instead of merely summarizing papers.
+- Candidate validation metric:
+  - `Research Motivation Recovery Score`
+  - measures whether the generated weakness aligns with the target paper motivation, whether the
+    proposed opportunity aligns with the target contribution, and whether each claim is grounded in
+    reference-paper evidence.
+
+### Appendix E: Quote-First Weakness Finder Principle
+
+- ScholarQA-inspired principle:
+  - extract evidence first, summarize second
+  - every important answer or weakness claim should be backed by source snippets
+  - paper comparison tables should keep methods, datasets, metrics, findings, and evidence links
+    next to each other
+- AutoResearch adaptation:
+  - retrieve papers or reference papers
+  - extract quotes/snippets from abstract, introduction, methods, experiments, limitations, and
+    discussion sections
+  - cluster snippets into evidence themes
+  - build a comparison table before generating any weakness
+  - generate candidate weaknesses only after support and counter snippets are available
+- Terminology decision:
+  - `quote`: a short verbatim source passage from a paper
+  - `snippet`: a broader evidence fragment, which may be lightly cleaned or section-bounded
+  - user-facing UI can call both `evidence snippets` to avoid confusing readers
+- Weakness card target structure:
+  - weakness statement
+  - support snippets
+  - counter snippets
+  - comparison-table origin
+  - MOC origin
+  - evidence quality
+  - verdict: valid, partially valid, evidence insufficient, or already covered
+
+### Appendix F: Big Gap Narrowing Logic From Meeting Notes
+
+- Key meeting correction:
+  - counter-evidence should not simply kill a gap.
+  - if an existing paper solves part of a broad gap, AutoResearch should use that paper to narrow
+    the gap.
+  - the remaining unsolved part becomes the useful narrow gap.
+- Updated reasoning chain:
+  - find a broad important problem
+  - map what existing papers already solved
+  - identify which subparts are only partially solved
+  - narrow the broad gap into a smaller remaining gap
+  - derive 2-3 concrete weaknesses from that remaining gap
+  - check whether any newer or adjacent papers already cover those weaknesses
+- Example pattern:
+  - broad gap: a field lacks capability `X`
+  - existing work: papers A/B solve parts of `X`
+  - narrow gap: `X` is still weak under condition `Y`, dataset `Z`, metric `M`, or workflow `W`
+  - weakness points: the remaining gap can be criticized through missing assumptions,
+    under-specified metrics, limited benchmarks, poor robustness, or missing failure analysis
+- Product implication:
+  - the current `support / counter / unclear` structure is useful but incomplete.
+  - the next Weakness Finder should add `covered_parts`, `partially_solved_parts`, and
+    `remaining_narrow_gap`.
+  - MOC should show where existing routes stop, not only which papers belong to which group.
+
+### Appendix G: Boundary With Existing Research-Agent Systems
+
+- AI Scientist and AI Scientist-v2:
+  - use idea-first workflows: generate ideas, run novelty checks, execute experiments, then use
+    reviewer-style feedback to find weaknesses in the generated paper or experiment.
+  - useful lessons: novelty checking, automated review rubrics, and experiment failure feedback.
+  - limitation for AutoResearch: they do not primarily discover field-level weaknesses from
+    literature relationships.
+- Agent Laboratory:
+  - starts from a user-provided research idea, then performs literature review, planning,
+    experiments, writing, and review.
+  - useful lessons: after a weakness becomes an idea, a downstream agent can execute experiments
+    and produce a report.
+  - limitation for AutoResearch: it does not strongly validate whether the original idea is
+    motivated by a real, unresolved weakness.
+- FutureHouse and ScholarQA:
+  - strong at retrieval, literature synthesis, citation-grounded answers, and prior-art checking.
+  - useful lessons: prior-art/counter-evidence search, quote-first answering, and evidence-backed
+    comparison tables.
+  - limitation for AutoResearch: they are not mainly designed as MOC-based weakness discovery
+    engines.
+- Current differentiation:
+  - AutoResearch should sit before Auto Design and Auto Writing.
+  - Its first job is to determine what weakness is real enough to deserve a research idea.
+
+- Implemented Weakness Evidence Completion v1:
+  - added `WeaknessCard` as the user-facing result layer on top of existing `GapEvidence`
+  - each weakness now records `verdict`, `evidence_quality`, checked paper count, checked full-text
+    count, checked source count, support papers, counter papers, covered parts, missing parts,
+    remaining narrow weakness, MOC origin, and verification queries
+  - added `weakness_cards.json` and `weakness_completion.md`
+  - `dashboard.html` now opens with `Weakness 首页` instead of `Gap 首页`
+  - the dashboard mainline now shows final-style verdicts: `成立`, `部分成立`, `已被覆盖`, or
+    `证据不足`
+  - the dashboard explicitly states the search boundary: AutoResearch does not read every paper in a
+    field; it performs multi-source recall, ranks candidates, and verifies the top-ranked subset
+  - `codex-apply` now rebuilds `WeaknessCard` after refined gaps are written back
+- Tightened evidence-quality rules:
+  - without successful full-text reads, a weakness cannot be marked as medium/strong evidence
+  - metadata-only runs therefore produce `weak` evidence quality even if support/counter counts are
+    available
+- Improved full-text fetching safety:
+  - added concurrent full-text fetching with a shorter request timeout
+  - restricted v1 full-text candidates to direct PDFs, arXiv PDFs, and PMC pages instead of generic
+    DOI or publisher landing pages
+- Medical VLM Weakness Finder run regenerated with a stable metadata-only configuration:
+  - topic: `medical VLM temporal lesion change analysis`
+  - query count: `10`
+  - source/query executions: `60`
+  - ranked papers: `8`
+  - weakness cards: `4`
+  - full-text reads: `0`
+  - checked sources: `6`
+  - evidence quality: `weak` because no full text was read in this stable run
+  - artifacts: `weakness_cards.json`, `weakness_completion.md`, `dashboard.html`
+- New limitation discovered:
+  - full-text fetching still needs a hard wall-clock deadline and better per-paper failure logging
+    before it can safely be enabled as the default evidence-completion path
+  - source/query execution is still serial and should be parallelized or cached for larger domains
+
+### Appendix H: AlphaXiv as an AI/ML Literature Source
+
+- Context:
+  - Senior collaborator recommended https://www.alphaxiv.org/ as a possible paper-discovery source.
+  - AlphaXiv should be treated as an arXiv-centered discovery and discussion layer, not as a
+    general scholarly database.
+- What AlphaXiv appears useful for:
+  - discovering and reading arXiv papers, especially AI/ML/CS papers
+  - replacing an `arxiv.org` paper URL with an `alphaxiv.org` paper page for enhanced reading and
+    discussion context
+  - semantic or multi-hop discovery around a research question, method name, benchmark, author, or
+    paper title
+  - finding newer or related arXiv papers that may act as counter-evidence for a proposed weakness
+  - reading paper content or asking paper-specific questions when AlphaXiv tools are available
+- Likely retrieval logic to model:
+  - user question plus focused keywords
+  - keyword search for exact method / benchmark / author / title matches
+  - semantic search for concept-level matches
+  - optional follow-up retrieval rounds for hard questions
+  - ranking by relevance, recency, and possibly community/activity signals
+- How AutoResearch should use it:
+  - add AlphaXiv as an AI/ML-focused collector or enrichment source
+  - use it in `Counter-evidence Search` for questions such as:
+    - has anyone already solved this weakness?
+    - is there already a benchmark for this capability?
+    - which recent arXiv papers directly challenge this claim?
+  - use it as a full-text or paper-QA helper when extracting limitations, datasets, metrics,
+    benchmark protocols, failure cases, and future-work statements
+- Boundaries:
+  - AlphaXiv should not replace OpenAlex, Semantic Scholar, CrossRef, PubMed, Europe PMC,
+    OpenReview, or Papers With Code.
+  - It is likely strongest for arXiv-heavy AI/ML areas and weaker for clinical, biomedical,
+    social-science, and paywalled literature.
+  - Community signals are useful for discovery but should not be treated as evidence that a
+    weakness is scientifically valid.
+- Product implication:
+  - AlphaXiv fits the new Weakness Finder direction because it can help retrieve both supporting
+    papers and recent counter-evidence.
+  - The first implementation should be read-only and evidence-preserving: collect candidates,
+    store source URLs, and mark AlphaXiv-derived papers as one source among several.
+
+### Appendix I: Bench Module Direction From Meeting Notes
+
+- Source:
+  - `自动化科研流程.docx` is a speech-to-text transcript with many recognition errors, but the
+    Bench-related intent is still recoverable.
+- Meeting-level interpretation:
+  - AutoResearch was originally discussed as four serial modules:
+    `Auto Search -> Auto Design -> Auto Bench / Auto Benchmark -> Auto Writing`.
+  - The current project should stay focused on Search / Weakness first, but the Bench module is an
+    important downstream evidence layer.
+- What the Bench module is expected to do:
+  - given a contribution, innovation point, method, or paper introduction/method section, find
+    existing datasets, benchmarks, and metrics that can evaluate the claimed effect
+  - determine which public benchmarks can be used as base benchmarks
+  - if no suitable benchmark exists, propose or construct a new benchmark or benchmark slice for
+    the specific contribution
+  - explain why a benchmark is suitable or unsuitable for validating the contribution
+  - support manual evaluation of whether the generated benchmark recommendation is useful
+- Important distinction:
+  - Bench is not only a standalone "benchmark website".
+  - In AutoResearch, Bench should answer whether a proposed weakness or contribution can be
+    evaluated, and whether existing benchmarks already cover it.
+- Connection to the current Weakness Finder direction:
+  - Paper Weakness Finder asks: what is not well solved in existing work?
+  - Bench module asks: is there an evaluation tool that can prove this weakness?
+  - Bench Weakness Finder asks: do the available benchmarks themselves miss the key capability,
+    rely on weak metrics, lack public data, lack model coverage, or fail to expose failure modes?
+- Meeting-derived workflow:
+  - start from a broad gap or contribution
+  - search for existing papers/benchmarks that partially address it
+  - use those papers as narrowing evidence rather than simply treating them as refutations
+  - identify the remaining narrow weakness
+  - ask whether any benchmark can measure that remaining weakness
+  - if not, propose a benchmark design or dataset construction plan
+- Proposed Bench module output:
+  - relevant benchmark list
+  - benchmark cards with source links, paper, code, dataset, leaderboard, task format, metrics,
+    model results, and evidence snippets
+  - benchmark suitability judgment for the target weakness/contribution
+  - benchmark weakness notes: missing capability, proxy metric, weak scoring protocol,
+    reproducibility issue, limited leaderboard/model coverage, or missing failure analysis
+  - optional generated benchmark proposal if no existing benchmark is suitable
+- Existing project to reuse:
+  - `/Users/zwx/Documents/文献阅读/bench-analysis-workbench`
+  - current positioning: `Benchmark Understanding / Benchmark Intelligence Workbench`
+  - reusable assets:
+    - `BenchProfile` / benchmark card schema
+    - source discovery for official pages, papers, GitHub, Hugging Face datasets, and leaderboards
+    - paper-level benchmark analysis fields: motivation, benchmark design, rubric/scoring,
+      model results, conclusions, failure modes, reliability notes
+    - model result extraction: model, metric, score, source, verification status
+    - seed library for benchmark names, aliases, manual sources, and latest reports
+    - gold-note annotation guideline and `data/gold_notes/template.json`
+- Recommended integration stance:
+  - do not merge the old workbench wholesale into AutoResearch immediately
+  - first extract a small `BenchCard` / `BenchProfile` module into AutoResearch
+  - keep the old web UI as a reference implementation and source of tested heuristics
+  - make Bench output serve Weakness Cards, not replace the Paper/MOC pipeline
+- Near-term Bench MVP:
+  - input: benchmark name, paper URL, Hugging Face dataset URL, or a target paper's
+    introduction/method text
+  - output: one structured BenchCard and a Chinese explanation page
+  - fields: what it measures, cases/schema, metrics/scoring, who has evaluated on it, source
+    evidence, suitability for a weakness, and benchmark limitations
+- Later Auto Benchmark goal:
+  - once Search / Weakness Finder is stable, use Bench Cards to recommend evaluation protocols,
+    baselines, metrics, ablations, and, when necessary, new benchmark construction plans.
+
+## 2026-08-10
+
+- Implemented Paper Seed Library v1:
+  - added seed schemas for `PaperSeedRecord`, `TopicSeed`, and `SeedLibrarySelection`
+  - added file-based seed data under `data/paper_seed/`
+  - added a first medical VLM temporal lesion seed topic:
+    `medical-vlm-temporal-lesion`
+  - added seed papers for dataset / benchmark-context / baseline roles
+  - added a seed loader that matches the user topic to a topic seed, expands search queries,
+    and converts matched seed papers into normal `PaperRecord` objects
+  - integrated seed papers into the main search pipeline before deduplication and ranking
+  - wrote seed metadata to `seed_selection.json` and `search_result.json`
+- Implemented Full-text Provider v2:
+  - replaced generic URL attempts with provider-ordered candidates
+  - provider order now prioritizes PMC XML / PMC HTML for PMCID papers, then arXiv PDF,
+    direct PDF, and direct HTML
+  - added per-paper hard timeout to avoid one bad PDF or webpage blocking the whole run
+  - added provider, attempted provider list, attempted URL list, and failure stage to
+    `FullTextRecord`
+  - added JATS/XML section extraction so medical PMC papers can expose Abstract, Methods,
+    Results, Discussion, and related sections more reliably than PDF parsing
+- Updated the UI and reports:
+  - dashboard homepage now shows seed paper count and full-text success count
+  - system page now shows Paper Seed Library details and Full-text Provider status
+  - source coverage / report markdown now records seed status and provider-level full-text coverage
+- Current positioning after this update:
+  - Paper Seed Library improves the starting point and makes the project accumulative
+  - Full-text Provider v2 improves evidence depth and failure transparency
+  - Weakness Finder remains the main target; Design / Benchmark / Writing are still downstream
+
 ## Next
 
+- Run a small medical VLM search with `full_text_limit > 0` and inspect whether PMC XML
+  increases evidence quality.
+- Add manual seed editing commands so the user can add / review / retire seed papers without
+  hand-editing JSONL.
 - Add source-quality reporting: source -> core / adjacent / noise contribution counts.
 - Add Codex-reviewed PaperInsight and MOC refinement with strict evidence references.
 - Add review/evaluation fixtures to compare rule-generated vs Codex-reviewed extraction quality.
-- Add query/source balancing so weak sources do not dominate runtime and source diversity is explicit.
-- Add Papers With Code / benchmark archive support as a dataset and benchmark source, not as a primary paper search source.
 - Add LitSearch-style evaluation for search/ranking quality.
+- Later: add BenchCard / BenchProfile integration using the existing `bench-analysis-workbench`
+  assets as the first AutoResearch Bench module.
