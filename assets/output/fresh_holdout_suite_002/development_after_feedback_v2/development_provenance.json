@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_002",
+  "evidence_class": "feedback_regression_after_gold_reveal",
+  "generalization_claim_allowed": false,
+  "matcher_loaded_gold": false,
+  "gold_was_known_to_developer_before_code_change": true,
+  "baseline_run": "assets/output/fresh_holdout_suite_002/blind_runs",
+  "purpose": "measure whether generic domain-scope, implementation-detail, declared-breadth, and route fixes resolve suite002 failure classes",
+  "taxonomy_update": "benchmark names and source evidence unchanged; outside-catalog micro-labels grouped by method-visible evaluation construct"
+}

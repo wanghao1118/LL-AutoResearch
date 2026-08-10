@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_002",
+  "acquisition_only": true,
+  "experiment_sections_inspected": false,
+  "papers": [
+    {
+      "case_id": "fresh2_001",
+      "arxiv_id": "2211.10435",
+      "downloaded": false,
+      "extracted": false,
+      "archive_bytes": 1136501,
+      "tex_file_count": 29,
+      "source_root": "assets/input/source_papers/extracted/2211.10435",
+      "experiment_sections_inspected": false
+    },
+    {
+      "case_id": "fresh2_002",
+      "arxiv_id": "2305.18323",
+      "downloaded": false,
+      "extracted": false,
+      "archive_bytes": 5482249,
+      "tex_file_count": 11,
+      "source_root": "assets/input/source_papers/extracted/2305.18323",
+      "experiment_sections_inspected": false
+    },
+    {
+      "case_id": "fresh2_003",
+      "arxiv_id": "2207.05608",
+      "downloaded": true,
+      "extracted": false,
+      "archive_bytes": 48682670,
+      "tex_file_count": 30,
+      "source_root": "assets/input/source_papers/extracted/2207.05608",
+      "experiment_sections_inspected": false
+    },
+    {
+      "case_id": "fresh2_004",
+      "arxiv_id": "2304.11477",
+      "downloaded": false,
+      "extracted": false,
+      "archive_bytes": 2806101,
+      "tex_file_count": 9,
+      "source_root": "assets/input/source_papers/extracted/2304.11477",
+      "experiment_sections_inspected": false
+    },
+    {
+      "case_id": "fresh2_005",
+      "arxiv_id": "2303.08128",
+      "downloaded": true,
+      "extracted": true,
+      "archive_bytes": 33362436,
+      "tex_file_count": 3,
+      "source_root": "assets/input/source_papers/extracted/2303.08128",
+      "experiment_sections_inspected": false
+    }
+  ]
+}

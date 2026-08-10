@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_002",
+  "command": [
+    "python3",
+    "step2_run_blind_matching.py",
+    "--cases-dir",
+    "assets/input/fresh_holdout_suite_002/cases",
+    "--case-pattern",
+    "fresh2_*.json",
+    "--output-dir",
+    "assets/output/fresh_holdout_suite_002/blind_runs"
+  ],
+  "exit_status": 0,
+  "reused_completed_blind_run_for_record_repair": false,
+  "blind_run_completed_before_gold": true,
+  "matcher_frozen_file_sizes_unchanged": true,
+  "gold_directory_existed_during_run": false,
+  "case_count": 5,
+  "all_worker_exit_statuses_zero": true,
+  "all_sandboxes_excluded_hidden_labels": true,
+  "run_manifest": "assets/output/fresh_holdout_suite_002/blind_runs/run_manifest.json",
+  "meta_agent_had_seen_some_experiment_text_before_run": true,
+  "matcher_and_selection_were_frozen_before_that_inspection": true,
+  "worker_visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ]
+}

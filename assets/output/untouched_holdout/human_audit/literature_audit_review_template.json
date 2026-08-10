@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "audit_id": "auto_bench_untouched_holdout_literature_audit_round_2_holdout_001",
+  "iteration": 2,
+  "scope_snapshot": [
+    {
+      "case_id": "holdout_001",
+      "selected_benchmark_ids": [
+        "webshop",
+        "game_of_24",
+        "hotpotqa",
+        "humaneval",
+        "mbpp"
+      ],
+      "top_6_benchmark_ids": [
+        "webshop",
+        "game_of_24",
+        "hotpotqa",
+        "humaneval",
+        "mbpp",
+        "humanevalfix"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "reviewer_id": "yzb",
+  "reviews": [
+    {
+      "case_id": "holdout_001",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "artifact_role": "modified_behavior",
+  "cases": {
+    "holdout_001": {
+      "input_case": "assets/input/untouched_holdout_cases/holdout_001.json",
+      "before_artifact": "assets/output/untouched_holdout/human_audit_history/round_1/blind_evaluation.json",
+      "after_artifact": "assets/output/untouched_holdout/latest_evaluation.json",
+      "before": {
+        "verdict": "NEEDS_ITERATION",
+        "selected": [
+          "webarena",
+          "humaneval",
+          "mind2web",
+          "webshop",
+          "mbpp"
+        ],
+        "unmodeled_gold": [
+          "Game of 24"
+        ],
+        "aggregate": {
+          "case_count": 1,
+          "mean_primary_recall_at_5": 0.25,
+          "mean_primary_recall_at_6": 0.5,
+          "mean_primary_mrr": 0.3333333333333333,
+          "mean_selected_modeled_recall": 0.75,
+          "mean_selected_actual_precision": 0.6,
+          "route_accuracy": 1.0,
+          "all_leakage_checks_passed": true,
+          "any_matcher_loaded_hidden_labels": false
+        }
+      },
+      "after": {
+        "verdict": "PASS",
+        "selected": [
+          "webshop",
+          "game_of_24",
+          "hotpotqa",
+          "humaneval",
+          "mbpp"
+        ],
+        "unmodeled_gold": [],
+        "aggregate": {
+          "case_count": 1,
+          "mean_primary_recall_at_5": 1.0,
+          "mean_primary_recall_at_6": 1.0,
+          "mean_primary_mrr": 1.0,
+          "mean_selected_modeled_recall": 1.0,
+          "mean_selected_actual_precision": 1.0,
+          "route_accuracy": 1.0,
+          "all_leakage_checks_passed": true,
+          "any_matcher_loaded_hidden_labels": false
+        }
+      }
+    },
+    "holdout_002": {
+      "input_case": "assets/input/untouched_holdout_2_cases/holdout_002.json",
+      "before_artifact": "assets/output/untouched_holdout_2/current_human_audit_history/round_1/blind_evaluation.json",
+      "after_artifact": "assets/output/untouched_holdout_2/post_admission_evaluation.json",
+      "before": {
+        "verdict": "PASS",
+        "selected": [
+          "hotpotqa",
+          "gsm8k",
+          "toolbench"
+        ],
+        "unmodeled_gold": [
+          "AmbigNQ",
+          "TriviaQA",
+          "SVAMP",
+          "TabMWP",
+          "RealToxicityPrompts"
+        ],
+        "aggregate": {
+          "case_count": 1,
+          "mean_primary_recall_at_5": 1.0,
+          "mean_primary_recall_at_6": 1.0,
+          "mean_primary_mrr": 1.0,
+          "mean_selected_modeled_recall": 1.0,
+          "mean_selected_actual_precision": 0.6666666666666666,
+          "route_accuracy": 1.0,
+          "all_leakage_checks_passed": true,
+          "any_matcher_loaded_hidden_labels": false
+        }
+      },
+      "after": {
+        "verdict": "PASS",
+        "selected": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "gsm8k",
+          "hotpotqa",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "unmodeled_gold": [],
+        "aggregate": {
+          "case_count": 1,
+          "mean_primary_recall_at_5": 1.0,
+          "mean_primary_recall_at_6": 1.0,
+          "mean_primary_mrr": 0.3333333333333333,
+          "mean_selected_modeled_recall": 1.0,
+          "mean_selected_actual_precision": 1.0,
+          "route_accuracy": 1.0,
+          "all_leakage_checks_passed": true,
+          "any_matcher_loaded_hidden_labels": false
+        }
+      }
+    }
+  }
+}

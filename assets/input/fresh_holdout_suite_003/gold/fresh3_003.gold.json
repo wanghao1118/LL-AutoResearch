@@ -1,0 +1,90 @@
+{
+  "case_id": "fresh3_003",
+  "source_arxiv_id": "2211.11559",
+  "source_title": "Visual Programming: Compositional visual reasoning without training",
+  "source_url": "https://arxiv.org/abs/2211.11559",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Visual Programming"
+    ]
+  },
+  "primary_benchmark_ids": [],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "GQA",
+    "NLVRv2",
+    "Factual Knowledge Object Tagging",
+    "Language-Guided Image Editing"
+  ],
+  "expected_route": "new_benchmark_synthesis",
+  "gold_evidence_sections": [
+    "Tasks / Compositional Visual Question Answering",
+    "Tasks / Zero-Shot Reasoning on Image Pairs",
+    "Tasks / Factual Knowledge Object Tagging",
+    "Tasks / Image Editing with Natural Language"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Compositional Visual Question Answering",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "GQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Zero-Shot Reasoning on Image Pairs",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "NLVRv2"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Factual Knowledge Object Tagging",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "Factual Knowledge Object Tagging"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Image Editing with Natural Language",
+      "task_family": "image_editing",
+      "benchmark_name": "Language-Guided Image Editing"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_003/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "Compositional Visual Question Answering",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex"
+      ]
+    },
+    {
+      "term": "GQA task",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex"
+      ]
+    },
+    {
+      "term": "NLVR",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex"
+      ]
+    },
+    {
+      "term": "Factual Knowledge Object Tagging",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex"
+      ]
+    },
+    {
+      "term": "Image Editing with Natural Language",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex"
+      ]
+    }
+  ]
+}

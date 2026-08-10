@@ -1,0 +1,249 @@
+{
+  "schema_version": "2.0",
+  "status": "AUTOMATED_LITERATURE_VALIDATION_NEEDS_ITERATION",
+  "validation_mode": "automatic_post_match_literature_comparison",
+  "human_submission_required": false,
+  "machine_ready": true,
+  "automatic_validation_complete": true,
+  "automatic_validation_passed": false,
+  "machine_checks": [
+    {
+      "requirement": "Introduction and Method only, with hidden labels isolated",
+      "status": "PASS",
+      "evidence": {
+        "case_count": 3,
+        "all_leakage_checks_passed": true,
+        "any_matcher_loaded_hidden_labels": false,
+        "run_manifest": "assets/output/blind_runs/run_manifest.json"
+      }
+    },
+    {
+      "requirement": "Automatic benchmark search, ranking, and portfolio selection",
+      "status": "PASS",
+      "evidence": {
+        "case_count": 3,
+        "mean_primary_recall_at_5": 0.9166666666666666,
+        "mean_primary_recall_at_6": 1.0,
+        "mean_primary_mrr": 0.8333333333333334,
+        "mean_selected_modeled_recall": 1.0,
+        "mean_selected_actual_precision": 0.7222222222222222,
+        "route_accuracy": 1.0,
+        "all_leakage_checks_passed": true,
+        "any_matcher_loaded_hidden_labels": false
+      }
+    },
+    {
+      "requirement": "Live literature search with typed catalog-admission isolation",
+      "status": "PASS",
+      "evidence": {
+        "search_hit_count": 22,
+        "catalog_admission_proposal_count": 9,
+        "all_proposals_excluded_from_selection": true
+      }
+    },
+    {
+      "requirement": "Direct, base-adaptation, and new-synthesis routes",
+      "status": "PASS",
+      "evidence": {
+        "direct": {
+          "route": "direct_portfolio",
+          "synthesis_status": "NOT_REQUIRED"
+        },
+        "base_adaptation": {
+          "route": "base_benchmark_adaptation",
+          "synthesis_status": "DRAFTS_READY_FOR_HUMAN_REVIEW"
+        },
+        "new_synthesis": {
+          "route": "new_benchmark_synthesis",
+          "synthesis_status": "BASE_RECORDS_REQUIRED"
+        },
+        "new_synthesis_online": {
+          "route": "new_benchmark_synthesis",
+          "synthesis_status": "BASE_RECORDS_REQUIRED"
+        }
+      }
+    },
+    {
+      "requirement": "Executable synthesis with deterministic provenance verification",
+      "status": "PASS",
+      "evidence": [
+        {
+          "transformation": "interaction_wrapper",
+          "records": 2,
+          "verification_status": "PASS",
+          "verification": "assets/output/end_to_end_demo/base_adaptation/synthesis/interaction_wrapper.verification.json"
+        },
+        {
+          "transformation": "compositional_recombination",
+          "records": 1,
+          "verification_status": "PASS",
+          "verification": "assets/output/end_to_end_demo/base_adaptation/synthesis/compositional_recombination.verification.json"
+        },
+        {
+          "transformation": "counterfactual_perturbation",
+          "records": 2,
+          "verification_status": "PASS",
+          "verification": "assets/output/end_to_end_demo/base_adaptation/synthesis/counterfactual_perturbation.verification.json"
+        }
+      ]
+    },
+    {
+      "requirement": "Newest fresh-suite matcher freeze and worker isolation",
+      "status": "PASS",
+      "evidence": {
+        "suite_id": "fresh_holdout_suite_003",
+        "case_count": 5,
+        "matcher_frozen_file_sizes_unchanged": true,
+        "all_sandboxes_excluded_hidden_labels": true,
+        "meta_agent_inspection_caveat": "meta-agent inspection occurred only after matcher and paper selection freeze; no matcher file changed and workers received no experiment content"
+      }
+    }
+  ],
+  "authoritative_fresh_review": {
+    "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_003.json",
+    "status": "AUTOMATED_LITERATURE_AUDIT_MISMATCH",
+    "evidence_class": "fresh_holdout",
+    "case_count": 5,
+    "decision_counts": {
+      "MATCH": 0,
+      "PARTIAL": 4,
+      "MISMATCH": 1
+    },
+    "all_source_evidence_complete": true,
+    "all_blind_checks_passed": true
+  },
+  "latest_feedback_regression": {
+    "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json",
+    "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+    "evidence_class": "feedback_regression",
+    "case_count": 5,
+    "decision_counts": {
+      "MATCH": 3,
+      "PARTIAL": 2,
+      "MISMATCH": 0
+    },
+    "all_source_evidence_complete": true,
+    "all_blind_checks_passed": true
+  },
+  "automatic_review_count": 9,
+  "automatic_reviews": [
+    {
+      "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_001.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_MISMATCH",
+      "evidence_class": "fresh_holdout",
+      "case_count": 5,
+      "decision_counts": {
+        "MATCH": 0,
+        "PARTIAL": 1,
+        "MISMATCH": 4
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_001_feedback_v1.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+      "evidence_class": "feedback_regression",
+      "case_count": 5,
+      "decision_counts": {
+        "MATCH": 3,
+        "PARTIAL": 2,
+        "MISMATCH": 0
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_002.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_MISMATCH",
+      "evidence_class": "fresh_holdout",
+      "case_count": 5,
+      "decision_counts": {
+        "MATCH": 0,
+        "PARTIAL": 2,
+        "MISMATCH": 3
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_002_feedback_v2.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+      "evidence_class": "feedback_regression",
+      "case_count": 5,
+      "decision_counts": {
+        "MATCH": 4,
+        "PARTIAL": 1,
+        "MISMATCH": 0
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_003.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_MISMATCH",
+      "evidence_class": "fresh_holdout",
+      "case_count": 5,
+      "decision_counts": {
+        "MATCH": 0,
+        "PARTIAL": 4,
+        "MISMATCH": 1
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+      "evidence_class": "feedback_regression",
+      "case_count": 5,
+      "decision_counts": {
+        "MATCH": 3,
+        "PARTIAL": 2,
+        "MISMATCH": 0
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/holdout_001_regression.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_CONFIRMED",
+      "evidence_class": "feedback_regression",
+      "case_count": 1,
+      "decision_counts": {
+        "MATCH": 1,
+        "PARTIAL": 0,
+        "MISMATCH": 0
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/holdout_002_regression.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_CONFIRMED",
+      "evidence_class": "feedback_regression",
+      "case_count": 1,
+      "decision_counts": {
+        "MATCH": 1,
+        "PARTIAL": 0,
+        "MISMATCH": 0
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    },
+    {
+      "artifact": "assets/output/automatic_literature_review/main_regression.json",
+      "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+      "evidence_class": "feedback_regression",
+      "case_count": 3,
+      "decision_counts": {
+        "MATCH": 1,
+        "PARTIAL": 2,
+        "MISMATCH": 0
+      },
+      "all_source_evidence_complete": true,
+      "all_blind_checks_passed": true
+    }
+  ],
+  "human_gates": []
+}

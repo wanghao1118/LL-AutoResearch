@@ -1,0 +1,68 @@
+{
+  "case_id": "fresh3_002",
+  "source_arxiv_id": "2209.11302",
+  "source_title": "ProgPrompt: Generating Situated Robot Task Plans using Large Language Models",
+  "source_url": "https://arxiv.org/abs/2209.11302",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Our Method: ProgPrompt"
+    ]
+  },
+  "primary_benchmark_ids": [],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "VirtualHome Household Task Set",
+    "Physical Robot Tabletop Task Set"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Experiments / Simulation Experiments",
+    "Experiments / Real-Robot Experiments"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Simulation Experiments",
+      "task_family": "embodied_household",
+      "benchmark_name": "VirtualHome Household Task Set"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Real-Robot Experiments",
+      "task_family": "robot_manipulation",
+      "benchmark_name": "Physical Robot Tabletop Task Set"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_003/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "Virtual Home (VH) Environment",
+      "source_files": [
+        "assets/input/source_papers/extracted/2209.11302/main.tex"
+      ]
+    },
+    {
+      "term": "dataset of 70 household tasks",
+      "source_files": [
+        "assets/input/source_papers/extracted/2209.11302/main.tex"
+      ]
+    },
+    {
+      "term": "physical robot manipulator",
+      "source_files": [
+        "assets/input/source_papers/extracted/2209.11302/main.tex"
+      ]
+    },
+    {
+      "term": "We evaluate on 4 tasks",
+      "source_files": [
+        "assets/input/source_papers/extracted/2209.11302/main.tex"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "case_id": "holdout_001",
+  "source_arxiv_id": "2310.04406",
+  "source_title": "Language Agent Tree Search Unifies Reasoning Acting and Planning in Language Models",
+  "source_url": "https://arxiv.org/abs/2310.04406",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Unifying Reasoning, Acting, and Planning"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "hotpotqa",
+    "humaneval",
+    "mbpp",
+    "webshop"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "Game of 24"
+  ],
+  "expected_route": "direct_portfolio",
+  "gold_evidence_sections": [
+    "HotPotQA",
+    "Programming",
+    "WebShop",
+    "Ablation Study and Additional Analysis"
+  ],
+  "benchmark_evidence": [
+    {
+      "benchmark_id": "hotpotqa",
+      "role": "primary",
+      "evidence_section": "HotPotQA"
+    },
+    {
+      "benchmark_id": "humaneval",
+      "role": "primary",
+      "evidence_section": "Programming"
+    },
+    {
+      "benchmark_id": "mbpp",
+      "role": "primary",
+      "evidence_section": "Programming"
+    },
+    {
+      "benchmark_id": "webshop",
+      "role": "primary",
+      "evidence_section": "WebShop"
+    },
+    {
+      "benchmark_name": "Game of 24",
+      "role": "unmodeled",
+      "evidence_section": "Ablation Study and Additional Analysis"
+    }
+  ],
+  "matcher_visible": false,
+  "leakage_scan": {
+    "passed": true,
+    "benchmark_alias_hits": [],
+    "identity_hits": [],
+    "generic_evaluation_terms": [
+      "benchmark",
+      "evaluation"
+    ]
+  }
+}

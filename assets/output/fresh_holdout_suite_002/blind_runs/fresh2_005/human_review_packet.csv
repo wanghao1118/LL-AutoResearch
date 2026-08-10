@@ -1,0 +1,13 @@
+case_id,benchmark_id,reviewer_slot,reviewer_id,construct_alignment,task_representativeness,metric_validity,data_quality,leakage_control,execution_feasibility,provenance_confirmed,independence_attested,decision,notes
+fresh2_005,swe_bench,REVIEWER_1,,,,,,,,,,,
+fresh2_005,swe_bench,REVIEWER_2,,,,,,,,,,,
+fresh2_005,multipl_e,REVIEWER_1,,,,,,,,,,,
+fresh2_005,multipl_e,REVIEWER_2,,,,,,,,,,,
+fresh2_005,triviaqa,REVIEWER_1,,,,,,,,,,,
+fresh2_005,triviaqa,REVIEWER_2,,,,,,,,,,,
+fresh2_005,leetcodehardgym,REVIEWER_1,,,,,,,,,,,
+fresh2_005,leetcodehardgym,REVIEWER_2,,,,,,,,,,,
+fresh2_005,humaneval,REVIEWER_1,,,,,,,,,,,
+fresh2_005,humaneval,REVIEWER_2,,,,,,,,,,,
+fresh2_005,mbpp,REVIEWER_1,,,,,,,,,,,
+fresh2_005,mbpp,REVIEWER_2,,,,,,,,,,,

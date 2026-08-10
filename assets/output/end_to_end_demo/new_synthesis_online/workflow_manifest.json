@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "case_id": "workflow_demo_new_synthesis",
+  "status": "HUMAN_REVIEW_REQUIRED",
+  "route": "new_benchmark_synthesis",
+  "coverage_ratio": 0.0,
+  "blind_input_fields": [
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "blind_gold_loaded": false,
+  "leakage_scan_passed": true,
+  "outputs": {
+    "json": "assets/output/end_to_end_demo/new_synthesis_online/benchmark_plan.json",
+    "markdown": "assets/output/end_to_end_demo/new_synthesis_online/benchmark_plan.md",
+    "review_packet": "assets/output/end_to_end_demo/new_synthesis_online/human_review_packet.csv"
+  },
+  "synthesis_execution": {
+    "status": "BASE_RECORDS_REQUIRED",
+    "route": "new_benchmark_synthesis",
+    "target_task_families": [
+      "audio_music_generation"
+    ],
+    "construct_definition": {
+      "status": "HUMAN_DEFINITION_REQUIRED",
+      "task_families": [
+        "audio_music_generation"
+      ],
+      "uncovered_task_families": [
+        "audio_music_generation"
+      ],
+      "modalities": [
+        "audio",
+        "text"
+      ],
+      "interactions": [
+        "static"
+      ],
+      "output_types": [
+        "generated_audio"
+      ],
+      "capabilities": [],
+      "candidate_metrics": [
+        "audio_quality",
+        "condition_alignment",
+        "long_range_structure"
+      ],
+      "evidence_terms": {
+        "uncovered_task:audio_music_generation": [
+          "music generation",
+          "polyphonic music",
+          "multi-track audio"
+        ]
+      }
+    },
+    "required_record_fields": [
+      "id",
+      "input",
+      "expected_output"
+    ],
+    "optional_counterfactual_fields": [
+      "input",
+      "expected_output",
+      "deterministic_check"
+    ],
+    "allowed_source_splits": [
+      "train",
+      "training",
+      "dev",
+      "development",
+      "validation"
+    ],
+    "planned_transformations": [
+      "interaction_wrapper"
+    ],
+    "source_policy": "use only licensed train/development records from named base benchmarks",
+    "request": "assets/output/end_to_end_demo/new_synthesis_online/synthesis/synthesis_request.json",
+    "modules": []
+  },
+  "human_review": {
+    "item_count": 1,
+    "review_row_count": 2,
+    "scope": "assets/output/end_to_end_demo/new_synthesis_online/human_review/review_scope.json",
+    "master_csv": "assets/output/end_to_end_demo/new_synthesis_online/human_review/master_review_packet.csv",
+    "submission_template": "assets/output/end_to_end_demo/new_synthesis_online/human_review/review_submission_template.json",
+    "assignments": {
+      "REVIEWER_1": "assets/output/end_to_end_demo/new_synthesis_online/human_review/reviewer_1_assignment.json",
+      "REVIEWER_2": "assets/output/end_to_end_demo/new_synthesis_online/human_review/reviewer_2_assignment.json"
+    },
+    "html_packets": {
+      "REVIEWER_1": "assets/output/end_to_end_demo/new_synthesis_online/human_review/reviewer_1_packet.html",
+      "REVIEWER_2": "assets/output/end_to_end_demo/new_synthesis_online/human_review/reviewer_2_packet.html"
+    }
+  },
+  "next_action": "provide named train/development base records, then rerun"
+}

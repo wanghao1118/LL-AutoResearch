@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0",
+  "case_id": "multimodal_ecommerce_reflective_agent",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "computer_use",
+      "sequential_decision_making",
+      "web_navigation"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [
+      "visual_reasoning"
+    ],
+    "modalities": [
+      "image",
+      "text",
+      "web"
+    ],
+    "interactions": [
+      "browser",
+      "interactive_environment"
+    ],
+    "output_types": [
+      "action_trajectory",
+      "selected_product",
+      "visual_answer"
+    ],
+    "environments": [
+      "online_store",
+      "visual_media",
+      "website"
+    ],
+    "capabilities": [
+      "long_horizon_planning",
+      "self_reflection",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "answer_accuracy",
+      "task_success_rate",
+      "trajectory_efficiency"
+    ],
+    "evidence_terms": {
+      "capability:long_horizon_planning": [
+        "long horizon",
+        "subgoal",
+        "plan",
+        "trajectory"
+      ],
+      "capability:self_reflection": [
+        "self-reflection",
+        "self-evaluation"
+      ],
+      "capability:tool_use": [
+        "action",
+        "browser",
+        "computer"
+      ],
+      "task:computer_use": [
+        "computer use",
+        "screenshot"
+      ],
+      "task:sequential_decision_making": [
+        "sequential decision",
+        "long horizon",
+        "trajectory"
+      ],
+      "task:web_navigation": [
+        "web navigation",
+        "website",
+        "browser",
+        "online shopping"
+      ],
+      "uncovered_task:visual_reasoning": [
+        "visual grounding"
+      ]
+    },
+    "declared_evaluation_breadth": 0
+  },
+  "selected_benchmarks": [
+    "webshop",
+    "osworld"
+  ],
+  "top_6": [
+    "webshop",
+    "osworld",
+    "alfworld",
+    "scienceworld",
+    "toolbench",
+    "gaia"
+  ],
+  "route": "base_benchmark_adaptation",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

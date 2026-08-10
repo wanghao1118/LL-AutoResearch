@@ -1,0 +1,134 @@
+{
+  "case_id": "fresh2_002",
+  "source_arxiv_id": "2305.18323",
+  "source_title": "ReWOO: Decoupling Reasoning from Observations for Efficient Augmented Language Models",
+  "source_url": "https://arxiv.org/abs/2305.18323",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Methodology"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "hotpotqa",
+    "triviaqa",
+    "gsm8k"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "SportsUnderstanding",
+    "StrategyQA",
+    "PhysicsQuestions",
+    "SOTUQA",
+    "Curated Real-World ALM Tasks"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Experiments / Setups / Tasks and Datasets"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "primary",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "knowledge_intensive_qa",
+      "benchmark_id": "hotpotqa"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "knowledge_intensive_qa",
+      "benchmark_id": "triviaqa"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "math_word_problem",
+      "benchmark_id": "gsm8k"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "SportsUnderstanding"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "StrategyQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "PhysicsQuestions"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "SOTUQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Tasks and Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "Curated Real-World ALM Tasks"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_002/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "HotpotQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "TriviaQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "SportsUnderstanding",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "StrategyQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "GSM8K",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "PhysicsQuestions",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "SOTUQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    },
+    {
+      "term": "real-world ALM applications",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s4_experiments.tex"
+      ]
+    }
+  ]
+}

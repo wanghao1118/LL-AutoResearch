@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto-Bench Current Holdout 002 Literature Audit — Round 2</title>
+  <style>
+    :root { --ink:#172033; --muted:#606b80; --paper:#f4f6fb; --card:#fff; --line:#d9dfeb; --blue:#2e54ce; --green:#147653; --amber:#9b5b00; }
+    * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:var(--paper); font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    header { padding:38px max(24px,calc((100vw - 1180px)/2)); color:white; background:linear-gradient(125deg,#14213d,#315bd5); }
+    header h1 { margin:0 0 10px; font-size:32px; } header p { max-width:920px; margin:0; opacity:.92; }
+    main { max-width:1180px; margin:26px auto 90px; padding:0 24px; }
+    .protocol,.case { background:var(--card); border:1px solid var(--line); border-radius:15px; box-shadow:0 7px 24px rgba(31,48,84,.08); }
+    .protocol { padding:22px; } .case { margin:26px 0; overflow:hidden; }
+    .case-head { padding:22px 24px; background:#edf2ff; border-bottom:1px solid var(--line); } .case-head h2 { margin:3px 0 8px; }
+    .case-number { color:var(--blue); font-weight:800; letter-spacing:.08em; font-size:12px; } .paper-link { color:var(--blue); font-weight:700; }
+    .case-body { padding:24px; } h3 { margin:26px 0 10px; }
+    table { width:100%; border-collapse:collapse; margin:10px 0 20px; } th,td { border:1px solid var(--line); text-align:left; padding:9px 10px; vertical-align:top; } th { background:#f3f5fa; }
+    .comparison { padding:2px 17px 16px; border-left:4px solid var(--blue); background:#f7f9ff; } dl { display:grid; grid-template-columns:250px 1fr; gap:7px 16px; } dt { font-weight:700; } dd { margin:0; }
+    details { margin:12px 0; border:1px solid var(--line); border-radius:9px; padding:10px 12px; } summary { cursor:pointer; font-weight:700; } pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+    .human-check { margin-top:24px; padding:20px; border:2px solid #b9c7ed; border-radius:12px; } .human-check > label:not(.field) { display:block; margin:10px 0; } .carried { padding:10px 12px; color:var(--green); background:#edf9f4; border-left:4px solid var(--green); }
+    .field { display:block; margin-top:14px; font-weight:700; } select,textarea,input[type="text"] { width:100%; margin-top:5px; padding:9px 10px; border:1px solid #aeb8cc; border-radius:8px; background:white; font:inherit; } textarea { min-height:95px; resize:vertical; }
+    .footer { position:sticky; bottom:0; display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:14px 16px; background:rgba(255,255,255,.97); border:1px solid var(--line); border-radius:12px; box-shadow:0 -5px 24px rgba(31,48,84,.12); }
+    button { border:0; border-radius:9px; padding:10px 16px; color:white; background:var(--blue); font-weight:750; cursor:pointer; } #message { color:var(--amber); font-weight:700; }
+    @media(max-width:760px) { dl { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <header><h1>Auto-Bench Current Holdout 002 Literature Audit — Round 2</h1><p>The matcher first saw only anonymized Introduction and Method text. This post-run page now reveals each source paper and its experiment-derived benchmark list so you can verify whether Auto-Bench recovered the choices made by the paper.</p></header>
+  <main>
+    <section class="protocol">
+      <h2>Human audit protocol</h2>
+      <ol><li>Open the official paper link unless its unchanged source check is carried from the prior round.</li><li>Confirm the actual benchmark list unless that unchanged check is carried forward.</li><li>Compare the current Selected and Top-6 recommendations with the paper benchmark list.</li><li>Read route and synthesis information as supporting context.</li><li>Choose MATCH, PARTIAL, or MISMATCH and record the important misses or extras.</li></ol>
+      <label class="field">Reviewer ID<input id="reviewer-id" type="text" value="yzb" placeholder="Your name, initials, or stable internal identifier"></label>
+    </section>
+<section class="protocol iteration-summary">
+      <h2>What changed after your Round 1 audit</h2>
+      <p>Previous aggregate human status: <strong>LITERATURE_AUDIT_PARTIAL</strong>. Round 2 is a feedback-driven regression on the same papers; newly modeled and still-outside-catalog choices remain visible.</p>
+      <table><thead><tr><th>Case</th><th>Previous judgement</th><th>Previous note</th><th>Selected before</th><th>Selected now</th><th>Modeled recall</th><th>Still outside catalog</th></tr></thead><tbody><tr><td>holdout_002</td><td>PARTIAL</td><td>有所差距</td><td>hotpotqa, gsm8k, toolbench</td><td>triviaqa, realtoxicityprompts, gsm8k, hotpotqa, svamp, ambignq, tabmwp</td><td>1.000 → 1.000</td><td>none</td></tr></tbody></table>
+    </section>
+    <article class="case" data-case-id="holdout_002">
+      <div class="case-head">
+        <div class="case-number">CASE 1</div>
+        <h2>CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing</h2>
+        <a class="paper-link" href="https://arxiv.org/abs/2305.11738" target="_blank" rel="noopener noreferrer">Open official arXiv source ↗</a>
+        <p><strong>Source sections used before anonymization:</strong> Introduction: Introduction; Method: CRITIC: Correcting with Tool-Interactive Critiquing.</p>
+        <p>Matcher phase used only <code>assets/input/untouched_holdout_2_cases/holdout_002.json</code>. Paper identity and actual benchmarks were revealed after the worker exited.</p>
+      </div>
+      <div class="case-body">
+        <h3>Benchmarks actually used by the paper</h3>
+        <table><thead><tr><th>Role</th><th>Benchmark</th><th>Paper section</th><th>Selected</th><th>Rank</th></tr></thead><tbody><tr><td>primary</td><td>HotpotQA</td><td>Free-form Question Answering</td><td>yes</td><td>4</td></tr><tr><td>admitted_after_freeze</td><td>AmbigNQ</td><td>Free-form Question Answering</td><td>yes</td><td>6</td></tr><tr><td>admitted_after_freeze</td><td>TriviaQA</td><td>Free-form Question Answering</td><td>yes</td><td>1</td></tr><tr><td>primary</td><td>GSM8K</td><td>Mathematical Program Synthesis</td><td>yes</td><td>3</td></tr><tr><td>admitted_after_freeze</td><td>SVAMP</td><td>Mathematical Program Synthesis</td><td>yes</td><td>5</td></tr><tr><td>admitted_after_freeze</td><td>TabMWP</td><td>Mathematical Program Synthesis</td><td>yes</td><td>7</td></tr><tr><td>admitted_after_freeze</td><td>RealToxicityPrompts</td><td>Toxicity Reduction</td><td>yes</td><td>2</td></tr></tbody></table>
+
+        <h3>Auto-Bench selected portfolio</h3>
+        <table><thead><tr><th>Rank</th><th>Recommendation</th><th>Score</th><th>Selection role</th><th>Role in paper</th></tr></thead><tbody><tr><td>1</td><td><a href="https://arxiv.org/abs/1705.03551" target="_blank" rel="noopener noreferrer">TriviaQA</a></td><td>0.517</td><td>core_task_coverage</td><td>admitted_after_freeze</td></tr><tr><td>2</td><td><a href="https://arxiv.org/abs/2009.11462" target="_blank" rel="noopener noreferrer">RealToxicityPrompts</a></td><td>0.397</td><td>core_task_coverage</td><td>admitted_after_freeze</td></tr><tr><td>3</td><td><a href="https://arxiv.org/abs/2110.14168" target="_blank" rel="noopener noreferrer">GSM8K</a></td><td>0.372</td><td>core_task_coverage</td><td>primary</td></tr><tr><td>4</td><td><a href="https://arxiv.org/abs/1809.09600" target="_blank" rel="noopener noreferrer">HotpotQA</a></td><td>0.467</td><td>explicit_suite_cardinality:knowledge_intensive_qa</td><td>primary</td></tr><tr><td>5</td><td><a href="https://arxiv.org/abs/2103.07191" target="_blank" rel="noopener noreferrer">SVAMP</a></td><td>0.372</td><td>explicit_suite_cardinality:math_reasoning</td><td>admitted_after_freeze</td></tr><tr><td>6</td><td><a href="https://arxiv.org/abs/2004.10645" target="_blank" rel="noopener noreferrer">AmbigNQ</a></td><td>0.517</td><td>explicit_suite_cardinality:knowledge_intensive_qa</td><td>admitted_after_freeze</td></tr><tr><td>7</td><td><a href="https://arxiv.org/abs/2209.14610" target="_blank" rel="noopener noreferrer">TabMWP</a></td><td>0.472</td><td>explicit_suite_cardinality:math_reasoning</td><td>admitted_after_freeze</td></tr></tbody></table>
+
+        <div class="comparison">
+          <h3>Direct comparison</h3>
+          <dl>
+            <dt>Selected primary matches</dt><dd>gsm8k, hotpotqa</dd>
+            <dt>Selected secondary matches</dt><dd>none</dd>
+            <dt>Selected post-freeze catalog matches</dt><dd>triviaqa, realtoxicityprompts, svamp, ambignq, tabmwp</dd>
+            <dt>Primary missing from selected</dt><dd>none</dd>
+            <dt>Secondary missing from selected</dt><dd>none</dd>
+            <dt>Post-freeze catalog items missing from selected</dt><dd>none</dd>
+            <dt>Selected but absent from paper</dt><dd>none</dd>
+            <dt>Top-6 primary matches</dt><dd>gsm8k, hotpotqa</dd>
+            <dt>Top-6 post-freeze catalog matches</dt><dd>triviaqa, realtoxicityprompts, svamp, ambignq</dd>
+          </dl>
+        </div>
+<div class="comparison">
+          <h3>Route, gaps, and fallback plan</h3>
+          <dl>
+            <dt>Route</dt><dd>direct_portfolio</dd>
+            <dt>Expected literature route</dt><dd>direct_portfolio</dd>
+            <dt>Decision reason</dt><dd>portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.585</dd>
+            <dt>Inferred task coverage</dt><dd>100.0%</dd>
+            <dt>Missing task families</dt><dd>none</dd>
+            <dt>Synthesis required</dt><dd>no</dd>
+            <dt>Synthesis targets</dt><dd>none</dd>
+            <dt>Catalog admission proposals</dt><dd>0</dd>
+          </dl>
+        </div>
+        <details><summary>Complete adaptation plan</summary><pre>{
+  &quot;base_benchmarks&quot;: [
+    &quot;triviaqa&quot;,
+    &quot;realtoxicityprompts&quot;,
+    &quot;gsm8k&quot;,
+    &quot;hotpotqa&quot;,
+    &quot;svamp&quot;,
+    &quot;ambignq&quot;,
+    &quot;tabmwp&quot;
+  ],
+  &quot;retain&quot;: [
+    &quot;official task semantics and unmodified test examples&quot;,
+    &quot;official metric definitions reported separately&quot;,
+    &quot;source IDs, split names, and license/access metadata&quot;
+  ],
+  &quot;add&quot;: [
+    &quot;method-specific interaction wrapper without exposing test labels&quot;,
+    &quot;capability-targeted challenge split for uncovered requirements&quot;,
+    &quot;cost, latency, and failure-state logging when the method is interactive&quot;
+  ],
+  &quot;missing_task_families&quot;: [],
+  &quot;adaptation_hooks&quot;: [
+    &quot;ambiguity_stratification&quot;,
+    &quot;answer_alias_normalization&quot;,
+    &quot;clarification_wrapper&quot;,
+    &quot;classifier_snapshot&quot;,
+    &quot;continuation_wrapper&quot;,
+    &quot;difficulty_stratification&quot;,
+    &quot;evidence_retrieval_wrapper&quot;,
+    &quot;multiple_answer_normalization&quot;,
+    &quot;open_domain_split&quot;,
+    &quot;question_only_protocol&quot;,
+    &quot;question_type_split&quot;,
+    &quot;reasoning_trace_wrapper&quot;,
+    &quot;supporting_fact_audit&quot;,
+    &quot;table_representation_choice&quot;,
+    &quot;toxicity_band_split&quot;,
+    &quot;variation_family_split&quot;,
+    &quot;wikipedia_retrieval_wrapper&quot;
+  ],
+  &quot;split_policy&quot;: {
+    &quot;development&quot;: &quot;derive transformations from train/development data only&quot;,
+    &quot;validation&quot;: &quot;freeze prompts and thresholds before hidden-test execution&quot;,
+    &quot;test&quot;: &quot;retain official test data; no synthesis seed may originate from test examples&quot;
+  }
+}</pre></details>
+        <details><summary>Complete synthesis plan</summary><pre>{
+  &quot;required&quot;: false,
+  &quot;target_task_families&quot;: [],
+  &quot;construct_definition&quot;: {
+    &quot;status&quot;: &quot;NOT_REQUIRED&quot;,
+    &quot;task_families&quot;: [],
+    &quot;uncovered_task_families&quot;: [],
+    &quot;modalities&quot;: [
+      &quot;code&quot;,
+      &quot;text&quot;
+    ],
+    &quot;interactions&quot;: [
+      &quot;retrieval_tool&quot;
+    ],
+    &quot;output_types&quot;: [
+      &quot;safe_text_continuation&quot;,
+      &quot;short_answer&quot;
+    ],
+    &quot;capabilities&quot;: [
+      &quot;evidence_grounding&quot;,
+      &quot;external_information_retrieval&quot;,
+      &quot;reasoning_action_interleaving&quot;,
+      &quot;tool_use&quot;
+    ],
+    &quot;candidate_metrics&quot;: [
+      &quot;exact_match&quot;,
+      &quot;fluency&quot;,
+      &quot;generation_diversity&quot;,
+      &quot;token_f1&quot;,
+      &quot;toxicity_probability&quot;
+    ],
+    &quot;evidence_terms&quot;: {
+      &quot;task:knowledge_intensive_qa&quot;: [
+        &quot;question answering&quot;
+      ],
+      &quot;task:math_reasoning&quot;: [
+        &quot;mathematical reasoning&quot;,
+        &quot;mathematical program synthesis&quot;
+      ],
+      &quot;task:toxicity_reduction&quot;: [
+        &quot;toxicity reduction&quot;,
+        &quot;toxic content&quot;
+      ]
+    }
+  },
+  &quot;source_policy&quot;: &quot;use only licensed train/development records from named base benchmarks&quot;,
+  &quot;generation_modules&quot;: [
+    {
+      &quot;name&quot;: &quot;compositional_recombination&quot;,
+      &quot;purpose&quot;: &quot;combine independent train-split constraints while preserving executable gold checks&quot;
+    },
+    {
+      &quot;name&quot;: &quot;counterfactual_perturbation&quot;,
+      &quot;purpose&quot;: &quot;change one controlled factor and regenerate the expected answer with a deterministic verifier&quot;
+    },
+    {
+      &quot;name&quot;: &quot;interaction_wrapper&quot;,
+      &quot;purpose&quot;: &quot;convert static examples into tool or environment episodes with logged action contracts&quot;
+    }
+  ],
+  &quot;record_schema&quot;: [
+    &quot;synthetic_id&quot;,
+    &quot;source_benchmark&quot;,
+    &quot;source_split&quot;,
+    &quot;source_record_ids&quot;,
+    &quot;transformation&quot;,
+    &quot;input&quot;,
+    &quot;expected_output&quot;,
+    &quot;deterministic_checks&quot;,
+    &quot;human_review_status&quot;
+  ],
+  &quot;quality_gates&quot;: [
+    &quot;exact and near-duplicate filtering against every split&quot;,
+    &quot;deterministic execution or answer verification where available&quot;,
+    &quot;stratified human review by task family and difficulty&quot;,
+    &quot;pilot inter-rater agreement before scaling annotation&quot;,
+    &quot;frozen test set before method tuning&quot;
+  ],
+  &quot;profile_snapshot&quot;: {
+    &quot;task_families&quot;: [
+      &quot;knowledge_intensive_qa&quot;,
+      &quot;math_reasoning&quot;,
+      &quot;toxicity_reduction&quot;
+    ],
+    &quot;task_benchmark_counts&quot;: {
+      &quot;knowledge_intensive_qa&quot;: 3,
+      &quot;math_reasoning&quot;: 3
+    },
+    &quot;uncovered_task_families&quot;: [],
+    &quot;modalities&quot;: [
+      &quot;code&quot;,
+      &quot;text&quot;
+    ],
+    &quot;interactions&quot;: [
+      &quot;retrieval_tool&quot;
+    ],
+    &quot;output_types&quot;: [
+      &quot;safe_text_continuation&quot;,
+      &quot;short_answer&quot;
+    ],
+    &quot;capabilities&quot;: [
+      &quot;evidence_grounding&quot;,
+      &quot;external_information_retrieval&quot;,
+      &quot;reasoning_action_interleaving&quot;,
+      &quot;tool_use&quot;
+    ],
+    &quot;suggested_metrics&quot;: [
+      &quot;exact_match&quot;,
+      &quot;fluency&quot;,
+      &quot;generation_diversity&quot;,
+      &quot;token_f1&quot;,
+      &quot;toxicity_probability&quot;
+    ]
+  },
+  &quot;catalog_admission_proposals&quot;: []
+}</pre></details>
+        <details><summary>Catalog admission proposals</summary><pre>[]</pre></details>
+
+        <details><summary>Exact anonymized Introduction given to the matcher</summary><pre>Introduction. The remarkable progress of large language models (LLMs), such as ChatGPT, has been amply demonstrated across an array of language tasks . Their potential to augment human intellect continues to burgeon . However, these models are not without their shortcomings. They occasionally exhibit undesirable behaviors, such as hallucination (generating inaccurate or non-truthful responses), faulty code, or even toxic content . Such inconsistent behavior hampers the trust in these models and poses hurdles to their real-world applications . Traditional approaches to mitigate these limitations typically employ additional training, involving behavior cloning, reinforcement learning, and self-training . However, these methods are constrained by the requirement of large-scale human annotation or data construction, which is often resource-intensive and challenging to obtain. To address these challenges, we present METHOD_X (METHOD_X), a unified framework that empowers black-box LLMs to verify and rectify their own output through human-like interaction with external tools. Drawing inspiration from human cognition and critical thinking , METHOD_X offers a versatile framework that supports precise, interpretable verification and correction of generated text. As depicted in Figure , METHOD_X interacts with external tools like search engines and code interpreters to verify the desired aspects of an initial output and subsequently amends the output based on the critiques from the verification. This verify-then-correct process can be repeated to ensure constant output enhancement. Contrary to methods that rely on expensive annotations or task-specific training, METHOD_X utilizes in-context learning with tool interaction to proficiently identify and rectify unsatisfactory behaviors using the LLM itself. This unique approach makes METHOD_X both practical and accessible, requiring only access to text-to-text tool APIs and a few-shot demonstration. [t] images/framework.pdf The METHOD_X framework consists of two steps: (1) verifying the output by interacting with external tools to generate critiques and (2) correcting the output based on the received critiques. We can iterative such verify-then-correct process to enable continuous improvements. We evaluate our approach on a range of LLMs, including ChatGPT, Text-Davinci-003, and open-source LLaMA-2 variants (7B, 13B, and 70B), spanning three distinct tasks: free-form question answering, mathematical program synthesis, and toxicity reduction. Our findings demonstrate that METHOD_X consistently surpasses prior techniques, obviating the need for supplementary data or training. For example, when applied to ChatGPT, METHOD_X attains 7.7 F1 enhancements across three QA tasks, 7.0 absolute gains on three mathematical reasoning tasks, and a 79.2 reduction in toxicity probability. Interestingly, our results underscore the unreliability of all tested LLMs, when it comes to validating their own results. We observe that exclusive reliance on self-correction without external feedback may yield modest improvements or even deteriorate performance. Our primary contributions include: (1) Proposing the unified METHOD_X framework by integrating various tools and diverse tasks, with a series of new prompts that enable frozen LLMs to verify and iteratively self-correct their output through interaction with external tools. (2) Conducting comprehensive experiments across distinct tasks that demonstrate significant performance improvements offered by METHOD_X across different base LLMs.</pre></details>
+        <details><summary>Exact anonymized Method given to the matcher</summary><pre>METHOD_X: Correcting with Tool-Interactive Critiquing. We can get an overview of the METHOD_X method through Figure . Given any input, LLMs first generate an initial output based on parametric knowledge, then interact with appropriate external tools (possibly multi-round) through text-to-text APIs to verify the output. The critiques generated by the verification step are concatenated with the initial output, and serve as feedback to allow LLMs to correct the output. We can iterate the cycle of ``Verify Correct Verify&#x27;&#x27; to continuously improve the output until a specific stopping condition is met. See Algorithm for a summary of METHOD_X method, and the following sections for details. In-context Learning for LLMs. METHOD_X utilizes the emergent abilities of chain-of-thought reasoning and few-shot in-context learning of LLMs. Few-shot in-context learning is a powerful approach that exploits the capabilities of LLMs to solve a task given a small set of input-output examples at test time . The few-shot setting typically involves only a handful of examples ( ). To accomplish this task, the examples are combined into a prompt , which concatenates the input and output pairs as follows: . During inference, a test instance is added to the prompt, and the model is then tasked with completing the sequence to generate an output . Interaction with External Tools. To enable LLMs to use tools, we first construct various external tools such as search engines, code interpreters, and various APIs into text-to-text functions, then interleave the LLMs generations with tool use in in-context demonstrations. As shown in Figure , the input for a search engine can be a query generated by LLMs, which returns a parsed search result, whereas the input for a code interpreter is a program, which returns execution information and the final execution result. This free format allows for human-like verify-then-correct trajectories, facilitating the construction of prompts intuitively and concisely while having strong interpretability and trustworthiness . Verification with Tool-Interaction. Give model and input , the initial answer is generated with prompt by , where indicates concatenation. Given previous output , LLMs interact with external tools to criticize the and produce critiques . If the process involves API calls, we directly concatenate the API call results with the model-generated query to construct the . The task-specific critiques can be used to detail the attributes of the output we expect to evaluate, such as truthfulness, feasibility, or safety. See for detailed experiments using METHOD_X for hallucination detection. For different inputs, we can use task-dependent, heuristically selected, or automatically selected appropriate tools for verification. We can implement automatic tool selection with in-context learning, allowing different tools for different input-output pairs. In our implementation, we pre-specify tools for different tasks to facilitate evaluation and experimentation. For example, as shown in Figure , the tool used for the QA task is Google, enabling LLMs to verify the truthfulness of output by analyzing and interacting with Google in an interleaved manner. Correction with Critiques. LLMs can generate an improved answer conditioned on input , previous output , and critiques from verification: . Critiques play a crucial role in the correction process as they identify errors, offer actionable suggestions, or provide credible groundings through interaction with external tools, thus guiding a new generation to avoid similar mistakes. Motivated by the human process of iterative drafts refinement, we can iterate the process of verify-then-correct until specific stopping criteria are met, such as satisfying critiques from verification, reaching the maximum iterations , or receiving environmental feedback. This method facilitates continuous output improvement by systematically and sample-efficiently verifying and correcting errors resulting from interactions with the world.</pre></details>
+        <details><summary>Complete Top-6 recommendation record</summary><pre>[
+  {
+    &quot;benchmark_id&quot;: &quot;triviaqa&quot;,
+    &quot;benchmark_name&quot;: &quot;TriviaQA&quot;,
+    &quot;rank&quot;: 1,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;core_task_coverage&quot;,
+    &quot;paper_role&quot;: &quot;admitted_after_freeze&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;realtoxicityprompts&quot;,
+    &quot;benchmark_name&quot;: &quot;RealToxicityPrompts&quot;,
+    &quot;rank&quot;: 2,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;core_task_coverage&quot;,
+    &quot;paper_role&quot;: &quot;admitted_after_freeze&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;gsm8k&quot;,
+    &quot;benchmark_name&quot;: &quot;GSM8K&quot;,
+    &quot;rank&quot;: 3,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;core_task_coverage&quot;,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;hotpotqa&quot;,
+    &quot;benchmark_name&quot;: &quot;HotpotQA&quot;,
+    &quot;rank&quot;: 4,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;explicit_suite_cardinality:knowledge_intensive_qa&quot;,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;svamp&quot;,
+    &quot;benchmark_name&quot;: &quot;SVAMP&quot;,
+    &quot;rank&quot;: 5,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;explicit_suite_cardinality:math_reasoning&quot;,
+    &quot;paper_role&quot;: &quot;admitted_after_freeze&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;ambignq&quot;,
+    &quot;benchmark_name&quot;: &quot;AmbigNQ&quot;,
+    &quot;rank&quot;: 6,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;explicit_suite_cardinality:knowledge_intensive_qa&quot;,
+    &quot;paper_role&quot;: &quot;admitted_after_freeze&quot;
+  }
+]</pre></details>
+
+        <section class="human-check">
+          <h3>Your literature check</h3>
+<p class="carried">Source paper and actual benchmark list carried from Round 1 review by yzb; the paper/evidence scope is unchanged. Only the updated recommendation comparison needs a new judgement.</p>
+          <label><input type="checkbox" data-field="source_verified" checked disabled> I opened the source paper and verified the named evidence sections.</label>
+          <label><input type="checkbox" data-field="actual_benchmarks_verified" checked disabled> I confirmed the benchmark list actually used by the paper.</label>
+          <label><input type="checkbox" data-field="comparison_reviewed"> I compared the paper benchmark list with Selected and Top-6 recommendations.</label>
+          <label class="field">Judgement
+            <select data-field="decision"><option value="">Select</option><option>MATCH</option><option>PARTIAL</option><option>MISMATCH</option></select>
+          </label>
+          <label class="field">Notes
+            <textarea data-field="notes" placeholder="Record whether the recommendation recovered the paper benchmarks and which extras or misses matter."></textarea>
+          </label>
+        </section>
+      </div>
+    </article>
+
+    <div class="footer"><button id="download" type="button">Validate and download audit JSON</button><span id="progress"></span><span id="message" role="status"></span></div>
+  </main>
+  <script id="audit-scope" type="application/json">{"audit_id": "auto_bench_current_holdout_002_literature_audit_round_2_holdout_002", "scope_snapshot": [{"case_id": "holdout_002", "selected_benchmark_ids": ["triviaqa", "realtoxicityprompts", "gsm8k", "hotpotqa", "svamp", "ambignq", "tabmwp"], "top_6_benchmark_ids": ["triviaqa", "realtoxicityprompts", "gsm8k", "hotpotqa", "svamp", "ambignq"], "route": "direct_portfolio"}], "case_ids": ["holdout_002"], "iteration": 2, "submission_filename": "literature_audit_submission_holdout_2_round_2.json"}</script>
+  <script>
+    const scope = JSON.parse(document.getElementById('audit-scope').textContent);
+    function collect(validate) {
+      const reviewerId = document.getElementById('reviewer-id').value.trim();
+      const errors = [];
+      if (!reviewerId) errors.push('Reviewer ID is empty');
+      const reviews = Array.from(document.querySelectorAll('.case')).map((card) => {
+        const caseId = card.dataset.caseId;
+        const sourceVerified = card.querySelector('[data-field="source_verified"]').checked;
+        const actualVerified = card.querySelector('[data-field="actual_benchmarks_verified"]').checked;
+        const comparisonReviewed = card.querySelector('[data-field="comparison_reviewed"]').checked;
+        const decision = card.querySelector('[data-field="decision"]').value;
+        const notes = card.querySelector('[data-field="notes"]').value.trim();
+        if (validate && !sourceVerified) errors.push(caseId + ': source paper not verified');
+        if (validate && !actualVerified) errors.push(caseId + ': actual benchmarks not verified');
+        if (validate && !comparisonReviewed) errors.push(caseId + ': comparison not reviewed');
+        if (validate && !decision) errors.push(caseId + ': judgement is empty');
+        if (validate && !notes) errors.push(caseId + ': notes are empty');
+        return {case_id:caseId, source_verified:sourceVerified, actual_benchmarks_verified:actualVerified, comparison_reviewed:comparisonReviewed, decision:decision || null, notes:notes || null};
+      });
+      return {payload:{schema_version:2, audit_id:scope.audit_id, iteration:scope.iteration, scope_snapshot:scope.scope_snapshot, reviewer_id:reviewerId || null, reviews:reviews}, errors:errors};
+    }
+    function updateProgress() {
+      const reviews = collect(false).payload.reviews;
+      const complete = reviews.filter((row) => row.source_verified && row.actual_benchmarks_verified && row.comparison_reviewed && row.decision && row.notes).length;
+      document.getElementById('progress').textContent = 'Complete ' + complete + ' / ' + scope.case_ids.length;
+    }
+    document.querySelectorAll('input,select,textarea').forEach((element) => element.addEventListener('input', updateProgress));
+    document.getElementById('download').addEventListener('click', () => {
+      const result = collect(true); const message = document.getElementById('message');
+      if (result.errors.length) { message.textContent = result.errors.join('; '); return; }
+      const blob = new Blob([JSON.stringify(result.payload, null, 2) + '\n'], {type:'application/json'});
+      const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = scope.submission_filename; anchor.click(); URL.revokeObjectURL(anchor.href);
+      message.textContent = 'Audit JSON downloaded';
+    });
+    updateProgress();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "schema_version": 2,
+  "audit_id": "auto_bench_untouched_holdout_002_literature_audit_round_1_holdout_002",
+  "iteration": 1,
+  "scope_snapshot": [
+    {
+      "case_id": "holdout_002",
+      "selected_benchmark_ids": [
+        "hotpotqa",
+        "toolbench",
+        "gsm8k"
+      ],
+      "top_6_benchmark_ids": [
+        "hotpotqa",
+        "toolbench",
+        "gsm8k",
+        "gaia",
+        "fever",
+        "agentbench"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "reviewer_id": null,
+  "reviews": [
+    {
+      "case_id": "holdout_002",
+      "source_verified": null,
+      "actual_benchmarks_verified": null,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "audit_id": "auto_bench_literature_audit_round_2_case_001_case_002_case_003",
+  "iteration": 2,
+  "scope_snapshot": [
+    {
+      "case_id": "case_001",
+      "selected_benchmark_ids": [
+        "webarena",
+        "fever",
+        "hotpotqa",
+        "alfworld",
+        "mind2web",
+        "webshop"
+      ],
+      "top_6_benchmark_ids": [
+        "webarena",
+        "fever",
+        "hotpotqa",
+        "alfworld",
+        "mind2web",
+        "webshop"
+      ],
+      "route": "direct_portfolio"
+    },
+    {
+      "case_id": "case_002",
+      "selected_benchmark_ids": [
+        "scienceworld",
+        "humaneval",
+        "hotpotqa",
+        "mbpp",
+        "alfworld"
+      ],
+      "top_6_benchmark_ids": [
+        "scienceworld",
+        "humaneval",
+        "hotpotqa",
+        "mbpp",
+        "alfworld",
+        "osworld"
+      ],
+      "route": "direct_portfolio"
+    },
+    {
+      "case_id": "case_003",
+      "selected_benchmark_ids": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval"
+      ],
+      "top_6_benchmark_ids": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "mbpp",
+        "hotpotqa",
+        "toolbench"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "reviewer_id": "yzb",
+  "reviews": [
+    {
+      "case_id": "case_001",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    },
+    {
+      "case_id": "case_002",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    },
+    {
+      "case_id": "case_003",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    }
+  ]
+}

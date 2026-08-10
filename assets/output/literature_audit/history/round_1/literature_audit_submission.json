@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewer_id": "yzb",
+  "reviews": [
+    {
+      "case_id": "case_001",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "MATCH",
+      "notes": "论文实际使用了4个Benchmark，而你候选也给选了4个Benchmark，其中有3个是符合论文的，其中有一个排在了候选第6的位置。属于基本match的选择。"
+    },
+    {
+      "case_id": "case_002",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "PARTIAL",
+      "notes": "论文采用了5个Benchmark，并使用MultiPL-E语言端口。你在选择中选了4个Benchmark，只与原论文有1个重合。感觉重合率不是很高，而且候选的AlfWord是排在第6，MPEPP是排在第5，而且没有选择用MultiPL-E语言端口，这个差距还是蛮大的。"
+    },
+    {
+      "case_id": "case_003",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "PARTIAL",
+      "notes": "论文选用了两个Benchmark，而你也采用了两个Benchmark。有一个是和论文符合的，另外一个是Human Aerial Fix，而你用的是Human Aerial，应该是它的子集吧，感觉是部分符合的。"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_003",
+  "selection_finalized_after_matcher_freeze": true,
+  "selection_frozen_before_source_experiment_inspection": true,
+  "selection_input": [
+    "official arXiv title",
+    "official arXiv abstract"
+  ],
+  "exclusions": [
+    "all suite001 and suite002 papers",
+    "papers used in previous holdouts",
+    "pure benchmark papers",
+    "surveys"
+  ],
+  "coverage_goal": [
+    "tool-augmented language modeling",
+    "situated robot planning",
+    "visual program execution",
+    "numerical program reasoning",
+    "search-based general problem solving"
+  ],
+  "papers": [
+    {
+      "case_id": "fresh3_001",
+      "arxiv_id": "2302.04761",
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "source_url": "https://arxiv.org/abs/2302.04761",
+      "selection_reason": "self-supervised API use across diverse downstream language tasks"
+    },
+    {
+      "case_id": "fresh3_002",
+      "arxiv_id": "2209.11302",
+      "title": "ProgPrompt: Generating Situated Robot Task Plans using Large Language Models",
+      "source_url": "https://arxiv.org/abs/2209.11302",
+      "selection_reason": "programmatic robot planning in simulated household and physical tabletop settings"
+    },
+    {
+      "case_id": "fresh3_003",
+      "arxiv_id": "2211.11559",
+      "title": "Visual Programming: Compositional visual reasoning without training",
+      "source_url": "https://arxiv.org/abs/2211.11559",
+      "selection_reason": "program-generated composition for four distinct visual reasoning applications"
+    },
+    {
+      "case_id": "fresh3_004",
+      "arxiv_id": "2211.12588",
+      "title": "Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks",
+      "source_url": "https://arxiv.org/abs/2211.12588",
+      "selection_reason": "program-executed numerical reasoning over math and financial question answering"
+    },
+    {
+      "case_id": "fresh3_005",
+      "arxiv_id": "2305.10601",
+      "title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2305.10601",
+      "selection_reason": "search-based reasoning over planning, puzzle, and creative-generation tasks"
+    }
+  ],
+  "gold_state": "REVEALED_AFTER_SEALED_BLIND_RUN",
+  "gold_files": [
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_001.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_002.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_003.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_004.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_005.gold.json"
+  ]
+}

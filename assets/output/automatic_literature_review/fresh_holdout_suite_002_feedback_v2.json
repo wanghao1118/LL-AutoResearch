@@ -1,0 +1,606 @@
+{
+  "schema_version": "1.0",
+  "reviewer": "AUTO_LITERATURE_EVALUATOR",
+  "validation_mode": "post_match_source_comparison",
+  "human_submission_required": false,
+  "evidence_class": "feedback_regression",
+  "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+  "case_count": 5,
+  "decision_counts": {
+    "MATCH": 4,
+    "PARTIAL": 1,
+    "MISMATCH": 0
+  },
+  "all_source_evidence_complete": true,
+  "all_blind_checks_passed": true,
+  "aggregate": {
+    "case_count": 5,
+    "mean_primary_recall_at_5": 0.9333333333333333,
+    "mean_primary_recall_at_6": 0.9333333333333333,
+    "mean_primary_mrr": 0.4,
+    "mean_selected_modeled_recall": 0.9333333333333333,
+    "mean_selected_actual_precision": 0.4,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "fresh2_001",
+      "source_title": "PAL: Program-aided Language Models",
+      "source_url": "https://arxiv.org/abs/2211.10435",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Background: Few-shot Prompting",
+          "Program-aided Language Models"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experimental Setup",
+        "Mathematical Reasoning",
+        "Symbolic Reasoning",
+        "Algorithmic Tasks",
+        "Appendix: Datasets"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "gsm8k",
+        "svamp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "evidence_section": "Mathematical Reasoning",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "evidence_section": "Mathematical Reasoning",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "ASDiv",
+          "evidence_section": "Appendix: Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "SingleOp",
+          "evidence_section": "Appendix: Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "SingleEq",
+          "evidence_section": "Appendix: Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "AddSub",
+          "evidence_section": "Appendix: Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "MultiArith",
+          "evidence_section": "Appendix: Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "GSM-Hard",
+          "evidence_section": "Appendix: Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Reasoning about Colored Objects",
+          "evidence_section": "Symbolic Reasoning",
+          "role": "unmodeled",
+          "task_family": "symbolic_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Penguins in a Table",
+          "evidence_section": "Symbolic Reasoning",
+          "role": "unmodeled",
+          "task_family": "symbolic_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Date Understanding",
+          "evidence_section": "Symbolic Reasoning",
+          "role": "unmodeled",
+          "task_family": "symbolic_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Object Counting",
+          "evidence_section": "Algorithmic Tasks",
+          "role": "unmodeled",
+          "task_family": "symbolic_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Repeat Copy",
+          "evidence_section": "Algorithmic Tasks",
+          "role": "unmodeled",
+          "task_family": "symbolic_reasoning"
+        }
+      ],
+      "selected_matches": [
+        "gsm8k",
+        "svamp"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "ASDiv",
+        "SingleOp",
+        "SingleEq",
+        "AddSub",
+        "MultiArith",
+        "GSM-Hard",
+        "Reasoning about Colored Objects",
+        "Penguins in a Table",
+        "Date Understanding",
+        "Object Counting",
+        "Repeat Copy"
+      ],
+      "actual_unmodeled_task_families": [
+        "math_reasoning",
+        "symbolic_reasoning"
+      ],
+      "inferred_task_families": [
+        "math_reasoning",
+        "symbolic_reasoning"
+      ],
+      "inferred_uncovered_task_families": [
+        "symbolic_reasoning"
+      ],
+      "matched_unmodeled_task_families": [
+        "math_reasoning",
+        "symbolic_reasoning"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh2_002",
+      "source_title": "ReWOO: Decoupling Reasoning from Observations for Efficient Augmented Language Models",
+      "source_url": "https://arxiv.org/abs/2305.18323",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Methodology"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Setups / Tasks and Datasets"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [
+        "triviaqa",
+        "hotpotqa"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "evidence_section": "Tasks and Datasets",
+          "role": "primary",
+          "task_family": "knowledge_intensive_qa"
+        },
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "evidence_section": "Tasks and Datasets",
+          "role": "primary",
+          "task_family": "knowledge_intensive_qa"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "evidence_section": "Tasks and Datasets",
+          "role": "primary",
+          "task_family": "math_word_problem"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "SportsUnderstanding",
+          "evidence_section": "Tasks and Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "StrategyQA",
+          "evidence_section": "Tasks and Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "PhysicsQuestions",
+          "evidence_section": "Tasks and Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "SOTUQA",
+          "evidence_section": "Tasks and Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Curated Real-World ALM Tasks",
+          "evidence_section": "Tasks and Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        }
+      ],
+      "selected_matches": [
+        "triviaqa",
+        "hotpotqa"
+      ],
+      "missing": [
+        "gsm8k"
+      ],
+      "extras": [],
+      "unmodeled": [
+        "SportsUnderstanding",
+        "StrategyQA",
+        "PhysicsQuestions",
+        "SOTUQA",
+        "Curated Real-World ALM Tasks"
+      ],
+      "actual_unmodeled_task_families": [
+        "tool_augmented_nlp"
+      ],
+      "inferred_task_families": [
+        "knowledge_intensive_qa",
+        "tool_augmented_nlp"
+      ],
+      "inferred_uncovered_task_families": [
+        "tool_augmented_nlp"
+      ],
+      "matched_unmodeled_task_families": [
+        "tool_augmented_nlp"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 0.6666666666666666,
+      "selected_actual_precision": 1.0,
+      "error_types": [
+        "CATALOG_GAP",
+        "PORTFOLIO_RECALL_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog",
+        "improve task, modality, environment, or suite-breadth inference for missed paper choices"
+      ]
+    },
+    {
+      "case_id": "fresh2_003",
+      "source_title": "Inner Monologue: Embodied Reasoning through Planning with Language Models",
+      "source_url": "https://arxiv.org/abs/2207.05608",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Leveraging Embodied Language Feedback",
+          "Problem Statement",
+          "Sources of Feedback"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experimental Results",
+        "Simulated Tabletop Rearrangement",
+        "Real-World Tabletop Rearrangement",
+        "Real-World Mobile Manipulator in a Kitchen Setting"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Ravens-based Simulated Tabletop Rearrangement",
+          "evidence_section": "Simulated Tabletop Rearrangement",
+          "role": "unmodeled",
+          "task_family": "robot_manipulation"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Real-World Tabletop Rearrangement",
+          "evidence_section": "Real-World Tabletop Rearrangement",
+          "role": "unmodeled",
+          "task_family": "robot_manipulation"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Real-World Kitchen Mobile Manipulation",
+          "evidence_section": "Real-World Mobile Manipulator in a Kitchen Setting",
+          "role": "unmodeled",
+          "task_family": "robot_manipulation"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "Ravens-based Simulated Tabletop Rearrangement",
+        "Real-World Tabletop Rearrangement",
+        "Real-World Kitchen Mobile Manipulation"
+      ],
+      "actual_unmodeled_task_families": [
+        "robot_manipulation"
+      ],
+      "inferred_task_families": [
+        "robot_manipulation"
+      ],
+      "inferred_uncovered_task_families": [
+        "robot_manipulation"
+      ],
+      "matched_unmodeled_task_families": [
+        "robot_manipulation"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh2_004",
+      "source_title": "LLM+P: Empowering Large Language Models with Optimal Planning Proficiency",
+      "source_url": "https://arxiv.org/abs/2304.11477",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Method"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Benchmark Problems"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Blocksworld",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Barman",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Floortile",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Grippers",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Storage",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Termes",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Tyreworld",
+          "evidence_section": "Benchmark Problems",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "Blocksworld",
+        "Barman",
+        "Floortile",
+        "Grippers",
+        "Storage",
+        "Termes",
+        "Tyreworld"
+      ],
+      "actual_unmodeled_task_families": [
+        "classical_planning"
+      ],
+      "inferred_task_families": [
+        "classical_planning",
+        "creative_writing"
+      ],
+      "inferred_uncovered_task_families": [
+        "classical_planning",
+        "creative_writing"
+      ],
+      "matched_unmodeled_task_families": [
+        "classical_planning"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh2_005",
+      "source_title": "ViperGPT: Visual Inference via Python Execution for Reasoning",
+      "source_url": "https://arxiv.org/abs/2303.08128",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Method",
+          "Program Generation",
+          "Modules and Their API",
+          "Program Execution"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Evaluation",
+        "Visual Grounding",
+        "Compositional Image Question Answering",
+        "External Knowledge-dependent Image Question Answering",
+        "Video Causal/Temporal Reasoning"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "RefCOCO",
+          "evidence_section": "Visual Grounding",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "RefCOCO+",
+          "evidence_section": "Visual Grounding",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "GQA",
+          "evidence_section": "Compositional Image Question Answering",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "OK-VQA",
+          "evidence_section": "External Knowledge-dependent Image Question Answering",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "NExT-QA",
+          "evidence_section": "Video Causal/Temporal Reasoning",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "RefCOCO",
+        "RefCOCO+",
+        "GQA",
+        "OK-VQA",
+        "NExT-QA"
+      ],
+      "actual_unmodeled_task_families": [
+        "visual_reasoning"
+      ],
+      "inferred_task_families": [
+        "visual_reasoning"
+      ],
+      "inferred_uncovered_task_families": [
+        "visual_reasoning"
+      ],
+      "matched_unmodeled_task_families": [
+        "visual_reasoning"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    }
+  ]
+}

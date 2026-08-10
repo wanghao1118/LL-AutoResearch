@@ -1,0 +1,302 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-08-10",
+  "branch": "add/auto-bench",
+  "deliverable_type": "codex_skill",
+  "skill_name": "auto-bench",
+  "result": "PASS",
+  "source_skill": "skills/auto-bench",
+  "installed_skill": "${CODEX_HOME:-$HOME/.codex}/skills/auto-bench",
+  "baseline_behavior": {
+    "command": "python3 -c 'import subprocess,json\np=subprocess.run(['\"'\"'git'\"'\"','\"'\"'show'\"'\"','\"'\"':README.md'\"'\"'],text=True,capture_output=True)\ntext=p.stdout\nprint(json.dumps({'\"'\"'skill_focused'\"'\"':'\"'\"'# Auto-Bench Skill'\"'\"' in text,'\"'\"'skill_install_command'\"'\"':'\"'\"'skills/auto-bench'\"'\"' in text,'\"'\"'staged_read_exit'\"'\"':p.returncode},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+    "inputs": [
+      "Git index README before working-tree Skill pivot"
+    ],
+    "literal_output": "{\"skill_focused\":false,\"skill_install_command\":false,\"staged_read_exit\":0}\n",
+    "exit_status": 0
+  },
+  "modified_behavior": {
+    "command": "python3 -c 'import json\nfrom pathlib import Path\nr=Path('\"'\"'skills/auto-bench'\"'\"')\nfiles=[p for p in r.rglob('\"'\"'*'\"'\"') if p.is_file()]\ncatalog=json.loads((r/'\"'\"'assets/benchmark_catalog.json'\"'\"').read_text())['\"'\"'benchmarks'\"'\"']\nprint(json.dumps({'\"'\"'skill_focused'\"'\"':'\"'\"'# Auto-Bench Skill'\"'\"' in Path('\"'\"'README.md'\"'\"').read_text(),'\"'\"'skill_name'\"'\"':'\"'\"'auto-bench'\"'\"','\"'\"'skill_files'\"'\"':len(files),'\"'\"'catalog_records'\"'\"':len(catalog),'\"'\"'installed'\"'\"':(Path.home()/'\"'\"'.codex/skills/auto-bench/SKILL.md'\"'\"').is_file()},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+    "inputs": [
+      "README.md",
+      "skills/auto-bench",
+      "${CODEX_HOME:-$HOME/.codex}/skills/auto-bench"
+    ],
+    "literal_output": "{\"skill_focused\":true,\"skill_name\":\"auto-bench\",\"skill_files\":21,\"catalog_records\":26,\"installed\":true}\n",
+    "exit_status": 0
+  },
+  "archive": "assets/output/skill_delivery/auto-bench.skill.tar.gz",
+  "archive_file_count": 21,
+  "patch": "assets/output/skill_delivery/auto_bench_skill.patch",
+  "rollback": "assets/output/skill_delivery/uninstall_auto_bench_skill.sh",
+  "forward_test": {
+    "installed_smoke": "PASS",
+    "isolated_match_run_review": "PASS",
+    "implicit_subagent_artifact": "PASS",
+    "subagent_final_text": "terminated_after_artifact_generation"
+  },
+  "human_submission_required": false,
+  "checks": [
+    {
+      "name": "baseline_deliverable_probe",
+      "command": "python3 -c 'import subprocess,json\np=subprocess.run(['\"'\"'git'\"'\"','\"'\"'show'\"'\"','\"'\"':README.md'\"'\"'],text=True,capture_output=True)\ntext=p.stdout\nprint(json.dumps({'\"'\"'skill_focused'\"'\"':'\"'\"'# Auto-Bench Skill'\"'\"' in text,'\"'\"'skill_install_command'\"'\"':'\"'\"'skills/auto-bench'\"'\"' in text,'\"'\"'staged_read_exit'\"'\"':p.returncode},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "Git index README before working-tree Skill pivot"
+      ],
+      "literal_stdout": "{\"skill_focused\":false,\"skill_install_command\":false,\"staged_read_exit\":0}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "modified_deliverable_probe",
+      "command": "python3 -c 'import json\nfrom pathlib import Path\nr=Path('\"'\"'skills/auto-bench'\"'\"')\nfiles=[p for p in r.rglob('\"'\"'*'\"'\"') if p.is_file()]\ncatalog=json.loads((r/'\"'\"'assets/benchmark_catalog.json'\"'\"').read_text())['\"'\"'benchmarks'\"'\"']\nprint(json.dumps({'\"'\"'skill_focused'\"'\"':'\"'\"'# Auto-Bench Skill'\"'\"' in Path('\"'\"'README.md'\"'\"').read_text(),'\"'\"'skill_name'\"'\"':'\"'\"'auto-bench'\"'\"','\"'\"'skill_files'\"'\"':len(files),'\"'\"'catalog_records'\"'\"':len(catalog),'\"'\"'installed'\"'\"':(Path.home()/'\"'\"'.codex/skills/auto-bench/SKILL.md'\"'\"').is_file()},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "README.md",
+        "skills/auto-bench",
+        "${CODEX_HOME:-$HOME/.codex}/skills/auto-bench"
+      ],
+      "literal_stdout": "{\"skill_focused\":true,\"skill_name\":\"auto-bench\",\"skill_files\":21,\"catalog_records\":26,\"installed\":true}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "source_quick_validate",
+      "command": "python3 /Users/yzb/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/auto-bench",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench"
+      ],
+      "literal_stdout": "Skill is valid!\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "installed_quick_validate",
+      "command": "python3 /Users/yzb/.codex/skills/.system/skill-creator/scripts/quick_validate.py /Users/yzb/.codex/skills/auto-bench",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "${CODEX_HOME:-$HOME/.codex}/skills/auto-bench"
+      ],
+      "literal_stdout": "Skill is valid!\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "path_privacy",
+      "command": "python3 /Users/yzb/.codex/skills/ccf-common/scripts/check_path_privacy.py skills/auto-bench",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench"
+      ],
+      "literal_stdout": "Scanned text files: 21\nPath privacy check passed.\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "source_installed_compare",
+      "command": "diff -qr skills/auto-bench /Users/yzb/.codex/skills/auto-bench",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench",
+        "${CODEX_HOME:-$HOME/.codex}/skills/auto-bench"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "compile",
+      "command": "python3 -m compileall -q skills/auto-bench/scripts",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench/scripts"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "matcher_help",
+      "command": "python3 skills/auto-bench/scripts/run_auto_bench.py --help",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench/scripts/run_auto_bench.py"
+      ],
+      "literal_stdout": "usage: run_auto_bench.py [-h] {match,run} ...\n\nGenerate or execute an Introduction/Method-only Auto-Bench plan.\n\npositional arguments:\n  {match,run}\n    match      generate a benchmark portfolio and route\n    run        generate the plan and execute adaptation/synthesis when source\n               records are supplied\n\noptional arguments:\n  -h, --help   show this help message and exit\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "reviewer_help",
+      "command": "python3 skills/auto-bench/scripts/review_plan.py --help",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench/scripts/review_plan.py"
+      ],
+      "literal_stdout": "usage: review_plan.py [-h] --plan PLAN --paper-evidence PAPER_EVIDENCE\n                      --output-json OUTPUT_JSON --output-markdown\n                      OUTPUT_MARKDOWN [--catalog CATALOG] --evidence-class\n                      {fresh_holdout,feedback_regression,untouched_holdout}\n\nCompare a sealed benchmark plan with post-match paper evidence.\n\noptional arguments:\n  -h, --help            show this help message and exit\n  --plan PLAN\n  --paper-evidence PAPER_EVIDENCE\n  --output-json OUTPUT_JSON\n  --output-markdown OUTPUT_MARKDOWN\n  --catalog CATALOG\n  --evidence-class {fresh_holdout,feedback_regression,untouched_holdout}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "runtime_tests",
+      "command": "python3 -m unittest tests.test_autobench",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "tests/test_autobench.py"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "............................................\n----------------------------------------------------------------------\nRan 44 tests in 0.228s\n\nOK\n",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "patch_reverse_check",
+      "command": "git apply --reverse --check /Users/yzb/Desktop/research/exp31_autoresearch/assets/output/skill_delivery/auto_bench_skill.patch",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/skill_delivery/auto_bench_skill.patch"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "rollback_check",
+      "command": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/skill_delivery/uninstall_auto_bench_skill.sh --check",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/skill_delivery/uninstall_auto_bench_skill.sh",
+        "assets/output/skill_delivery/auto_bench_skill.patch"
+      ],
+      "literal_stdout": "skill_uninstall_check=PASS\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "archive_extract",
+      "command": "tar -xzf /Users/yzb/Desktop/research/exp31_autoresearch/assets/output/skill_delivery/auto-bench.skill.tar.gz -C /var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-skill-hnow3jjk",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/skill_delivery/auto-bench.skill.tar.gz"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "archive_quick_validate",
+      "command": "python3 /Users/yzb/.codex/skills/.system/skill-creator/scripts/quick_validate.py /var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-skill-hnow3jjk/auto-bench",
+      "cwd": "/var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-skill-hnow3jjk",
+      "inputs": [
+        "assets/output/skill_delivery/auto-bench.skill.tar.gz"
+      ],
+      "literal_stdout": "Skill is valid!\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "archive_matcher_help",
+      "command": "python3 /var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-skill-hnow3jjk/auto-bench/scripts/run_auto_bench.py --help",
+      "cwd": "/var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-skill-hnow3jjk",
+      "inputs": [
+        "assets/output/skill_delivery/auto-bench.skill.tar.gz"
+      ],
+      "literal_stdout": "usage: run_auto_bench.py [-h] {match,run} ...\n\nGenerate or execute an Introduction/Method-only Auto-Bench plan.\n\npositional arguments:\n  {match,run}\n    match      generate a benchmark portfolio and route\n    run        generate the plan and execute adaptation/synthesis when source\n               records are supplied\n\noptional arguments:\n  -h, --help   show this help message and exit\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "forward_artifact_readback",
+      "command": "python3 -c 'import json\nfrom pathlib import Path\ninstalled=json.loads(Path('\"'\"'assets/output/skill_installed_smoke/plan/benchmark_plan.json'\"'\"').read_text())\nimplicit=json.loads(Path('\"'\"'assets/output/skill_implicit_forward_test/auto_bench_plan/benchmark_plan.json'\"'\"').read_text())\nreview=json.loads(Path('\"'\"'assets/output/final_verification/suite003_feedback_auto_review.json'\"'\"').read_text())\nresult={'\"'\"'installed_selected'\"'\"':installed['\"'\"'selected_benchmarks'\"'\"'],'\"'\"'installed_route'\"'\"':installed['\"'\"'route'\"'\"'],'\"'\"'installed_human_submission_required'\"'\"':installed['\"'\"'automatic_review'\"'\"']['\"'\"'human_submission_required'\"'\"'],'\"'\"'implicit_selected'\"'\"':implicit['\"'\"'selected_benchmarks'\"'\"'],'\"'\"'implicit_route'\"'\"':implicit['\"'\"'route'\"'\"'],'\"'\"'implicit_tasks'\"'\"':implicit['\"'\"'profile'\"'\"']['\"'\"'task_families'\"'\"'],'\"'\"'implicit_human_submission_required'\"'\"':implicit['\"'\"'automatic_review'\"'\"']['\"'\"'human_submission_required'\"'\"'],'\"'\"'automatic_review_counts'\"'\"':review['\"'\"'decision_counts'\"'\"'],'\"'\"'automatic_review_human_submission_required'\"'\"':review['\"'\"'human_submission_required'\"'\"']}\nassert result['\"'\"'installed_human_submission_required'\"'\"'] is False\nassert result['\"'\"'implicit_human_submission_required'\"'\"'] is False\nassert result['\"'\"'automatic_review_human_submission_required'\"'\"'] is False\nprint(json.dumps(result,separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/skill_installed_smoke/plan/benchmark_plan.json",
+        "assets/output/skill_implicit_forward_test/auto_bench_plan/benchmark_plan.json",
+        "assets/output/final_verification/suite003_feedback_auto_review.json"
+      ],
+      "literal_stdout": "{\"installed_selected\":[\"visualwebarena\",\"mind2web\",\"webarena\"],\"installed_route\":\"direct_portfolio\",\"installed_human_submission_required\":false,\"implicit_selected\":[\"webshop\",\"osworld\"],\"implicit_route\":\"base_benchmark_adaptation\",\"implicit_tasks\":[\"computer_use\",\"sequential_decision_making\",\"web_navigation\"],\"implicit_human_submission_required\":false,\"automatic_review_counts\":{\"MATCH\":3,\"PARTIAL\":2,\"MISMATCH\":0},\"automatic_review_human_submission_required\":false}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "skill_static_check",
+      "command": "python3 -c 'from pathlib import Path\nr=Path('\"'\"'skills/auto-bench'\"'\"'); files=[p for p in r.rglob('\"'\"'*'\"'\"') if p.is_file()]\ntext='\"'\"'\\n'\"'\"'.join(p.read_text(encoding='\"'\"'utf-8'\"'\"') for p in files)\nassert '\"'\"'TODO'\"'\"' not in text\nassert '\"'\"'/Users/'\"'\"' not in text\nassert not any('\"'\"'__pycache__'\"'\"' in p.parts or p.suffix=='\"'\"'.pyc'\"'\"' for p in files)\nassert len((r/'\"'\"'SKILL.md'\"'\"').read_text().splitlines())<500\nassert not (r/'\"'\"'README.md'\"'\"').exists()\nprint('\"'\"'skill_static_check=PASS'\"'\"')'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "skills/auto-bench"
+      ],
+      "literal_stdout": "skill_static_check=PASS\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    }
+  ]
+}

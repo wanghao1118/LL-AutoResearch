@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "case_ids": [
+    "holdout_001"
+  ],
+  "paper_selected_before_matching": true,
+  "fixture_frozen_before_first_matching": true,
+  "gold_directory_passed_to_matcher": false,
+  "matcher_change_policy": "record the first run before any holdout-driven matcher change",
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ]
+}

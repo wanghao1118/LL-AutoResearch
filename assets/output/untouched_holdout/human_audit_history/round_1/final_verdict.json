@@ -1,0 +1,17 @@
+{
+  "status": "LITERATURE_AUDIT_PARTIAL",
+  "reason": "the human audit found at least one partial benchmark match",
+  "reviewer_id": "yzb",
+  "audit_id": "auto_bench_untouched_holdout_literature_audit_round_1_holdout_001",
+  "expected_case_ids": [
+    "holdout_001"
+  ],
+  "pending_case_ids": [],
+  "items": [
+    {
+      "case_id": "holdout_001",
+      "status": "PARTIAL",
+      "notes": "自己对比一下也能看出来，你选的Bench和人家论文用的还是有些差别的。"
+    }
+  ]
+}

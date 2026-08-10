@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "case_ids": [
+    "holdout_002"
+  ],
+  "paper_selected_before_holdout_001_driven_matcher_revision": true,
+  "fixture_frozen_before_matcher_revision": true,
+  "matcher_has_not_seen_holdout_002_gold": true,
+  "gold_directory_passed_to_matcher": false,
+  "revision_basis": [
+    "assets/output/untouched_holdout/first_run_evaluation.json"
+  ],
+  "selection_reason": "tests cross-domain question answering, mathematical reasoning, tool interaction, and a domain without a current catalog entry",
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ]
+}

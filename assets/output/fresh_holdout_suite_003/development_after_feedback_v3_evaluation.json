@@ -1,0 +1,2034 @@
+{
+  "schema_version": "1.0",
+  "verdict": "NEEDS_ITERATION",
+  "thresholds": {
+    "minimum_cases": 5,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_selected_modeled_recall": 0.85,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 5,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.6,
+    "mean_selected_modeled_recall": 0.9,
+    "mean_selected_actual_precision": 0.5,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "fresh3_001",
+      "source_arxiv_id": "2302.04761",
+      "source_title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "source_url": "https://arxiv.org/abs/2302.04761",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Approach",
+          "Tools"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite_003/cases/fresh3_001.json",
+      "gold_evidence_sections": [
+        "Experiments / Downstream Tasks / LAMA",
+        "Experiments / Math Datasets",
+        "Experiments / Question Answering",
+        "Experiments / Multilingual Question Answering",
+        "Experiments / Temporal Datasets",
+        "Experiments / Language Modeling"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "primary",
+          "evidence_section": "Math Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 4
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Question Answering",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "LAMA",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "SQuAD subset of LAMA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "LAMA",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "Google-RE subset of LAMA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "LAMA",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "T-REx subset of LAMA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Math Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_name": "ASDiv",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Math Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_name": "MAWPS",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Question Answering",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "Web Questions",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Question Answering",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "Natural Questions",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Multilingual Question Answering",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "MLQA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Temporal Datasets",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "TempLAMA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Temporal Datasets",
+          "task_family": "tool_augmented_nlp",
+          "benchmark_name": "Dateset",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Language Modeling",
+          "task_family": "language_modeling",
+          "benchmark_name": "WikiText",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Language Modeling",
+          "task_family": "language_modeling",
+          "benchmark_name": "CCNet language-modeling subset",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "svamp",
+        "triviaqa"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "SQuAD subset of LAMA",
+        "Google-RE subset of LAMA",
+        "T-REx subset of LAMA",
+        "ASDiv",
+        "MAWPS",
+        "Web Questions",
+        "Natural Questions",
+        "MLQA",
+        "TempLAMA",
+        "Dateset",
+        "WikiText",
+        "CCNet language-modeling subset"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "triviaqa",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "fever",
+        "toolbench"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "triviaqa",
+        "gsm8k"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 1,
+          "score": 0.62,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1705.03551"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "score": 0.45,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2110.14168"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "knowledge_intensive_qa",
+          "math_reasoning"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [
+          "language_modeling",
+          "tool_augmented_nlp"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "short_answer",
+          "text_continuation"
+        ],
+        "environments": [
+          "knowledge_base"
+        ],
+        "capabilities": [
+          "external_information_retrieval",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "answer_accuracy",
+          "exact_match",
+          "perplexity",
+          "task_accuracy",
+          "token_f1",
+          "tool_execution_success"
+        ],
+        "evidence_terms": {
+          "capability:external_information_retrieval": [
+            "retrieve",
+            "search"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "tool",
+            "api"
+          ],
+          "task:knowledge_intensive_qa": [
+            "question answering",
+            "wikipedia"
+          ],
+          "task:math_reasoning": [
+            "mathematical skills",
+            "precise calculations"
+          ],
+          "uncovered_task:language_modeling": [
+            "language modeling abilities",
+            "language modeling objective",
+            "language modeling dataset"
+          ],
+          "uncovered_task:tool_augmented_nlp": [
+            "use external tools",
+            "use different tools by means of api calls"
+          ]
+        },
+        "declared_evaluation_breadth": 0
+      },
+      "coverage_ratio": 0.5,
+      "route_reason": "best existing match scores 0.620, but portfolio coverage is 50.0%",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "triviaqa",
+          "gsm8k"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "language_modeling",
+          "tool_augmented_nlp"
+        ],
+        "adaptation_hooks": [
+          "answer_alias_normalization",
+          "difficulty_stratification",
+          "evidence_retrieval_wrapper",
+          "open_domain_split",
+          "reasoning_trace_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "language_modeling",
+          "tool_augmented_nlp"
+        ],
+        "construct_definition": {
+          "status": "AUTOMATIC_CONSTRUCT_CHECK_PENDING",
+          "task_families": [
+            "language_modeling",
+            "tool_augmented_nlp"
+          ],
+          "uncovered_task_families": [
+            "language_modeling",
+            "tool_augmented_nlp"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "short_answer",
+            "text_continuation"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "answer_accuracy",
+            "exact_match",
+            "perplexity",
+            "task_accuracy",
+            "token_f1",
+            "tool_execution_success"
+          ],
+          "evidence_terms": {
+            "task:knowledge_intensive_qa": [
+              "question answering",
+              "wikipedia"
+            ],
+            "task:math_reasoning": [
+              "mathematical skills",
+              "precise calculations"
+            ],
+            "uncovered_task:language_modeling": [
+              "language modeling abilities",
+              "language modeling objective",
+              "language modeling dataset"
+            ],
+            "uncovered_task:tool_augmented_nlp": [
+              "use external tools",
+              "use different tools by means of api calls"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "automatic_validation_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified semantic-judge audit by task family and difficulty",
+          "agreement check across independent automatic judge passes before scaling",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "knowledge_intensive_qa",
+            "math_reasoning"
+          ],
+          "task_benchmark_counts": {},
+          "declared_evaluation_breadth": 0,
+          "uncovered_task_families": [
+            "language_modeling",
+            "tool_augmented_nlp"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "short_answer",
+            "text_continuation"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "answer_accuracy",
+            "exact_match",
+            "perplexity",
+            "task_accuracy",
+            "token_f1",
+            "tool_execution_success"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "triviaqa"
+        ],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [
+          "svamp"
+        ],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "gsm8k"
+        ],
+        "top_6_primary_matches": [
+          "triviaqa",
+          "svamp"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.5
+      },
+      "primary_recall_at_1": 0.5,
+      "primary_recall_at_3": 0.5,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 0.5,
+      "selected_modeled_recall": 0.5,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "AUTOMATIC_LITERATURE_CHECK_PENDING"
+    },
+    {
+      "case_id": "fresh3_002",
+      "source_arxiv_id": "2209.11302",
+      "source_title": "ProgPrompt: Generating Situated Robot Task Plans using Large Language Models",
+      "source_url": "https://arxiv.org/abs/2209.11302",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Our Method: ProgPrompt"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite_003/cases/fresh3_002.json",
+      "gold_evidence_sections": [
+        "Experiments / Simulation Experiments",
+        "Experiments / Real-Robot Experiments"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "unmodeled",
+          "evidence_section": "Simulation Experiments",
+          "task_family": "embodied_household",
+          "benchmark_name": "VirtualHome Household Task Set",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Real-Robot Experiments",
+          "task_family": "robot_manipulation",
+          "benchmark_name": "Physical Robot Tabletop Task Set",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "VirtualHome Household Task Set",
+        "Physical Robot Tabletop Task Set"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "alfworld",
+        "scienceworld",
+        "toolbench",
+        "webarena",
+        "mind2web",
+        "hotpotqa"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 2,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 3,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mind2web",
+          "benchmark_name": "Mind2Web",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "alfworld"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 1,
+          "score": 0.776667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "embodied_household"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [
+          "robot_manipulation"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [
+          "household_simulator",
+          "robot_environment"
+        ],
+        "capabilities": [
+          "evidence_grounding",
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "plan_success_rate",
+          "task_success_rate",
+          "trajectory_efficiency"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "verify"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:tool_use": [
+            "action",
+            "api"
+          ],
+          "task:embodied_household": [
+            "household"
+          ],
+          "uncovered_task:robot_manipulation": [
+            "robot task planning",
+            "robotic task planning",
+            "physical robot"
+          ]
+        },
+        "declared_evaluation_breadth": 0
+      },
+      "coverage_ratio": 0.5,
+      "route_reason": "best existing match scores 0.777, but portfolio coverage is 50.0%",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "alfworld"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "robot_manipulation"
+        ],
+        "adaptation_hooks": [
+          "action_trace_logging",
+          "task_type_stratification",
+          "unseen_environment_split"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "robot_manipulation"
+        ],
+        "construct_definition": {
+          "status": "AUTOMATIC_CONSTRUCT_CHECK_PENDING",
+          "task_families": [
+            "robot_manipulation"
+          ],
+          "uncovered_task_families": [
+            "robot_manipulation"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "long_horizon_planning",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "plan_success_rate",
+            "task_success_rate",
+            "trajectory_efficiency"
+          ],
+          "evidence_terms": {
+            "task:embodied_household": [
+              "household"
+            ],
+            "uncovered_task:robot_manipulation": [
+              "robot task planning",
+              "robotic task planning",
+              "physical robot"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "automatic_validation_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified semantic-judge audit by task family and difficulty",
+          "agreement check across independent automatic judge passes before scaling",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "embodied_household"
+          ],
+          "task_benchmark_counts": {},
+          "declared_evaluation_breadth": 0,
+          "uncovered_task_families": [
+            "robot_manipulation"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "long_horizon_planning",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "plan_success_rate",
+            "task_success_rate",
+            "trajectory_efficiency"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "alfworld"
+        ],
+        "top_6_primary_matches": [],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.0
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "AUTOMATIC_LITERATURE_CHECK_PENDING"
+    },
+    {
+      "case_id": "fresh3_003",
+      "source_arxiv_id": "2211.11559",
+      "source_title": "Visual Programming: Compositional visual reasoning without training",
+      "source_url": "https://arxiv.org/abs/2211.11559",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Visual Programming"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite_003/cases/fresh3_003.json",
+      "gold_evidence_sections": [
+        "Tasks / Compositional Visual Question Answering",
+        "Tasks / Zero-Shot Reasoning on Image Pairs",
+        "Tasks / Factual Knowledge Object Tagging",
+        "Tasks / Image Editing with Natural Language"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "unmodeled",
+          "evidence_section": "Compositional Visual Question Answering",
+          "task_family": "visual_reasoning",
+          "benchmark_name": "GQA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Zero-Shot Reasoning on Image Pairs",
+          "task_family": "visual_reasoning",
+          "benchmark_name": "NLVRv2",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Factual Knowledge Object Tagging",
+          "task_family": "visual_reasoning",
+          "benchmark_name": "Factual Knowledge Object Tagging",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Image Editing with Natural Language",
+          "task_family": "image_editing",
+          "benchmark_name": "Language-Guided Image Editing",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "GQA",
+        "NLVRv2",
+        "Factual Knowledge Object Tagging",
+        "Language-Guided Image Editing"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "gsm8k",
+        "mmlu",
+        "realtoxicityprompts",
+        "svamp",
+        "fever",
+        "triviaqa"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 1,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mmlu",
+          "benchmark_name": "MMLU",
+          "rank": 2,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 3,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [],
+      "selected_recommendations": [],
+      "profile": {
+        "task_families": [],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [
+          "image_editing",
+          "visual_reasoning"
+        ],
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "interactions": [
+          "static"
+        ],
+        "output_types": [
+          "edited_image",
+          "visual_answer"
+        ],
+        "environments": [
+          "visual_media"
+        ],
+        "capabilities": [
+          "evidence_grounding"
+        ],
+        "suggested_metrics": [
+          "answer_accuracy",
+          "edit_accuracy",
+          "semantic_correctness"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "factual"
+          ],
+          "uncovered_task:image_editing": [
+            "image editing",
+            "language guided image editing",
+            "image manipulation"
+          ],
+          "uncovered_task:visual_reasoning": [
+            "complex visual task",
+            "compositional visual"
+          ]
+        },
+        "declared_evaluation_breadth": 0
+      },
+      "coverage_ratio": 0.0,
+      "route_reason": "no catalog task family covers the explicitly stated method domain",
+      "adaptation_plan": {
+        "base_benchmarks": [],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "image_editing",
+          "visual_reasoning"
+        ],
+        "adaptation_hooks": [],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "image_editing",
+          "visual_reasoning"
+        ],
+        "construct_definition": {
+          "status": "AUTOMATIC_CONSTRUCT_CHECK_PENDING",
+          "task_families": [
+            "image_editing",
+            "visual_reasoning"
+          ],
+          "uncovered_task_families": [
+            "image_editing",
+            "visual_reasoning"
+          ],
+          "modalities": [
+            "image",
+            "text"
+          ],
+          "interactions": [
+            "static"
+          ],
+          "output_types": [
+            "edited_image",
+            "visual_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding"
+          ],
+          "candidate_metrics": [
+            "answer_accuracy",
+            "edit_accuracy",
+            "semantic_correctness"
+          ],
+          "evidence_terms": {
+            "uncovered_task:image_editing": [
+              "image editing",
+              "language guided image editing",
+              "image manipulation"
+            ],
+            "uncovered_task:visual_reasoning": [
+              "complex visual task",
+              "compositional visual"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "automatic_validation_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified semantic-judge audit by task family and difficulty",
+          "agreement check across independent automatic judge passes before scaling",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [],
+          "task_benchmark_counts": {},
+          "declared_evaluation_breadth": 0,
+          "uncovered_task_families": [
+            "image_editing",
+            "visual_reasoning"
+          ],
+          "modalities": [
+            "image",
+            "text"
+          ],
+          "interactions": [
+            "static"
+          ],
+          "output_types": [
+            "edited_image",
+            "visual_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding"
+          ],
+          "suggested_metrics": [
+            "answer_accuracy",
+            "edit_accuracy",
+            "semantic_correctness"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.0
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "expected_route_at_freeze": "new_benchmark_synthesis",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "AUTOMATIC_LITERATURE_CHECK_PENDING"
+    },
+    {
+      "case_id": "fresh3_004",
+      "source_arxiv_id": "2211.12588",
+      "source_title": "Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks",
+      "source_url": "https://arxiv.org/abs/2211.12588",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Program of Thoughts"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite_003/cases/fresh3_004.json",
+      "gold_evidence_sections": [
+        "Experiments / Experimental Setup / Datasets"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "primary",
+          "evidence_section": "Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Datasets",
+          "task_family": "tabular_math_reasoning",
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_name": "AQuA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Datasets",
+          "task_family": "math_reasoning",
+          "benchmark_name": "MultiArith",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Datasets",
+          "task_family": "financial_numerical_qa",
+          "benchmark_name": "FinQA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Datasets",
+          "task_family": "financial_numerical_qa",
+          "benchmark_name": "ConvFinQA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Datasets",
+          "task_family": "financial_numerical_qa",
+          "benchmark_name": "TATQA",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "gsm8k",
+        "svamp",
+        "tabmwp"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "AQuA",
+        "MultiArith",
+        "FinQA",
+        "ConvFinQA",
+        "TATQA"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "tabmwp",
+        "gsm8k",
+        "svamp",
+        "mmlu",
+        "realtoxicityprompts",
+        "hotpotqa"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "declared_suite_breadth:math_reasoning",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "declared_suite_breadth:math_word_problem",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "mmlu",
+          "benchmark_name": "MMLU",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "tabmwp",
+        "gsm8k",
+        "svamp"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "rank": 1,
+          "score": 0.845,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2209.14610"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "score": 0.638333,
+          "selection_role": "declared_suite_breadth:math_reasoning",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2110.14168"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 3,
+          "score": 0.638333,
+          "selection_role": "declared_suite_breadth:math_word_problem",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2103.07191"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "math_reasoning",
+          "math_word_problem",
+          "tabular_math_reasoning"
+        ],
+        "task_benchmark_counts": {
+          "math_reasoning": 5
+        },
+        "uncovered_task_families": [
+          "financial_numerical_qa"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "static"
+        ],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [
+          "structured_table"
+        ],
+        "capabilities": [],
+        "suggested_metrics": [
+          "answer_accuracy",
+          "task_accuracy"
+        ],
+        "evidence_terms": {
+          "evaluation:declared_breadth": [
+            "we evaluate method_x prompting across five mwp datasets, [redacted_benchmark], [redacted_benchmark], [redacted_benchmark], [redacted_benchmark], [redacted_benchmark]; and three financial datasets, [redacted_benchmark], [redacted_benchmark], and [redacted_benchmark]."
+          ],
+          "task:math_reasoning": [
+            "math word problem",
+            "arithmetic reasoning"
+          ],
+          "task:math_word_problem": [
+            "math word problem"
+          ],
+          "task:tabular_math_reasoning": [
+            "input formats including text, tables",
+            "text, tables, and conversation"
+          ],
+          "uncovered_task:financial_numerical_qa": [
+            "financial problem",
+            "financial dataset",
+            "financial question",
+            "math driven financial"
+          ]
+        },
+        "declared_evaluation_breadth": 8
+      },
+      "coverage_ratio": 0.75,
+      "route_reason": "best existing match scores 0.845, but portfolio coverage is 75.0%",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "tabmwp",
+          "gsm8k",
+          "svamp"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "financial_numerical_qa"
+        ],
+        "adaptation_hooks": [
+          "difficulty_stratification",
+          "question_type_split",
+          "reasoning_trace_wrapper",
+          "table_representation_choice",
+          "variation_family_split"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "financial_numerical_qa"
+        ],
+        "construct_definition": {
+          "status": "AUTOMATIC_CONSTRUCT_CHECK_PENDING",
+          "task_families": [
+            "financial_numerical_qa"
+          ],
+          "uncovered_task_families": [
+            "financial_numerical_qa"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "static"
+          ],
+          "output_types": [
+            "short_answer"
+          ],
+          "capabilities": [],
+          "candidate_metrics": [
+            "answer_accuracy",
+            "task_accuracy"
+          ],
+          "evidence_terms": {
+            "task:math_reasoning": [
+              "math word problem",
+              "arithmetic reasoning"
+            ],
+            "task:math_word_problem": [
+              "math word problem"
+            ],
+            "task:tabular_math_reasoning": [
+              "input formats including text, tables",
+              "text, tables, and conversation"
+            ],
+            "uncovered_task:financial_numerical_qa": [
+              "financial problem",
+              "financial dataset",
+              "financial question",
+              "math driven financial"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "automatic_validation_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified semantic-judge audit by task family and difficulty",
+          "agreement check across independent automatic judge passes before scaling",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "math_reasoning",
+            "math_word_problem",
+            "tabular_math_reasoning"
+          ],
+          "task_benchmark_counts": {
+            "math_reasoning": 5
+          },
+          "declared_evaluation_breadth": 8,
+          "uncovered_task_families": [
+            "financial_numerical_qa"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "static"
+          ],
+          "output_types": [
+            "short_answer"
+          ],
+          "capabilities": [],
+          "suggested_metrics": [
+            "answer_accuracy",
+            "task_accuracy"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "tabmwp",
+          "gsm8k",
+          "svamp"
+        ],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [
+          "tabmwp",
+          "gsm8k",
+          "svamp"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 1.0
+      },
+      "primary_recall_at_1": 0.3333333333333333,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "AUTOMATIC_LITERATURE_CHECK_PENDING"
+    },
+    {
+      "case_id": "fresh3_005",
+      "source_arxiv_id": "2305.10601",
+      "source_title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2305.10601",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Tree of Thoughts: Deliberate Problem Solving with LM"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite_003/cases/fresh3_005.json",
+      "gold_evidence_sections": [
+        "Experiments / Game of 24",
+        "Experiments / Creative Writing",
+        "Experiments / Mini Crosswords"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "primary",
+          "evidence_section": "Game of 24",
+          "task_family": "math_reasoning",
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Creative Writing",
+          "task_family": "creative_writing",
+          "benchmark_name": "Creative Writing",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Mini Crosswords",
+          "task_family": "word_puzzle",
+          "benchmark_name": "5x5 Mini Crosswords",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "game_of_24"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "Creative Writing",
+        "5x5 Mini Crosswords"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "game_of_24",
+        "gsm8k",
+        "svamp",
+        "hotpotqa",
+        "toolbench",
+        "fever"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 3,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "game_of_24"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "rank": 1,
+          "score": 0.565,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2305.10601"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "math_reasoning"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [
+          "creative_writing",
+          "word_puzzle"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "generated_passage",
+          "puzzle_solution"
+        ],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "self_reflection"
+        ],
+        "suggested_metrics": [
+          "coherence_score",
+          "letter_accuracy",
+          "puzzle_success_rate",
+          "task_accuracy",
+          "word_accuracy"
+        ],
+        "evidence_terms": {
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:self_reflection": [
+            "self-evaluation"
+          ],
+          "evaluation:declared_breadth": [
+            "we show method_x obtains superior results on all three tasks by being general and flexible enough to support different levels of thoughts, different ways to generate and evaluate thoughts, and different search algorithms that adapt to the nature of different problems."
+          ],
+          "task:math_reasoning": [
+            "line of equation"
+          ],
+          "uncovered_task:creative_writing": [
+            "writing plan",
+            "paragraph of writing"
+          ],
+          "uncovered_task:word_puzzle": [
+            "lexical reasoning"
+          ]
+        },
+        "declared_evaluation_breadth": 3
+      },
+      "coverage_ratio": 0.333333,
+      "route_reason": "best existing match scores 0.565, but portfolio coverage is 33.3%",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "game_of_24"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "creative_writing",
+          "word_puzzle"
+        ],
+        "adaptation_hooks": [
+          "number_tuple_split",
+          "search_budget_control",
+          "solution_verifier"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "creative_writing",
+          "word_puzzle"
+        ],
+        "construct_definition": {
+          "status": "AUTOMATIC_CONSTRUCT_CHECK_PENDING",
+          "task_families": [
+            "creative_writing",
+            "word_puzzle"
+          ],
+          "uncovered_task_families": [
+            "creative_writing",
+            "word_puzzle"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "generated_passage",
+            "puzzle_solution"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "self_reflection"
+          ],
+          "candidate_metrics": [
+            "coherence_score",
+            "letter_accuracy",
+            "puzzle_success_rate",
+            "task_accuracy",
+            "word_accuracy"
+          ],
+          "evidence_terms": {
+            "task:math_reasoning": [
+              "line of equation"
+            ],
+            "uncovered_task:creative_writing": [
+              "writing plan",
+              "paragraph of writing"
+            ],
+            "uncovered_task:word_puzzle": [
+              "lexical reasoning"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "automatic_validation_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified semantic-judge audit by task family and difficulty",
+          "agreement check across independent automatic judge passes before scaling",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "math_reasoning"
+          ],
+          "task_benchmark_counts": {},
+          "declared_evaluation_breadth": 3,
+          "uncovered_task_families": [
+            "creative_writing",
+            "word_puzzle"
+          ],
+          "modalities": [
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "generated_passage",
+            "puzzle_solution"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "self_reflection"
+          ],
+          "suggested_metrics": [
+            "coherence_score",
+            "letter_accuracy",
+            "puzzle_success_rate",
+            "task_accuracy",
+            "word_accuracy"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "game_of_24"
+        ],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [
+          "game_of_24"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 1.0
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "AUTOMATIC_LITERATURE_CHECK_PENDING"
+    }
+  ]
+}

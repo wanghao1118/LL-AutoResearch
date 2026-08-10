@@ -1,0 +1,68 @@
+# Auto-Bench Plan: fresh3_004
+
+- Status: **AUTOMATIC_LITERATURE_CHECK_PENDING**
+- Route: **base_benchmark_adaptation**
+- Task-family coverage: **75.0%**
+- Decision: best existing match scores 0.845, but portfolio coverage is 75.0%
+
+## Matcher-Visible Paper Input
+
+### Introduction
+
+Numerical reasoning is a long-standing task in artificial intelligence. A surge of datasets has been proposed recently to benchmark deep-learning models' capabilities to perform numerical/arithmetic reasoning. Some widely used benchmarks are based on Math word problems (MWP) , where systems are supposed to answer math questions expressed with natural text. Besides MWP, some datasets also consider financial problems , where systems need to answer math-driven financial questions. [!t] figures/intro.001.pdf Comparison between Chain of Thoughts and METHOD_X. -2ex Prior work has studied how to train models from scratch or fine-tune models to generate intermediate steps to derive the final answer. Such methods are data-intensive, requiring a significant number of training examples with expert-annotated steps. Recently, have discovered that the large language models (LLMs) can be prompted with a few input-output exemplars to solve these tasks without any training or fine-tuning. In particular, when prompted with a few examples containing inputs, natural language `rationales', and outputs, LLMs can imitate the demonstrations to both generate rationales and answer these questions. CoT uses LLMs for both reasoning and computation, i.e. the language model not only needs to generate the mathematical expressions but also needs to perform the computation in each step. We argue that language models are not ideal for actually solving these mathematical expressions, because: 1) LLMs are very prone to arithmetic calculation errors, especially when dealing with large numbers; 2) LLMs cannot solve complex mathematical expressions like polynomial equations or even differential equations; 3) LLMs are highly inefficient at expressing iteration, especially when the number of iteration steps is large. In order to solve these issues, we propose program-of-thoughts (METHOD_X) prompting, which will delegate computation steps to an external language interpreter. In METHOD_X, LMs can express reasoning steps as Python programs, and the computation can be accomplished by a Python interpreter. We depict the difference between CoT and METHOD_X in . In the upper example, for CoT the iteration runs for 50 times, which leads to extremely low accuracy; Assuming each addition is correct with 90 chance, after 50 additions, the likelihood of a correct output is less than 1 . in the lower example, CoT cannot solve the cubic equation with language models and outputs a wrong answer. In contrast, in the upper example, METHOD_X can express the iteration process with a few lines of code, which can be executed on a Python interpreter to derive an accurate answer; and in the lower example, METHOD_X can convert the problem into a program that relies on `SymPy' library in Python to solve the complex equation. We evaluate METHOD_X prompting across five MWP datasets, [REDACTED_BENCHMARK], [REDACTED_BENCHMARK], [REDACTED_BENCHMARK], [REDACTED_BENCHMARK], [REDACTED_BENCHMARK]; and three financial datasets, [REDACTED_BENCHMARK], [REDACTED_BENCHMARK], and [REDACTED_BENCHMARK]. These datasets cover various input formats including text, tables, and conversation. We give an overview of the results in . Under the few-shot setting, the average gain over CoT is around 8 for the MWP datasets and 15 for the financial datasets. Under the zero-shot setting, the average gain over CoT is around 12 for the MWP datasets. Our METHOD_X+SC achieves the best-known results on all the evaluated MWP datasets and near best-known results on the financial datasets (excluding GPT-4 ). Finally, we conduct comprehensive ablation studies to understand the different components of METHOD_X. [!t] -6ex -6ex -4ex Few-shot (upper), Few-shot + SC (middle) and Zero-Shot (lower) Performance overview of Codex METHOD_X and Codex CoT across different datasets. -1ex
+
+### Method
+
+Preliminaries. In-context learning has been described in . Compared with fine-tuning, in-context learning (1) only takes a few annotations/demonstrations as a prompt, and (2) performs inference without training the model parameters. With in-context learning, LLMs receive the input-output exemplars as the prefix, followed by an input problem, and generate outputs imitating the exemplars. More recently, `chain of thoughts prompting' has been proposed as a specific type of in-context learning where the exemplar's output contains the `thought process' or rationale instead of just an output. This approach has been shown to elicit LLMs' strong reasoning capabilities on various kinds of tasks. METHOD_X. Besides natural language, programs can also be used to express our thought processes. By using semantically meaningful variable names, a program can also be a natural representation to convey human thoughts. For example, in the lower example in , we first create an unknown variable named interest rate. Then we bind `summation in two years with ... interest rate' to the variable sum in two years with XXX interest and write down the equation expressing their mathematical relations with interest rate. These equations are packaged into the `solve' function provided by `SymPy'. The program is executed with Python to solve the equations to derive the answer variable interest rate. Unlike CoT, METHOD_X relegates some computation to an external process (a Python interpreter). The LLMs are only responsible for expressing the `reasoning process' in the programming language. In contrast, CoT aims to use LLMs to perform both reasoning and computation. We argue that such an approach is more expressive and accurate in terms of numerical reasoning. The `METHOD_X' is different from generating equations directly, where the generation target would be solve . As observed by for CoT, directly generating such equations is challenging for LLMs. METHOD_X differs from equation generation in two aspects: (1) METHOD_X breaks down the equation into a multi-step `thought' process, and (2) METHOD_X binds semantic meanings to variables to help ground the model in language. We found that this sort of `thoughtful' process can elicit language models' reasoning capabilities and generate more accurate programs. We provide a detailed comparison in the experimental section. We show the proposed METHOD_X prompting method in under the few-shot and zero-shot settings. Under the few-shot setting, a few exemplars of (question, `METHOD_X') pairs will be prefixed as demonstrations to teach the LLM how to generate `thoughtful' programs. Under the zero-shot setting, the prompt only contains an instruction without any exemplar demonstration. Unlike zero-shot CoT , which requires an extra step to extract the answer from the `chain of thoughts', zero-shot METHOD_X can return the answer straightforwardly without extra steps. figures/model.001.jpeg Left: Few-shot METHOD_X prompting, Right: Zero-shot METHOD_X prompting. -2ex In zero-shot METHOD_X, a caveat is that LLM can fall back to generating a reasoning chain in comments rather than in the program. Therefore, we propose to suppress ` ' token logits to encourage it to generate programs. METHOD_X as an Intermediate Step. For certain problems requiring additional textual reasoning, we propose to utilize METHOD_X to tackle the computation part. The program generated by METHOD_X can be executed to provide intermediate result, which is further combined with the question to derive the final answer with CoT. We depict the whole process in . During demonstration, we present LLMs with examples to teach it predict whether to an additional CoT reasoning needs to be used. If LLM outputs `keep prompting' in the end, we will adopt the execution results from METHOD_X as input to further prompt LLMs to derive the answer through CoT. figures/chainer.001.jpeg METHOD_X combined with CoT for multi-stage reasoning. -2ex For instance, in the left example in , the program will be executed to return a float number `ans=2.05', which means that after 2.05 hours the two trains will meet. However, directly adding 2.05 to 11 AM does not make sense because 2.05 hour needs to be translated to minutes to obtain the standard HH:MM time format to make it aligned with provided option in the multi-choice questions. Please note that this prompting strategy is only needed for the [REDACTED_BENCHMARK] because the other datasets can all be solved by METHOD_X-only prompting.
+
+## Inferred Evaluation Profile
+
+- Tasks: math_reasoning, math_word_problem, tabular_math_reasoning
+- Explicit benchmark counts: {'math_reasoning': 5}
+- Declared total evaluation breadth: 8
+- Uncovered tasks: financial_numerical_qa
+- Modalities: text
+- Interactions: static
+- Outputs: short_answer
+- Capabilities: none
+
+## Selected Benchmark Portfolio
+
+- **TabMWP** (`tabmwp`): score=0.845; role=core_task_coverage; source=https://arxiv.org/abs/2209.14610
+- **GSM8K** (`gsm8k`): score=0.638; role=declared_suite_breadth:math_reasoning; source=https://arxiv.org/abs/2110.14168
+- **SVAMP** (`svamp`): score=0.638; role=declared_suite_breadth:math_word_problem; source=https://arxiv.org/abs/2103.07191
+
+## Top Candidates
+
+1. **TabMWP** (`tabmwp`) — 0.845; tasks=['math_reasoning', 'math_word_problem', 'tabular_math_reasoning']
+2. **GSM8K** (`gsm8k`) — 0.638; tasks=['math_reasoning', 'math_word_problem']
+3. **SVAMP** (`svamp`) — 0.638; tasks=['math_reasoning', 'math_word_problem']
+4. **MMLU** (`mmlu`) — 0.330; tasks=[]
+5. **RealToxicityPrompts** (`realtoxicityprompts`) — 0.280; tasks=[]
+6. **HotpotQA** (`hotpotqa`) — 0.260; tasks=[]
+7. **TriviaQA** (`triviaqa`) — 0.260; tasks=[]
+8. **FEVER** (`fever`) — 0.200; tasks=[]
+9. **ToolBench** (`toolbench`) — 0.145; tasks=[]
+10. **ALFWorld** (`alfworld`) — 0.120; tasks=[]
+
+## Online Literature Leads
+
+- Online search was disabled or returned no relevant arXiv metadata hits.
+
+## Catalog Admission Proposals
+
+- No benchmark-like online hit met the proposal threshold.
+
+## Adaptation and Synthesis
+
+- Missing task families: ['financial_numerical_qa']
+- Synthesis required: True
+- Official and adapted metrics must be reported separately.
+- Test examples stay frozen and never seed synthetic records.
+
+## Automatic Literature Validation
+
+Current status: **AUTOMATIC_LITERATURE_CHECK_PENDING**.
+- Existing-paper blind test: after matching, reveal the source paper and compare its actual benchmarks with Selected and Top-6 using MATCH / PARTIAL / MISMATCH.
+- The source comparison runs in a separate evaluator process; the matcher never receives paper identity, experiment sections, or benchmark labels.
+- Every mismatch, missing benchmark, extra benchmark, catalog gap, and route error becomes machine-readable optimization feedback; no user submission is required.

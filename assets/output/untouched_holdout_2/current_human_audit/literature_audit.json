@@ -1,0 +1,721 @@
+{
+  "schema_version": "2.0",
+  "audit_id": "auto_bench_current_holdout_002_literature_audit_round_2_holdout_002",
+  "iteration": 2,
+  "submission_scope_snapshot": [
+    {
+      "case_id": "holdout_002",
+      "selected_benchmark_ids": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "top_6_benchmark_ids": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "protocol": {
+    "matcher_input": [
+      "introduction",
+      "method",
+      "constraints"
+    ],
+    "paper_identity_visible_to_matcher": false,
+    "paper_benchmarks_visible_to_matcher": false,
+    "source_revealed_after_matching": true,
+    "human_task": "verify the source paper benchmark list and compare it with Auto-Bench recommendations",
+    "carried_source_and_gold_checks": 1,
+    "route_context_is_informational": true,
+    "full_evaluation_case_count": 1,
+    "audit_case_count": 1,
+    "changed_case_filter": [
+      "holdout_002"
+    ]
+  },
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.3333333333333333,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 1.0,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_002",
+      "source_arxiv_id": "2305.11738",
+      "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+      "source_url": "https://arxiv.org/abs/2305.11738",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "CRITIC: Correcting with Tool-Interactive Critiquing"
+        ]
+      },
+      "matcher_visible_input": "assets/input/untouched_holdout_2_cases/holdout_002.json",
+      "gold_evidence_sections": [
+        "Free-form Question Answering",
+        "Mathematical Program Synthesis",
+        "Toxicity Reduction"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        },
+        {
+          "benchmark_name": "AmbigNQ",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_id": "ambignq",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        },
+        {
+          "benchmark_name": "TriviaQA",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_id": "triviaqa",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "role": "primary",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_name": "SVAMP",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_id": "svamp",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 5
+        },
+        {
+          "benchmark_name": "TabMWP",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_id": "tabmwp",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 7
+        },
+        {
+          "benchmark_name": "RealToxicityPrompts",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Toxicity Reduction",
+          "benchmark_id": "realtoxicityprompts",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "gsm8k"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [],
+      "admitted_gold": [
+        {
+          "benchmark_name": "AmbigNQ",
+          "benchmark_id": "ambignq"
+        },
+        {
+          "benchmark_name": "TriviaQA",
+          "benchmark_id": "triviaqa"
+        },
+        {
+          "benchmark_name": "SVAMP",
+          "benchmark_id": "svamp"
+        },
+        {
+          "benchmark_name": "TabMWP",
+          "benchmark_id": "tabmwp"
+        },
+        {
+          "benchmark_name": "RealToxicityPrompts",
+          "benchmark_id": "realtoxicityprompts"
+        }
+      ],
+      "top_6": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "explicit_suite_cardinality:math_reasoning",
+          "paper_role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "ambignq",
+          "benchmark_name": "AmbigNQ",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "admitted_after_freeze"
+        }
+      ],
+      "selected": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 1,
+          "score": 0.516667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/1705.03551"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 2,
+          "score": 0.396667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2009.11462"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 3,
+          "score": 0.371667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2110.14168"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "score": 0.466667,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 5,
+          "score": 0.371667,
+          "selection_role": "explicit_suite_cardinality:math_reasoning",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2103.07191"
+        },
+        {
+          "benchmark_id": "ambignq",
+          "benchmark_name": "AmbigNQ",
+          "rank": 6,
+          "score": 0.516667,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2004.10645"
+        },
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "rank": 7,
+          "score": 0.471667,
+          "selection_role": "explicit_suite_cardinality:math_reasoning",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2209.14610"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "knowledge_intensive_qa",
+          "math_reasoning",
+          "toxicity_reduction"
+        ],
+        "task_benchmark_counts": {
+          "knowledge_intensive_qa": 3,
+          "math_reasoning": 3
+        },
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "safe_text_continuation",
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "fluency",
+          "generation_diversity",
+          "token_f1",
+          "toxicity_probability"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "verify"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:knowledge_intensive_qa": [
+            "question answering"
+          ],
+          "task:math_reasoning": [
+            "mathematical reasoning",
+            "mathematical program synthesis"
+          ],
+          "task:toxicity_reduction": [
+            "toxicity reduction",
+            "toxic content"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.585",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "gsm8k",
+          "hotpotqa",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "ambiguity_stratification",
+          "answer_alias_normalization",
+          "clarification_wrapper",
+          "classifier_snapshot",
+          "continuation_wrapper",
+          "difficulty_stratification",
+          "evidence_retrieval_wrapper",
+          "multiple_answer_normalization",
+          "open_domain_split",
+          "question_only_protocol",
+          "question_type_split",
+          "reasoning_trace_wrapper",
+          "supporting_fact_audit",
+          "table_representation_choice",
+          "toxicity_band_split",
+          "variation_family_split",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "safe_text_continuation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "exact_match",
+            "fluency",
+            "generation_diversity",
+            "token_f1",
+            "toxicity_probability"
+          ],
+          "evidence_terms": {
+            "task:knowledge_intensive_qa": [
+              "question answering"
+            ],
+            "task:math_reasoning": [
+              "mathematical reasoning",
+              "mathematical program synthesis"
+            ],
+            "task:toxicity_reduction": [
+              "toxicity reduction",
+              "toxic content"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "knowledge_intensive_qa",
+            "math_reasoning",
+            "toxicity_reduction"
+          ],
+          "task_benchmark_counts": {
+            "knowledge_intensive_qa": 3,
+            "math_reasoning": 3
+          },
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "safe_text_continuation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "exact_match",
+            "fluency",
+            "generation_diversity",
+            "token_f1",
+            "toxicity_probability"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "gsm8k",
+          "hotpotqa"
+        ],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [
+          "gsm8k",
+          "hotpotqa"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "svamp",
+          "ambignq"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 1.0
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.5,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.3333333333333333,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "visible_input": {
+        "introduction": "Introduction. The remarkable progress of large language models (LLMs), such as ChatGPT, has been amply demonstrated across an array of language tasks . Their potential to augment human intellect continues to burgeon . However, these models are not without their shortcomings. They occasionally exhibit undesirable behaviors, such as hallucination (generating inaccurate or non-truthful responses), faulty code, or even toxic content . Such inconsistent behavior hampers the trust in these models and poses hurdles to their real-world applications . Traditional approaches to mitigate these limitations typically employ additional training, involving behavior cloning, reinforcement learning, and self-training . However, these methods are constrained by the requirement of large-scale human annotation or data construction, which is often resource-intensive and challenging to obtain. To address these challenges, we present METHOD_X (METHOD_X), a unified framework that empowers black-box LLMs to verify and rectify their own output through human-like interaction with external tools. Drawing inspiration from human cognition and critical thinking , METHOD_X offers a versatile framework that supports precise, interpretable verification and correction of generated text. As depicted in Figure , METHOD_X interacts with external tools like search engines and code interpreters to verify the desired aspects of an initial output and subsequently amends the output based on the critiques from the verification. This verify-then-correct process can be repeated to ensure constant output enhancement. Contrary to methods that rely on expensive annotations or task-specific training, METHOD_X utilizes in-context learning with tool interaction to proficiently identify and rectify unsatisfactory behaviors using the LLM itself. This unique approach makes METHOD_X both practical and accessible, requiring only access to text-to-text tool APIs and a few-shot demonstration. [t] images/framework.pdf The METHOD_X framework consists of two steps: (1) verifying the output by interacting with external tools to generate critiques and (2) correcting the output based on the received critiques. We can iterative such verify-then-correct process to enable continuous improvements. We evaluate our approach on a range of LLMs, including ChatGPT, Text-Davinci-003, and open-source LLaMA-2 variants (7B, 13B, and 70B), spanning three distinct tasks: free-form question answering, mathematical program synthesis, and toxicity reduction. Our findings demonstrate that METHOD_X consistently surpasses prior techniques, obviating the need for supplementary data or training. For example, when applied to ChatGPT, METHOD_X attains 7.7 F1 enhancements across three QA tasks, 7.0 absolute gains on three mathematical reasoning tasks, and a 79.2 reduction in toxicity probability. Interestingly, our results underscore the unreliability of all tested LLMs, when it comes to validating their own results. We observe that exclusive reliance on self-correction without external feedback may yield modest improvements or even deteriorate performance. Our primary contributions include: (1) Proposing the unified METHOD_X framework by integrating various tools and diverse tasks, with a series of new prompts that enable frozen LLMs to verify and iteratively self-correct their output through interaction with external tools. (2) Conducting comprehensive experiments across distinct tasks that demonstrate significant performance improvements offered by METHOD_X across different base LLMs.",
+        "method": "METHOD_X: Correcting with Tool-Interactive Critiquing. We can get an overview of the METHOD_X method through Figure . Given any input, LLMs first generate an initial output based on parametric knowledge, then interact with appropriate external tools (possibly multi-round) through text-to-text APIs to verify the output. The critiques generated by the verification step are concatenated with the initial output, and serve as feedback to allow LLMs to correct the output. We can iterate the cycle of ``Verify Correct Verify'' to continuously improve the output until a specific stopping condition is met. See Algorithm for a summary of METHOD_X method, and the following sections for details. In-context Learning for LLMs. METHOD_X utilizes the emergent abilities of chain-of-thought reasoning and few-shot in-context learning of LLMs. Few-shot in-context learning is a powerful approach that exploits the capabilities of LLMs to solve a task given a small set of input-output examples at test time . The few-shot setting typically involves only a handful of examples ( ). To accomplish this task, the examples are combined into a prompt , which concatenates the input and output pairs as follows: . During inference, a test instance is added to the prompt, and the model is then tasked with completing the sequence to generate an output . Interaction with External Tools. To enable LLMs to use tools, we first construct various external tools such as search engines, code interpreters, and various APIs into text-to-text functions, then interleave the LLMs generations with tool use in in-context demonstrations. As shown in Figure , the input for a search engine can be a query generated by LLMs, which returns a parsed search result, whereas the input for a code interpreter is a program, which returns execution information and the final execution result. This free format allows for human-like verify-then-correct trajectories, facilitating the construction of prompts intuitively and concisely while having strong interpretability and trustworthiness . Verification with Tool-Interaction. Give model and input , the initial answer is generated with prompt by , where indicates concatenation. Given previous output , LLMs interact with external tools to criticize the and produce critiques . If the process involves API calls, we directly concatenate the API call results with the model-generated query to construct the . The task-specific critiques can be used to detail the attributes of the output we expect to evaluate, such as truthfulness, feasibility, or safety. See for detailed experiments using METHOD_X for hallucination detection. For different inputs, we can use task-dependent, heuristically selected, or automatically selected appropriate tools for verification. We can implement automatic tool selection with in-context learning, allowing different tools for different input-output pairs. In our implementation, we pre-specify tools for different tasks to facilitate evaluation and experimentation. For example, as shown in Figure , the tool used for the QA task is Google, enabling LLMs to verify the truthfulness of output by analyzing and interacting with Google in an interleaved manner. Correction with Critiques. LLMs can generate an improved answer conditioned on input , previous output , and critiques from verification: . Critiques play a crucial role in the correction process as they identify errors, offer actionable suggestions, or provide credible groundings through interaction with external tools, thus guiding a new generation to avoid similar mistakes. Motivated by the human process of iterative drafts refinement, we can iterate the process of verify-then-correct until specific stopping criteria are met, such as satisfying critiques from verification, reaching the maximum iterations , or receiving environmental feedback. This method facilitates continuous output improvement by systematically and sample-efficiently verifying and correcting errors resulting from interactions with the world."
+      },
+      "carried_review_evidence": {
+        "source_verified": true,
+        "actual_benchmarks_verified": true,
+        "reviewer_id": "yzb",
+        "from_iteration": 1,
+        "scope_match": true
+      }
+    }
+  ],
+  "display_label": "Auto-Bench Current Holdout 002 Literature Audit — Round 2",
+  "submission_filename": "literature_audit_submission_holdout_2_round_2.json",
+  "iteration_comparison": {
+    "schema_version": "1.0",
+    "comparison": "literature_audit_round_1_to_round_2",
+    "previous_iteration": 1,
+    "current_iteration": 2,
+    "interpretation": "Round 2 is a feedback-driven regression on the same papers, not a new untouched holdout. A fresh-paper audit is still needed for an unbiased generalization estimate.",
+    "aggregate": {
+      "previous_human_status": "LITERATURE_AUDIT_PARTIAL",
+      "before": {
+        "mean_primary_recall_at_5": 1.0,
+        "mean_primary_recall_at_6": 1.0,
+        "mean_primary_mrr": 1.0,
+        "mean_selected_modeled_recall": 1.0,
+        "mean_selected_actual_precision": 0.6666666666666666
+      },
+      "after": {
+        "mean_primary_recall_at_5": 1.0,
+        "mean_primary_recall_at_6": 1.0,
+        "mean_primary_mrr": 0.3333333333333333,
+        "mean_selected_modeled_recall": 1.0,
+        "mean_selected_actual_precision": 1.0
+      },
+      "delta": {
+        "mean_primary_recall_at_5": 0.0,
+        "mean_primary_recall_at_6": 0.0,
+        "mean_primary_mrr": -0.6666666666666667,
+        "mean_selected_modeled_recall": 0.0,
+        "mean_selected_actual_precision": 0.33333333333333337
+      }
+    },
+    "cases": [
+      {
+        "case_id": "holdout_002",
+        "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+        "source_url": "https://arxiv.org/abs/2305.11738",
+        "previous_human_decision": "PARTIAL",
+        "previous_human_notes": "有所差距",
+        "before": {
+          "selected": [
+            "hotpotqa",
+            "gsm8k",
+            "toolbench"
+          ],
+          "modeled_gold": [
+            "hotpotqa",
+            "gsm8k"
+          ],
+          "selected_matches": [
+            "hotpotqa",
+            "gsm8k"
+          ],
+          "selected_missing": [],
+          "selected_extras": [
+            "toolbench"
+          ],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 0.6666666666666666,
+          "rank_by_modeled_gold": {
+            "hotpotqa": 1,
+            "gsm8k": 2
+          }
+        },
+        "after": {
+          "selected": [
+            "triviaqa",
+            "realtoxicityprompts",
+            "gsm8k",
+            "hotpotqa",
+            "svamp",
+            "ambignq",
+            "tabmwp"
+          ],
+          "modeled_gold": [
+            "hotpotqa",
+            "gsm8k",
+            "ambignq",
+            "triviaqa",
+            "svamp",
+            "tabmwp",
+            "realtoxicityprompts"
+          ],
+          "selected_matches": [
+            "triviaqa",
+            "realtoxicityprompts",
+            "gsm8k",
+            "hotpotqa",
+            "svamp",
+            "ambignq",
+            "tabmwp"
+          ],
+          "selected_missing": [],
+          "selected_extras": [],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 1.0,
+          "rank_by_modeled_gold": {
+            "hotpotqa": 4,
+            "gsm8k": 3,
+            "ambignq": 6,
+            "triviaqa": 1,
+            "svamp": 5,
+            "tabmwp": null,
+            "realtoxicityprompts": 2
+          }
+        },
+        "delta": {
+          "selected_modeled_recall": 0.0,
+          "selected_actual_precision": 0.33333333333333337
+        },
+        "newly_selected": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "removed_selected": [
+          "toolbench"
+        ],
+        "previous_unmodeled_gold": [
+          "AmbigNQ",
+          "TriviaQA",
+          "SVAMP",
+          "TabMWP",
+          "RealToxicityPrompts"
+        ],
+        "resolved_unmodeled_gold": [
+          "AmbigNQ",
+          "TriviaQA",
+          "SVAMP",
+          "TabMWP",
+          "RealToxicityPrompts"
+        ],
+        "unmodeled_gold": []
+      }
+    ]
+  }
+}

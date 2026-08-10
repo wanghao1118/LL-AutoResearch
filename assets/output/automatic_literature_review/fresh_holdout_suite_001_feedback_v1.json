@@ -1,0 +1,480 @@
+{
+  "schema_version": "1.0",
+  "reviewer": "AUTO_LITERATURE_EVALUATOR",
+  "validation_mode": "post_match_source_comparison",
+  "human_submission_required": false,
+  "evidence_class": "feedback_regression",
+  "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+  "case_count": 5,
+  "decision_counts": {
+    "MATCH": 3,
+    "PARTIAL": 2,
+    "MISMATCH": 0
+  },
+  "all_source_evidence_complete": true,
+  "all_blind_checks_passed": true,
+  "aggregate": {
+    "case_count": 5,
+    "mean_primary_recall_at_5": 0.9,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_primary_mrr": 0.65,
+    "mean_selected_modeled_recall": 0.65,
+    "mean_selected_actual_precision": 0.4666666666666667,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "fresh_001",
+      "source_title": "Self-Refine: Iterative Refinement with Self-Feedback",
+      "source_url": "https://arxiv.org/abs/2303.17651",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Method"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Evaluation",
+        "Appendix: Task Details"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "FED",
+          "evidence_section": "Dialogue Response Generation / Evaluation",
+          "role": "unmodeled",
+          "task_family": "dialogue_response_generation"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "PIE",
+          "evidence_section": "Code Optimization",
+          "role": "unmodeled",
+          "task_family": "code_optimization"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Project CodeNet",
+          "evidence_section": "Code Readability / Experiments",
+          "role": "unmodeled",
+          "task_family": "code_readability"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "evidence_section": "Math Reasoning",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Sentiment Reversal review-passage set",
+          "evidence_section": "Sentiment Reversal",
+          "role": "unmodeled",
+          "task_family": "sentiment_reversal"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Acronym Generation paper-curated set",
+          "evidence_section": "Acronym Generation",
+          "role": "unmodeled",
+          "task_family": "acronym_generation"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "CommonGen-Hard",
+          "evidence_section": "Constrained Generation",
+          "role": "unmodeled",
+          "task_family": "constrained_generation"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [
+        "gsm8k"
+      ],
+      "extras": [],
+      "unmodeled": [
+        "FED",
+        "PIE",
+        "Project CodeNet",
+        "Sentiment Reversal review-passage set",
+        "Acronym Generation paper-curated set",
+        "CommonGen-Hard"
+      ],
+      "actual_unmodeled_task_families": [
+        "acronym_generation",
+        "code_optimization",
+        "code_readability",
+        "constrained_generation",
+        "dialogue_response_generation",
+        "sentiment_reversal"
+      ],
+      "inferred_uncovered_task_families": [
+        "code_optimization",
+        "code_readability",
+        "dialogue_response_generation"
+      ],
+      "matched_unmodeled_task_families": [
+        "code_optimization",
+        "code_readability",
+        "dialogue_response_generation"
+      ],
+      "missing_unmodeled_task_families": [
+        "acronym_generation",
+        "constrained_generation",
+        "sentiment_reversal"
+      ],
+      "unmodeled_task_family_recall": 0.5,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "route_correct": true,
+      "selected_modeled_recall": 0.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP",
+        "UNMODELED_TASK_INFERENCE_GAP",
+        "PORTFOLIO_RECALL_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog",
+        "expand task-family inference for paper benchmarks outside the current catalog",
+        "improve task, modality, environment, or suite-breadth inference for missed paper choices"
+      ]
+    },
+    {
+      "case_id": "fresh_002",
+      "source_title": "Graph of Thoughts: Solving Elaborate Problems with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2308.09687",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Graph of Thoughts",
+          "Architecture"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Example Use Cases",
+        "Evaluation"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Sorting task suite",
+          "evidence_section": "Example Use Cases / Sorting",
+          "role": "unmodeled",
+          "task_family": "sorting"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Set Intersection task suite",
+          "evidence_section": "Example Use Cases / Set Operations",
+          "role": "unmodeled",
+          "task_family": "set_intersection"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Keyword Counting task suite",
+          "evidence_section": "Example Use Cases / Keyword Counting",
+          "role": "unmodeled",
+          "task_family": "keyword_counting"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Document Merging task suite",
+          "evidence_section": "Example Use Cases / Document Merging",
+          "role": "unmodeled",
+          "task_family": "document_merging"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "Sorting task suite",
+        "Set Intersection task suite",
+        "Keyword Counting task suite",
+        "Document Merging task suite"
+      ],
+      "actual_unmodeled_task_families": [
+        "document_merging",
+        "keyword_counting",
+        "set_intersection",
+        "sorting"
+      ],
+      "inferred_uncovered_task_families": [
+        "document_merging",
+        "keyword_counting",
+        "set_intersection",
+        "sorting"
+      ],
+      "matched_unmodeled_task_families": [
+        "document_merging",
+        "keyword_counting",
+        "set_intersection",
+        "sorting"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh_003",
+      "source_title": "ExpeL: LLM Agents Are Experiential Learners",
+      "source_url": "https://arxiv.org/abs/2308.10144",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "ExpeL: An Experiential Learning Agent"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Experimental Setup",
+        "Transfer Learning"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [
+        "alfworld",
+        "scienceworld",
+        "webarena"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "evidence_section": "Experiments / Experimental Setup",
+          "role": "primary",
+          "task_family": "knowledge_intensive_qa"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "evidence_section": "Experiments / Experimental Setup",
+          "role": "primary",
+          "task_family": "embodied_household"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "evidence_section": "Experiments / Experimental Setup",
+          "role": "primary",
+          "task_family": "web_navigation"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "evidence_section": "Experiments / Experimental Setup and Transfer Learning",
+          "role": "primary",
+          "task_family": "fact_verification"
+        }
+      ],
+      "selected_matches": [
+        "alfworld"
+      ],
+      "missing": [
+        "hotpotqa",
+        "webshop",
+        "fever"
+      ],
+      "extras": [
+        "scienceworld",
+        "webarena"
+      ],
+      "unmodeled": [],
+      "actual_unmodeled_task_families": [],
+      "inferred_uncovered_task_families": [],
+      "matched_unmodeled_task_families": [],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "selected_modeled_recall": 0.25,
+      "selected_actual_precision": 0.3333333333333333,
+      "error_types": [
+        "PORTFOLIO_RECALL_GAP",
+        "PORTFOLIO_PRECISION_GAP"
+      ],
+      "optimization_feedback": [
+        "improve task, modality, environment, or suite-breadth inference for missed paper choices",
+        "tighten specialization and environment gates for paper-external selections"
+      ]
+    },
+    {
+      "case_id": "fresh_004",
+      "source_title": "Reasoning with Language Model is Planning with World Model",
+      "source_url": "https://arxiv.org/abs/2305.14992",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Reasoning via Planning"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Plan Generation",
+        "Math Reasoning",
+        "Logical Reasoning"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "gsm8k"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Blocksworld",
+          "evidence_section": "Plan Generation",
+          "role": "unmodeled",
+          "task_family": "classical_planning"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "evidence_section": "Math Reasoning",
+          "role": "primary",
+          "task_family": "math_word_problem"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "PrOntoQA",
+          "evidence_section": "Logical Reasoning",
+          "role": "unmodeled",
+          "task_family": "logical_reasoning"
+        }
+      ],
+      "selected_matches": [
+        "gsm8k"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "Blocksworld",
+        "PrOntoQA"
+      ],
+      "actual_unmodeled_task_families": [
+        "classical_planning",
+        "logical_reasoning"
+      ],
+      "inferred_uncovered_task_families": [
+        "classical_planning",
+        "logical_reasoning"
+      ],
+      "matched_unmodeled_task_families": [
+        "classical_planning",
+        "logical_reasoning"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh_005",
+      "source_title": "Chameleon: Plug-and-Play Compositional Reasoning with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2304.09842",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "General Framework",
+          "Module Inventory",
+          "Applications"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Applications of Chameleon",
+        "Science Question Answering",
+        "Tabular Mathematical Reasoning",
+        "Experiments"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "tabmwp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "ScienceQA",
+          "evidence_section": "Applications / Science Question Answering",
+          "role": "unmodeled",
+          "task_family": "multimodal_science_qa"
+        },
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "evidence_section": "Applications / Tabular Mathematical Reasoning",
+          "role": "primary",
+          "task_family": "tabular_math_reasoning"
+        }
+      ],
+      "selected_matches": [
+        "tabmwp"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "ScienceQA"
+      ],
+      "actual_unmodeled_task_families": [
+        "multimodal_science_qa"
+      ],
+      "inferred_uncovered_task_families": [
+        "multimodal_science_qa"
+      ],
+      "matched_unmodeled_task_families": [
+        "multimodal_science_qa"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    }
+  ]
+}

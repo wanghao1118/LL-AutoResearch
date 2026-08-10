@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "reviewer_slots": [
+    "REVIEWER_1",
+    "REVIEWER_2"
+  ],
+  "pairs": [
+    {
+      "case_id": "case_001",
+      "benchmark_id": "webarena",
+      "route": "direct_portfolio",
+      "source_plan": "assets/output/end_to_end_demo/direct/benchmark_plan.json"
+    },
+    {
+      "case_id": "case_001",
+      "benchmark_id": "alfworld",
+      "route": "direct_portfolio",
+      "source_plan": "assets/output/end_to_end_demo/direct/benchmark_plan.json"
+    },
+    {
+      "case_id": "case_001",
+      "benchmark_id": "fever",
+      "route": "direct_portfolio",
+      "source_plan": "assets/output/end_to_end_demo/direct/benchmark_plan.json"
+    },
+    {
+      "case_id": "case_001",
+      "benchmark_id": "hotpotqa",
+      "route": "direct_portfolio",
+      "source_plan": "assets/output/end_to_end_demo/direct/benchmark_plan.json"
+    },
+    {
+      "case_id": "case_001",
+      "benchmark_id": "visualwebarena",
+      "route": "direct_portfolio",
+      "source_plan": "assets/output/end_to_end_demo/direct/benchmark_plan.json"
+    },
+    {
+      "case_id": "case_001",
+      "benchmark_id": "webshop",
+      "route": "direct_portfolio",
+      "source_plan": "assets/output/end_to_end_demo/direct/benchmark_plan.json"
+    }
+  ]
+}

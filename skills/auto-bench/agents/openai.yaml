@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auto-Bench"
+  short_description: "从论文方法自动设计并核对 Benchmark 组合"
+  default_prompt: "Use $auto-bench to derive a benchmark portfolio, metrics, and validation route from a paper’s Introduction and Method."

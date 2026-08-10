@@ -1,0 +1,13 @@
+case_id,benchmark_id,reviewer_slot,reviewer_id,construct_alignment,task_representativeness,metric_validity,data_quality,leakage_control,execution_feasibility,provenance_confirmed,independence_attested,decision,notes
+holdout_001,webarena,REVIEWER_1,,,,,,,,,,,
+holdout_001,webarena,REVIEWER_2,,,,,,,,,,,
+holdout_001,hotpotqa,REVIEWER_1,,,,,,,,,,,
+holdout_001,hotpotqa,REVIEWER_2,,,,,,,,,,,
+holdout_001,humaneval,REVIEWER_1,,,,,,,,,,,
+holdout_001,humaneval,REVIEWER_2,,,,,,,,,,,
+holdout_001,mind2web,REVIEWER_1,,,,,,,,,,,
+holdout_001,mind2web,REVIEWER_2,,,,,,,,,,,
+holdout_001,webshop,REVIEWER_1,,,,,,,,,,,
+holdout_001,webshop,REVIEWER_2,,,,,,,,,,,
+holdout_001,mbpp,REVIEWER_1,,,,,,,,,,,
+holdout_001,mbpp,REVIEWER_2,,,,,,,,,,,

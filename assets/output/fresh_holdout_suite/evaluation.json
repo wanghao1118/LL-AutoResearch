@@ -1,0 +1,1898 @@
+{
+  "schema_version": "1.0",
+  "verdict": "NEEDS_ITERATION",
+  "thresholds": {
+    "minimum_cases": 5,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_selected_modeled_recall": 0.85,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 5,
+    "mean_primary_recall_at_5": 0.5,
+    "mean_primary_recall_at_6": 0.5,
+    "mean_primary_mrr": 0.31869565217391305,
+    "mean_selected_modeled_recall": 0.25,
+    "mean_selected_actual_precision": 0.06666666666666667,
+    "route_accuracy": 0.2,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "fresh_001",
+      "source_arxiv_id": "2303.17651",
+      "source_title": "Self-Refine: Iterative Refinement with Self-Feedback",
+      "source_url": "https://arxiv.org/abs/2303.17651",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Method"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite/cases/fresh_001.json",
+      "gold_evidence_sections": [
+        "Evaluation",
+        "Appendix: Task Details"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "unmodeled",
+          "evidence_section": "Dialogue Response Generation / Evaluation",
+          "benchmark_name": "FED",
+          "task_family": "dialogue_response_generation",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Code Optimization",
+          "benchmark_name": "PIE",
+          "task_family": "code_optimization",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Code Readability / Experiments",
+          "benchmark_name": "Project CodeNet",
+          "task_family": "code_readability",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Math Reasoning",
+          "benchmark_id": "gsm8k",
+          "task_family": "math_reasoning",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 20
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Sentiment Reversal",
+          "benchmark_name": "Sentiment Reversal review-passage set",
+          "task_family": "sentiment_reversal",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Acronym Generation",
+          "benchmark_name": "Acronym Generation paper-curated set",
+          "task_family": "acronym_generation",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Constrained Generation",
+          "benchmark_name": "CommonGen-Hard",
+          "task_family": "constrained_generation",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "gsm8k"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "FED",
+        "PIE",
+        "Project CodeNet",
+        "Sentiment Reversal review-passage set",
+        "Acronym Generation paper-curated set",
+        "CommonGen-Hard"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "humaneval",
+        "mbpp",
+        "humanevalfix",
+        "mmlu",
+        "realtoxicityprompts",
+        "swe_bench"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mmlu",
+          "benchmark_name": "MMLU",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "humaneval",
+        "mbpp",
+        "humanevalfix"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 1,
+          "score": 0.853333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 2,
+          "score": 0.853333,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2108.07732"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 3,
+          "score": 0.75,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2308.07124"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_generation"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "static"
+        ],
+        "output_types": [
+          "function_implementation"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ],
+        "evidence_terms": {
+          "capability:tool_use": [
+            "action"
+          ],
+          "task:code_generation": [
+            "code generation"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.750",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "humaneval",
+          "mbpp",
+          "humanevalfix"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "bug_type_stratification",
+          "difficulty_rebalancing",
+          "feedback_wrapper",
+          "hidden_unit_tests",
+          "iterative_feedback_wrapper",
+          "language_port"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "static"
+          ],
+          "output_types": [
+            "function_implementation"
+          ],
+          "capabilities": [
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ],
+          "evidence_terms": {
+            "task:code_generation": [
+              "code generation"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_generation"
+          ],
+          "task_benchmark_counts": {},
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "static"
+          ],
+          "output_types": [
+            "function_implementation"
+          ],
+          "capabilities": [
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [
+          "gsm8k"
+        ],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "humaneval",
+          "mbpp",
+          "humanevalfix"
+        ],
+        "top_6_primary_matches": [],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [
+          "gsm8k"
+        ],
+        "selected_actual_precision": 0.0
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.0,
+      "primary_recall_at_5": 0.0,
+      "primary_recall_at_6": 0.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.05,
+      "selected_primary_recall": 0.0,
+      "selected_modeled_recall": 0.0,
+      "route": "direct_portfolio",
+      "expected_route": "new_benchmark_synthesis",
+      "expected_route_at_freeze": "new_benchmark_synthesis",
+      "route_correct": false,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "fresh_002",
+      "source_arxiv_id": "2308.09687",
+      "source_title": "Graph of Thoughts: Solving Elaborate Problems with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2308.09687",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Graph of Thoughts",
+          "Architecture"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite/cases/fresh_002.json",
+      "gold_evidence_sections": [
+        "Example Use Cases",
+        "Evaluation"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "unmodeled",
+          "evidence_section": "Example Use Cases / Sorting",
+          "benchmark_name": "Sorting task suite",
+          "task_family": "sorting",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Example Use Cases / Set Operations",
+          "benchmark_name": "Set Intersection task suite",
+          "task_family": "set_intersection",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Example Use Cases / Keyword Counting",
+          "benchmark_name": "Keyword Counting task suite",
+          "task_family": "keyword_counting",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Example Use Cases / Document Merging",
+          "benchmark_name": "Document Merging task suite",
+          "task_family": "document_merging",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "Sorting task suite",
+        "Set Intersection task suite",
+        "Keyword Counting task suite",
+        "Document Merging task suite"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "swe_bench",
+        "agentbench",
+        "alfworld",
+        "hotpotqa",
+        "scienceworld",
+        "toolbench"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "agentbench",
+          "benchmark_name": "AgentBench",
+          "rank": 2,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 3,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "swe_bench"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "score": 0.833333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2310.06770"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_issue_resolution"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "shell"
+        ],
+        "output_types": [
+          "repository_patch"
+        ],
+        "environments": [
+          "software_repository"
+        ],
+        "capabilities": [
+          "evidence_grounding",
+          "long_horizon_planning",
+          "repository_navigation",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "verify"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:repository_navigation": [
+            "repository"
+          ],
+          "capability:tool_use": [
+            "action",
+            "api"
+          ],
+          "task:code_issue_resolution": [
+            "repository"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.833",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "swe_bench"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "cost_logging",
+          "issue_category_stratification",
+          "repository_holdout",
+          "test_patch_isolation"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "shell"
+          ],
+          "output_types": [
+            "repository_patch"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "long_horizon_planning",
+            "repository_navigation",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ],
+          "evidence_terms": {
+            "task:code_issue_resolution": [
+              "repository"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_issue_resolution"
+          ],
+          "task_benchmark_counts": {},
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "shell"
+          ],
+          "output_types": [
+            "repository_patch"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "long_horizon_planning",
+            "repository_navigation",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "swe_bench"
+        ],
+        "top_6_primary_matches": [],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.0
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "new_benchmark_synthesis",
+      "expected_route_at_freeze": "new_benchmark_synthesis",
+      "route_correct": false,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "fresh_003",
+      "source_arxiv_id": "2308.10144",
+      "source_title": "ExpeL: LLM Agents Are Experiential Learners",
+      "source_url": "https://arxiv.org/abs/2308.10144",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "ExpeL: An Experiential Learning Agent"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite/cases/fresh_003.json",
+      "gold_evidence_sections": [
+        "Experiments / Experimental Setup",
+        "Transfer Learning"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "primary",
+          "evidence_section": "Experiments / Experimental Setup",
+          "benchmark_id": "hotpotqa",
+          "task_family": "knowledge_intensive_qa",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 9
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Experiments / Experimental Setup",
+          "benchmark_id": "alfworld",
+          "task_family": "embodied_household",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Experiments / Experimental Setup",
+          "benchmark_id": "webshop",
+          "task_family": "web_navigation",
+          "benchmark_name": "WebShop",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 4
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Experiments / Experimental Setup and Transfer Learning",
+          "benchmark_id": "fever",
+          "task_family": "fact_verification",
+          "benchmark_name": "FEVER",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 11
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "alfworld",
+        "webshop",
+        "fever"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [],
+      "admitted_gold": [],
+      "top_6": [
+        "alfworld",
+        "scienceworld",
+        "webarena",
+        "webshop",
+        "agentbench",
+        "toolbench"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "agentbench",
+          "benchmark_name": "AgentBench",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "alfworld",
+        "scienceworld",
+        "webarena"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 1,
+          "score": 0.836667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        },
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 2,
+          "score": 0.836667,
+          "selection_role": "supplementary_triangulation:sequential_decision_making",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2203.07540"
+        },
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 3,
+          "score": 0.73,
+          "selection_role": "supplementary_triangulation:sequential_decision_making",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.13854"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "sequential_decision_making"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval",
+          "iterative_improvement",
+          "long_horizon_planning",
+          "self_reflection",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ],
+        "evidence_terms": {
+          "capability:external_information_retrieval": [
+            "retrieve",
+            "search"
+          ],
+          "capability:iterative_improvement": [
+            "retry"
+          ],
+          "capability:long_horizon_planning": [
+            "plan",
+            "trajectory"
+          ],
+          "capability:self_reflection": [
+            "self-reflection"
+          ],
+          "capability:tool_use": [
+            "action"
+          ],
+          "task:sequential_decision_making": [
+            "sequential decision",
+            "trajectory"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.730",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "alfworld",
+          "scienceworld",
+          "webarena"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "action_trace_logging",
+          "difficulty_curriculum",
+          "site_subset",
+          "state_reset_audit",
+          "task_family_subset",
+          "task_template_extension",
+          "task_type_stratification",
+          "unseen_environment_split"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "iterative_improvement",
+            "long_horizon_planning",
+            "self_reflection",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "task_success_rate",
+            "trajectory_efficiency"
+          ],
+          "evidence_terms": {
+            "task:sequential_decision_making": [
+              "sequential decision",
+              "trajectory"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "sequential_decision_making"
+          ],
+          "task_benchmark_counts": {},
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "iterative_improvement",
+            "long_horizon_planning",
+            "self_reflection",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "task_success_rate",
+            "trajectory_efficiency"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "alfworld"
+        ],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [
+          "hotpotqa",
+          "webshop",
+          "fever"
+        ],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "scienceworld",
+          "webarena"
+        ],
+        "top_6_primary_matches": [
+          "alfworld",
+          "webshop"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [
+          "hotpotqa",
+          "fever"
+        ],
+        "selected_actual_precision": 0.3333333333333333
+      },
+      "primary_recall_at_1": 0.25,
+      "primary_recall_at_3": 0.25,
+      "primary_recall_at_5": 0.5,
+      "primary_recall_at_6": 0.5,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 0.25,
+      "selected_modeled_recall": 0.25,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "expected_route_at_freeze": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "fresh_004",
+      "source_arxiv_id": "2305.14992",
+      "source_title": "Reasoning with Language Model is Planning with World Model",
+      "source_url": "https://arxiv.org/abs/2305.14992",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Reasoning via Planning"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite/cases/fresh_004.json",
+      "gold_evidence_sections": [
+        "Plan Generation",
+        "Math Reasoning",
+        "Logical Reasoning"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "unmodeled",
+          "evidence_section": "Plan Generation",
+          "benchmark_name": "Blocksworld",
+          "task_family": "classical_planning",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Math Reasoning",
+          "benchmark_id": "gsm8k",
+          "task_family": "math_word_problem",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 2
+        },
+        {
+          "role": "unmodeled",
+          "evidence_section": "Logical Reasoning",
+          "benchmark_name": "PrOntoQA",
+          "task_family": "logical_reasoning",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "gsm8k"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "Blocksworld",
+        "PrOntoQA"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "game_of_24",
+        "gsm8k",
+        "svamp",
+        "toolbench",
+        "fever",
+        "hotpotqa"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 3,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "game_of_24"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "rank": 1,
+          "score": 0.565,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2305.10601"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "math_reasoning"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "task_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "self_reflection",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "task_accuracy"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "grounded"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "interleave"
+          ],
+          "capability:self_reflection": [
+            "self-evaluation"
+          ],
+          "capability:tool_use": [
+            "action"
+          ],
+          "task:math_reasoning": [
+            "mathematical reasoning"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.565",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "game_of_24"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "number_tuple_split",
+          "search_budget_control",
+          "solution_verifier"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "task_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "reasoning_action_interleaving",
+            "self_reflection",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "task_accuracy"
+          ],
+          "evidence_terms": {
+            "task:math_reasoning": [
+              "mathematical reasoning"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "math_reasoning"
+          ],
+          "task_benchmark_counts": {},
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "task_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "reasoning_action_interleaving",
+            "self_reflection",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "task_accuracy"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [
+          "gsm8k"
+        ],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "game_of_24"
+        ],
+        "top_6_primary_matches": [
+          "gsm8k"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.0
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.5,
+      "selected_primary_recall": 0.0,
+      "selected_modeled_recall": 0.0,
+      "route": "direct_portfolio",
+      "expected_route": "base_benchmark_adaptation",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": false,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "fresh_005",
+      "source_arxiv_id": "2304.09842",
+      "source_title": "Chameleon: Plug-and-Play Compositional Reasoning with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2304.09842",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "General Framework",
+          "Module Inventory",
+          "Applications"
+        ]
+      },
+      "matcher_visible_input": "assets/input/fresh_holdout_suite/cases/fresh_005.json",
+      "gold_evidence_sections": [
+        "Applications of Chameleon",
+        "Science Question Answering",
+        "Tabular Mathematical Reasoning",
+        "Experiments"
+      ],
+      "actual_benchmarks": [
+        {
+          "role": "unmodeled",
+          "evidence_section": "Applications / Science Question Answering",
+          "benchmark_name": "ScienceQA",
+          "task_family": "multimodal_science_qa",
+          "benchmark_id": null,
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "role": "primary",
+          "evidence_section": "Applications / Tabular Mathematical Reasoning",
+          "benchmark_id": "tabmwp",
+          "task_family": "tabular_math_reasoning",
+          "benchmark_name": "TabMWP",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 23
+        }
+      ],
+      "primary_gold": [
+        "tabmwp"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "ScienceQA"
+      ],
+      "admitted_gold": [],
+      "top_6": [
+        "humaneval",
+        "hotpotqa",
+        "game_of_24",
+        "mbpp",
+        "humanevalfix",
+        "triviaqa"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "humaneval",
+        "hotpotqa",
+        "game_of_24",
+        "mbpp",
+        "humanevalfix"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 1,
+          "score": 0.48,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 2,
+          "score": 0.466667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "rank": 3,
+          "score": 0.446667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2305.10601"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 4,
+          "score": 0.48,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2108.07732"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 5,
+          "score": 0.376667,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2308.07124"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_generation",
+          "knowledge_intensive_qa",
+          "math_reasoning"
+        ],
+        "task_benchmark_counts": {},
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "function_implementation",
+          "short_answer"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "pass_at_1",
+          "test_pass_rate",
+          "token_f1"
+        ],
+        "evidence_terms": {
+          "capability:external_information_retrieval": [
+            "retrieve",
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:code_generation": [
+            "programming"
+          ],
+          "task:knowledge_intensive_qa": [
+            "question answering",
+            "knowledge retrieval"
+          ],
+          "task:math_reasoning": [
+            "mathematical reasoning"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.590",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "humaneval",
+          "hotpotqa",
+          "game_of_24",
+          "mbpp",
+          "humanevalfix"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "bug_type_stratification",
+          "difficulty_rebalancing",
+          "feedback_wrapper",
+          "hidden_unit_tests",
+          "iterative_feedback_wrapper",
+          "language_port",
+          "number_tuple_split",
+          "question_only_protocol",
+          "search_budget_control",
+          "solution_verifier",
+          "supporting_fact_audit",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "function_implementation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "exact_match",
+            "pass_at_1",
+            "test_pass_rate",
+            "token_f1"
+          ],
+          "evidence_terms": {
+            "task:code_generation": [
+              "programming"
+            ],
+            "task:knowledge_intensive_qa": [
+              "question answering",
+              "knowledge retrieval"
+            ],
+            "task:math_reasoning": [
+              "mathematical reasoning"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_generation",
+            "knowledge_intensive_qa",
+            "math_reasoning"
+          ],
+          "task_benchmark_counts": {},
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "function_implementation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "exact_match",
+            "pass_at_1",
+            "test_pass_rate",
+            "token_f1"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [],
+        "primary_missing_from_selected": [
+          "tabmwp"
+        ],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "humaneval",
+          "hotpotqa",
+          "game_of_24",
+          "mbpp",
+          "humanevalfix"
+        ],
+        "top_6_primary_matches": [],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [],
+        "top_6_primary_missing": [
+          "tabmwp"
+        ],
+        "selected_actual_precision": 0.0
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.0,
+      "primary_recall_at_5": 0.0,
+      "primary_recall_at_6": 0.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.043478260869565216,
+      "selected_primary_recall": 0.0,
+      "selected_modeled_recall": 0.0,
+      "route": "direct_portfolio",
+      "expected_route": "base_benchmark_adaptation",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": false,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    }
+  ]
+}

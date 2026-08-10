@@ -1,0 +1,29 @@
+{
+  "status": "LITERATURE_AUDIT_PARTIAL",
+  "reason": "the human audit found at least one partial benchmark match",
+  "reviewer_id": "yzb",
+  "audit_id": "auto_bench_literature_audit_round_2_case_001_case_002_case_003",
+  "expected_case_ids": [
+    "case_001",
+    "case_002",
+    "case_003"
+  ],
+  "pending_case_ids": [],
+  "items": [
+    {
+      "case_id": "case_001",
+      "status": "MATCH",
+      "notes": "perfect"
+    },
+    {
+      "case_id": "case_002",
+      "status": "PARTIAL",
+      "notes": "你的分数最高的bench：\tScienceWorld并没有被入选，而且论文中也有两个bench：LeetcodeHardGym、MultiPL-E language ports，你没有选到"
+    },
+    {
+      "case_id": "case_003",
+      "status": "MATCH",
+      "notes": "good"
+    }
+  ]
+}

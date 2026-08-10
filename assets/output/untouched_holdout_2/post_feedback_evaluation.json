@@ -1,0 +1,392 @@
+{
+  "schema_version": "1.0",
+  "verdict": "PASS",
+  "thresholds": {
+    "minimum_cases": 1,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_selected_modeled_recall": 0.85,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 1.0,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 0.6666666666666666,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_002",
+      "source_arxiv_id": "2305.11738",
+      "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+      "source_url": "https://arxiv.org/abs/2305.11738",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "CRITIC: Correcting with Tool-Interactive Critiquing"
+        ]
+      },
+      "matcher_visible_input": "assets/input/untouched_holdout_2_cases/holdout_002.json",
+      "gold_evidence_sections": [
+        "Free-form Question Answering",
+        "Mathematical Program Synthesis",
+        "Toxicity Reduction"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_name": "AmbigNQ",
+          "role": "unmodeled",
+          "evidence_section": "Free-form Question Answering",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "TriviaQA",
+          "role": "unmodeled",
+          "evidence_section": "Free-form Question Answering",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "role": "primary",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_name": "SVAMP",
+          "role": "unmodeled",
+          "evidence_section": "Mathematical Program Synthesis",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "TabMWP",
+          "role": "unmodeled",
+          "evidence_section": "Mathematical Program Synthesis",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "RealToxicityPrompts",
+          "role": "unmodeled",
+          "evidence_section": "Toxicity Reduction",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "gsm8k"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "AmbigNQ",
+        "TriviaQA",
+        "SVAMP",
+        "TabMWP",
+        "RealToxicityPrompts"
+      ],
+      "top_6": [
+        "hotpotqa",
+        "toolbench",
+        "gsm8k",
+        "gaia",
+        "fever",
+        "agentbench"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "gaia",
+          "benchmark_name": "GAIA",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "agentbench",
+          "benchmark_name": "AgentBench",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "hotpotqa",
+        "toolbench",
+        "gsm8k"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 1,
+          "score": 0.68,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 2,
+          "score": 0.586667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.16789"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 3,
+          "score": 0.585,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2110.14168"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "api_tool_use",
+          "knowledge_intensive_qa",
+          "math_reasoning",
+          "toxicity_reduction"
+        ],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "safe_text_continuation",
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "fluency",
+          "generation_diversity",
+          "token_f1",
+          "toxicity_probability"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "verify"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:api_tool_use": [
+            "api call"
+          ],
+          "task:knowledge_intensive_qa": [
+            "question answering"
+          ],
+          "task:math_reasoning": [
+            "mathematical reasoning"
+          ],
+          "task:toxicity_reduction": [
+            "toxicity reduction",
+            "toxic content"
+          ]
+        }
+      },
+      "coverage_ratio": 0.75,
+      "route_reason": "best existing match scores 0.680, but portfolio coverage is 75.0%",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "hotpotqa",
+          "toolbench",
+          "gsm8k"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "toxicity_reduction"
+        ],
+        "adaptation_hooks": [
+          "api_domain_subset",
+          "difficulty_stratification",
+          "execution_verification",
+          "question_only_protocol",
+          "reasoning_trace_wrapper",
+          "supporting_fact_audit",
+          "tool_availability_snapshot",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "toxicity_reduction"
+        ],
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "hotpotqa",
+          "gsm8k"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "toolbench"
+        ],
+        "top_6_primary_matches": [
+          "hotpotqa",
+          "gsm8k"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.6666666666666666
+      },
+      "primary_recall_at_1": 0.5,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    }
+  ]
+}

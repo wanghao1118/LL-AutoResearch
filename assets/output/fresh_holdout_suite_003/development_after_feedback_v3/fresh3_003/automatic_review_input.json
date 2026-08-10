@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "case_id": "fresh3_003",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [
+      "image_editing",
+      "visual_reasoning"
+    ],
+    "modalities": [
+      "image",
+      "text"
+    ],
+    "interactions": [
+      "static"
+    ],
+    "output_types": [
+      "edited_image",
+      "visual_answer"
+    ],
+    "environments": [
+      "visual_media"
+    ],
+    "capabilities": [
+      "evidence_grounding"
+    ],
+    "suggested_metrics": [
+      "answer_accuracy",
+      "edit_accuracy",
+      "semantic_correctness"
+    ],
+    "evidence_terms": {
+      "capability:evidence_grounding": [
+        "factual"
+      ],
+      "uncovered_task:image_editing": [
+        "image editing",
+        "language guided image editing",
+        "image manipulation"
+      ],
+      "uncovered_task:visual_reasoning": [
+        "complex visual task",
+        "compositional visual"
+      ]
+    },
+    "declared_evaluation_breadth": 0
+  },
+  "selected_benchmarks": [],
+  "top_6": [
+    "gsm8k",
+    "mmlu",
+    "realtoxicityprompts",
+    "svamp",
+    "fever",
+    "triviaqa"
+  ],
+  "route": "new_benchmark_synthesis",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

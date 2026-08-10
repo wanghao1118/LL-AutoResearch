@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "case_id": "fresh3_004",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "math_reasoning",
+      "math_word_problem",
+      "tabular_math_reasoning"
+    ],
+    "task_benchmark_counts": {
+      "math_reasoning": 5
+    },
+    "uncovered_task_families": [
+      "financial_numerical_qa"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "interactions": [
+      "static"
+    ],
+    "output_types": [
+      "short_answer"
+    ],
+    "environments": [
+      "structured_table"
+    ],
+    "capabilities": [],
+    "suggested_metrics": [
+      "answer_accuracy",
+      "task_accuracy"
+    ],
+    "evidence_terms": {
+      "evaluation:declared_breadth": [
+        "we evaluate method_x prompting across five mwp datasets, [redacted_benchmark], [redacted_benchmark], [redacted_benchmark], [redacted_benchmark], [redacted_benchmark]; and three financial datasets, [redacted_benchmark], [redacted_benchmark], and [redacted_benchmark]."
+      ],
+      "task:math_reasoning": [
+        "math word problem",
+        "arithmetic reasoning"
+      ],
+      "task:math_word_problem": [
+        "math word problem"
+      ],
+      "task:tabular_math_reasoning": [
+        "input formats including text, tables",
+        "text, tables, and conversation"
+      ],
+      "uncovered_task:financial_numerical_qa": [
+        "financial problem",
+        "financial dataset",
+        "financial question",
+        "math driven financial"
+      ]
+    },
+    "declared_evaluation_breadth": 8
+  },
+  "selected_benchmarks": [
+    "tabmwp",
+    "gsm8k",
+    "svamp"
+  ],
+  "top_6": [
+    "tabmwp",
+    "gsm8k",
+    "svamp",
+    "mmlu",
+    "realtoxicityprompts",
+    "hotpotqa"
+  ],
+  "route": "base_benchmark_adaptation",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

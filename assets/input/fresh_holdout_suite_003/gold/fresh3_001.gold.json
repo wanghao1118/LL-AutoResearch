@@ -1,0 +1,206 @@
+{
+  "case_id": "fresh3_001",
+  "source_arxiv_id": "2302.04761",
+  "source_title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+  "source_url": "https://arxiv.org/abs/2302.04761",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Approach",
+      "Tools"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "svamp",
+    "triviaqa"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "SQuAD subset of LAMA",
+    "Google-RE subset of LAMA",
+    "T-REx subset of LAMA",
+    "ASDiv",
+    "MAWPS",
+    "Web Questions",
+    "Natural Questions",
+    "MLQA",
+    "TempLAMA",
+    "Dateset",
+    "WikiText",
+    "CCNet language-modeling subset"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Experiments / Downstream Tasks / LAMA",
+    "Experiments / Math Datasets",
+    "Experiments / Question Answering",
+    "Experiments / Multilingual Question Answering",
+    "Experiments / Temporal Datasets",
+    "Experiments / Language Modeling"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "primary",
+      "evidence_section": "Math Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_id": "svamp"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Question Answering",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_id": "triviaqa"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "LAMA",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "SQuAD subset of LAMA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "LAMA",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "Google-RE subset of LAMA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "LAMA",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "T-REx subset of LAMA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Math Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "ASDiv"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Math Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "MAWPS"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Question Answering",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "Web Questions"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Question Answering",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "Natural Questions"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Multilingual Question Answering",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "MLQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Temporal Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "TempLAMA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Temporal Datasets",
+      "task_family": "tool_augmented_nlp",
+      "benchmark_name": "Dateset"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Language Modeling",
+      "task_family": "language_modeling",
+      "benchmark_name": "WikiText"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Language Modeling",
+      "task_family": "language_modeling",
+      "benchmark_name": "CCNet language-modeling subset"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_003/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "SQuAD, Google-RE and T-REx subsets",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "ASDiv",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "SVAMP",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "MAWPS",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "Web Questions",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "Natural Questions",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "TriviaQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "MLQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "TempLAMA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "Dateset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "WikiText",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "term": "CCNet",
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1818 @@
+{
+  "schema_version": "2.0",
+  "audit_id": "auto_bench_blind_literature_audit_round_3_case_001_case_002_case_003",
+  "iteration": 3,
+  "submission_scope_snapshot": [
+    {
+      "case_id": "case_001",
+      "selected_benchmark_ids": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "top_6_benchmark_ids": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "route": "direct_portfolio"
+    },
+    {
+      "case_id": "case_002",
+      "selected_benchmark_ids": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "top_6_benchmark_ids": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "route": "direct_portfolio"
+    },
+    {
+      "case_id": "case_003",
+      "selected_benchmark_ids": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym"
+      ],
+      "top_6_benchmark_ids": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym",
+        "mbpp",
+        "multipl_e"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "protocol": {
+    "matcher_input": [
+      "introduction",
+      "method",
+      "constraints"
+    ],
+    "paper_identity_visible_to_matcher": false,
+    "paper_benchmarks_visible_to_matcher": false,
+    "source_revealed_after_matching": true,
+    "human_task": "verify the source paper benchmark list and compare it with Auto-Bench recommendations",
+    "carried_source_and_gold_checks": 3,
+    "route_context_is_informational": true,
+    "full_evaluation_case_count": 3,
+    "audit_case_count": 3,
+    "changed_case_filter": [
+      "case_001",
+      "case_002",
+      "case_003"
+    ]
+  },
+  "aggregate": {
+    "case_count": 3,
+    "mean_primary_recall_at_5": 0.9166666666666666,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.8333333333333334,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 0.7222222222222222,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "case_001",
+      "source_arxiv_id": "2210.03629",
+      "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "source_url": "https://arxiv.org/abs/2210.03629",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "ReAct: Synergizing Reasoning + Acting"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_001.json",
+      "gold_evidence_sections": [
+        "Knowledge-Intensive Reasoning Tasks",
+        "Decision Making Tasks"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        },
+        {
+          "benchmark_id": "fever",
+          "role": "primary",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "benchmark_name": "FEVER",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_id": "alfworld",
+          "role": "primary",
+          "evidence_section": "Decision Making Tasks",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_id": "webshop",
+          "role": "primary",
+          "evidence_section": "Decision Making Tasks",
+          "benchmark_name": "WebShop",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "fever",
+        "alfworld",
+        "webshop"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [],
+      "top_6": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "visualwebarena",
+          "benchmark_name": "VisualWebArena",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "primary"
+        }
+      ],
+      "selected": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 1,
+          "score": 0.778,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.13854"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "score": 0.678,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 3,
+          "score": 0.634,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1803.05355"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "score": 0.634,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "visualwebarena",
+          "benchmark_name": "VisualWebArena",
+          "rank": 5,
+          "score": 0.738,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2401.13649"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 6,
+          "score": 0.701333,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2207.01206"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "embodied_household",
+          "fact_verification",
+          "knowledge_intensive_qa",
+          "sequential_decision_making",
+          "web_navigation"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "audio",
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser",
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory",
+          "classification_label",
+          "short_answer",
+          "supporting_evidence"
+        ],
+        "environments": [
+          "knowledge_base",
+          "website"
+        ],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "evidence_score",
+          "exact_match",
+          "label_accuracy",
+          "task_success_rate",
+          "token_f1",
+          "trajectory_efficiency"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "grounded",
+            "factual"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan",
+            "trajectory"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "reasoning and acting",
+            "thought-action-observation",
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "action"
+          ],
+          "task:embodied_household": [
+            "embodied"
+          ],
+          "task:fact_verification": [
+            "fact verification"
+          ],
+          "task:knowledge_intensive_qa": [
+            "answer questions",
+            "wikipedia"
+          ],
+          "task:sequential_decision_making": [
+            "sequential decision",
+            "action-observation",
+            "trajectory",
+            "interactive environment"
+          ],
+          "task:web_navigation": [
+            "web navigation"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.870",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "webarena",
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "visualwebarena",
+          "webshop"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "action_trace_logging",
+          "attribute_level_scoring",
+          "claim_only_protocol",
+          "evidence_retrieval_wrapper",
+          "instruction_constraint_expansion",
+          "label_and_evidence_scoring",
+          "question_only_protocol",
+          "site_subset",
+          "state_reset_audit",
+          "supporting_fact_audit",
+          "task_template_extension",
+          "task_type_stratification",
+          "unseen_environment_split",
+          "visual_dependency_stratification",
+          "website_action_wrapper",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "audio",
+            "text",
+            "web"
+          ],
+          "interactions": [
+            "browser",
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "classification_label",
+            "short_answer",
+            "supporting_evidence"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "evidence_score",
+            "exact_match",
+            "label_accuracy",
+            "task_success_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ],
+          "evidence_terms": {
+            "task:embodied_household": [
+              "embodied"
+            ],
+            "task:fact_verification": [
+              "fact verification"
+            ],
+            "task:knowledge_intensive_qa": [
+              "answer questions",
+              "wikipedia"
+            ],
+            "task:sequential_decision_making": [
+              "sequential decision",
+              "action-observation",
+              "trajectory",
+              "interactive environment"
+            ],
+            "task:web_navigation": [
+              "web navigation"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "embodied_household",
+            "fact_verification",
+            "knowledge_intensive_qa",
+            "sequential_decision_making",
+            "web_navigation"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "audio",
+            "text",
+            "web"
+          ],
+          "interactions": [
+            "browser",
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "classification_label",
+            "short_answer",
+            "supporting_evidence"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "evidence_score",
+            "exact_match",
+            "label_accuracy",
+            "task_success_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "webshop"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "webarena",
+          "visualwebarena"
+        ],
+        "top_6_primary_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "webshop"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.6666666666666666
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.5,
+      "primary_recall_at_5": 0.75,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.5,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "visible_input": {
+        "introduction": "Introduction. A unique feature of human intelligence is the ability to seamlessly combine task-oriented actions with verbal reasoning (or inner speech, ), which has been theorized to play an important role in human cognition for enabling self-regulation or strategization and maintaining a working memory . Consider the example of cooking up a dish in the kitchen. Between any two specific actions, we may reason in language in order to track progress (``now that everything is cut, I should heat up the pot of water’’), to handle exceptions or adjust the plan according to the situation (``I don’t have salt, so let me use soy sauce and pepper instead’’), and to realize when external information is needed (``how do I prepare dough? Let me search on the Internet’’). We may also act (open a cookbook to read the recipe, open the fridge, check ingredients) to support the reasoning and to answer questions (``What dish can I make right now?''). This tight synergy between ``acting'’ and ``reasoning'’ allows humans to learn new tasks quickly and perform robust decision making or reasoning, even under previously unseen circumstances or facing information uncertainties. Recent results have hinted at the possibility of combining verbal reasoning with interactive decision making in autonomous systems. On one hand, properly prompted large language models (LLMs) have demonstrated emergent capabilities to carry out several steps of reasoning traces to derive answers from questions in arithmetic, commonsense, and symbolic reasoning tasks . However, this ``chain-of-thought’' reasoning is a static black box, in that the model uses its own internal representations to generate thoughts and is not grounded in the external world, which limits its ability to reason reactively or update its knowledge. This can lead to issues like fact hallucination and error propagation over the reasoning process (Figure (1b)). On the other hand, recent work has explored the use of pre-trained language models for planning and acting in interactive environments , with a focus on predicting actions via language priors. These approaches usually convert multi-modal observations into text, use a language model to generate domain-specific actions or plans, and then use a controller to choose or execute them. However, they do not employ language models to reason abstractly about high-level goals or maintain a working memory to support acting, barring who perform a limited form of verbal reasoning to reiterate spatial facts about the current state. Beyond such simple embodied tasks to interact with a few blocks, there have not been studies on how reasoning and acting can be combined in a synergistic manner for general task solving, and if such a combination can bring systematic benefits compared to reasoning or acting alone. In this work, we present METHOD_X, a general paradigm to combine reasoning and acting with language models for solving diverse language reasoning and decision making tasks (Figure ). METHOD_X prompts LLMs to generate both verbal reasoning traces and actions pertaining to a task in an interleaved manner, which allows the model to perform dynamic reasoning to create, maintain, and adjust high-level plans for acting (reason to act), while also interact with the external environments (e.g.\\,Wikipedia) to incorporate additional information into reasoning (act to reason). The best approach overall is a combination of METHOD_X and REASONING_BASELINE that allows for the use of both internal knowledge and externally obtained information during reasoning. We also demonstrate the importance of sparse, versatile reasoning in decision making by showing consistent advantages over controlled baselines with actions only. Besides general applicability and performance boost, the combination of reasoning and acting also contributes to model interpretability, trustworthiness, and diagnosability across all domains, as humans can readily distinguish information from model's internal knowledge versus external environments, as well as inspect reasoning traces to understand the decision basis of model actions. To summarize, our key contributions are the following: (1) we introduce METHOD_X, a novel prompt-based paradigm to synergize reasoning and acting in language models for general task solving; (2) we perform extensive experiments across diverse benchmarks to showcase the advantage of METHOD_X in a few-shot learning setup over prior approaches that perform either reasoning or action generation in isolation; (3) we present systematic ablations and analysis to understand the importance of acting in reasoning tasks, and reasoning in interactive tasks; (4) we analyze the limitations of METHOD_X under the prompting setup (i.e.\\,limited support of reasoning and acting behaviors), and perform initial finetuning experiments showing the potential of METHOD_X to improve with additional training data. Scaling up METHOD_X to train and operate on more tasks and combining it with complementary paradigms like reinforcement learning could further unlock the potential of large language models.",
+        "method": "METHOD_X: Synergizing Reasoning + Acting Consider a general setup of an agent interacting with an environment for task solving. At time step , an agent receives an observation from the environment and takes an action following some policy , where is the context to the agent. Learning a policy is challenging when the mapping is highly implicit and requires extensive computation. For example, the agent shown in Figure (1c) is unable to generate the correct final action (Act 4) to finish the QA task as it requires complex reasoning over the trajectory context (Question, Act 1-3, Obs 1-3). Similarly, the agent shown in Figure (2a) fails to comprehend from the context that sinkbasin 1 does not contain peppershaker 1, thus keep producing hallucinating actions. The idea of METHOD_X is simple: we augment the agent's action space to , where is the space of language. An action in the language space, which we will refer to as a thought or a reasoning trace, does not affect the external environment, thus leading to no observation feedback. Instead, a thought aims to compose useful information by reasoning over the current context , and update the context to support future reasoning or acting. As shown in Figure , there could be various types of useful thoughts, e.g.\\,decomposing task goals and create action plans (2b, Act 1; 1d, Thought 1), injecting commonsense knowledge relevant to task solving (2b, Act 1), extracting important parts from observations (1d, Thought2, 4), track progress and transit action plans (2b, Act 8), handle exceptions and adjust action plans (1d, Thought 3), and so on. However, as the language space is unlimited, learning in this augmented action space is difficult and requires strong language priors. , is prompted with few-shot in-context examples to generate both domain-specific actions and free-form language thoughts for task solving (Figure (1d), (2b)). Each in-context example is a human trajectory of actions, thoughts, and environment observations to solve a task instance (see Appendix ). For the tasks where reasoning is of primary importance (Figure (1)), we alternate the generation of thoughts and actions so that the task-solving trajectory consists of multiple thought-action-observation steps. In contrast, for decision making tasks that potentially involve a large number of actions (Figure (2)), thoughts only need to appear sparsely in the most relevant positions of a trajectory, so we let the language model decide the asynchronous occurrence of thoughts and actions for itself. Since decision making and reasoning capabilities are integrated into a large language model, METHOD_X enjoys several unique features: A) Intuitive and easy to design: Designing METHOD_X prompts is straightforward as human annotators just type down their thoughts in language on top of their actions taken. No ad-hoc format choice, thought design, or example selection is used in this paper. We detail prompt design for each task in Sections and . B) General and flexible: Due to the flexible thought space and thought-action occurrence format, METHOD_X works for diverse tasks with distinct action spaces and reasoning needs, including but not limited to QA, fact verification, text game, and web navigation. We also show in Section additional benefits when finetuning is enabled, and in Section how METHOD_X performance is robust to prompt selections. D) Human aligned and controllable: METHOD_X promises an interpretable sequential decision making and reasoning process where humans can easily inspect reasoning and factual correctness. Moreover, humans can also control or correct the agent behavior on the go by thought editing, as shown in Figure in Section ."
+      },
+      "carried_review_evidence": {
+        "source_verified": true,
+        "actual_benchmarks_verified": true,
+        "reviewer_id": "yzb",
+        "from_iteration": 2,
+        "scope_match": true
+      }
+    },
+    {
+      "case_id": "case_002",
+      "source_arxiv_id": "2303.11366",
+      "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2303.11366",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Reflexion: reinforcement via verbal reflection"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_002.json",
+      "gold_evidence_sections": [
+        "Sequential decision making: ALFWorld",
+        "Reasoning: HotpotQA",
+        "Programming"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "alfworld",
+          "role": "primary",
+          "evidence_section": "Sequential decision making: ALFWorld",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Reasoning: HotpotQA",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_id": "humaneval",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "HumanEval",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 5
+        },
+        {
+          "benchmark_id": "mbpp",
+          "role": "secondary",
+          "evidence_section": "Programming",
+          "benchmark_name": "MBPP",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "LeetcodeHardGym",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "role": "secondary",
+          "evidence_section": "Programming",
+          "benchmark_name": "MultiPL-E",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        }
+      ],
+      "primary_gold": [
+        "alfworld",
+        "hotpotqa",
+        "humaneval",
+        "leetcodehardgym"
+      ],
+      "secondary_gold": [
+        "mbpp",
+        "multipl_e"
+      ],
+      "unmodeled_gold": [],
+      "top_6": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "specialized_capability:multilingual_code_generation",
+          "paper_role": "secondary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "secondary"
+        }
+      ],
+      "selected": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 1,
+          "score": 0.756667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2303.11366"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "score": 0.623333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "score": 0.433333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "rank": 4,
+          "score": 0.58,
+          "selection_role": "specialized_capability:multilingual_code_generation",
+          "paper_role": "secondary",
+          "source_url": "https://arxiv.org/abs/2208.08227"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 5,
+          "score": 0.58,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 6,
+          "score": 0.58,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "secondary",
+          "source_url": "https://arxiv.org/abs/2108.07732"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_generation",
+          "knowledge_intensive_qa",
+          "sequential_decision_making"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory",
+          "function_implementation",
+          "short_answer"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [
+          "episodic_memory",
+          "iterative_improvement",
+          "long_horizon_planning",
+          "multilingual_code_generation",
+          "self_reflection",
+          "test_based_verification",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "pass_at_1",
+          "task_success_rate",
+          "test_pass_rate",
+          "token_f1",
+          "trajectory_efficiency"
+        ],
+        "evidence_terms": {
+          "capability:episodic_memory": [
+            "episodic memory",
+            "prior experiences"
+          ],
+          "capability:iterative_improvement": [
+            "future episode"
+          ],
+          "capability:long_horizon_planning": [
+            "plan",
+            "trajectory"
+          ],
+          "capability:multilingual_code_generation": [
+            "programming languages"
+          ],
+          "capability:self_reflection": [
+            "self-reflection",
+            "reflective feedback",
+            "self-evaluation"
+          ],
+          "capability:test_based_verification": [
+            "unit tests"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:code_generation": [
+            "programming",
+            "unit tests",
+            "code generation"
+          ],
+          "task:knowledge_intensive_qa": [
+            "reasoning questions"
+          ],
+          "task:sequential_decision_making": [
+            "trajectory",
+            "sparse reward"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.647",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "leetcodehardgym",
+          "alfworld",
+          "hotpotqa",
+          "multipl_e",
+          "humaneval",
+          "mbpp"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "action_trace_logging",
+          "difficulty_curriculum",
+          "difficulty_rebalancing",
+          "hidden_unit_tests",
+          "iterative_feedback_wrapper",
+          "language_family_stratification",
+          "language_port",
+          "question_only_protocol",
+          "supporting_fact_audit",
+          "task_type_stratification",
+          "unseen_environment_split",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "function_implementation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "episodic_memory",
+            "iterative_improvement",
+            "long_horizon_planning",
+            "multilingual_code_generation",
+            "self_reflection",
+            "test_based_verification",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "exact_match",
+            "pass_at_1",
+            "task_success_rate",
+            "test_pass_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ],
+          "evidence_terms": {
+            "task:code_generation": [
+              "programming",
+              "unit tests",
+              "code generation"
+            ],
+            "task:knowledge_intensive_qa": [
+              "reasoning questions"
+            ],
+            "task:sequential_decision_making": [
+              "trajectory",
+              "sparse reward"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_generation",
+            "knowledge_intensive_qa",
+            "sequential_decision_making"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "function_implementation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "episodic_memory",
+            "iterative_improvement",
+            "long_horizon_planning",
+            "multilingual_code_generation",
+            "self_reflection",
+            "test_based_verification",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "exact_match",
+            "pass_at_1",
+            "task_success_rate",
+            "test_pass_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "leetcodehardgym",
+          "alfworld",
+          "hotpotqa",
+          "humaneval"
+        ],
+        "selected_secondary_matches": [
+          "multipl_e",
+          "mbpp"
+        ],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [
+          "leetcodehardgym",
+          "alfworld",
+          "hotpotqa",
+          "humaneval"
+        ],
+        "top_6_secondary_matches": [
+          "multipl_e",
+          "mbpp"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 1.0
+      },
+      "primary_recall_at_1": 0.25,
+      "primary_recall_at_3": 0.75,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "visible_input": {
+        "introduction": "Recent works such as ReAct , SayCan , Toolformer , HuggingGPT , generative agents , and WebGPT have demonstrated the feasibility of autonomous decision-making agents that are built on top of a large language model (LLM) core. These methods use LLMs to generate text and `actions` that can be used in API calls and executed in an environment. Since they rely on massive models with an enormous number of parameters, such approaches have been so far limited to using in-context examples as a way of teaching the agents, since more traditional optimization schemes like reinforcement learning with gradient descent require substantial amounts of compute and time. In this paper, we propose an alternative approach called METHOD_X that uses verbal reinforcement to help agents learn from prior failings. METHOD_X converts binary or scalar feedback from the environment into verbal feedback in the form of a textual summary, which is then added as additional context for the LLM agent in the next episode. This self-reflective feedback acts as a `semantic' gradient signal by providing the agent with a concrete direction to improve upon, helping it learn from prior mistakes to perform better on the task. This is akin to how humans iteratively learn to accomplish complex tasks in a few-shot manner -- by reflecting on their previous failures in order to form an improved plan of attack for the next attempt. For example, in figure , a METHOD_X agent learns to optimize its own behavior to solve decision-making, programming, and reasoning tasks through trial, error, and self-reflection. Generating useful reflective feedback is challenging since it requires a good understanding of where the model made mistakes (i.e. the credit assignment problem ) as well as the ability to generate a summary containing actionable insights for improvement. We explore three ways for doing this -- simple binary environment feedback, pre-defined heuristics for common failure cases, and self-evaluation such as binary classification using LLMs (decision-making) or self-written unit tests (programming). In all implementations, the evaluation signal is amplified to natural language experience summaries which can be stored in long-term memory. METHOD_X has several advantages compared to more traditional RL approaches like policy or value-based learning: 1) it is lightweight and doesn't require finetuning the LLM, 2) it allows for more nuanced forms of feedback (e.g. targeted changes in actions), compared to scalar or vector rewards that are challenging to perform accurate credit assignment with, 3) it allows for a more explicit and interpretable form of episodic memory over prior experiences, and 4) it provides more explicit hints for actions in future episodes. At the same time, it does have the disadvantages of relying on the power of the LLM's self-evaluation capabilities (or heuristics) and not having a formal guarantee for success. However, as LLM capabilities improve, we only expect this paradigm to get better over time. Across all three types of tasks, we observe METHOD_X agents are better decision-makers, reasoners, and programmers. More concretely, METHOD_X agents improve on decision-making [REDACTED_BENCHMARK] tasks over strong baseline approaches by an absolute 22 in 12 iterative learning steps, and on reasoning questions in [REDACTED_BENCHMARK] by 20 , and Python programming tasks on [REDACTED_BENCHMARK] by as much as 11 . To summarize, our contributions are the following: We propose METHOD_X, a new paradigm for `verbal` reinforcement that parameterizes a policy as an agent's memory encoding paired with a choice of LLM parameters. We explore this emergent property of self-reflection in LLMs and empirically show that self-reflection is extremely useful to learn complex tasks over a handful of trials. We introduce [REDACTED_BENCHMARK], a code-generation RL gym environment consisting of 40 challenging Leetcode questions (`hard-level`) in 19 programming languages. [t] figures/METHOD_X_tasks.pdf METHOD_X works on decision-making , programming , and reasoning tasks.",
+        "method": "[t] .48 figures/METHOD_X_rl.pdf .48 [H] Reinforcement via self-reflection Initialize Actor, Evaluator, Self-Reflection: , , Initialize policy , Generate initial trajectory using Evaluate using Generate initial self-reflection using Set Set not pass or max trials Generate using Evaluate using Generate self-reflection using Append to Increment (a) Diagram of METHOD_X. (b) METHOD_X reinforcement algorithm -10pt We develop a modular formulation for METHOD_X, utilizing three distinct models: an Actor, denoted as , which generates text and actions; an Evaluator model, represented by , that scores the outputs produced by ; and a Self-Reflection model, denoted as , which generates verbal reinforcement cues to assist the Actor in self-improvement. We provide a detailed description of each of these models and subsequently elucidate their collaborative functioning within the METHOD_X framework. Actor. The Actor is built upon a large language model (LLM) that is specifically prompted to generate the necessary text and actions conditioned on the state observations. Analogous to traditional policy-based RL setups, we sample an action or generation, , from the current policy at time , receive an observation from the environment . We explore various Actor models, including Chain of Thought and ReAct . These diverse generation models allow us to explore different aspects of text and action generation within the METHOD_X framework, providing valuable insights into their performance and effectiveness. In addition, we also add a memory component mem that provides additional context to this agent. This adaption was inspired by , who suggest a policy iteration approach using in-context learning. Details on how this is populated are provided below. Evaluator. The Evaluator component of the METHOD_X framework plays a crucial role in assessing the quality of the generated outputs produced by the Actor. It takes as input a generated trajectory and computes a reward score that reflects its performance within the given task context. Defining effective value and reward functions that apply to semantic spaces is difficult, so we investigate several variants of the Evaluator model. For reasoning tasks, we explore reward functions based on exact match (EM) grading, ensuring that the generated output aligns closely with the expected solution. In decision-making tasks, we employ pre-defined heuristic functions that are tailored to specific evaluation criteria. Additionally, we experiment with using a different instantiation of an LLM itself as an Evaluator, generating rewards for decision-making and programming tasks. This multi-faceted approach to Evaluator design allows us to examine different strategies for scoring generated outputs, offering insights into their effectiveness and suitability across a range of tasks. Self-reflection. The Self-Reflection model instantiated as an LLM, plays a crucial role in the METHOD_X framework by generating verbal self-reflections to provide valuable feedback for future trials. Given a sparse reward signal, such as a binary success status (success/fail), the current trajectory, and its persistent memory mem, the self-reflection model generates nuanced and specific feedback. This feedback, which is more informative than scalar rewards, is then stored in the agent's memory (mem). For instance, in a multi-step decision-making task, when the agent receives a failure signal, it can infer that a specific action led to subsequent incorrect actions and . The agent can then verbally state that it should have taken a different action, , which would have resulted in and , and store this experience in its memory. In subsequent trials, the agent can leverage its past experiences to adapt its decision-making approach at time by choosing action . This iterative process of trial, error, self-reflection, and persisting memory enables the agent to rapidly improve its decision-making ability in various environments by utilizing informative feedback signals. Memory. Core components of the METHOD_X process are the notion of short-term and long-term memory. At inference time, the Actor conditions its decisions on short and long-term memory, similar to the way that humans remember fine-grain recent details while also recalling distilled important experiences from long-term memory. In the RL setup, the trajectory history serves as the short-term memory while outputs from the Self-Reflection model are stored in long-term memory. These two memory components work together to provide context that is specific but also influenced by lessons learned over several trials, which is a key advantage of METHOD_X agents over other LLM action choice works. The METHOD_X process. METHOD_X is formalized as an iterative optimization process in . In the first trial, the Actor produces a trajectory by interacting with the environment. The Evaluator then produces a score which is computed as . is only a scalar reward for trial that improves as task-specific performance increases. After the first trial, to amplify to a feedback form that can be used for improvement by an LLM, the Self-Reflection model analyzes the set of to produce a summary which is stored in the memory mem. is a verbal experience feedback for trial . The Actor, Evaluator, and Self-Reflection models work together through trials in a loop until the Evaluator deems to be correct. As mentioned in , the memory component of METHOD_X is crucial to its effectiveness. After each trial , , is appended mem. In practice, we bound mem by a maximum number of stored experiences, (usually set to 1-3) to adhere to max context LLM limitations."
+      },
+      "carried_review_evidence": {
+        "source_verified": true,
+        "actual_benchmarks_verified": true,
+        "reviewer_id": "yzb",
+        "from_iteration": 2,
+        "scope_match": true
+      }
+    },
+    {
+      "case_id": "case_003",
+      "source_arxiv_id": "2405.15793",
+      "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "source_url": "https://arxiv.org/abs/2405.15793",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "The Agent-Computer Interface",
+          "SWE-agent: Designing an ACI for Software Engineering"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_003.json",
+      "gold_evidence_sections": [
+        "Experimental Setup"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "swe_bench",
+          "role": "primary",
+          "evidence_section": "Experimental Setup",
+          "benchmark_name": "SWE-bench",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "role": "secondary",
+          "evidence_section": "Experimental Setup",
+          "benchmark_name": "HumanEvalFix",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        }
+      ],
+      "primary_gold": [
+        "swe_bench"
+      ],
+      "secondary_gold": [
+        "humanevalfix"
+      ],
+      "unmodeled_gold": [],
+      "top_6": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym",
+        "mbpp",
+        "multipl_e"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "secondary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "score": 0.746667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2310.06770"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 2,
+          "score": 0.653333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "secondary",
+          "source_url": "https://arxiv.org/abs/2308.07124"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 3,
+          "score": 0.48,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 4,
+          "score": 0.48,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2303.11366"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_debugging",
+          "code_generation",
+          "code_issue_resolution"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool",
+          "shell"
+        ],
+        "output_types": [
+          "function_implementation",
+          "repaired_program",
+          "repository_patch"
+        ],
+        "environments": [
+          "code_executor",
+          "software_repository"
+        ],
+        "capabilities": [
+          "code_editing",
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "repository_navigation",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ],
+        "evidence_terms": {
+          "capability:code_editing": [
+            "editing files",
+            "edit function",
+            "file editor",
+            "code linter"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:repository_navigation": [
+            "repository",
+            "codebase",
+            "file viewer"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "shell",
+            "computer"
+          ],
+          "task:code_debugging": [
+            "code syntax checker",
+            "code linter",
+            "format errors",
+            "edit function"
+          ],
+          "task:code_generation": [
+            "programming",
+            "code generation"
+          ],
+          "task:code_issue_resolution": [
+            "software engineering problem",
+            "repository"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.693",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "swe_bench",
+          "humanevalfix",
+          "humaneval",
+          "leetcodehardgym"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "bug_type_stratification",
+          "cost_logging",
+          "difficulty_curriculum",
+          "feedback_wrapper",
+          "hidden_unit_tests",
+          "issue_category_stratification",
+          "iterative_feedback_wrapper",
+          "language_port",
+          "repository_holdout",
+          "test_patch_isolation"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool",
+            "shell"
+          ],
+          "output_types": [
+            "function_implementation",
+            "repaired_program",
+            "repository_patch"
+          ],
+          "capabilities": [
+            "code_editing",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "repository_navigation",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ],
+          "evidence_terms": {
+            "task:code_debugging": [
+              "code syntax checker",
+              "code linter",
+              "format errors",
+              "edit function"
+            ],
+            "task:code_generation": [
+              "programming",
+              "code generation"
+            ],
+            "task:code_issue_resolution": [
+              "software engineering problem",
+              "repository"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_debugging",
+            "code_generation",
+            "code_issue_resolution"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool",
+            "shell"
+          ],
+          "output_types": [
+            "function_implementation",
+            "repaired_program",
+            "repository_patch"
+          ],
+          "capabilities": [
+            "code_editing",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "repository_navigation",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "swe_bench"
+        ],
+        "selected_secondary_matches": [
+          "humanevalfix"
+        ],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "humaneval",
+          "leetcodehardgym"
+        ],
+        "top_6_primary_matches": [
+          "swe_bench"
+        ],
+        "top_6_secondary_matches": [
+          "humanevalfix"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.5
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "visible_input": {
+        "introduction": "Introduction. Recent work has demonstrated the efficacy of LM agents for code generation with execution feedback . However, applying agents to more complex code tasks like software engineering remains unexplored. To solve programming tasks, LM agents are typically designed to use existing applications, such as the Linux shell or Python interpreter . However, to perform more complex programming tasks such as software engineering , human engineers benefit from sophisticated applications like VSCode with powerful tools and extensions. Inspired by human-computer interaction (HCI) studies on the efficacy of user interfaces for humans , we investigate whether LM agents could similarly benefit from better-designed interfaces for performing software engineering tasks. [ht] figures/swe_agent_overview.pdf METHOD_X is an LM interacting with a computer through an specialized computer interaction interface (INTERFACE_X), which includes the commands the agent uses and the format of the feedback from the computer. Consider the simple setting of an agent interacting directly with a Linux shell . In practice, we find that LM agents can struggle to reliably take actions in this environment. For example, it fails to provide simple commands to edit a small file segment, and does not provide any feedback if the user makes an invalid edit. These deficits substantially hamper performance, motivating the need for an specialized computer interaction interface (INTERFACE_X), i.e., an abstraction layer between the LM agent and computer, to enhance the LM agent's abilities in computer environments (Figure ). From this effort, we introduce METHOD_X, an agent composed of an LM and INTERFACE_X, that can interact with a computer to solve challenging real-world software engineering problems, such as those proposed in [REDACTED_BENCHMARK] . In contrast to the Linux Shell's granular, highly configurable action space, METHOD_X's INTERFACE_X instead offers a small set of simple actions for viewing, searching through and editing files. The INTERFACE_X uses guardrails to prevent common mistakes, and an agent receives specific, concise feedback about a command's effects at every turn. The results show that METHOD_X solves 10.7 percentage points more instances than the baseline agent, which uses only the default Linux shell. Although our INTERFACE_X was developed for GPT-4 Turbo, we show that it is portable to a different LM; METHOD_X with Claude 3 Opus can solve 10.5 of the benchmark tasks. Our contributions are twofold. First, we introduce the concept of the specialized computer interaction interface (INTERFACE_X) and demonstrate how careful INTERFACE_X design can substantially improve LM agent performance without modifying the underlying LM's weights. Second, we build, evaluate, and open-source METHOD_X, a system that provides LMs an INTERFACE_X for solving real-world software engineering tasks. Unlike prior works that independently explore the merits of tool use, prompting techniques, and code execution in interactive settings, our approach unifies these factors within the INTERFACE_X framework. We show that crafting LM-centric interactive components has meaningful effects on downstream task performance.",
+        "method": "The specialized computer interaction interface. An LM acts as an agent when it interacts with an environment by iteratively taking actions and receiving feedback . Typically, the environment has hard constraints, as in robotics, where agents control actuators in the physical world. On the other hand, digital environments can be molded by abstractions in the form of application programming interfaces and user interfaces for software and humans respectively. Naturally, existing interfaces have been designed with one of these users in mind. We argue that LM agents represent a new category of end user, with their own needs and abilities. We refer to the interface LM agents use to interact with computers as the specialized computer interaction interface (INTERFACE_X). Figure illustrates how ACIs provide LM agents with important functionality to interface with computers, similar to how code editors also help humans use computers more effectively. [ht] figures/INTERFACE_X-ui.pdf Specialized applications like IDEs (e.g., VSCode, PyCharm) make scientists and software engineers more efficient and effective at computer tasks. Similarly, INTERFACE_X design aims to create a suitable interface that makes LM agents more effective at digital work such as software engineering. Disparities in humans' and LMs' abilities and limitations motivates different interface design guidelines. For instance, the current generation of LMs lack the visual understanding abilities to directly operate GUI-based applications with rich visual components and signals. However, many of the features provided by these applications, such as syntax checking and navigation tools, could be useful to LM agents if they were presented in a suitable manner. Additionally, humans can flexibly ignore unnecessary information, whereas all content has a fixed cost in memory and computation for LMs and distracting context can harm performance . Therefore, LM agents may be more effective at interacting with computers when provided an interface that was built informed by these differences. Ultimately, a well-designed INTERFACE_X should help the LM agent understand the state of the application given previous changes, manage history to avoid unnecessary context from prior observations, and provide actions that models can use efficiently and reliably. The INTERFACE_X specifies both the commands available to the LM and how the environment state is communicated back to the LM. It also tracks the history of all previous commands and observations and, at each step, manages how these should be formatted and combined with high-level instructions into a single input for the LM. In this paper, we assume a fixed LM and focus on designing the INTERFACE_X to improve its performance. This means that we shape the actions, their documentation, and environment feedback to complement an LM's limitations and abilities. We draw inspiration from the field of HCI, where user studies elicit insights about how compatible different interfaces are with respect to human intuition and performance . We use two approaches to enhance performance on a development set: (1) manually inspect agent behavior to identify difficulties and propose improvements, and (2) run a grid search to select the best INTERFACE_X configuration. Taking these two actions resulted in several insights about design principles that seem especially important for building effective ACIs: [leftmargin=*] Actions should be simple and easy to understand for agents. Many bash commands have documentation that includes dozens of options. Simple commands with a few options and concise documentation are easier for agents to use, reducing the need for demonstrations or fine-tuning. This is a defining principle for all METHOD_X commands that we describe in Section . Actions should be compact and efficient. Important operations (e.g., file navigation, editing) should be consolidated into as few actions as possible. Efficient actions help agents make meaningful progress towards a goal in a single step. A poor design would therefore have many simple actions that must be composed across multiple turns for a higher order operation to take effect. We show this idea in action in the Editing and Search interface analyses in Section . Environment feedback should be informative but concise. High quality feedback should provide the agent with substantive information about the current environment state (and the effect of the agent's recent actions) without unnecessary details. For instance, when editing a file, updating the agent about revised content is helpful. Figures , and Table show this. Guardrails mitigate error propagation and hasten recovery. Like humans, LMs make mistakes when editing or searching and can struggle to recover from these errors. Building in guardrails, such as a code syntax checker that automatically detects mistakes, can help agents recognize and quickly correct errors. We show the effect of editing guardrails in Table . Analysis and ablation studies in Section demonstrate how alternative ACIs affect LM performance. Our studies shows how these principles appear recurrently across actions, feedback, and workflows. METHOD_X: Designing an INTERFACE_X for Software Engineering . Here we describe how METHOD_X provides an INTERFACE_X for LMs to act as software engineering agents, enabling them to effectively search, navigate, edit, and execute code commands. The INTERFACE_X comprises several principal components, including search/navigation, file viewer, file editor, and context management. At each step, METHOD_X generates a thought and a command, then incorporates the feedback from the command's execution in the environment (ReAct; ). Built atop the Linux shell, METHOD_X also allows access to common Linux commands and utilities when needed. Search and navigation. Navigating codebases requires finding the relevant file and content. A common strategy to do this involves looking up terms that might be useful, e.g., files, functions, or class definitions mentioned in an issue. We introduce the special commands find file, search file, and search dir, which output a summary of search results when searching for filenames and strings within files or directories. Figure shows examples of these search result formats. The find file command searches for filenames in the repository, while the search file and search dir locates strings in a file(s) of a subdirectory. Our interface encourages efficient searches by suppressing verbose results. The search commands return at most 50 results for each search query; if a search exceeds this number, we do not report the results and instead suggest that the agent write a more specific query. [t] 0.48 figures/file_viewer_example.pdf Observation from the file viewer. [t] 0.48 figures/file_editor_example.pdf Action using the edit interface. The file viewer and edit command are integrated. (a) The file viewer shows the agent the open file's content with line numbers. (b) The agent invokes the edit function to replace lines 404-407 in the open file. After the edit, the file viewer shows the agent the now updated version of the file. File viewer. After finding a file they want to view, agents use the interactive file viewer by calling the command open on the relevant file path. The file viewer presents a window of at most 100 lines of the file at a time. The agent can move this window with the commands scroll down and scroll up or access a specific line with the goto command. To facilitate in-file navigation and code localization, we display: the full path of the open file, the total number of lines in the file, the number of lines omitted before and after the current window, and the line number (prepended to each visible line). Figure shows an example of this interface. File editor. We provide a few commands that let LMs create and edit files. The edit command works in conjunction with the file viewer, allowing agents to replace a specific range of lines in the open file. This command takes 3 required arguments: the start line, end line, and replacement text. In a single step, agents can replace all lines between the start and end lines with the replacement text, as shown in Figure . After edits are applied, the file viewer automatically displays the updated content, helping the agent observe the effects of its edit immediately without invoking additional commands. Figure shows an example agent response, including a file edit. Similar to how humans can use tools like syntax highlighting to help them notice format errors when editing files in an IDE, we integrate a code linter into the edit function to alert the agent of mistakes it may have introduced when editing a file. Select errors from the linter are shown to the agent along with a snippet of the file contents before/after the error was introduced. Invalid edits are discarded, and the agent is asked to try editing the file again. Context management. The METHOD_X system uses informative prompts, error messages, and history processors to keep agent context concise and informative. Agents receive instructions, documentation, and demonstrations on the correct use of bash and INTERFACE_X commands. At each step, the system instructs them to generate both a thought and an action . Malformed generations trigger an error response, shown in Figure , asking the agent to try again, which is repeated until a valid generation is received. Once received, all past error messages except the first are omitted. The agent's environment responses display computer output using the template shown in Figure ; however, if no output is generated, a specific message (``Your command ran successfully and did not produce any output'') is included to enhance clarity. To further improve context relevance, observations preceding the last are each collapsed into a single line, shown in Figure . By removing most content from prior observations, we maintain essential information about the plan and action history while reducing unnecessary context, which allows for more interaction cycles and avoids showing outdated file information. provides further implementation details."
+      },
+      "carried_review_evidence": {
+        "source_verified": true,
+        "actual_benchmarks_verified": true,
+        "reviewer_id": "yzb",
+        "from_iteration": 2,
+        "scope_match": true
+      }
+    }
+  ],
+  "display_label": "Auto-Bench Blind Literature Audit — Round 3 Delta",
+  "submission_filename": "literature_audit_submission_round_3.json",
+  "iteration_comparison": {
+    "schema_version": "1.0",
+    "comparison": "literature_audit_round_2_to_round_3",
+    "previous_iteration": 2,
+    "current_iteration": 3,
+    "interpretation": "Round 3 is a feedback-driven regression on the same papers, not a new untouched holdout. A fresh-paper audit is still needed for an unbiased generalization estimate.",
+    "aggregate": {
+      "previous_human_status": "LITERATURE_AUDIT_PARTIAL",
+      "before": {
+        "mean_primary_recall_at_5": 0.9166666666666666,
+        "mean_primary_recall_at_6": 1.0,
+        "mean_primary_mrr": 0.6666666666666666,
+        "mean_selected_modeled_recall": 1.0,
+        "mean_selected_actual_precision": 0.7111111111111111
+      },
+      "after": {
+        "mean_primary_recall_at_5": 0.9166666666666666,
+        "mean_primary_recall_at_6": 1.0,
+        "mean_primary_mrr": 0.8333333333333334,
+        "mean_selected_modeled_recall": 1.0,
+        "mean_selected_actual_precision": 0.7222222222222222
+      },
+      "delta": {
+        "mean_primary_recall_at_5": 0.0,
+        "mean_primary_recall_at_6": 0.0,
+        "mean_primary_mrr": 0.16666666666666674,
+        "mean_selected_modeled_recall": 0.0,
+        "mean_selected_actual_precision": 0.011111111111111072
+      }
+    },
+    "cases": [
+      {
+        "case_id": "case_001",
+        "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+        "source_url": "https://arxiv.org/abs/2210.03629",
+        "previous_human_decision": "MATCH",
+        "previous_human_notes": "perfect",
+        "before": {
+          "selected": [
+            "webarena",
+            "fever",
+            "hotpotqa",
+            "alfworld",
+            "mind2web",
+            "webshop"
+          ],
+          "modeled_gold": [
+            "hotpotqa",
+            "fever",
+            "alfworld",
+            "webshop"
+          ],
+          "selected_matches": [
+            "fever",
+            "hotpotqa",
+            "alfworld",
+            "webshop"
+          ],
+          "selected_missing": [],
+          "selected_extras": [
+            "webarena",
+            "mind2web"
+          ],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 0.6666666666666666,
+          "rank_by_modeled_gold": {
+            "hotpotqa": 3,
+            "fever": 2,
+            "alfworld": 4,
+            "webshop": 6
+          }
+        },
+        "after": {
+          "selected": [
+            "webarena",
+            "alfworld",
+            "fever",
+            "hotpotqa",
+            "visualwebarena",
+            "webshop"
+          ],
+          "modeled_gold": [
+            "hotpotqa",
+            "fever",
+            "alfworld",
+            "webshop"
+          ],
+          "selected_matches": [
+            "alfworld",
+            "fever",
+            "hotpotqa",
+            "webshop"
+          ],
+          "selected_missing": [],
+          "selected_extras": [
+            "webarena",
+            "visualwebarena"
+          ],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 0.6666666666666666,
+          "rank_by_modeled_gold": {
+            "hotpotqa": 4,
+            "fever": 3,
+            "alfworld": 2,
+            "webshop": 6
+          }
+        },
+        "delta": {
+          "selected_modeled_recall": 0.0,
+          "selected_actual_precision": 0.0
+        },
+        "newly_selected": [
+          "visualwebarena"
+        ],
+        "removed_selected": [
+          "mind2web"
+        ],
+        "previous_unmodeled_gold": [],
+        "resolved_unmodeled_gold": [],
+        "unmodeled_gold": []
+      },
+      {
+        "case_id": "case_002",
+        "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+        "source_url": "https://arxiv.org/abs/2303.11366",
+        "previous_human_decision": "PARTIAL",
+        "previous_human_notes": "你的分数最高的bench：\tScienceWorld并没有被入选，而且论文中也有两个bench：LeetcodeHardGym、MultiPL-E language ports，你没有选到",
+        "before": {
+          "selected": [
+            "scienceworld",
+            "humaneval",
+            "hotpotqa",
+            "mbpp",
+            "alfworld"
+          ],
+          "modeled_gold": [
+            "alfworld",
+            "hotpotqa",
+            "humaneval",
+            "mbpp"
+          ],
+          "selected_matches": [
+            "humaneval",
+            "hotpotqa",
+            "mbpp",
+            "alfworld"
+          ],
+          "selected_missing": [],
+          "selected_extras": [
+            "scienceworld"
+          ],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 0.8,
+          "rank_by_modeled_gold": {
+            "alfworld": 5,
+            "hotpotqa": 3,
+            "humaneval": 2,
+            "mbpp": 4
+          }
+        },
+        "after": {
+          "selected": [
+            "leetcodehardgym",
+            "alfworld",
+            "hotpotqa",
+            "multipl_e",
+            "humaneval",
+            "mbpp"
+          ],
+          "modeled_gold": [
+            "alfworld",
+            "hotpotqa",
+            "humaneval",
+            "leetcodehardgym",
+            "mbpp",
+            "multipl_e"
+          ],
+          "selected_matches": [
+            "leetcodehardgym",
+            "alfworld",
+            "hotpotqa",
+            "multipl_e",
+            "humaneval",
+            "mbpp"
+          ],
+          "selected_missing": [],
+          "selected_extras": [],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 1.0,
+          "rank_by_modeled_gold": {
+            "alfworld": 2,
+            "hotpotqa": 3,
+            "humaneval": 5,
+            "leetcodehardgym": 1,
+            "mbpp": 6,
+            "multipl_e": 4
+          }
+        },
+        "delta": {
+          "selected_modeled_recall": 0.0,
+          "selected_actual_precision": 0.19999999999999996
+        },
+        "newly_selected": [
+          "leetcodehardgym",
+          "multipl_e"
+        ],
+        "removed_selected": [
+          "scienceworld"
+        ],
+        "previous_unmodeled_gold": [
+          "LeetcodeHardGym",
+          "MultiPL-E language ports"
+        ],
+        "resolved_unmodeled_gold": [
+          "LeetcodeHardGym",
+          "MultiPL-E language ports"
+        ],
+        "unmodeled_gold": []
+      },
+      {
+        "case_id": "case_003",
+        "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+        "source_url": "https://arxiv.org/abs/2405.15793",
+        "previous_human_decision": "MATCH",
+        "previous_human_notes": "good",
+        "before": {
+          "selected": [
+            "swe_bench",
+            "humanevalfix",
+            "humaneval"
+          ],
+          "modeled_gold": [
+            "swe_bench",
+            "humanevalfix"
+          ],
+          "selected_matches": [
+            "swe_bench",
+            "humanevalfix"
+          ],
+          "selected_missing": [],
+          "selected_extras": [
+            "humaneval"
+          ],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 0.6666666666666666,
+          "rank_by_modeled_gold": {
+            "swe_bench": 1,
+            "humanevalfix": 2
+          }
+        },
+        "after": {
+          "selected": [
+            "swe_bench",
+            "humanevalfix",
+            "humaneval",
+            "leetcodehardgym"
+          ],
+          "modeled_gold": [
+            "swe_bench",
+            "humanevalfix"
+          ],
+          "selected_matches": [
+            "swe_bench",
+            "humanevalfix"
+          ],
+          "selected_missing": [],
+          "selected_extras": [
+            "humaneval",
+            "leetcodehardgym"
+          ],
+          "selected_modeled_recall": 1.0,
+          "selected_actual_precision": 0.5,
+          "rank_by_modeled_gold": {
+            "swe_bench": 1,
+            "humanevalfix": 2
+          }
+        },
+        "delta": {
+          "selected_modeled_recall": 0.0,
+          "selected_actual_precision": -0.16666666666666663
+        },
+        "newly_selected": [
+          "leetcodehardgym"
+        ],
+        "removed_selected": [],
+        "previous_unmodeled_gold": [],
+        "resolved_unmodeled_gold": [],
+        "unmodeled_gold": []
+      }
+    ]
+  }
+}

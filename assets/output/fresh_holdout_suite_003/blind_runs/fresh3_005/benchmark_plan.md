@@ -1,0 +1,66 @@
+# Auto-Bench Plan: fresh3_005
+
+- Status: **HUMAN_REVIEW_REQUIRED**
+- Route: **new_benchmark_synthesis**
+- Task-family coverage: **0.0%**
+- Decision: no catalog task family covers the explicitly stated method domain
+
+## Matcher-Visible Paper Input
+
+### Introduction
+
+Originally designed to generate text, scaled-up versions of language models (LMs) such as GPT and PaLM have been shown to be increasingly capable of performing an ever wider range of tasks requiring mathematical, symbolic, commonsense, and knowledge reasoning. It is perhaps surprising that underlying all this progress is still the original autoregressive mechanism for generating text, which makes token-level decisions one by one and in a left-to-right fashion. Is such a simple mechanism sufficient for a LM to be built toward a general problem solver? If not, what problems would challenge the current paradigm, and what should be alternative mechanisms? The literature on human cognition provides some clues to answer these questions. Research on ``dual process'' models suggests that people have two modes in which they engage with decisions -- a fast, automatic, unconscious mode (``System 1'') and a slow, deliberate, conscious mode (``System 2'') . These two modes have previously been connected to a variety of mathematical models used in machine learning. For example, research on reinforcement learning in humans and other animals has explored the circumstances under which they engage in associative ``model free'' learning or more deliberative ``model based'' planning . The simple associative token-level choices of LMs are also reminiscent of ``System 1'', and thus might benefit from augmentation by a more deliberate ``System 2'' planning process that (1) maintains and explores diverse alternatives for current choices instead of just picking one, and (2) evaluates its current status and actively looks ahead or backtracks to make more global decisions. To design such a planning process, we return to the origins of artificial intelligence (and cognitive science), drawing inspiration from the planning processes explored by Newell, Shaw, and Simon starting in the 1950s . Newell and colleagues characterized problem solving as search through a combinatorial problem space, represented as a tree. We thus propose the METHOD_X (METHOD_X) framework for general problem solving with language models. As Figure illustrates, while existing methods (detailed below) sample continuous language sequences for problem solving, METHOD_X actively maintains a METHOD_X, where each thought is a coherent language sequence that serves as an intermediate step toward problem solving (Table ). Such a high-level semantic unit allows the LM to self-evaluate the progress different intermediate thoughts make towards solving the problem through a deliberate reasoning process that is also instantiated in language (Figures , , ). This implementation of search heuristics via LM self-evaluation and deliberation is novel, as previous search heuristics are either programmed or learned. Finally, we combine this language-based capability to generate and evaluate diverse thoughts with search algorithms, such as breadth-first search (BFS) or depth-first search (DFS), which allow systematic exploration of the METHOD_X with lookahead and backtracking. These tasks require deductive, mathematical, commonsense, lexical reasoning abilities, and a way to incorporate systematic planning or search. We show METHOD_X obtains superior results on all three tasks by being general and flexible enough to support different levels of thoughts, different ways to generate and evaluate thoughts, and different search algorithms that adapt to the nature of different problems. We also analyze how such choices affect model performances via systematic ablations and discuss future directions to better train and use LMs. [t] figures/teaser.pdf Schematic illustrating various approaches to problem solving with LLMs. Each rectangle box represents a thought , which is a coherent language sequence that serves as an intermediate step toward problem solving. See concrete examples of how thoughts are generated, evaluated, and searched in Figures , , . -15pt
+
+### Method
+
+Deliberate Problem Solving with LM A genuine problem-solving process involves the repeated use of available information to initiate exploration , which discloses, in turn, more information until a way to attain the solution is finally discovered. ------ -5pt Research on human problem-solving suggests that people search through a combinatorial problem-space -- a tree where the nodes represent partial solutions, and the branches correspond to operators that modify them . Which branch to take is determined by heuristics that help to navigate the problem-space and guide the problem-solver towards a solution. This perspective highlights two key shortcomings of existing approaches that use LMs to solve general problems: 1) Locally, they do not explore different continuations within a thought process -- the branches of the tree. 2) Globally, they do not incorporate any type of planning, lookahead, or backtracking to help evaluate these different options -- the kind of heuristic-guided search that seems characteristic of human problem-solving. To address these shortcomings, we introduce METHOD_X (METHOD_X), a paradigm that allows LMs to explore multiple reasoning paths over thoughts (Figure (c)). METHOD_X frames any problem as a search over a tree, where each node is a state representing a partial solution with the input and the sequence of thoughts so far. A specific instantiation of METHOD_X involves answering four questions: 1. How to decompose the intermediate process into thought steps; 2. How to generate potential thoughts from each state; 3. How to heuristically evaluate states; 4. What search algorithm to use. 1.\,Thought decomposition. While CoT samples thoughts coherently without explicit decomposition, METHOD_X leverages problem properties to design and decompose intermediate thought steps. As Table shows, depending on different problems, a thought could be a couple of words ([REDACTED_BENCHMARK]), a line of equation ([REDACTED_BENCHMARK]), or a whole paragraph of writing plan ([REDACTED_BENCHMARK]). In general, a thought should be ``small'' enough so that LMs can generate promising and diverse samples (e.g.\,generating a whole book is usually too ``big'' to be coherent), yet ``big'' enough so that LMs can evaluate its prospect toward problem solving (e.g.\,generating one token is usually too ``small'' to evaluate). 2.\,Thought generator . Given a tree state , we consider two strategies to generate candidates for the next thought step: [(a)] -6pt Sample i.i.d.\,thoughts from a CoT prompt ([REDACTED_BENCHMARK], Figure ): . This works better when the thought space is rich (e.g.\,each thought is a paragraph), and i.i.d.\,samples lead to diversity; Propose thoughts sequentially using a ``propose prompt'' ([REDACTED_BENCHMARK], Figure ; [REDACTED_BENCHMARK], Figure ): . This works better when the thought space is more constrained (e.g.\,each thought is just a word or a line), so proposing different thoughts in the same context avoids duplication. -6pt 3.\,State evaluator . Given a frontier of different states, the state evaluator evaluates the progress they make towards solving the problem, serving as a heuristic for the search algorithm to determine which states to keep exploring and in which order. While heuristics are a standard approach to solving search problems, they are typically either programmed (e.g.\,DeepBlue ) or learned (e.g.\,AlphaGo ). We propose a third alternative, by using the LM to deliberately reason about states. When applicable, such a deliberate heuristic can be more flexible than programmed rules, and more sample-efficient than learned models. Similar to the thought generator, we consider two strategies to evaluate states either independently or together: -5pt [(a)] Value each state independently: , where a value prompt reasons about the state to generate a scalar value (e.g.\,1-10) or a classification (e.g.\,sure/likely/impossible) that could be heuristically turned into a value. The basis of such evaluative reasoning can vary across problems and thought steps. In this work, we explore evaluation via few lookahead simulations (e.g.\,quickly confirm that 5, 5, 14 can reach 24 via 5 + 5 + 14, or ``hot l'' can mean ``inn'' via filling ``e'' in `` '') plus commonsense (e.g.\,1 2 3 are too small to reach 24, or no word can start with ``tzxc''). While the former might promote ``good'' states, the latter could help eliminate ``bad'' states. Such valuations do not need to be perfect, and only need to be approximately helpful for decision making. Vote across states: , where a ``good'' state is voted out based on deliberately comparing different states in in a vote prompt. When problem success is harder to directly value (e.g.\,passage coherency), it is natural to to instead compare different partial solutions and vote for the most promising one. This is similar in spirit to a ``step-wise'' self-consistency strategy, i.e.\,cast ``which state to explore'' as a multi-choice QA, and use LM samples to vote for it. -6pt For both strategies, we could prompt the LM multiple times to aggregate the value or vote results to trade time/resource/cost for more faithful/robust heuristics. [ht] -15pt 0.50 [H] METHOD_X-BFS( ) Input , LM , thought generator size limit , states evaluator , step limit , breadth limit . \\ 0.49 [H] METHOD_X-DFS( ) Current state , step , LM , thought generator and size limit , states evaluator , step limit , threshold record output sorted candidates pruning DFS -9pt 4. Search algorithm. Finally, within the METHOD_X framework, one can plug and play different search algorithms depending on the tree structure. We explore two relatively simple search algorithms and leave more advanced ones (e.g.\,A* , MCTS ) for future work: -7pt [(a)] Breadth-first search (BFS) (Algorithm ) maintains a set of the most promising states per step. This is used for [REDACTED_BENCHMARK] and [REDACTED_BENCHMARK] where the tree depth is limit ( ), and initial thought steps can be evaluated and pruned to a small set ( ). Depth-first search (DFS) (Algorithm ) explores the most promising state first, until the final output is reached ( ), or the state evaluator deems it impossible to solve the problem from the current ( for a value threshold ). In the latter case, the subtree from is pruned to trade exploration for exploitation. In both cases, DFS backtracks to the parent state of to continue exploration. -7pt Conceptually, METHOD_X has several benefits as a method for general problem-solving with LMs: (1) Generality. IO, CoT, CoT-SC, and self-refinement can be seen as special cases of METHOD_X (i.e. trees of limited depth and breadth; Figure ). (2) Modularity. The base LM, as well as the thought decomposition, generation, evaluation, and search procedures can all be varied independently. (3) Adaptability . Different problem properties, LM capabilities, and resource constraints can be accommodated. (4) Convenience. No extra training is needed, just a pre-trained LM is sufficient. The next section will show how these conceptual benefits translate to strong empirical performance in different problems.
+
+## Inferred Evaluation Profile
+
+- Tasks: none
+- Explicit benchmark counts: {}
+- Declared total evaluation breadth: 0
+- Uncovered tasks: two_strategies_to_generate_candidates_for_the_next
+- Modalities: text
+- Interactions: retrieval_tool
+- Outputs: task_answer
+- Capabilities: external_information_retrieval, long_horizon_planning, self_reflection
+
+## Selected Benchmark Portfolio
+
+- No existing benchmark passed the portfolio threshold.
+
+## Top Candidates
+
+1. **ToolBench** (`toolbench`) — 0.318; tasks=[]
+2. **HotpotQA** (`hotpotqa`) — 0.267; tasks=[]
+3. **FEVER** (`fever`) — 0.250; tasks=[]
+4. **TriviaQA** (`triviaqa`) — 0.250; tasks=[]
+5. **MMLU** (`mmlu`) — 0.170; tasks=[]
+6. **ALFWorld** (`alfworld`) — 0.153; tasks=[]
+7. **ScienceWorld** (`scienceworld`) — 0.153; tasks=[]
+8. **GSM8K** (`gsm8k`) — 0.145; tasks=[]
+9. **SVAMP** (`svamp`) — 0.145; tasks=[]
+10. **RealToxicityPrompts** (`realtoxicityprompts`) — 0.120; tasks=[]
+
+## Online Literature Leads
+
+- Online search was disabled or returned no relevant arXiv metadata hits.
+
+## Catalog Admission Proposals
+
+- No benchmark-like online hit met the proposal threshold.
+
+## Adaptation and Synthesis
+
+- Missing task families: ['two_strategies_to_generate_candidates_for_the_next']
+- Synthesis required: True
+- Official and adapted metrics must be reported separately.
+- Test examples stay frozen and never seed synthetic records.
+
+## Human Validation
+
+Current status: **HUMAN_REVIEW_REQUIRED**.
+- Existing-paper blind test: after matching, reveal the source paper and compare its actual benchmarks with Selected and Top-6 using MATCH / PARTIAL / MISMATCH.
+- New method without literature gold: two independent reviewers score construct alignment, task representativeness, metric validity, data quality, leakage control, and execution feasibility.
+Automated retrieval metrics do not approve either validation track.

@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "reviewer": "AUTO_LITERATURE_EVALUATOR",
+  "validation_mode": "post_match_source_comparison",
+  "human_submission_required": false,
+  "evidence_class": "feedback_regression",
+  "status": "AUTOMATED_LITERATURE_AUDIT_CONFIRMED",
+  "case_count": 1,
+  "decision_counts": {
+    "MATCH": 1,
+    "PARTIAL": 0,
+    "MISMATCH": 0
+  },
+  "all_source_evidence_complete": true,
+  "all_blind_checks_passed": true,
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.3333333333333333,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 1.0,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_002",
+      "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+      "source_url": "https://arxiv.org/abs/2305.11738",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "CRITIC: Correcting with Tool-Interactive Critiquing"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Free-form Question Answering",
+        "Mathematical Program Synthesis",
+        "Toxicity Reduction"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "evidence_section": "Free-form Question Answering",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "ambignq",
+          "benchmark_name": "AmbigNQ",
+          "evidence_section": "Free-form Question Answering",
+          "role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "evidence_section": "Free-form Question Answering",
+          "role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "evidence_section": "Mathematical Program Synthesis",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "evidence_section": "Mathematical Program Synthesis",
+          "role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "evidence_section": "Mathematical Program Synthesis",
+          "role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "evidence_section": "Toxicity Reduction",
+          "role": "admitted_after_freeze"
+        }
+      ],
+      "selected_matches": [
+        "gsm8k",
+        "hotpotqa",
+        "triviaqa",
+        "realtoxicityprompts",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [],
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [],
+      "optimization_feedback": []
+    }
+  ]
+}

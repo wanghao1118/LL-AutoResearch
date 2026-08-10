@@ -1,0 +1,128 @@
+{
+  "case_id": "fresh_001",
+  "source_arxiv_id": "2303.17651",
+  "source_title": "Self-Refine: Iterative Refinement with Self-Feedback",
+  "source_url": "https://arxiv.org/abs/2303.17651",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Method"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "gsm8k"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "FED",
+    "PIE",
+    "Project CodeNet",
+    "Sentiment Reversal review-passage set",
+    "Acronym Generation paper-curated set",
+    "CommonGen-Hard"
+  ],
+  "expected_route": "new_benchmark_synthesis",
+  "gold_evidence_sections": [
+    "Evaluation",
+    "Appendix: Task Details"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Dialogue Response Generation / Evaluation",
+      "benchmark_name": "FED",
+      "task_family": "dialogue_response_generation"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Code Optimization",
+      "benchmark_name": "PIE",
+      "task_family": "code_optimization"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Code Readability / Experiments",
+      "benchmark_name": "Project CodeNet",
+      "task_family": "code_readability"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Math Reasoning",
+      "benchmark_id": "gsm8k",
+      "task_family": "math_reasoning"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Sentiment Reversal",
+      "benchmark_name": "Sentiment Reversal review-passage set",
+      "task_family": "sentiment_reversal"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Acronym Generation",
+      "benchmark_name": "Acronym Generation paper-curated set",
+      "task_family": "acronym_generation"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Constrained Generation",
+      "benchmark_name": "CommonGen-Hard",
+      "task_family": "constrained_generation"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "We evaluate \\ours on \\numtasks diverse tasks",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/400_tasks.tex"
+      ]
+    },
+    {
+      "term": "FED dataset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/task_details/responsegen.tex"
+      ]
+    },
+    {
+      "term": "Performance-Improving Code Edits or PIE",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/task_details/pie.tex"
+      ]
+    },
+    {
+      "term": "We use the CodeNet",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/task_details/code.tex"
+      ]
+    },
+    {
+      "term": "Grade School Math 8k (GSM-8k)",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/task_details/gsm.tex"
+      ]
+    },
+    {
+      "term": "1000 review passages",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/tasks_table.tex"
+      ]
+    },
+    {
+      "term": "generated a list of 250 acronyms",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/task_details/acronym.tex"
+      ]
+    },
+    {
+      "term": "CommonGen-Hard",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/appendix/task_details/commongen.tex"
+      ]
+    }
+  ]
+}

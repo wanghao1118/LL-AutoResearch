@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_001",
+  "validation_mode": "automatic_post_match_literature_comparison",
+  "human_submission_required": false,
+  "matcher_frozen_before_paper_selection": true,
+  "gold_revealed": true,
+  "matcher_change_policy": "run every selected paper once before opening experiment/evaluation sections; any later change creates a new suite",
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "matcher_patch": "assets/input/fresh_holdout_suite/matcher_freeze.patch",
+  "frozen_files": [
+    {
+      "path": "autobench/__init__.py",
+      "bytes": 138
+    },
+    {
+      "path": "autobench/__main__.py",
+      "bytes": 48
+    },
+    {
+      "path": "autobench/admission_agent.py",
+      "bytes": 5634
+    },
+    {
+      "path": "autobench/auto_literature_review.py",
+      "bytes": 8185
+    },
+    {
+      "path": "autobench/catalog.py",
+      "bytes": 1757
+    },
+    {
+      "path": "autobench/cli.py",
+      "bytes": 6226
+    },
+    {
+      "path": "autobench/iteration_report.py",
+      "bytes": 10869
+    },
+    {
+      "path": "autobench/leakage.py",
+      "bytes": 2450
+    },
+    {
+      "path": "autobench/literature_audit.py",
+      "bytes": 32381
+    },
+    {
+      "path": "autobench/match_agent.py",
+      "bytes": 18031
+    },
+    {
+      "path": "autobench/models.py",
+      "bytes": 5085
+    },
+    {
+      "path": "autobench/pipeline.py",
+      "bytes": 10074
+    },
+    {
+      "path": "autobench/profile_agent.py",
+      "bytes": 16312
+    },
+    {
+      "path": "autobench/query_agent.py",
+      "bytes": 1547
+    },
+    {
+      "path": "autobench/review_gate.py",
+      "bytes": 17151
+    },
+    {
+      "path": "autobench/review_workflow.py",
+      "bytes": 23778
+    },
+    {
+      "path": "autobench/search_agent.py",
+      "bytes": 3709
+    },
+    {
+      "path": "autobench/synthesis_agent.py",
+      "bytes": 17106
+    },
+    {
+      "path": "autobench/workflow.py",
+      "bytes": 8178
+    },
+    {
+      "path": "configs/benchmark_catalog.json",
+      "bytes": 25802
+    },
+    {
+      "path": "step2_run_blind_matching.py",
+      "bytes": 4582
+    },
+    {
+      "path": "step3_evaluate_blind_results.py",
+      "bytes": 19794
+    }
+  ],
+  "catalog_ids": [
+    "hotpotqa",
+    "fever",
+    "alfworld",
+    "webshop",
+    "humaneval",
+    "mbpp",
+    "leetcodehardgym",
+    "multipl_e",
+    "swe_bench",
+    "humanevalfix",
+    "webarena",
+    "mind2web",
+    "visualwebarena",
+    "osworld",
+    "gaia",
+    "agentbench",
+    "scienceworld",
+    "toolbench",
+    "gsm8k",
+    "ambignq",
+    "triviaqa",
+    "svamp",
+    "tabmwp",
+    "realtoxicityprompts",
+    "game_of_24",
+    "mmlu"
+  ],
+  "paper_selection": "assets/input/fresh_holdout_suite/paper_selection.json",
+  "paper_ids": [
+    "2303.17651",
+    "2308.09687",
+    "2308.10144",
+    "2305.14992",
+    "2304.09842"
+  ],
+  "gold_reveal_started_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite/pre_gold_run_record.json",
+  "matcher_changes_before_gold_reveal": false,
+  "gold_constructed_after_blind_run": true,
+  "gold_files": [
+    "assets/input/fresh_holdout_suite/gold/fresh_001.gold.json",
+    "assets/input/fresh_holdout_suite/gold/fresh_002.gold.json",
+    "assets/input/fresh_holdout_suite/gold/fresh_003.gold.json",
+    "assets/input/fresh_holdout_suite/gold/fresh_004.gold.json",
+    "assets/input/fresh_holdout_suite/gold/fresh_005.gold.json"
+  ],
+  "gold_construction_preconditions": {
+    "blind_run_completed_before_gold": true,
+    "gold_absent_during_run": true,
+    "five_cases": true,
+    "workers_succeeded": true,
+    "sandboxes_clean": true,
+    "matcher_unchanged": true
+  }
+}

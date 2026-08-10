@@ -1,0 +1,14 @@
+{
+  "status": "HUMAN_LITERATURE_AUDIT_REQUIRED",
+  "audit_id": "auto_bench_literature_audit_round_2_case_001_case_002_case_003",
+  "expected_case_ids": [
+    "case_001",
+    "case_002",
+    "case_003"
+  ],
+  "pending_case_ids": [
+    "case_001",
+    "case_002",
+    "case_003"
+  ]
+}

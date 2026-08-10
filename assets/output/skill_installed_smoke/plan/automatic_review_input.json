@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "case_id": "installed_skill_smoke",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "computer_use",
+      "web_navigation"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [],
+    "modalities": [
+      "image",
+      "text",
+      "web"
+    ],
+    "interactions": [
+      "browser"
+    ],
+    "output_types": [
+      "action_trajectory"
+    ],
+    "environments": [
+      "website"
+    ],
+    "capabilities": [
+      "long_horizon_planning",
+      "self_reflection",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "task_success_rate",
+      "trajectory_efficiency"
+    ],
+    "evidence_terms": {
+      "capability:long_horizon_planning": [
+        "plan"
+      ],
+      "capability:self_reflection": [
+        "self-reflection"
+      ],
+      "capability:tool_use": [
+        "action",
+        "browser"
+      ],
+      "task:computer_use": [
+        "screenshot"
+      ],
+      "task:web_navigation": [
+        "website",
+        "browser"
+      ]
+    },
+    "declared_evaluation_breadth": 0
+  },
+  "selected_benchmarks": [
+    "visualwebarena",
+    "mind2web",
+    "webarena"
+  ],
+  "top_6": [
+    "visualwebarena",
+    "mind2web",
+    "webarena",
+    "webshop",
+    "osworld",
+    "alfworld"
+  ],
+  "route": "direct_portfolio",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

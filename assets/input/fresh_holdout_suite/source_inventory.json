@@ -1,0 +1,44 @@
+{
+  "papers": [
+    {
+      "arxiv_id": "2303.17651",
+      "downloaded": true,
+      "extracted": true,
+      "archive_bytes": 1541504,
+      "tex_file_count": 56,
+      "source_root": "assets/input/source_papers/extracted/2303.17651"
+    },
+    {
+      "arxiv_id": "2308.09687",
+      "downloaded": true,
+      "extracted": true,
+      "archive_bytes": 886673,
+      "tex_file_count": 16,
+      "source_root": "assets/input/source_papers/extracted/2308.09687"
+    },
+    {
+      "arxiv_id": "2308.10144",
+      "downloaded": true,
+      "extracted": true,
+      "archive_bytes": 12775073,
+      "tex_file_count": 1,
+      "source_root": "assets/input/source_papers/extracted/2308.10144"
+    },
+    {
+      "arxiv_id": "2305.14992",
+      "downloaded": true,
+      "extracted": true,
+      "archive_bytes": 1267353,
+      "tex_file_count": 7,
+      "source_root": "assets/input/source_papers/extracted/2305.14992"
+    },
+    {
+      "arxiv_id": "2304.09842",
+      "downloaded": true,
+      "extracted": true,
+      "archive_bytes": 2292925,
+      "tex_file_count": 20,
+      "source_root": "assets/input/source_papers/extracted/2304.09842"
+    }
+  ]
+}

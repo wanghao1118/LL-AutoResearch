@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "comparison": "literature_audit_round_1_to_round_2",
+  "previous_iteration": 1,
+  "current_iteration": 2,
+  "interpretation": "Round 2 is a feedback-driven regression on the same papers, not a new untouched holdout. A fresh-paper audit is still needed for an unbiased generalization estimate.",
+  "aggregate": {
+    "previous_human_status": "LITERATURE_AUDIT_PARTIAL",
+    "before": {
+      "mean_primary_recall_at_5": 1.0,
+      "mean_primary_recall_at_6": 1.0,
+      "mean_primary_mrr": 1.0,
+      "mean_selected_modeled_recall": 1.0,
+      "mean_selected_actual_precision": 0.6666666666666666
+    },
+    "after": {
+      "mean_primary_recall_at_5": 1.0,
+      "mean_primary_recall_at_6": 1.0,
+      "mean_primary_mrr": 0.3333333333333333,
+      "mean_selected_modeled_recall": 1.0,
+      "mean_selected_actual_precision": 1.0
+    },
+    "delta": {
+      "mean_primary_recall_at_5": 0.0,
+      "mean_primary_recall_at_6": 0.0,
+      "mean_primary_mrr": -0.6666666666666667,
+      "mean_selected_modeled_recall": 0.0,
+      "mean_selected_actual_precision": 0.33333333333333337
+    }
+  },
+  "cases": [
+    {
+      "case_id": "holdout_002",
+      "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+      "source_url": "https://arxiv.org/abs/2305.11738",
+      "previous_human_decision": "PARTIAL",
+      "previous_human_notes": "有所差距",
+      "before": {
+        "selected": [
+          "hotpotqa",
+          "gsm8k",
+          "toolbench"
+        ],
+        "modeled_gold": [
+          "hotpotqa",
+          "gsm8k"
+        ],
+        "selected_matches": [
+          "hotpotqa",
+          "gsm8k"
+        ],
+        "selected_missing": [],
+        "selected_extras": [
+          "toolbench"
+        ],
+        "selected_modeled_recall": 1.0,
+        "selected_actual_precision": 0.6666666666666666,
+        "rank_by_modeled_gold": {
+          "hotpotqa": 1,
+          "gsm8k": 2
+        }
+      },
+      "after": {
+        "selected": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "gsm8k",
+          "hotpotqa",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "modeled_gold": [
+          "hotpotqa",
+          "gsm8k",
+          "ambignq",
+          "triviaqa",
+          "svamp",
+          "tabmwp",
+          "realtoxicityprompts"
+        ],
+        "selected_matches": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "gsm8k",
+          "hotpotqa",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "selected_missing": [],
+        "selected_extras": [],
+        "selected_modeled_recall": 1.0,
+        "selected_actual_precision": 1.0,
+        "rank_by_modeled_gold": {
+          "hotpotqa": 4,
+          "gsm8k": 3,
+          "ambignq": 6,
+          "triviaqa": 1,
+          "svamp": 5,
+          "tabmwp": null,
+          "realtoxicityprompts": 2
+        }
+      },
+      "delta": {
+        "selected_modeled_recall": 0.0,
+        "selected_actual_precision": 0.33333333333333337
+      },
+      "newly_selected": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "removed_selected": [
+        "toolbench"
+      ],
+      "previous_unmodeled_gold": [
+        "AmbigNQ",
+        "TriviaQA",
+        "SVAMP",
+        "TabMWP",
+        "RealToxicityPrompts"
+      ],
+      "resolved_unmodeled_gold": [
+        "AmbigNQ",
+        "TriviaQA",
+        "SVAMP",
+        "TabMWP",
+        "RealToxicityPrompts"
+      ],
+      "unmodeled_gold": []
+    }
+  ]
+}

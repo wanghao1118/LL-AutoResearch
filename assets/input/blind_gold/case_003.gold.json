@@ -1,0 +1,47 @@
+{
+  "case_id": "case_003",
+  "source_arxiv_id": "2405.15793",
+  "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+  "source_url": "https://arxiv.org/abs/2405.15793",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "The Agent-Computer Interface",
+      "SWE-agent: Designing an ACI for Software Engineering"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "swe_bench"
+  ],
+  "secondary_benchmark_ids": [
+    "humanevalfix"
+  ],
+  "unmodeled_benchmarks": [],
+  "expected_route": "direct_portfolio",
+  "gold_evidence_sections": [
+    "Experimental Setup"
+  ],
+  "benchmark_evidence": [
+    {
+      "benchmark_id": "swe_bench",
+      "role": "primary",
+      "evidence_section": "Experimental Setup"
+    },
+    {
+      "benchmark_id": "humanevalfix",
+      "role": "secondary",
+      "evidence_section": "Experimental Setup"
+    }
+  ],
+  "matcher_visible": false,
+  "leakage_scan": {
+    "passed": true,
+    "benchmark_alias_hits": [],
+    "identity_hits": [],
+    "generic_evaluation_terms": [
+      "benchmark"
+    ]
+  }
+}

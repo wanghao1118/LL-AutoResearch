@@ -1,0 +1,540 @@
+{
+  "schema_version": "1.0",
+  "verdict": "PASS",
+  "thresholds": {
+    "minimum_cases": 1,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_selected_modeled_recall": 0.85,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.3333333333333333,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 1.0,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_002",
+      "source_arxiv_id": "2305.11738",
+      "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+      "source_url": "https://arxiv.org/abs/2305.11738",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "CRITIC: Correcting with Tool-Interactive Critiquing"
+        ]
+      },
+      "matcher_visible_input": "assets/input/untouched_holdout_2_cases/holdout_002.json",
+      "gold_evidence_sections": [
+        "Free-form Question Answering",
+        "Mathematical Program Synthesis",
+        "Toxicity Reduction"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        },
+        {
+          "benchmark_name": "AmbigNQ",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_id": "ambignq",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        },
+        {
+          "benchmark_name": "TriviaQA",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_id": "triviaqa",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "role": "primary",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_name": "SVAMP",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_id": "svamp",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 5
+        },
+        {
+          "benchmark_name": "TabMWP",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_id": "tabmwp",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 7
+        },
+        {
+          "benchmark_name": "RealToxicityPrompts",
+          "role": "admitted_after_freeze",
+          "evidence_section": "Toxicity Reduction",
+          "benchmark_id": "realtoxicityprompts",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "gsm8k"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [],
+      "admitted_gold": [
+        {
+          "benchmark_name": "AmbigNQ",
+          "benchmark_id": "ambignq"
+        },
+        {
+          "benchmark_name": "TriviaQA",
+          "benchmark_id": "triviaqa"
+        },
+        {
+          "benchmark_name": "SVAMP",
+          "benchmark_id": "svamp"
+        },
+        {
+          "benchmark_name": "TabMWP",
+          "benchmark_id": "tabmwp"
+        },
+        {
+          "benchmark_name": "RealToxicityPrompts",
+          "benchmark_id": "realtoxicityprompts"
+        }
+      ],
+      "top_6": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "explicit_suite_cardinality:math_reasoning",
+          "paper_role": "admitted_after_freeze"
+        },
+        {
+          "benchmark_id": "ambignq",
+          "benchmark_name": "AmbigNQ",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "admitted_after_freeze"
+        }
+      ],
+      "selected": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "rank": 1,
+          "score": 0.516667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/1705.03551"
+        },
+        {
+          "benchmark_id": "realtoxicityprompts",
+          "benchmark_name": "RealToxicityPrompts",
+          "rank": 2,
+          "score": 0.396667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2009.11462"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 3,
+          "score": 0.371667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2110.14168"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "score": 0.466667,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "rank": 5,
+          "score": 0.371667,
+          "selection_role": "explicit_suite_cardinality:math_reasoning",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2103.07191"
+        },
+        {
+          "benchmark_id": "ambignq",
+          "benchmark_name": "AmbigNQ",
+          "rank": 6,
+          "score": 0.516667,
+          "selection_role": "explicit_suite_cardinality:knowledge_intensive_qa",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2004.10645"
+        },
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "rank": 7,
+          "score": 0.471667,
+          "selection_role": "explicit_suite_cardinality:math_reasoning",
+          "paper_role": "admitted_after_freeze",
+          "source_url": "https://arxiv.org/abs/2209.14610"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "knowledge_intensive_qa",
+          "math_reasoning",
+          "toxicity_reduction"
+        ],
+        "task_benchmark_counts": {
+          "knowledge_intensive_qa": 3,
+          "math_reasoning": 3
+        },
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "safe_text_continuation",
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "fluency",
+          "generation_diversity",
+          "token_f1",
+          "toxicity_probability"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "verify"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:knowledge_intensive_qa": [
+            "question answering"
+          ],
+          "task:math_reasoning": [
+            "mathematical reasoning",
+            "mathematical program synthesis"
+          ],
+          "task:toxicity_reduction": [
+            "toxicity reduction",
+            "toxic content"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.585",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "gsm8k",
+          "hotpotqa",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "ambiguity_stratification",
+          "answer_alias_normalization",
+          "clarification_wrapper",
+          "classifier_snapshot",
+          "continuation_wrapper",
+          "difficulty_stratification",
+          "evidence_retrieval_wrapper",
+          "multiple_answer_normalization",
+          "open_domain_split",
+          "question_only_protocol",
+          "question_type_split",
+          "reasoning_trace_wrapper",
+          "supporting_fact_audit",
+          "table_representation_choice",
+          "toxicity_band_split",
+          "variation_family_split",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "safe_text_continuation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "exact_match",
+            "fluency",
+            "generation_diversity",
+            "token_f1",
+            "toxicity_probability"
+          ],
+          "evidence_terms": {
+            "task:knowledge_intensive_qa": [
+              "question answering"
+            ],
+            "task:math_reasoning": [
+              "mathematical reasoning",
+              "mathematical program synthesis"
+            ],
+            "task:toxicity_reduction": [
+              "toxicity reduction",
+              "toxic content"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "knowledge_intensive_qa",
+            "math_reasoning",
+            "toxicity_reduction"
+          ],
+          "task_benchmark_counts": {
+            "knowledge_intensive_qa": 3,
+            "math_reasoning": 3
+          },
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "safe_text_continuation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "exact_match",
+            "fluency",
+            "generation_diversity",
+            "token_f1",
+            "toxicity_probability"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "gsm8k",
+          "hotpotqa"
+        ],
+        "selected_secondary_matches": [],
+        "selected_admitted_matches": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "svamp",
+          "ambignq",
+          "tabmwp"
+        ],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "admitted_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [
+          "gsm8k",
+          "hotpotqa"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_admitted_matches": [
+          "triviaqa",
+          "realtoxicityprompts",
+          "svamp",
+          "ambignq"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 1.0
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.5,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.3333333333333333,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "expected_route_at_freeze": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    }
+  ]
+}

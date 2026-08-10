@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_001",
+  "case_ids": [
+    "fresh_001",
+    "fresh_002",
+    "fresh_003",
+    "fresh_004",
+    "fresh_005"
+  ],
+  "fixture_frozen_before_first_matching": true,
+  "gold_directory_exists": false,
+  "gold_directory_passed_to_matcher": false,
+  "matcher_change_after_suite_freeze": false,
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "cases": [
+    {
+      "case_id": "fresh_001",
+      "visible_chars": 8813,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.17651/sections/200_intro.tex",
+        "assets/input/source_papers/extracted/2303.17651/sections/300_method-alt.tex"
+      ]
+    },
+    {
+      "case_id": "fresh_002",
+      "visible_chars": 17276,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.09687/introduction.tex",
+        "assets/input/source_papers/extracted/2308.09687/scheme.tex",
+        "assets/input/source_papers/extracted/2308.09687/arch.tex"
+      ]
+    },
+    {
+      "case_id": "fresh_003",
+      "visible_chars": 17045,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.10144/main.tex",
+        "assets/input/source_papers/extracted/2308.10144/main.tex"
+      ]
+    },
+    {
+      "case_id": "fresh_004",
+      "visible_chars": 14934,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.14992/sections/intro.tex",
+        "assets/input/source_papers/extracted/2305.14992/sections/method.tex"
+      ]
+    },
+    {
+      "case_id": "fresh_005",
+      "visible_chars": 15674,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.09842/body.tex",
+        "assets/input/source_papers/extracted/2304.09842/body.tex"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "case_id": "workflow_demo_base_adaptation",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "route": "base_benchmark_adaptation",
+  "coverage_ratio": 0.5,
+  "blind_input_fields": [
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "blind_gold_loaded": false,
+  "leakage_scan_passed": true,
+  "outputs": {
+    "json": "assets/output/final_verification/base_run/benchmark_plan.json",
+    "markdown": "assets/output/final_verification/base_run/benchmark_plan.md",
+    "automatic_review_input": "assets/output/final_verification/base_run/automatic_review_input.json"
+  },
+  "synthesis_execution": {
+    "status": "DRAFTS_READY_FOR_AUTOMATIC_VALIDATION",
+    "route": "base_benchmark_adaptation",
+    "source_benchmark": "local_demo_base",
+    "source_split": "train",
+    "base_records": "assets/input/workflow_demo/base_records.jsonl",
+    "base_record_count": 2,
+    "target_task_families": [
+      "scientific_experiment_planning"
+    ],
+    "construct_definition": {
+      "status": "AUTOMATIC_CONSTRUCT_CHECK_PENDING",
+      "task_families": [
+        "scientific_experiment_planning"
+      ],
+      "uncovered_task_families": [],
+      "modalities": [
+        "text"
+      ],
+      "interactions": [
+        "interactive_environment"
+      ],
+      "output_types": [
+        "action_trajectory"
+      ],
+      "capabilities": [
+        "long_horizon_planning",
+        "tool_use"
+      ],
+      "candidate_metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "evidence_terms": {
+        "task:scientific_experiment_planning": [
+          "laboratory protocol",
+          "wet lab",
+          "reagent",
+          "assay"
+        ],
+        "task:sequential_decision_making": [
+          "long horizon",
+          "action-observation"
+        ]
+      }
+    },
+    "modules": [
+      {
+        "transformation": "interaction_wrapper",
+        "records": 2,
+        "drafts": "assets/output/final_verification/base_run/synthesis/interaction_wrapper.jsonl",
+        "verification": "assets/output/final_verification/base_run/synthesis/interaction_wrapper.verification.json",
+        "verification_status": "PASS"
+      },
+      {
+        "transformation": "compositional_recombination",
+        "records": 1,
+        "drafts": "assets/output/final_verification/base_run/synthesis/compositional_recombination.jsonl",
+        "verification": "assets/output/final_verification/base_run/synthesis/compositional_recombination.verification.json",
+        "verification_status": "PASS"
+      },
+      {
+        "transformation": "counterfactual_perturbation",
+        "records": 2,
+        "drafts": "assets/output/final_verification/base_run/synthesis/counterfactual_perturbation.jsonl",
+        "verification": "assets/output/final_verification/base_run/synthesis/counterfactual_perturbation.verification.json",
+        "verification_status": "PASS"
+      }
+    ]
+  },
+  "automatic_validation": {
+    "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+    "human_submission_required": false,
+    "input": "assets/output/final_verification/base_run/automatic_review_input.json",
+    "synthesis_verifications": [
+      "assets/output/final_verification/base_run/synthesis/interaction_wrapper.verification.json",
+      "assets/output/final_verification/base_run/synthesis/compositional_recombination.verification.json",
+      "assets/output/final_verification/base_run/synthesis/counterfactual_perturbation.verification.json"
+    ],
+    "next_step": "after the blind matcher exits, load source-paper benchmark evidence and run the automatic literature evaluator"
+  },
+  "human_submission_required": false,
+  "next_action": "run automatic post-match source comparison and feed its typed errors into optimization"
+}

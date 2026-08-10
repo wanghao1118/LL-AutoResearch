@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "audit_id": "auto_bench_untouched_holdout_literature_audit_round_1_holdout_001",
+  "iteration": 1,
+  "scope_snapshot": [
+    {
+      "case_id": "holdout_001",
+      "selected_benchmark_ids": [
+        "webarena",
+        "humaneval",
+        "mind2web",
+        "webshop",
+        "mbpp"
+      ],
+      "top_6_benchmark_ids": [
+        "webarena",
+        "mind2web",
+        "webshop",
+        "scienceworld",
+        "visualwebarena",
+        "humaneval"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "reviewer_id": "yzb",
+  "reviews": [
+    {
+      "case_id": "holdout_001",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "PARTIAL",
+      "notes": "自己对比一下也能看出来，你选的Bench和人家论文用的还是有些差别的。"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "case_id": "holdout_002",
+  "source_arxiv_id": "2305.11738",
+  "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+  "source_url": "https://arxiv.org/abs/2305.11738",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "CRITIC: Correcting with Tool-Interactive Critiquing"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "hotpotqa",
+    "gsm8k"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "AmbigNQ",
+    "TriviaQA",
+    "SVAMP",
+    "TabMWP",
+    "RealToxicityPrompts"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Free-form Question Answering",
+    "Mathematical Program Synthesis",
+    "Toxicity Reduction"
+  ],
+  "benchmark_evidence": [
+    {
+      "benchmark_id": "hotpotqa",
+      "role": "primary",
+      "evidence_section": "Free-form Question Answering"
+    },
+    {
+      "benchmark_name": "AmbigNQ",
+      "role": "unmodeled",
+      "evidence_section": "Free-form Question Answering"
+    },
+    {
+      "benchmark_name": "TriviaQA",
+      "role": "unmodeled",
+      "evidence_section": "Free-form Question Answering"
+    },
+    {
+      "benchmark_id": "gsm8k",
+      "role": "primary",
+      "evidence_section": "Mathematical Program Synthesis"
+    },
+    {
+      "benchmark_name": "SVAMP",
+      "role": "unmodeled",
+      "evidence_section": "Mathematical Program Synthesis"
+    },
+    {
+      "benchmark_name": "TabMWP",
+      "role": "unmodeled",
+      "evidence_section": "Mathematical Program Synthesis"
+    },
+    {
+      "benchmark_name": "RealToxicityPrompts",
+      "role": "unmodeled",
+      "evidence_section": "Toxicity Reduction"
+    }
+  ],
+  "matcher_visible": false,
+  "leakage_scan": {
+    "passed": true,
+    "benchmark_alias_hits": [],
+    "identity_hits": [],
+    "generic_evaluation_terms": [
+      "evaluation"
+    ]
+  }
+}

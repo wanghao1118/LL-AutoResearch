@@ -1,0 +1,1494 @@
+{
+  "case_id": "fresh_005",
+  "status": "HUMAN_REVIEW_REQUIRED",
+  "visible_input": {
+    "introduction": "Remarkable progress has been observed in recent large language models (LLMs) for various natural language processing tasks, with prominent examples such as GPT-3 , PaLM , LLaMA , ChatGPT , and the recently developed GPT-4 . LLMs have demonstrated emergent abilities, including in-context learning and chain-of-thought (CoT) reasoning . These models are capable of solving diverse tasks in a zero-shot fashion or with the aid of a few examples , and they show great potential in planning and decision-making akin to human beings . Despite these capabilities, LLMs face inherent limitations, such as an inability to access up-to-date information , perform precise mathematical reasoning , or utilize specialized models . Therefore, enhancing current LLMs with the capability to automatically compose external tools for real-world task solving is critical to address these drawbacks. Consider the example 173 in Figure : Which is the main persuasive appeal used in this ad?. To answer this question, one needs to: 1) infer that there is an ad image containing text context and call a text decoder to understand the semantics; 2) retrieve background knowledge about persuasive appeals and the differences among three persuasive appeals; 3) generate a solution based on the input query and intermediate results from previous steps; and 4) finally produce the answer in a task-specific format. On the other hand, when answering Which animal's skin is adapted for survival in cold places ( 174 ), one might need to call modules such as an image captioner to decipher image information and a web search engine to retrieve domain knowledge to understand scientific terminologies. However, current tool-augmented LLMs still face challenges when addressing these real-world queries across various scenarios. Most existing approaches are either limited to a small number of tools or relying on domain-specific tools , and thus are not easy to generalize to queries of new domains (see sections and for further discussion). In this work, we study how to enable LLMs to synthesize programs to capture the logic of composing heterogeneous tools. To address the challenges of existing work, we introduce METHOD_X, a plug-and-play compositional reasoning framework that leverages LLMs to synthesize programs and compose various tools for a wide range of tasks. Unlike existing tool-augmented LLMs , METHOD_X uses a richer set of tools, including LLMs, off-the-shelf vision models, web search engines, Python functions, and heuristics-based modules. Moreover, METHOD_X leverages the in-context learning capabilities of LLMs and builds on an LLM as a natural language planner, without requiring any training or carefully curated rules. Prompted by tool descriptions and usage examples, the planner infers a program composed of a sequence of tools to execute in order to generate the final response for a user query. Instead of generating programs in domain-specific languages , METHOD_X generates natural-language-like (NL) programs (e.g., [Text Detector, Knowledge Retrieval, Solution Generator, Answer Generator] for the second query in Figure ). The NL-like programs are easy to understand and debug by users with limited programming experience, and easily extendable to new modules. During each module's execution, the module processes the query and cached context, returns a result determined by the module itself, and updates the query and context for subsequent execution. Composing modules as a sequential program allows subsequent modules to leverage prior cached context and updated queries. We showcase the adaptability and effectiveness of METHOD_X on two tasks: and . is a multi-modal question answering benchmark spanning multiple context formats and various scientific topics, while is a mathematical benchmark involving diverse tabular contexts. These two benchmarks serve as a good testbed to evaluate METHOD_X's ability to coordinate diverse tools across different types and domains. Notably, METHOD_X with GPT-4 achieves an 86.54 accuracy on , significantly improving upon the best published few-shot model by 11.37 . Further studies suggest that using GPT-4 as a planner exhibits more consistent and rational tool selection and is able to infer potential constraints given the instructions, compared to other LLMs like ChatGPT. Our contributions are as follows: (1) We develop a plug-and-play compositional reasoning framework, METHOD_X, that effectively composes external tools to address inherent limitations of LLMs and tackle a broad range of reasoning tasks. (2) Relying on an LLM as a natural language planner to generate programs, METHOD_X successfully integrates various tools, including LLMs, off-the-shelf vision models, web search engines, Python functions, and rule-based modules, to build a versatile and adaptable AI system capable of answering real-world queries. (3) We demonstrate METHOD_X's effectiveness on two challenging benchmarks, significantly surpassing the state of the art.",
+    "method": ": METHOD_X To address the limitations of current LLMs in utilizing diverse tools, we propose METHOD_X, a novel plug-and-play compositional reasoning framework, synthesizing the composition of various tools to accommodate a wide range of problems. METHOD_X is comprised of a module inventory that defines different types of tools and an LLM-based planner, whose purpose is to decompose the original problem into sub-tasks that can be effectively solved by task-specific tools. Unlike existing tool-augmented LLM approaches , our module inventory features multiple tool types as illustrated in Table , enabling METHOD_X to exhibit various reasoning abilities, including image understanding, knowledge retrieval, web search, complex mathematical reasoning, and table understanding. Instead of generating domain-specific programs , METHOD_X employs an LLM-based planner to create natural-language-like programs that follow natural language instructions, which is less error-prone, easily expandable to new modules, and user-friendly. We formalize our planner as follows: given the input query , the module inventory , and constraints , the natural language planner selects a set of modules that can be executed sequentially to answer the query via generating a program in a natural-language-like format. The module inventory consists of a set of pre-built modules: , each corresponding to a tool of various types (Table ). are the constraints for the plan generation, for example, the concurrent relations and sequence orders of modules. In our work, the planner is an LLM prompted to generate a sequence of module names in a few-shot setup. The planner is prompted in natural language with a planning task instruction , the descriptions of modules in with corresponding constraints , as well as a few demonstration examples . A -length plan sampled from can be denoted as , where represents an the -th element in the generated plan and . Formally, given an input query (problem statement) , a plan is generated as follows: p (x_0; I , , , D ). Given the generated plan, the corresponding modules for each step are then executed sequentially. The plan is a natural-language program where each module is bound simply via string matching. When evaluating the module at time step , the output of the execution is calculated by: y^t M^t (x^ t-1 ; c^ t-1 ), where is the input for the current module , and is the cached information (e.g., image semantics, retrieved knowledge, generated programs) resulting from the execution history of modules. Both the problem input and cache for the next module are updated, respectively, by: x^t update input(x^ t-1 , y^t), c^t update cache(c^ t-1 , y^t). The update input and update cache functions are hand-designed for each . Specifically, update input is applied to elements in the input query, including the question, table context, and image. These elements are updated after module execution. update cache corresponds to the generation of new information, such as a description for the input image or retrieved knowledge from external resources. Finally, the response to the query is generated by the last module : r = y^T M^T (x^ T-1 ; c^ T-1 ). Applications of METHOD_X. We demonstrate the applications of METHOD_X on two challenging tasks: [REDACTED_BENCHMARK] (section ) and [REDACTED_BENCHMARK] (section ), using the module inventory introduced in section . Further experimental details can be found in appendix . Module Inventory. r 0.49 -3.7mm figs/tools.pdf -0.8mm Different tools in our module inventory. -5mm To accommodate various reasoning capabilities over a diverse range of queries, our system utilizes a rich module inventory of various external tools. We provide a high-level overview of this inventory here, with detailed implementations in specific experiments. The complete module inventory, , is presented in Table . Each tool within the inventory is defined as follows: Knowledge Retrieval: This module retrieves additional background knowledge crucial for tackling complex problems. It is especially beneficial for specialized domains like science and mathematics, providing context for the task. For example, if a query is about a tax form table, this module could generate knowledge about tax procedures, offering valuable context. Bing Search: Like ``Knowledge Retrieval'', the ``Bing Search'' module aims to provide wide-ranging task-relevant knowledge. In contrast, it excels when broader or up-to-date information from multiple sources is required. Using the search engine API, this module returns relevant search results based on the input query, which are then parsed and used by subsequent modules to gather richer context information from diverse sources, enhancing problem-solving effectiveness. Query Generator: Since the original problem typically lacks a tailored query for retrieving task-relevant information, this module creates search engine queries based on the problem, which are then used by the ``Bing Search'' module. Mostly, it is a good strategy to use the ``Query Generator'' module before the ``Bing Search''. Coupled with the search engine tool, generating more targeted queries generally facilitates both the recall and precision of retrieved information. Image Captioner: Designed to generate captions for images, this module provides crucial supplementary context for queries. It is particularly valuable when understanding an image semantically, like identifying objects and interactions in a scene. Using pre-trained models, it translates visual data into language, facilitating effective comprehension and reasoning about image content. Text Detector: This module is designed to identify text within a given image. Typically, the ``Text Detector'' is employed when a question requires the extraction of textual information from images containing diagrams, charts, tables, maps, or other visual elements. By effectively detecting text in various formats, this module aids in the analysis and understanding of image-based content. Row Lookup: This module is crucial when queries involve tabular context, as locating relevant cells is often required. Large tables can distract the system, so ``Row Lookup'' simplifies the table by retaining only the rows relevant to the query. If all rows are pertinent, it returns the original table. Column Lookup: Like the ``Row Lookup'' module, ``Column Lookup'' addresses questions involving tabular context by focusing on relevant columns. It simplifies the table by retaining only pertinent columns, or returns the original table if all columns are relevant. Table Verbalizer: Converting structured tables into text is likely to enhance the comprehension of tabular information by various downstream modules as shown by for open-domain question answering, making this module a vital part of our system. It translates tables into easily understandable descriptions for modules like ``Program Generator'' and ``Solution Generator'', particularly useful for small, domain-specific tables like stem-and-leaf plots or function tables. Program Generator: Program-aided approaches are shown to enhance the logical and mathematical reasoning abilities of LLMs . The ``Program Generator'' generates Python programs to solve queries effectively, which is particularly beneficial for queries requiring complex computations or intricate logical operations, such as ``if-else'' statements. Program Verifier: Recent studies highlight the importance of verification to reduce hallucination . Hence, ``Program Verifier'' ensures the validity and error-free nature of programs generated by ``Program Generator''. It checks for syntax and logical errors, and potential execution issues, enhancing the reliability and accuracy of the solutions. Program Executor: This module executes the program generated by ``Program Generator'' and produces the result, bridging the gap between program generation and final solution derivation. Solution Generator: This module generates a detailed solution to the input query using all the cached information. Employing a chain-of-thought prompting approach , it ensures coherent and well-structured responses. The planner can directly employ this module instead of other functional modules if it can solve the query independently, especially for simpler ones. Answer Generator: This task-specific module uses a rule-based approach to extract and normalize answers from the results of the ``Program Executor'' or ``Solution Generator''. Unlike the Solution Generator'' that provides detailed multi-step solutions, ``Answer Generator'' serves as the final module in the pipeline, providing concise and task-specific answers. Science Question Answering. Science Question Answering ( ) is a diverse benchmark for multi-modal question answering over a range of scientific topics and contexts. As examples illustrated in Figure , answering these questions requires various tools and skills like image captioning, text detection, knowledge retrieval, online resource search, and multi-clue visual reasoning. When generating programs for using tools, we limit the search space to the relevant inventory subset (Table in the appendix). Programs are deemed invalid and default to a ``Solution Generator'' and ``Answer Generator'' sequence if these are not the final two elements, following the chain-of-thought prompting baseline . See Table in the appendix for the constructed natural language planner prompt. The prompts for LLM-based modules like ``Knowledge Retrieval'', ``Query Generator'', and ``Solution Generator'' are shown in Table , , and , respectively, in the appendix. Tabular Mathematical Reasoning. is a mathematical reasoning task involving diverse tabular contexts like schedules, prices, tax forms, plots, and function relations (Figure ). It requires AI systems to understand various table formats and perform precise numerical or symbolic computations. Like , we constrain the program search space to focus on two tool types: 1) those helping LLMs better digest tabular information (e.g., ``Row Lookup'', ``Column Lookup'', and ``Table Verbalizer'') and 2) those performing faithful symbolic computations (e.g., ``Program Generator'', ``Program Verifier'', and ``Program Executor'') as listed in Table . The generated programs must meet certain constraints, such as including ``Answer Generator'' and placing ``Program Generator'' prior to both ``Program Verifier'' and ``Program Executor''. Non-compliant programs default to a sequence of ``Program Generator'', ``Program Verifier'', ``Program Executor'', and ``Answer Generator'', aligning with the program-of-thought prompting baseline with added verification.",
+    "constraints": {
+      "input_scope": [
+        "introduction",
+        "method"
+      ],
+      "paper_identity_hidden": true,
+      "benchmark_names_redacted": true,
+      "experiment_sections_excluded": true,
+      "fresh_suite": "fresh_holdout_suite_001"
+    }
+  },
+  "profile": {
+    "task_families": [
+      "math_reasoning",
+      "tabular_math_reasoning"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [
+      "multimodal_science_qa"
+    ],
+    "modalities": [
+      "image",
+      "text"
+    ],
+    "interactions": [
+      "retrieval_tool"
+    ],
+    "output_types": [
+      "short_answer"
+    ],
+    "environments": [
+      "structured_table"
+    ],
+    "capabilities": [
+      "external_information_retrieval",
+      "long_horizon_planning",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "answer_accuracy",
+      "task_accuracy"
+    ],
+    "evidence_terms": {
+      "capability:external_information_retrieval": [
+        "retrieve",
+        "search"
+      ],
+      "capability:long_horizon_planning": [
+        "plan"
+      ],
+      "capability:tool_use": [
+        "action",
+        "tool",
+        "api"
+      ],
+      "task:math_reasoning": [
+        "mathematical reasoning"
+      ],
+      "task:tabular_math_reasoning": [
+        "tabular mathematical reasoning",
+        "tabular math",
+        "mathematical benchmark involving diverse tabular contexts",
+        "mathematical reasoning task involving diverse tabular contexts"
+      ],
+      "uncovered_task:multimodal_science_qa": [
+        "multi-modal question answering",
+        "science question answering",
+        "scientific topics and contexts"
+      ]
+    }
+  },
+  "search_queries": [
+    "\"math reasoning\" benchmark dataset evaluation image text",
+    "\"tabular math reasoning\" benchmark dataset evaluation image text",
+    "\"multimodal science qa\" benchmark dataset evaluation image text",
+    "\"math reasoning\" agent benchmark retrieval_tool",
+    "\"tabular math reasoning\" agent benchmark retrieval_tool",
+    "\"multimodal science qa\" agent benchmark retrieval_tool",
+    "agent benchmark external information retrieval long horizon planning tool use"
+  ],
+  "search_hits": [],
+  "catalog_admission_proposals": [],
+  "ranked_candidates": [
+    {
+      "benchmark_id": "tabmwp",
+      "name": "TabMWP",
+      "score": 0.685,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 0.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "math_reasoning",
+          "tabular_math_reasoning"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [
+          "structured_table"
+        ],
+        "capabilities": [],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2209.14610"
+      ],
+      "source_url": "https://arxiv.org/abs/2209.14610",
+      "metrics": [
+        "exact_match",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "table_representation_choice",
+        "question_type_split",
+        "reasoning_trace_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "game_of_24",
+      "name": "Game of 24",
+      "score": 0.525,
+      "component_scores": {
+        "task": 0.5,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "math_reasoning"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning"
+        ],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2305.10601"
+      ],
+      "source_url": "https://arxiv.org/abs/2305.10601",
+      "metrics": [
+        "task_accuracy",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "number_tuple_split",
+        "search_budget_control",
+        "solution_verifier"
+      ]
+    },
+    {
+      "benchmark_id": "gsm8k",
+      "name": "GSM8K",
+      "score": 0.425,
+      "component_scores": {
+        "task": 0.5,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "math_reasoning"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2110.14168"
+      ],
+      "source_url": "https://arxiv.org/abs/2110.14168",
+      "metrics": [
+        "exact_match",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "reasoning_trace_wrapper",
+        "difficulty_stratification"
+      ]
+    },
+    {
+      "benchmark_id": "svamp",
+      "name": "SVAMP",
+      "score": 0.425,
+      "component_scores": {
+        "task": 0.5,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "math_reasoning"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2103.07191"
+      ],
+      "source_url": "https://arxiv.org/abs/2103.07191",
+      "metrics": [
+        "exact_match",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "variation_family_split",
+        "reasoning_trace_wrapper",
+        "difficulty_stratification"
+      ]
+    },
+    {
+      "benchmark_id": "hotpotqa",
+      "name": "HotpotQA",
+      "score": 0.326667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.5,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval",
+          "long_horizon_planning"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1809.09600"
+      ],
+      "source_url": "https://arxiv.org/abs/1809.09600",
+      "metrics": [
+        "exact_match",
+        "token_f1",
+        "evidence_score"
+      ],
+      "adaptation_hooks": [
+        "question_only_protocol",
+        "wikipedia_retrieval_wrapper",
+        "supporting_fact_audit"
+      ]
+    },
+    {
+      "benchmark_id": "gaia",
+      "name": "GAIA",
+      "score": 0.316667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2311.12983"
+      ],
+      "source_url": "https://arxiv.org/abs/2311.12983",
+      "metrics": [
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "capability_level_split",
+        "tool_trace_logging",
+        "answer_normalization"
+      ]
+    },
+    {
+      "benchmark_id": "triviaqa",
+      "name": "TriviaQA",
+      "score": 0.31,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.5,
+        "environment": 0.0,
+        "capability": 0.5,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1705.03551"
+      ],
+      "source_url": "https://arxiv.org/abs/1705.03551",
+      "metrics": [
+        "exact_match",
+        "token_f1"
+      ],
+      "adaptation_hooks": [
+        "open_domain_split",
+        "evidence_retrieval_wrapper",
+        "answer_alias_normalization"
+      ]
+    },
+    {
+      "benchmark_id": "toolbench",
+      "name": "ToolBench",
+      "score": 0.291667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2307.16789"
+      ],
+      "source_url": "https://arxiv.org/abs/2307.16789",
+      "metrics": [
+        "task_success_rate",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "api_domain_subset",
+        "tool_availability_snapshot",
+        "execution_verification"
+      ]
+    },
+    {
+      "benchmark_id": "fever",
+      "name": "FEVER",
+      "score": 0.25,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.5,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1803.05355"
+      ],
+      "source_url": "https://arxiv.org/abs/1803.05355",
+      "metrics": [
+        "label_accuracy",
+        "evidence_score"
+      ],
+      "adaptation_hooks": [
+        "claim_only_protocol",
+        "evidence_retrieval_wrapper",
+        "label_and_evidence_scoring"
+      ]
+    },
+    {
+      "benchmark_id": "osworld",
+      "name": "OSWorld",
+      "score": 0.22,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2404.07972"
+      ],
+      "source_url": "https://arxiv.org/abs/2404.07972",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "application_subset",
+        "task_template_extension",
+        "environment_snapshot"
+      ]
+    },
+    {
+      "benchmark_id": "alfworld",
+      "name": "ALFWorld",
+      "score": 0.186667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2010.03768"
+      ],
+      "source_url": "https://arxiv.org/abs/2010.03768",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "task_type_stratification",
+        "unseen_environment_split",
+        "action_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "scienceworld",
+      "name": "ScienceWorld",
+      "score": 0.186667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2203.07540"
+      ],
+      "source_url": "https://arxiv.org/abs/2203.07540",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "task_family_subset",
+        "difficulty_curriculum",
+        "action_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "visualwebarena",
+      "name": "VisualWebArena",
+      "score": 0.18,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.666667,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2401.13649"
+      ],
+      "source_url": "https://arxiv.org/abs/2401.13649",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "visual_dependency_stratification",
+        "site_subset",
+        "state_reset_audit"
+      ]
+    },
+    {
+      "benchmark_id": "mmlu",
+      "name": "MMLU",
+      "score": 0.17,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2009.03300"
+      ],
+      "source_url": "https://arxiv.org/abs/2009.03300",
+      "metrics": [
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "subject_subset",
+        "answer_order_randomization"
+      ]
+    },
+    {
+      "benchmark_id": "mind2web",
+      "name": "Mind2Web",
+      "score": 0.16,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2306.06070"
+      ],
+      "source_url": "https://arxiv.org/abs/2306.06070",
+      "metrics": [
+        "element_accuracy",
+        "operation_f1",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "cross_domain_split",
+        "live_browser_replay",
+        "element_grounding_audit"
+      ]
+    },
+    {
+      "benchmark_id": "webarena",
+      "name": "WebArena",
+      "score": 0.16,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2307.13854"
+      ],
+      "source_url": "https://arxiv.org/abs/2307.13854",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "site_subset",
+        "task_template_extension",
+        "state_reset_audit"
+      ]
+    },
+    {
+      "benchmark_id": "webshop",
+      "name": "WebShop",
+      "score": 0.126667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2207.01206"
+      ],
+      "source_url": "https://arxiv.org/abs/2207.01206",
+      "metrics": [
+        "task_success_rate",
+        "attribute_score",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "instruction_constraint_expansion",
+        "website_action_wrapper",
+        "attribute_level_scoring"
+      ]
+    },
+    {
+      "benchmark_id": "realtoxicityprompts",
+      "name": "RealToxicityPrompts",
+      "score": 0.12,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2009.11462"
+      ],
+      "source_url": "https://arxiv.org/abs/2009.11462",
+      "metrics": [
+        "toxicity_probability",
+        "fluency",
+        "generation_diversity"
+      ],
+      "adaptation_hooks": [
+        "toxicity_band_split",
+        "continuation_wrapper",
+        "classifier_snapshot"
+      ]
+    },
+    {
+      "benchmark_id": "ambignq",
+      "name": "AmbigNQ",
+      "score": 0.062,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.5,
+        "environment": 0.0,
+        "capability": 0.5,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "specialized benchmark lacks visible method evidence for disambiguated_question"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2004.10645"
+      ],
+      "source_url": "https://arxiv.org/abs/2004.10645",
+      "metrics": [
+        "exact_match",
+        "token_f1"
+      ],
+      "adaptation_hooks": [
+        "ambiguity_stratification",
+        "multiple_answer_normalization",
+        "clarification_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "agentbench",
+      "name": "AgentBench",
+      "score": 0.026333,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.333333,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_accuracy"
+        ]
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2308.03688"
+      ],
+      "source_url": "https://arxiv.org/abs/2308.03688",
+      "metrics": [
+        "task_success_rate",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "environment_subset",
+        "per_environment_metrics",
+        "tool_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "swe_bench",
+      "name": "SWE-bench",
+      "score": 0.02,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.4,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2310.06770"
+      ],
+      "source_url": "https://arxiv.org/abs/2310.06770",
+      "metrics": [
+        "pass_at_1",
+        "test_pass_rate",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "issue_category_stratification",
+        "repository_holdout",
+        "test_patch_isolation",
+        "cost_logging"
+      ]
+    },
+    {
+      "benchmark_id": "humaneval",
+      "name": "HumanEval",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2107.03374"
+      ],
+      "source_url": "https://arxiv.org/abs/2107.03374",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "language_port",
+        "iterative_feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "humanevalfix",
+      "name": "HumanEvalFix",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2308.07124"
+      ],
+      "source_url": "https://arxiv.org/abs/2308.07124",
+      "metrics": [
+        "pass_at_1",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "bug_type_stratification",
+        "language_port",
+        "feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "leetcodehardgym",
+      "name": "LeetcodeHardGym",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output",
+        "specialized benchmark lacks visible method evidence for iterative_improvement, multilingual_code_generation"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2303.11366"
+      ],
+      "source_url": "https://arxiv.org/abs/2303.11366",
+      "metrics": [
+        "pass_at_1",
+        "task_success_rate",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "difficulty_curriculum",
+        "hidden_unit_tests",
+        "iterative_feedback_wrapper",
+        "language_port"
+      ]
+    },
+    {
+      "benchmark_id": "mbpp",
+      "name": "MBPP",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2108.07732"
+      ],
+      "source_url": "https://arxiv.org/abs/2108.07732",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "difficulty_rebalancing",
+        "iterative_feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "multipl_e",
+      "name": "MultiPL-E",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output",
+        "specialized benchmark lacks visible method evidence for multilingual_code_generation"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2208.08227"
+      ],
+      "source_url": "https://arxiv.org/abs/2208.08227",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "language_family_stratification",
+        "language_port",
+        "iterative_feedback_wrapper"
+      ]
+    }
+  ],
+  "selected_benchmarks": [
+    "tabmwp"
+  ],
+  "portfolio_roles": {
+    "tabmwp": "core_task_coverage"
+  },
+  "coverage_ratio": 0.666667,
+  "route": "base_benchmark_adaptation",
+  "route_reason": "best existing match scores 0.685, but portfolio coverage is 66.7%",
+  "metric_plan": [
+    {
+      "benchmark_id": "tabmwp",
+      "official_metrics": [
+        "exact_match",
+        "task_accuracy"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    }
+  ],
+  "adaptation_plan": {
+    "base_benchmarks": [
+      "tabmwp"
+    ],
+    "retain": [
+      "official task semantics and unmodified test examples",
+      "official metric definitions reported separately",
+      "source IDs, split names, and license/access metadata"
+    ],
+    "add": [
+      "method-specific interaction wrapper without exposing test labels",
+      "capability-targeted challenge split for uncovered requirements",
+      "cost, latency, and failure-state logging when the method is interactive"
+    ],
+    "missing_task_families": [
+      "multimodal_science_qa"
+    ],
+    "adaptation_hooks": [
+      "question_type_split",
+      "reasoning_trace_wrapper",
+      "table_representation_choice"
+    ],
+    "split_policy": {
+      "development": "derive transformations from train/development data only",
+      "validation": "freeze prompts and thresholds before hidden-test execution",
+      "test": "retain official test data; no synthesis seed may originate from test examples"
+    }
+  },
+  "synthesis_plan": {
+    "required": true,
+    "target_task_families": [
+      "multimodal_science_qa"
+    ],
+    "construct_definition": {
+      "status": "HUMAN_DEFINITION_REQUIRED",
+      "task_families": [
+        "multimodal_science_qa"
+      ],
+      "uncovered_task_families": [
+        "multimodal_science_qa"
+      ],
+      "modalities": [
+        "image",
+        "text"
+      ],
+      "interactions": [
+        "retrieval_tool"
+      ],
+      "output_types": [
+        "short_answer"
+      ],
+      "capabilities": [
+        "external_information_retrieval",
+        "long_horizon_planning",
+        "tool_use"
+      ],
+      "candidate_metrics": [
+        "answer_accuracy",
+        "task_accuracy"
+      ],
+      "evidence_terms": {
+        "task:math_reasoning": [
+          "mathematical reasoning"
+        ],
+        "task:tabular_math_reasoning": [
+          "tabular mathematical reasoning",
+          "tabular math",
+          "mathematical benchmark involving diverse tabular contexts",
+          "mathematical reasoning task involving diverse tabular contexts"
+        ],
+        "uncovered_task:multimodal_science_qa": [
+          "multi-modal question answering",
+          "science question answering",
+          "scientific topics and contexts"
+        ]
+      }
+    },
+    "source_policy": "use only licensed train/development records from named base benchmarks",
+    "generation_modules": [
+      {
+        "name": "compositional_recombination",
+        "purpose": "combine independent train-split constraints while preserving executable gold checks"
+      },
+      {
+        "name": "counterfactual_perturbation",
+        "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+      },
+      {
+        "name": "interaction_wrapper",
+        "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+      }
+    ],
+    "record_schema": [
+      "synthetic_id",
+      "source_benchmark",
+      "source_split",
+      "source_record_ids",
+      "transformation",
+      "input",
+      "expected_output",
+      "deterministic_checks",
+      "human_review_status"
+    ],
+    "quality_gates": [
+      "exact and near-duplicate filtering against every split",
+      "deterministic execution or answer verification where available",
+      "stratified human review by task family and difficulty",
+      "pilot inter-rater agreement before scaling annotation",
+      "frozen test set before method tuning"
+    ],
+    "profile_snapshot": {
+      "task_families": [
+        "math_reasoning",
+        "tabular_math_reasoning"
+      ],
+      "task_benchmark_counts": {},
+      "uncovered_task_families": [
+        "multimodal_science_qa"
+      ],
+      "modalities": [
+        "image",
+        "text"
+      ],
+      "interactions": [
+        "retrieval_tool"
+      ],
+      "output_types": [
+        "short_answer"
+      ],
+      "capabilities": [
+        "external_information_retrieval",
+        "long_horizon_planning",
+        "tool_use"
+      ],
+      "suggested_metrics": [
+        "answer_accuracy",
+        "task_accuracy"
+      ]
+    },
+    "catalog_admission_proposals": []
+  },
+  "human_review": {
+    "status": "HUMAN_REVIEW_REQUIRED",
+    "validation_tracks": {
+      "literature_recovery": {
+        "timing": "post_match_only",
+        "input": "revealed source paper, actual benchmarks, Selected, and Top-6",
+        "decision_values": [
+          "MATCH",
+          "PARTIAL",
+          "MISMATCH"
+        ]
+      },
+      "new_method_suitability": {
+        "timing": "before_research_use",
+        "input": "method text, candidate evidence, metrics, adaptation, and synthesis plan",
+        "decision_values": [
+          "APPROVE",
+          "REJECT"
+        ]
+      }
+    },
+    "required_reviewer_slots": [
+      "REVIEWER_1",
+      "REVIEWER_2"
+    ],
+    "minimum_reviewers": 2,
+    "rubric_dimensions": [
+      "construct_alignment",
+      "task_representativeness",
+      "metric_validity",
+      "data_quality",
+      "leakage_control",
+      "execution_feasibility"
+    ],
+    "rubric_guidance": {
+      "construct_alignment": "Success measures the capability claimed by the method rather than a proxy.",
+      "task_representativeness": "Tasks cover the intended use, difficulty range, and important failure modes.",
+      "metric_validity": "Metrics are meaningful, reproducible, and separate official from adapted results.",
+      "data_quality": "Labels, splits, and any synthetic transformations have auditable quality.",
+      "leakage_control": "Hidden labels and test examples stay isolated from matching, synthesis, and tuning.",
+      "execution_feasibility": "The full protocol can run with the stated tools, data access, and compute."
+    },
+    "score_range": [
+      1,
+      5
+    ],
+    "acceptance_rules": {
+      "mean_score_at_least": 4.0,
+      "every_dimension_at_least": 3.0,
+      "provenance_confirmed_by_all": true,
+      "independence_attested_by_all": true,
+      "explicit_approval_by_all": true,
+      "nonempty_justification_by_all": true,
+      "maximum_pairwise_dimension_gap": 1.0
+    },
+    "reviews": []
+  },
+  "provenance": {
+    "input_fields": [
+      "introduction",
+      "method",
+      "constraints"
+    ],
+    "blind_gold_loaded": false,
+    "leakage_scan": {
+      "passed": true,
+      "benchmark_alias_hits": [],
+      "identity_hits": [],
+      "generic_evaluation_terms": [
+        "benchmark"
+      ]
+    },
+    "catalog": "catalog.json",
+    "catalog_records": 26,
+    "online_search": false,
+    "decision_backend": "deterministic_profile_and_weighted_compatibility_v1"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_003",
+  "frozen_at": "2026-08-10T10:29:29+08:00",
+  "validation_mode": "automatic_post_match_literature_comparison",
+  "human_submission_required": false,
+  "matcher_frozen_before_final_paper_selection": true,
+  "paper_selection_exists_at_freeze": false,
+  "source_experiment_sections_inspected": false,
+  "gold_revealed": true,
+  "matcher_change_policy": "run all selected papers once before opening experiment/evaluation sections; post-gold changes are feedback regression only",
+  "frozen_files": [
+    {
+      "path": "autobench/__init__.py",
+      "bytes": 138
+    },
+    {
+      "path": "autobench/__main__.py",
+      "bytes": 48
+    },
+    {
+      "path": "autobench/admission_agent.py",
+      "bytes": 5634
+    },
+    {
+      "path": "autobench/auto_literature_review.py",
+      "bytes": 10240
+    },
+    {
+      "path": "autobench/catalog.py",
+      "bytes": 1757
+    },
+    {
+      "path": "autobench/cli.py",
+      "bytes": 6226
+    },
+    {
+      "path": "autobench/iteration_report.py",
+      "bytes": 10869
+    },
+    {
+      "path": "autobench/leakage.py",
+      "bytes": 2450
+    },
+    {
+      "path": "autobench/literature_audit.py",
+      "bytes": 32381
+    },
+    {
+      "path": "autobench/match_agent.py",
+      "bytes": 19645
+    },
+    {
+      "path": "autobench/models.py",
+      "bytes": 5126
+    },
+    {
+      "path": "autobench/pipeline.py",
+      "bytes": 10172
+    },
+    {
+      "path": "autobench/profile_agent.py",
+      "bytes": 29220
+    },
+    {
+      "path": "autobench/query_agent.py",
+      "bytes": 1547
+    },
+    {
+      "path": "autobench/review_gate.py",
+      "bytes": 17151
+    },
+    {
+      "path": "autobench/review_workflow.py",
+      "bytes": 23778
+    },
+    {
+      "path": "autobench/search_agent.py",
+      "bytes": 3709
+    },
+    {
+      "path": "autobench/synthesis_agent.py",
+      "bytes": 17186
+    },
+    {
+      "path": "autobench/workflow.py",
+      "bytes": 8178
+    },
+    {
+      "path": "configs/benchmark_catalog.json",
+      "bytes": 25891
+    },
+    {
+      "path": "step2_run_blind_matching.py",
+      "bytes": 4582
+    }
+  ],
+  "matcher_patch": "assets/input/fresh_holdout_suite_003/matcher_freeze.patch",
+  "catalog_ids": [
+    "hotpotqa",
+    "fever",
+    "alfworld",
+    "webshop",
+    "humaneval",
+    "mbpp",
+    "leetcodehardgym",
+    "multipl_e",
+    "swe_bench",
+    "humanevalfix",
+    "webarena",
+    "mind2web",
+    "visualwebarena",
+    "osworld",
+    "gaia",
+    "agentbench",
+    "scienceworld",
+    "toolbench",
+    "gsm8k",
+    "ambignq",
+    "triviaqa",
+    "svamp",
+    "tabmwp",
+    "realtoxicityprompts",
+    "game_of_24",
+    "mmlu"
+  ],
+  "paper_selection": "assets/input/fresh_holdout_suite_003/paper_selection.json",
+  "paper_selection_finalized_after_freeze": true,
+  "paper_ids": [
+    "2302.04761",
+    "2209.11302",
+    "2211.11559",
+    "2211.12588",
+    "2305.10601"
+  ],
+  "cases_manifest": "assets/input/fresh_holdout_suite_003/cases/freeze_manifest.json",
+  "experiment_headings_enumerated_after_selection": true,
+  "source_experiment_content_inspected": false,
+  "gold_constructed_after_blind_run": true,
+  "gold_files": [
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_001.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_002.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_003.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_004.gold.json",
+    "assets/input/fresh_holdout_suite_003/gold/fresh3_005.gold.json"
+  ],
+  "gold_construction_preconditions": {
+    "blind_run_completed_before_gold": true,
+    "gold_absent_during_run": true,
+    "five_cases": true,
+    "workers_succeeded": true,
+    "sandboxes_clean": true,
+    "matcher_unchanged": true,
+    "workers_intro_method_only": true
+  },
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_003/pre_gold_run_record.json",
+  "meta_agent_experiment_line_caveat_recorded": true
+}

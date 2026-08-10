@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "case_ids": [
+    "case_001",
+    "case_002",
+    "case_003"
+  ],
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "gold_directory_passed_to_matcher": false
+}

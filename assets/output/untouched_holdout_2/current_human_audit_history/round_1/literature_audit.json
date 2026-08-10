@@ -1,0 +1,1000 @@
+{
+  "schema_version": "2.0",
+  "audit_id": "auto_bench_current_holdout_002_literature_audit_round_1_holdout_002",
+  "iteration": 1,
+  "submission_scope_snapshot": [
+    {
+      "case_id": "holdout_002",
+      "selected_benchmark_ids": [
+        "hotpotqa",
+        "gsm8k",
+        "toolbench"
+      ],
+      "top_6_benchmark_ids": [
+        "hotpotqa",
+        "gsm8k",
+        "toolbench",
+        "gaia",
+        "fever",
+        "agentbench"
+      ],
+      "route": "base_benchmark_adaptation"
+    }
+  ],
+  "protocol": {
+    "matcher_input": [
+      "introduction",
+      "method",
+      "constraints"
+    ],
+    "paper_identity_visible_to_matcher": false,
+    "paper_benchmarks_visible_to_matcher": false,
+    "source_revealed_after_matching": true,
+    "human_task": "verify the source paper benchmark list and compare it with Auto-Bench recommendations",
+    "carried_source_and_gold_checks": 0,
+    "route_context_is_informational": true,
+    "full_evaluation_case_count": 1,
+    "audit_case_count": 1,
+    "changed_case_filter": [
+      "holdout_002"
+    ]
+  },
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 1.0,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 0.6666666666666666,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_002",
+      "source_arxiv_id": "2305.11738",
+      "source_title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+      "source_url": "https://arxiv.org/abs/2305.11738",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "CRITIC: Correcting with Tool-Interactive Critiquing"
+        ]
+      },
+      "matcher_visible_input": "assets/input/untouched_holdout_2_cases/holdout_002.json",
+      "gold_evidence_sections": [
+        "Free-form Question Answering",
+        "Mathematical Program Synthesis",
+        "Toxicity Reduction"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Free-form Question Answering",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_name": "AmbigNQ",
+          "role": "unmodeled",
+          "evidence_section": "Free-form Question Answering",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "TriviaQA",
+          "role": "unmodeled",
+          "evidence_section": "Free-form Question Answering",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "role": "primary",
+          "evidence_section": "Mathematical Program Synthesis",
+          "benchmark_name": "GSM8K",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_name": "SVAMP",
+          "role": "unmodeled",
+          "evidence_section": "Mathematical Program Synthesis",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "TabMWP",
+          "role": "unmodeled",
+          "evidence_section": "Mathematical Program Synthesis",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "RealToxicityPrompts",
+          "role": "unmodeled",
+          "evidence_section": "Toxicity Reduction",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "gsm8k"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "AmbigNQ",
+        "TriviaQA",
+        "SVAMP",
+        "TabMWP",
+        "RealToxicityPrompts"
+      ],
+      "top_6": [
+        "hotpotqa",
+        "gsm8k",
+        "toolbench",
+        "gaia",
+        "fever",
+        "agentbench"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "gaia",
+          "benchmark_name": "GAIA",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "agentbench",
+          "benchmark_name": "AgentBench",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "hotpotqa",
+        "gsm8k",
+        "toolbench"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 1,
+          "score": 0.68,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "rank": 2,
+          "score": 0.615,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2110.14168"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 3,
+          "score": 0.586667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.16789"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "api_tool_use",
+          "knowledge_intensive_qa",
+          "math_reasoning",
+          "toxicity_reduction"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "safe_text_continuation",
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "fluency",
+          "generation_diversity",
+          "token_f1",
+          "toxicity_probability"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "verify"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:api_tool_use": [
+            "api call"
+          ],
+          "task:knowledge_intensive_qa": [
+            "question answering"
+          ],
+          "task:math_reasoning": [
+            "mathematical reasoning"
+          ],
+          "task:toxicity_reduction": [
+            "toxicity reduction",
+            "toxic content"
+          ]
+        }
+      },
+      "coverage_ratio": 0.75,
+      "route_reason": "best existing match scores 0.680, but portfolio coverage is 75.0%",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "hotpotqa",
+          "gsm8k",
+          "toolbench"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [
+          "toxicity_reduction"
+        ],
+        "adaptation_hooks": [
+          "api_domain_subset",
+          "difficulty_stratification",
+          "execution_verification",
+          "question_only_protocol",
+          "reasoning_trace_wrapper",
+          "supporting_fact_audit",
+          "tool_availability_snapshot",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": true,
+        "target_task_families": [
+          "toxicity_reduction"
+        ],
+        "construct_definition": {
+          "status": "HUMAN_DEFINITION_REQUIRED",
+          "task_families": [
+            "toxicity_reduction"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "safe_text_continuation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "exact_match",
+            "fluency",
+            "generation_diversity",
+            "token_f1",
+            "toxicity_probability"
+          ],
+          "evidence_terms": {
+            "task:api_tool_use": [
+              "api call"
+            ],
+            "task:knowledge_intensive_qa": [
+              "question answering"
+            ],
+            "task:math_reasoning": [
+              "mathematical reasoning"
+            ],
+            "task:toxicity_reduction": [
+              "toxicity reduction",
+              "toxic content"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "api_tool_use",
+            "knowledge_intensive_qa",
+            "math_reasoning",
+            "toxicity_reduction"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "safe_text_continuation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "exact_match",
+            "fluency",
+            "generation_diversity",
+            "token_f1",
+            "toxicity_probability"
+          ]
+        },
+        "catalog_admission_proposals": [
+          "arxiv_2305_14536",
+          "arxiv_2507_15557",
+          "arxiv_2510_24702",
+          "arxiv_2604_25926",
+          "arxiv_2605_09544",
+          "arxiv_2009_11462",
+          "arxiv_2403_04735",
+          "arxiv_2410_09584",
+          "arxiv_2507_04023"
+        ]
+      },
+      "catalog_admission_proposals": [
+        {
+          "proposal_id": "arxiv_2305_14536",
+          "title": "MathDial: A Dialogue Tutoring Dataset with Rich Pedagogical Properties Grounded in Math Reasoning Problems",
+          "source_url": "https://arxiv.org/abs/2305.14536v2",
+          "source_query": "\"math reasoning\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 1.0,
+          "matched_task_families": [
+            "math_reasoning"
+          ],
+          "evidence_terms": [
+            "title:dataset"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "MathDial: A Dialogue Tutoring Dataset with Rich Pedagogical Properties Grounded in Math Reasoning Problems",
+            "task_families": [
+              "math_reasoning"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "MathDial: A Dialogue Tutoring Dataset with Rich Pedagogical Properties Grounded in Math Reasoning Problems",
+            "source_url": "https://arxiv.org/abs/2305.14536v2"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2507_15557",
+          "title": "Evaluating Text Style Transfer: A Nine-Language Benchmark for Text Detoxification",
+          "source_url": "https://arxiv.org/abs/2507.15557v2",
+          "source_query": "\"text detoxification\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 1.0,
+          "matched_task_families": [
+            "toxicity_reduction"
+          ],
+          "evidence_terms": [
+            "title:benchmark"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "Evaluating Text Style Transfer: A Nine-Language Benchmark for Text Detoxification",
+            "task_families": [
+              "toxicity_reduction"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "Evaluating Text Style Transfer: A Nine-Language Benchmark for Text Detoxification",
+            "source_url": "https://arxiv.org/abs/2507.15557v2"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2510_24702",
+          "title": "Agent Data Protocol: Unifying Datasets for Diverse, Effective Fine-tuning of LLM Agents",
+          "source_url": "https://arxiv.org/abs/2510.24702v2",
+          "source_query": "\"api tool use\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 1.0,
+          "matched_task_families": [
+            "api_tool_use"
+          ],
+          "evidence_terms": [
+            "title:dataset",
+            "summary:introduced_dataset"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "Agent Data Protocol: Unifying Datasets for Diverse, Effective Fine-tuning of LLM Agents",
+            "task_families": [
+              "api_tool_use"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "Agent Data Protocol: Unifying Datasets for Diverse, Effective Fine-tuning of LLM Agents",
+            "source_url": "https://arxiv.org/abs/2510.24702v2"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2604_25926",
+          "title": "MATH-PT: A Math Reasoning Benchmark for European and Brazilian Portuguese",
+          "source_url": "https://arxiv.org/abs/2604.25926v1",
+          "source_query": "\"math reasoning\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 1.0,
+          "matched_task_families": [
+            "math_reasoning"
+          ],
+          "evidence_terms": [
+            "title:benchmark",
+            "summary:introduced_benchmark"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "MATH-PT: A Math Reasoning Benchmark for European and Brazilian Portuguese",
+            "task_families": [
+              "math_reasoning"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "MATH-PT: A Math Reasoning Benchmark for European and Brazilian Portuguese",
+            "source_url": "https://arxiv.org/abs/2604.25926v1"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2605_09544",
+          "title": "TIDE-Bench: Task-Aware and Diagnostic Evaluation of Tool-Integrated Reasoning",
+          "source_url": "https://arxiv.org/abs/2605.09544v1",
+          "source_query": "\"knowledge intensive qa\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 1.0,
+          "matched_task_families": [
+            "knowledge_intensive_qa"
+          ],
+          "evidence_terms": [
+            "title:named bench",
+            "summary:introduced_named bench"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "TIDE-Bench: Task-Aware and Diagnostic Evaluation of Tool-Integrated Reasoning",
+            "task_families": [
+              "knowledge_intensive_qa"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "TIDE-Bench: Task-Aware and Diagnostic Evaluation of Tool-Integrated Reasoning",
+            "source_url": "https://arxiv.org/abs/2605.09544v1"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2009_11462",
+          "title": "RealToxicityPrompts: Evaluating Neural Toxic Degeneration in Language Models",
+          "source_url": "https://arxiv.org/abs/2009.11462v2",
+          "source_query": "\"toxic degeneration\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 0.8,
+          "matched_task_families": [
+            "toxicity_reduction"
+          ],
+          "evidence_terms": [
+            "summary:introduced_dataset"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "RealToxicityPrompts: Evaluating Neural Toxic Degeneration in Language Models",
+            "task_families": [
+              "toxicity_reduction"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "RealToxicityPrompts: Evaluating Neural Toxic Degeneration in Language Models",
+            "source_url": "https://arxiv.org/abs/2009.11462v2"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2403_04735",
+          "title": "SnapNTell: Enhancing Entity-Centric Visual Question Answering with Retrieval Augmented Multimodal LLM",
+          "source_url": "https://arxiv.org/abs/2403.04735v1",
+          "source_query": "\"knowledge intensive qa\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 0.8,
+          "matched_task_families": [
+            "knowledge_intensive_qa"
+          ],
+          "evidence_terms": [
+            "summary:introduced_benchmark"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "SnapNTell: Enhancing Entity-Centric Visual Question Answering with Retrieval Augmented Multimodal LLM",
+            "task_families": [
+              "knowledge_intensive_qa"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "SnapNTell: Enhancing Entity-Centric Visual Question Answering with Retrieval Augmented Multimodal LLM",
+            "source_url": "https://arxiv.org/abs/2403.04735v1"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2410_09584",
+          "title": "Toward General Instruction-Following Alignment for Retrieval-Augmented Generation",
+          "source_url": "https://arxiv.org/abs/2410.09584v1",
+          "source_query": "\"knowledge intensive qa\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 0.8,
+          "matched_task_families": [
+            "knowledge_intensive_qa"
+          ],
+          "evidence_terms": [
+            "summary:introduced_benchmark"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "Toward General Instruction-Following Alignment for Retrieval-Augmented Generation",
+            "task_families": [
+              "knowledge_intensive_qa"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "Toward General Instruction-Following Alignment for Retrieval-Augmented Generation",
+            "source_url": "https://arxiv.org/abs/2410.09584v1"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        },
+        {
+          "proposal_id": "arxiv_2507_04023",
+          "title": "Do LLMs Overthink Basic Math Reasoning? Benchmarking the Accuracy-Efficiency Tradeoff in Language Models",
+          "source_url": "https://arxiv.org/abs/2507.04023v3",
+          "source_query": "\"math reasoning\" benchmark dataset evaluation code text",
+          "benchmark_likelihood": 0.8,
+          "matched_task_families": [
+            "math_reasoning"
+          ],
+          "evidence_terms": [
+            "summary:introduced_benchmark"
+          ],
+          "proposed_record": {
+            "benchmark_id": null,
+            "name": "Do LLMs Overthink Basic Math Reasoning? Benchmarking the Accuracy-Efficiency Tradeoff in Language Models",
+            "task_families": [
+              "math_reasoning"
+            ],
+            "modalities": [
+              "code",
+              "text"
+            ],
+            "interactions": [
+              "retrieval_tool"
+            ],
+            "output_types": [
+              "safe_text_continuation",
+              "short_answer"
+            ],
+            "environments": [],
+            "capabilities": [
+              "evidence_grounding",
+              "external_information_retrieval",
+              "reasoning_action_interleaving",
+              "tool_use"
+            ],
+            "official_metrics": [],
+            "dataset_or_harness_url": null,
+            "split_definition": null,
+            "access": null,
+            "license_note": null,
+            "source_title": "Do LLMs Overthink Basic Math Reasoning? Benchmarking the Accuracy-Efficiency Tradeoff in Language Models",
+            "source_url": "https://arxiv.org/abs/2507.04023v3"
+          },
+          "missing_required_fields": [
+            "benchmark_id",
+            "official_metrics",
+            "dataset_or_harness_url",
+            "split_definition",
+            "access",
+            "license_note"
+          ],
+          "selection_eligible": false,
+          "status": "CATALOG_ADMISSION_REVIEW_REQUIRED"
+        }
+      ],
+      "comparison": {
+        "selected_primary_matches": [
+          "hotpotqa",
+          "gsm8k"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "toolbench"
+        ],
+        "top_6_primary_matches": [
+          "hotpotqa",
+          "gsm8k"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.6666666666666666
+      },
+      "primary_recall_at_1": 0.5,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "visible_input": {
+        "introduction": "Introduction. The remarkable progress of large language models (LLMs), such as ChatGPT, has been amply demonstrated across an array of language tasks . Their potential to augment human intellect continues to burgeon . However, these models are not without their shortcomings. They occasionally exhibit undesirable behaviors, such as hallucination (generating inaccurate or non-truthful responses), faulty code, or even toxic content . Such inconsistent behavior hampers the trust in these models and poses hurdles to their real-world applications . Traditional approaches to mitigate these limitations typically employ additional training, involving behavior cloning, reinforcement learning, and self-training . However, these methods are constrained by the requirement of large-scale human annotation or data construction, which is often resource-intensive and challenging to obtain. To address these challenges, we present METHOD_X (METHOD_X), a unified framework that empowers black-box LLMs to verify and rectify their own output through human-like interaction with external tools. Drawing inspiration from human cognition and critical thinking , METHOD_X offers a versatile framework that supports precise, interpretable verification and correction of generated text. As depicted in Figure , METHOD_X interacts with external tools like search engines and code interpreters to verify the desired aspects of an initial output and subsequently amends the output based on the critiques from the verification. This verify-then-correct process can be repeated to ensure constant output enhancement. Contrary to methods that rely on expensive annotations or task-specific training, METHOD_X utilizes in-context learning with tool interaction to proficiently identify and rectify unsatisfactory behaviors using the LLM itself. This unique approach makes METHOD_X both practical and accessible, requiring only access to text-to-text tool APIs and a few-shot demonstration. [t] images/framework.pdf The METHOD_X framework consists of two steps: (1) verifying the output by interacting with external tools to generate critiques and (2) correcting the output based on the received critiques. We can iterative such verify-then-correct process to enable continuous improvements. We evaluate our approach on a range of LLMs, including ChatGPT, Text-Davinci-003, and open-source LLaMA-2 variants (7B, 13B, and 70B), spanning three distinct tasks: free-form question answering, mathematical program synthesis, and toxicity reduction. Our findings demonstrate that METHOD_X consistently surpasses prior techniques, obviating the need for supplementary data or training. For example, when applied to ChatGPT, METHOD_X attains 7.7 F1 enhancements across three QA tasks, 7.0 absolute gains on three mathematical reasoning tasks, and a 79.2 reduction in toxicity probability. Interestingly, our results underscore the unreliability of all tested LLMs, when it comes to validating their own results. We observe that exclusive reliance on self-correction without external feedback may yield modest improvements or even deteriorate performance. Our primary contributions include: (1) Proposing the unified METHOD_X framework by integrating various tools and diverse tasks, with a series of new prompts that enable frozen LLMs to verify and iteratively self-correct their output through interaction with external tools. (2) Conducting comprehensive experiments across distinct tasks that demonstrate significant performance improvements offered by METHOD_X across different base LLMs.",
+        "method": "METHOD_X: Correcting with Tool-Interactive Critiquing. We can get an overview of the METHOD_X method through Figure . Given any input, LLMs first generate an initial output based on parametric knowledge, then interact with appropriate external tools (possibly multi-round) through text-to-text APIs to verify the output. The critiques generated by the verification step are concatenated with the initial output, and serve as feedback to allow LLMs to correct the output. We can iterate the cycle of ``Verify Correct Verify'' to continuously improve the output until a specific stopping condition is met. See Algorithm for a summary of METHOD_X method, and the following sections for details. In-context Learning for LLMs. METHOD_X utilizes the emergent abilities of chain-of-thought reasoning and few-shot in-context learning of LLMs. Few-shot in-context learning is a powerful approach that exploits the capabilities of LLMs to solve a task given a small set of input-output examples at test time . The few-shot setting typically involves only a handful of examples ( ). To accomplish this task, the examples are combined into a prompt , which concatenates the input and output pairs as follows: . During inference, a test instance is added to the prompt, and the model is then tasked with completing the sequence to generate an output . Interaction with External Tools. To enable LLMs to use tools, we first construct various external tools such as search engines, code interpreters, and various APIs into text-to-text functions, then interleave the LLMs generations with tool use in in-context demonstrations. As shown in Figure , the input for a search engine can be a query generated by LLMs, which returns a parsed search result, whereas the input for a code interpreter is a program, which returns execution information and the final execution result. This free format allows for human-like verify-then-correct trajectories, facilitating the construction of prompts intuitively and concisely while having strong interpretability and trustworthiness . Verification with Tool-Interaction. Give model and input , the initial answer is generated with prompt by , where indicates concatenation. Given previous output , LLMs interact with external tools to criticize the and produce critiques . If the process involves API calls, we directly concatenate the API call results with the model-generated query to construct the . The task-specific critiques can be used to detail the attributes of the output we expect to evaluate, such as truthfulness, feasibility, or safety. See for detailed experiments using METHOD_X for hallucination detection. For different inputs, we can use task-dependent, heuristically selected, or automatically selected appropriate tools for verification. We can implement automatic tool selection with in-context learning, allowing different tools for different input-output pairs. In our implementation, we pre-specify tools for different tasks to facilitate evaluation and experimentation. For example, as shown in Figure , the tool used for the QA task is Google, enabling LLMs to verify the truthfulness of output by analyzing and interacting with Google in an interleaved manner. Correction with Critiques. LLMs can generate an improved answer conditioned on input , previous output , and critiques from verification: . Critiques play a crucial role in the correction process as they identify errors, offer actionable suggestions, or provide credible groundings through interaction with external tools, thus guiding a new generation to avoid similar mistakes. Motivated by the human process of iterative drafts refinement, we can iterate the process of verify-then-correct until specific stopping criteria are met, such as satisfying critiques from verification, reaching the maximum iterations , or receiving environmental feedback. This method facilitates continuous output improvement by systematically and sample-efficiently verifying and correcting errors resulting from interactions with the world."
+      }
+    }
+  ],
+  "display_label": "Auto-Bench Current Holdout 002 Literature Audit",
+  "submission_filename": "literature_audit_submission_holdout_2_current.json"
+}

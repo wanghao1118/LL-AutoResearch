@@ -1,0 +1,821 @@
+diff --git a/autobench/iteration_report.py b/autobench/iteration_report.py
+index 3b6758f..9f8d503 100644
+--- a/autobench/iteration_report.py
++++ b/autobench/iteration_report.py
+@@ -12,7 +12,12 @@ def _case_metrics(case: dict[str, Any]) -> dict[str, Any]:
+     """Derive portfolio recovery metrics for old and new result schemas."""
+ 
+     selected = case["selected"]
+-    modeled_gold = [*case["primary_gold"], *case["secondary_gold"]]
++    admitted_gold = [
++        item["benchmark_id"]
++        for item in case.get("admitted_gold", [])
++        if item.get("benchmark_id")
++    ]
++    modeled_gold = [*case["primary_gold"], *case["secondary_gold"], *admitted_gold]
+     matches = [benchmark_id for benchmark_id in selected if benchmark_id in modeled_gold]
+     extras = [benchmark_id for benchmark_id in selected if benchmark_id not in modeled_gold]
+     missing = [benchmark_id for benchmark_id in modeled_gold if benchmark_id not in selected]
+diff --git a/autobench/literature_audit.py b/autobench/literature_audit.py
+index 85d16b5..00bec0f 100644
+--- a/autobench/literature_audit.py
++++ b/autobench/literature_audit.py
+@@ -214,10 +214,13 @@ def _render_case(case: dict[str, Any], index: int) -> str:
+           <dl>
+             <dt>Selected primary matches</dt><dd>{html.escape(_list_text(comparison['selected_primary_matches']))}</dd>
+             <dt>Selected secondary matches</dt><dd>{html.escape(_list_text(comparison['selected_secondary_matches']))}</dd>
++            <dt>Selected post-freeze catalog matches</dt><dd>{html.escape(_list_text(comparison.get('selected_admitted_matches', [])))}</dd>
+             <dt>Primary missing from selected</dt><dd>{html.escape(_list_text(comparison['primary_missing_from_selected']))}</dd>
+             <dt>Secondary missing from selected</dt><dd>{html.escape(_list_text(comparison['secondary_missing_from_selected']))}</dd>
++            <dt>Post-freeze catalog items missing from selected</dt><dd>{html.escape(_list_text(comparison.get('admitted_missing_from_selected', [])))}</dd>
+             <dt>Selected but absent from paper</dt><dd>{html.escape(_list_text(comparison['selected_not_used_in_paper']))}</dd>
+             <dt>Top-6 primary matches</dt><dd>{html.escape(_list_text(comparison['top_6_primary_matches']))}</dd>
++            <dt>Top-6 post-freeze catalog matches</dt><dd>{html.escape(_list_text(comparison.get('top_6_admitted_matches', [])))}</dd>
+           </dl>
+         </div>
+ {route_context}
+diff --git a/autobench/match_agent.py b/autobench/match_agent.py
+index 733c6a1..d6cc391 100644
+--- a/autobench/match_agent.py
++++ b/autobench/match_agent.py
+@@ -20,6 +20,26 @@ WEIGHTS = {
+ 
+ SPECIALIZED_CAPABILITIES = {"multilingual_code_generation"}
+ 
++SPECIALIZATION_GATES: dict[str, tuple[str, frozenset[str]]] = {
++    "ambignq": ("output_types", frozenset({"disambiguated_question"})),
++    "tabmwp": ("environments", frozenset({"structured_table"})),
++    "game_of_24": ("capabilities", frozenset({"long_horizon_planning"})),
++    "multipl_e": ("capabilities", frozenset({"multilingual_code_generation"})),
++    "leetcodehardgym": (
++        "capabilities",
++        frozenset({"iterative_improvement", "multilingual_code_generation"}),
++    ),
++}
++
++SPECIALIZATION_BREADTH_EXEMPTIONS: dict[str, tuple[str, int]] = {
++    "ambignq": ("knowledge_intensive_qa", 3),
++    "tabmwp": ("math_reasoning", 3),
++}
++
++TASK_ENVIRONMENT_GATES: dict[str, tuple[frozenset[str], frozenset[str]]] = {
++    "online_store": (frozenset({"web_navigation"}), frozenset({"website"})),
++}
++
+ 
+ def _coverage(required: list[str], offered: list[str], candidate_denominator: bool = False) -> float:
+     required_set = set(required)
+@@ -30,6 +50,29 @@ def _coverage(required: list[str], offered: list[str], candidate_denominator: bo
+     return len(required_set & offered_set) / max(denominator, 1)
+ 
+ 
++def _environment_fit(required: list[str], offered: list[str]) -> float:
++    """Reward a benchmark that matches a visible domain-specific environment.
++
++    Generic website or executor compatibility remains useful, but it should not
++    outrank an explicitly supported online-store, repository, table, or other
++    domain environment merely because the generic record has fewer labels.
++    """
++
++    required_set = set(required)
++    offered_set = set(offered)
++    if not required_set or not offered_set:
++        return 0.0
++    generic = {"website", "knowledge_base", "code_executor"}
++    specific_required = required_set - generic
++    if specific_required:
++        if specific_required & offered_set:
++            return 1.0
++        if required_set & offered_set:
++            return 0.5
++        return 0.0
++    return _coverage(required, offered, candidate_denominator=True)
++
++
+ def task_normalized_score(candidate: ScoredCandidate) -> float:
+     """Restore the task component to one for cross-profile thresholds.
+ 
+@@ -45,6 +88,29 @@ def task_normalized_score(candidate: ScoredCandidate) -> float:
+     return candidate.score + WEIGHTS["task"] * (1.0 - task_component)
+ 
+ 
++def _deferred_breadth_variant(
++    profile: CapabilityProfile,
++    candidate: ScoredCandidate,
++) -> bool:
++    """Place subtype-specific breadth variants after canonical task coverage.
++
++    An explicit multi-benchmark count makes AmbigNQ or TabMWP eligible even
++    without disambiguation/table wording. In that case they remain useful suite
++    variants, but a general QA/math benchmark should occupy the earlier core
++    rank. Direct subtype evidence removes this deferral.
++    """
++
++    exemption = SPECIALIZATION_BREADTH_EXEMPTIONS.get(candidate.benchmark_id)
++    specialization = SPECIALIZATION_GATES.get(candidate.benchmark_id)
++    if not exemption or not specialization:
++        return False
++    task, required_count = exemption
++    if profile.task_benchmark_counts.get(task, 0) < required_count:
++        return False
++    profile_field, accepted_values = specialization
++    return set(getattr(profile, profile_field)).isdisjoint(accepted_values)
++
++
+ def _literature_evidence(record: BenchmarkRecord, hits: list[SearchHit]) -> tuple[float, list[str]]:
+     """Return named-source or topical corroboration from live search hits.
+ 
+@@ -86,12 +152,37 @@ def score_candidate(
+     """Score one benchmark and expose every component used in the decision."""
+ 
+     mismatches: list[str] = []
+-    if record.modalities == ["image"] and "image" not in profile.modalities:
+-        mismatches.append("image-only benchmark for a non-image method")
++    if "image" in record.modalities and "image" not in profile.modalities:
++        mismatches.append("image-dependent benchmark for a non-image method")
+     if record.task_families == ["math_reasoning"] and "math_reasoning" not in profile.task_families:
+         mismatches.append("math-only benchmark outside inferred task families")
+     if "code" in record.modalities and "code" not in profile.modalities:
+         mismatches.append("code benchmark for a method without code input or output")
++    specialization = SPECIALIZATION_GATES.get(record.benchmark_id)
++    if specialization:
++        profile_field, accepted_values = specialization
++        observed_values = set(getattr(profile, profile_field))
++        breadth_exemption = SPECIALIZATION_BREADTH_EXEMPTIONS.get(record.benchmark_id)
++        breadth_supported = bool(
++            breadth_exemption
++            and profile.task_benchmark_counts.get(breadth_exemption[0], 0) >= breadth_exemption[1]
++        )
++        if observed_values.isdisjoint(accepted_values) and not breadth_supported:
++            mismatches.append(
++                "specialized benchmark lacks visible method evidence for "
++                + ", ".join(sorted(accepted_values))
++            )
++    for required_environment, (affected_tasks, generic_environments) in TASK_ENVIRONMENT_GATES.items():
++        if required_environment not in profile.environments:
++            continue
++        if set(record.task_families).isdisjoint(affected_tasks):
++            continue
++        if required_environment in record.environments:
++            continue
++        if set(record.environments) & generic_environments:
++            mismatches.append(
++                f"generic environment does not satisfy explicit {required_environment} scope"
++            )
+ 
+     literature_score, literature_urls = _literature_evidence(record, search_hits)
+     components = {
+@@ -99,7 +190,7 @@ def score_candidate(
+         "modality": _coverage(profile.modalities, record.modalities, candidate_denominator=True),
+         "interaction": _coverage(profile.interactions, record.interactions, candidate_denominator=True),
+         "output": _coverage(profile.output_types, record.output_types, candidate_denominator=True),
+-        "environment": _coverage(profile.environments, record.environments, candidate_denominator=True),
++        "environment": _environment_fit(profile.environments, record.environments),
+         "capability": _coverage(profile.capabilities, record.capabilities, candidate_denominator=True),
+         "metric": _coverage(profile.suggested_metrics, record.metrics, candidate_denominator=True),
+         "literature": literature_score,
+@@ -166,6 +257,7 @@ def rank_candidates(
+             covering,
+             key=lambda item: (
+                 -len(set(item.matched_requirements["task_families"]) - covered_tasks),
++                _deferred_breadth_variant(profile, item),
+                 -item.score,
+                 item.benchmark_id,
+             ),
+@@ -202,7 +294,14 @@ def rank_candidates(
+             ]
+             if not candidates:
+                 continue
+-            chosen = sorted(candidates, key=lambda item: (-item.score, item.benchmark_id))[0]
++            chosen = sorted(
++                candidates,
++                key=lambda item: (
++                    _deferred_breadth_variant(profile, item),
++                    -item.score,
++                    item.benchmark_id,
++                ),
++            )[0]
+             remaining.remove(chosen)
+             ranked.append(chosen)
+             for supported_task in set(chosen.matched_requirements["task_families"]) & target_tasks:
+@@ -233,6 +332,13 @@ def select_portfolio(
+     """
+ 
+     target_tasks = set(profile.task_families) | set(profile.uncovered_task_families)
++    explicit_counts = {
++        task: count
++        for task, count in profile.task_benchmark_counts.items()
++        if task in target_tasks and count > 0
++    }
++    visible_minimum_size = sum(explicit_counts.get(task, 1) for task in target_tasks)
++    effective_max_benchmarks = min(max(max_benchmarks, visible_minimum_size), 12)
+     covered: set[str] = set()
+     selected: list[str] = []
+     roles: dict[str, str] = {}
+@@ -245,7 +351,7 @@ def select_portfolio(
+         selected.append(candidate.benchmark_id)
+         roles[candidate.benchmark_id] = "core_task_coverage"
+         covered.update(new_tasks)
+-        if len(selected) >= max_benchmarks or covered >= target_tasks:
++        if len(selected) >= effective_max_benchmarks or covered >= target_tasks:
+             break
+ 
+     ratio = 0.0 if not target_tasks else len(covered & target_tasks) / len(target_tasks)
+@@ -254,7 +360,7 @@ def select_portfolio(
+ 
+     for capability in sorted(set(profile.capabilities) & SPECIALIZED_CAPABILITIES):
+         for candidate in ranked:
+-            if len(selected) >= max_benchmarks:
++            if len(selected) >= effective_max_benchmarks:
+                 break
+             if candidate.benchmark_id in selected:
+                 continue
+@@ -266,8 +372,22 @@ def select_portfolio(
+             roles[candidate.benchmark_id] = f"specialized_capability:{capability}"
+             break
+ 
++    selected_counts = {
++        task: sum(
++            task in candidate.matched_requirements["task_families"]
++            for candidate in ranked
++            if candidate.benchmark_id in selected
++        )
++        for task in covered & target_tasks
++    }
+     supplementary_by_task: dict[str, list[ScoredCandidate]] = {}
+     for task in sorted(covered & target_tasks):
++        if task in explicit_counts:
++            remaining_slots = max(explicit_counts[task] - selected_counts.get(task, 0), 0)
++        else:
++            remaining_slots = 2
++        if remaining_slots == 0:
++            continue
+         for candidate in ranked:
+             if candidate.benchmark_id in selected:
+                 continue
+@@ -278,7 +398,7 @@ def select_portfolio(
+             if profile.environments and not candidate.matched_requirements["environments"]:
+                 continue
+             supplementary_by_task.setdefault(task, []).append(candidate)
+-            if len(supplementary_by_task[task]) >= 2:
++            if len(supplementary_by_task[task]) >= remaining_slots:
+                 break
+     supplementary_ids = {
+         candidate.benchmark_id
+@@ -286,7 +406,7 @@ def select_portfolio(
+         for candidate in candidates
+     }
+     for candidate in ranked:
+-        if len(selected) >= max_benchmarks:
++        if len(selected) >= effective_max_benchmarks:
+             break
+         if candidate.benchmark_id not in supplementary_ids or candidate.benchmark_id in selected:
+             continue
+@@ -296,7 +416,12 @@ def select_portfolio(
+             for task, items in supplementary_by_task.items()
+             if any(item.benchmark_id == candidate.benchmark_id for item in items)
+         )
+-        roles[candidate.benchmark_id] = "supplementary_triangulation:" + ",".join(supported_tasks)
++        role_prefix = (
++            "explicit_suite_cardinality"
++            if any(task in explicit_counts for task in supported_tasks)
++            else "supplementary_triangulation"
++        )
++        roles[candidate.benchmark_id] = role_prefix + ":" + ",".join(supported_tasks)
+ 
+     rank_order = {candidate.benchmark_id: rank for rank, candidate in enumerate(ranked)}
+     selected.sort(key=rank_order.__getitem__)
+diff --git a/autobench/models.py b/autobench/models.py
+index 0e53ca7..d7a0cab 100644
+--- a/autobench/models.py
++++ b/autobench/models.py
+@@ -46,6 +46,7 @@ class CapabilityProfile:
+     """Evaluation requirements inferred only from introduction and method."""
+ 
+     task_families: list[str]
++    task_benchmark_counts: dict[str, int]
+     uncovered_task_families: list[str]
+     modalities: list[str]
+     interactions: list[str]
+diff --git a/autobench/pipeline.py b/autobench/pipeline.py
+index 2d5740d..f5156f7 100644
+--- a/autobench/pipeline.py
++++ b/autobench/pipeline.py
+@@ -146,6 +146,7 @@ def _render_markdown(plan: dict[str, Any]) -> str:
+         "## Inferred Evaluation Profile",
+         "",
+         f"- Tasks: {', '.join(plan['profile']['task_families']) or 'none'}",
++        f"- Explicit benchmark counts: {plan['profile']['task_benchmark_counts']}",
+         f"- Uncovered tasks: {', '.join(plan['profile']['uncovered_task_families']) or 'none'}",
+         f"- Modalities: {', '.join(plan['profile']['modalities'])}",
+         f"- Interactions: {', '.join(plan['profile']['interactions'])}",
+diff --git a/autobench/profile_agent.py b/autobench/profile_agent.py
+index b83f7eb..7e7204d 100644
+--- a/autobench/profile_agent.py
++++ b/autobench/profile_agent.py
+@@ -72,7 +72,14 @@ TASK_RULES: dict[str, tuple[str, ...]] = {
+         "sparse reward",
+         "interactive environment",
+     ),
+-    "math_reasoning": ("math word problem", "mathematical reasoning", "arithmetic reasoning"),
++    "math_reasoning": (
++        "math word problem",
++        "mathematical reasoning",
++        "mathematical program synthesis",
++        "arithmetic reasoning",
++        "quantitative skills",
++        "math tasks",
++    ),
+     "toxicity_reduction": (
+         "toxicity reduction",
+         "toxic content",
+@@ -142,6 +149,37 @@ CAPABILITY_RULES: dict[str, tuple[str, ...]] = {
+     "tool_use": ("action", "tool", "api", "shell", "browser", "computer"),
+ }
+ 
++TASK_COUNT_ALIASES: dict[str, tuple[str, ...]] = {
++    "knowledge_intensive_qa": (
++        "qa",
++        "question answering",
++        "free form question answering",
++        "free-form question answering",
++    ),
++    "math_reasoning": (
++        "math",
++        "mathematical reasoning",
++        "mathematical program synthesis",
++        "arithmetic reasoning",
++    ),
++    "code_generation": ("programming", "code generation"),
++    "web_navigation": ("web navigation", "web interaction"),
++    "toxicity_reduction": ("toxicity", "toxicity reduction"),
++}
++
++NUMBER_WORDS = {
++    "one": 1,
++    "two": 2,
++    "three": 3,
++    "four": 4,
++    "five": 5,
++    "six": 6,
++    "seven": 7,
++    "eight": 8,
++    "nine": 9,
++    "ten": 10,
++}
++
+ 
+ def _normalize(text: str) -> str:
+     text = text.casefold().replace("–", "-").replace("—", "-")
+@@ -186,6 +224,67 @@ def _fallback_uncovered_task(text: str) -> dict[str, list[str]]:
+     return {}
+ 
+ 
++def _explicit_api_evaluation_task(text: str) -> bool:
++    """Distinguish an API-use evaluation task from APIs used by the method.
++
++    Tool-augmented methods often mention API calls as implementation details
++    while evaluating question answering, mathematics, or generation. API
++    benchmarks are proposed only when the visible paper text explicitly names
++    tool/API use as the task or benchmark construct.
++    """
++
++    markers = (
++        "api use task",
++        "api-use task",
++        "api tool use",
++        "api interaction task",
++        "tool use task",
++        "tool-use task",
++        "tool use benchmark",
++        "tool-use benchmark",
++        "multi-tool task",
++        "evaluate api use",
++        "evaluation of api use",
++        "evaluate tool use",
++        "evaluation of tool use",
++    )
++    return _contains_any(text, markers)
++
++
++def _explicit_task_benchmark_counts(
++    text: str,
++    task_families: set[str],
++) -> dict[str, int]:
++    """Extract visible per-task evaluation breadth from Introduction/Method.
++
++    Papers sometimes disclose that they evaluate on, for example, three QA
++    tasks and three mathematical-reasoning tasks even when benchmark names are
++    redacted. Those counts are legitimate matcher-visible evidence and should
++    determine portfolio breadth instead of being discarded by a global Top-6
++    limit. Counts are capped to ten to keep malformed prose from creating an
++    unbounded recommendation list.
++    """
++
++    number_pattern = r"(?P<count>\d+|" + "|".join(NUMBER_WORDS) + r")"
++    counts: dict[str, int] = {}
++    for task in sorted(task_families):
++        aliases = TASK_COUNT_ALIASES.get(task, ())
++        for alias in sorted(aliases, key=len, reverse=True):
++            pattern = (
++                rf"\b{number_pattern}\s+(?:distinct\s+)?"
++                rf"{re.escape(_normalize(alias))}\s+"
++                rf"(?:benchmarks?|datasets?|tasks?)\b"
++            )
++            match = re.search(pattern, text)
++            if not match:
++                continue
++            raw_count = match.group("count")
++            count = int(raw_count) if raw_count.isdigit() else NUMBER_WORDS[raw_count]
++            counts[task] = max(1, min(count, 10))
++            break
++    return counts
++
++
+ def build_profile(method_input: MethodInput) -> CapabilityProfile:
+     """Build an inspectable capability profile using deterministic rules.
+ 
+@@ -195,16 +294,14 @@ def build_profile(method_input: MethodInput) -> CapabilityProfile:
+     """
+ 
+     text = _normalize(f"{method_input.introduction}\n{method_input.method}")
+-    method_text = _normalize(method_input.method)
+     task_hits = _rule_hits(text, TASK_RULES)
+     uncovered_task_hits = _rule_hits(text, UNCOVERED_TASK_RULES)
+     if not task_hits and not uncovered_task_hits:
+         uncovered_task_hits = _fallback_uncovered_task(text)
+-    method_task_hits = _rule_hits(method_text, TASK_RULES)
+-    if "api_tool_use" in task_hits and "api_tool_use" not in method_task_hits:
+-        if len(task_hits["api_tool_use"]) < 2:
+-            task_hits.pop("api_tool_use")
++    if "api_tool_use" in task_hits and not _explicit_api_evaluation_task(text):
++        task_hits.pop("api_tool_use")
+     capability_hits = _rule_hits(text, CAPABILITY_RULES)
++    task_benchmark_counts = _explicit_task_benchmark_counts(text, set(task_hits))
+ 
+     modalities = {"text"}
+     if _contains_any(text, ("code", "programming", "repository", "compiler", "unit test")):
+@@ -258,6 +355,8 @@ def build_profile(method_input: MethodInput) -> CapabilityProfile:
+         outputs.add("repaired_program")
+     if "toxicity_reduction" in task_hits:
+         outputs.add("safe_text_continuation")
++    if _contains_any(text, ("finalizing a purchase", "purchase a product", "online shopping")):
++        outputs.add("selected_product")
+     if "audio_music_generation" in uncovered_task_hits:
+         outputs.add("generated_audio")
+     if "speech_recognition" in uncovered_task_hits:
+@@ -276,6 +375,8 @@ def build_profile(method_input: MethodInput) -> CapabilityProfile:
+         environments.add("household_simulator")
+     if _contains_any(text, ("webpage", "website", "browser", "online shopping", "web navigation")):
+         environments.add("website")
++    if _contains_any(text, ("finalizing a purchase", "purchase a product", "online shopping")):
++        environments.add("online_store")
+     if _contains_any(text, ("repository", "codebase", "software engineering")):
+         environments.add("software_repository")
+     if _contains_any(
+@@ -325,6 +426,7 @@ def build_profile(method_input: MethodInput) -> CapabilityProfile:
+ 
+     return CapabilityProfile(
+         task_families=sorted(task_hits),
++        task_benchmark_counts=task_benchmark_counts,
+         uncovered_task_families=sorted(uncovered_task_hits),
+         modalities=sorted(modalities),
+         interactions=sorted(interactions),
+diff --git a/autobench/synthesis_agent.py b/autobench/synthesis_agent.py
+index ccc433e..cb70af7 100644
+--- a/autobench/synthesis_agent.py
++++ b/autobench/synthesis_agent.py
+@@ -156,6 +156,7 @@ def build_synthesis_plan(profile: CapabilityProfile, adaptation_plan: dict[str,
+         ],
+         "profile_snapshot": {
+             "task_families": profile.task_families,
++            "task_benchmark_counts": profile.task_benchmark_counts,
+             "uncovered_task_families": profile.uncovered_task_families,
+             "modalities": profile.modalities,
+             "interactions": profile.interactions,
+diff --git a/configs/benchmark_catalog.json b/configs/benchmark_catalog.json
+index 52f2a6b..8c01625 100644
+--- a/configs/benchmark_catalog.json
++++ b/configs/benchmark_catalog.json
+@@ -68,7 +68,7 @@
+       "modalities": ["text", "web"],
+       "interactions": ["browser", "interactive_environment"],
+       "output_types": ["action_trajectory", "selected_product"],
+-      "environments": ["website"],
++      "environments": ["website", "online_store"],
+       "capabilities": ["long_horizon_planning", "reasoning_action_interleaving", "tool_use"],
+       "metrics": ["task_success_rate", "attribute_score", "trajectory_efficiency"],
+       "keywords": ["online shopping", "grounded language agent", "product search", "web interaction"],
+@@ -363,6 +363,120 @@
+       "source_url": "https://arxiv.org/abs/2110.14168",
+       "adaptation_hooks": ["reasoning_trace_wrapper", "difficulty_stratification"]
+     },
++    {
++      "benchmark_id": "ambignq",
++      "name": "AmbigNQ",
++      "aliases": ["AmbigQA", "Ambiguous Natural Questions"],
++      "year": 2020,
++      "task_families": ["knowledge_intensive_qa"],
++      "modalities": ["text"],
++      "interactions": ["static", "retrieval_tool"],
++      "output_types": ["short_answer", "disambiguated_question"],
++      "environments": ["knowledge_base"],
++      "capabilities": ["external_information_retrieval", "evidence_grounding"],
++      "metrics": ["exact_match", "token_f1"],
++      "keywords": ["ambiguous open-domain question answering", "multiple plausible answers", "question disambiguation"],
++      "access": "public research dataset",
++      "license_note": "verify the current dataset and source-corpus terms",
++      "source_title": "AmbigQA: Answering Ambiguous Open-domain Questions",
++      "source_url": "https://arxiv.org/abs/2004.10645",
++      "adaptation_hooks": ["ambiguity_stratification", "multiple_answer_normalization", "clarification_wrapper"]
++    },
++    {
++      "benchmark_id": "triviaqa",
++      "name": "TriviaQA",
++      "aliases": ["Trivia QA"],
++      "year": 2017,
++      "task_families": ["knowledge_intensive_qa"],
++      "modalities": ["text"],
++      "interactions": ["static", "retrieval_tool"],
++      "output_types": ["short_answer", "supporting_evidence"],
++      "environments": ["knowledge_base"],
++      "capabilities": ["external_information_retrieval", "evidence_grounding"],
++      "metrics": ["exact_match", "token_f1"],
++      "keywords": ["open-domain trivia questions", "distantly supervised reading comprehension", "evidence documents"],
++      "access": "public research dataset",
++      "license_note": "verify the current question and evidence-document terms",
++      "source_title": "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
++      "source_url": "https://arxiv.org/abs/1705.03551",
++      "adaptation_hooks": ["open_domain_split", "evidence_retrieval_wrapper", "answer_alias_normalization"]
++    },
++    {
++      "benchmark_id": "svamp",
++      "name": "SVAMP",
++      "aliases": ["Simple Variations on Arithmetic Math Word Problems"],
++      "year": 2021,
++      "task_families": ["math_reasoning"],
++      "modalities": ["text"],
++      "interactions": ["static"],
++      "output_types": ["short_answer"],
++      "environments": [],
++      "capabilities": [],
++      "metrics": ["exact_match", "task_accuracy"],
++      "keywords": ["arithmetic word problems", "question variation", "robust mathematical reasoning"],
++      "access": "public research dataset",
++      "license_note": "verify the current dataset and source-problem terms",
++      "source_title": "Are NLP Models really able to Solve Simple Math Word Problems?",
++      "source_url": "https://arxiv.org/abs/2103.07191",
++      "adaptation_hooks": ["variation_family_split", "reasoning_trace_wrapper", "difficulty_stratification"]
++    },
++    {
++      "benchmark_id": "tabmwp",
++      "name": "TabMWP",
++      "aliases": ["Tabular Math Word Problems"],
++      "year": 2022,
++      "task_families": ["math_reasoning"],
++      "modalities": ["text"],
++      "interactions": ["static"],
++      "output_types": ["short_answer"],
++      "environments": ["structured_table"],
++      "capabilities": ["evidence_grounding"],
++      "metrics": ["exact_match", "task_accuracy"],
++      "keywords": ["tabular math word problems", "semi-structured mathematical reasoning", "table and text"],
++      "access": "public research dataset",
++      "license_note": "verify the current dataset and table-source terms",
++      "source_title": "Dynamic Prompt Learning via Policy Gradient for Semi-structured Mathematical Reasoning",
++      "source_url": "https://arxiv.org/abs/2209.14610",
++      "adaptation_hooks": ["table_representation_choice", "question_type_split", "reasoning_trace_wrapper"]
++    },
++    {
++      "benchmark_id": "realtoxicityprompts",
++      "name": "RealToxicityPrompts",
++      "aliases": ["Real Toxicity Prompts"],
++      "year": 2020,
++      "task_families": ["toxicity_reduction"],
++      "modalities": ["text"],
++      "interactions": ["static"],
++      "output_types": ["safe_text_continuation"],
++      "environments": [],
++      "capabilities": [],
++      "metrics": ["toxicity_probability", "fluency", "generation_diversity"],
++      "keywords": ["toxic degeneration", "non-toxic text generation", "toxicity-scored prompts"],
++      "access": "public research dataset",
++      "license_note": "verify the current prompt-corpus and toxicity-scoring terms",
++      "source_title": "RealToxicityPrompts: Evaluating Neural Toxic Degeneration in Language Models",
++      "source_url": "https://arxiv.org/abs/2009.11462",
++      "adaptation_hooks": ["toxicity_band_split", "continuation_wrapper", "classifier_snapshot"]
++    },
++    {
++      "benchmark_id": "game_of_24",
++      "name": "Game of 24",
++      "aliases": ["24 Game", "Game24"],
++      "year": 2023,
++      "task_families": ["math_reasoning"],
++      "modalities": ["text"],
++      "interactions": ["static"],
++      "output_types": ["short_answer"],
++      "environments": [],
++      "capabilities": ["long_horizon_planning"],
++      "metrics": ["task_accuracy", "task_success_rate"],
++      "keywords": ["Game of 24", "arithmetic search", "strategic lookahead", "backtracking"],
++      "access": "public research task and prompt set",
++      "license_note": "verify the current task-generation and prompt-release terms",
++      "source_title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
++      "source_url": "https://arxiv.org/abs/2305.10601",
++      "adaptation_hooks": ["number_tuple_split", "search_budget_control", "solution_verifier"]
++    },
+     {
+       "benchmark_id": "mmlu",
+       "name": "MMLU",
+diff --git a/step3_evaluate_blind_results.py b/step3_evaluate_blind_results.py
+index 1670436..a478d82 100755
+--- a/step3_evaluate_blind_results.py
++++ b/step3_evaluate_blind_results.py
+@@ -51,35 +51,74 @@ def evaluate_case(
+     plan: dict[str, Any],
+     gold: dict[str, Any],
+     benchmark_names: dict[str, str],
++    benchmark_aliases: dict[str, str] | None = None,
+     matcher_visible_input: str | None = None,
+ ) -> dict[str, Any]:
++    """Join one blind plan with post-run gold and newly admitted catalog IDs.
++
++    A frozen gold file may name a benchmark that was outside the catalog at
++    freeze time. If that exact public name or alias is admitted later, the
++    evaluator resolves it only after the matcher has exited. This improves the
++    current comparison without changing the preserved first-run artifact or
++    exposing the mapping to the matcher.
++    """
++
+     ranked = [candidate["benchmark_id"] for candidate in plan["ranked_candidates"]]
+     primary = gold["primary_benchmark_ids"]
+     secondary = gold["secondary_benchmark_ids"]
+     selected = plan["selected_benchmarks"]
+-    actual_ids = set(primary) | set(secondary)
+     rank_by_id = {benchmark_id: rank for rank, benchmark_id in enumerate(ranked, start=1)}
++    alias_to_id = benchmark_aliases or {}
++    admitted_ids: list[str] = []
++    admitted_gold: list[dict[str, str]] = []
+ 
+     actual_benchmarks: list[dict[str, Any]] = []
+     for evidence in gold["benchmark_evidence"]:
+         benchmark_id = evidence.get("benchmark_id")
+-        benchmark_name = evidence.get("benchmark_name") or benchmark_names.get(
++        original_name = evidence.get("benchmark_name")
++        benchmark_name = original_name or benchmark_names.get(
+             benchmark_id,
+             benchmark_id,
+         )
++        admitted_after_freeze = False
++        if not benchmark_id and benchmark_name:
++            benchmark_id = alias_to_id.get(str(benchmark_name).casefold().strip())
++            admitted_after_freeze = benchmark_id is not None
++        if admitted_after_freeze:
++            admitted_ids.append(benchmark_id)
++            admitted_gold.append(
++                {
++                    "benchmark_name": str(benchmark_name),
++                    "benchmark_id": benchmark_id,
++                }
++            )
+         actual_benchmarks.append(
+             {
+                 **evidence,
++                "benchmark_id": benchmark_id,
+                 "benchmark_name": benchmark_name,
++                "role": "admitted_after_freeze" if admitted_after_freeze else evidence["role"],
+                 "selected_by_autobench": benchmark_id in selected if benchmark_id else False,
+                 "rank_in_autobench": rank_by_id.get(benchmark_id) if benchmark_id else None,
+             }
+         )
+ 
++    admitted_id_set = set(admitted_ids)
++    actual_ids = set(primary) | set(secondary) | admitted_id_set
++
++    def paper_role(benchmark_id: str) -> str:
++        if benchmark_id in primary:
++            return "primary"
++        if benchmark_id in secondary:
++            return "secondary"
++        if benchmark_id in admitted_id_set:
++            return "admitted_after_freeze"
++        return "not_used_in_paper"
++
+     selected_recommendations = []
+     for benchmark_id in selected:
+         candidate = next(item for item in plan["ranked_candidates"] if item["benchmark_id"] == benchmark_id)
+-        role = "primary" if benchmark_id in primary else "secondary" if benchmark_id in secondary else "not_used_in_paper"
++        role = paper_role(benchmark_id)
+         selected_recommendations.append(
+             {
+                 "benchmark_id": benchmark_id,
+@@ -94,7 +133,7 @@ def evaluate_case(
+ 
+     top_6_details = []
+     for benchmark_id in ranked[:6]:
+-        role = "primary" if benchmark_id in primary else "secondary" if benchmark_id in secondary else "not_used_in_paper"
++        role = paper_role(benchmark_id)
+         top_6_details.append(
+             {
+                 "benchmark_id": benchmark_id,
+@@ -112,6 +151,15 @@ def evaluate_case(
+     selected_modeled_recall = (
+         len(set(selected_actual_matches)) / len(actual_ids) if actual_ids else 1.0
+     )
++    unresolved_unmodeled = [
++        name
++        for name in gold["unmodeled_benchmarks"]
++        if str(name).casefold().strip() not in alias_to_id
++    ]
++    expected_route_at_freeze = gold["expected_route"]
++    expected_route = expected_route_at_freeze
++    if admitted_ids and plan["coverage_ratio"] >= 1.0:
++        expected_route = "direct_portfolio"
+     return {
+         "case_id": gold["case_id"],
+         "source_arxiv_id": gold["source_arxiv_id"],
+@@ -124,7 +172,8 @@ def evaluate_case(
+         "actual_benchmarks": actual_benchmarks,
+         "primary_gold": primary,
+         "secondary_gold": secondary,
+-        "unmodeled_gold": gold["unmodeled_benchmarks"],
++        "unmodeled_gold": unresolved_unmodeled,
++        "admitted_gold": admitted_gold,
+         "top_6": ranked[:6],
+         "top_6_details": top_6_details,
+         "selected": selected,
+@@ -138,11 +187,14 @@ def evaluate_case(
+         "comparison": {
+             "selected_primary_matches": [benchmark_id for benchmark_id in selected if benchmark_id in primary],
+             "selected_secondary_matches": [benchmark_id for benchmark_id in selected if benchmark_id in secondary],
++            "selected_admitted_matches": [benchmark_id for benchmark_id in selected if benchmark_id in admitted_id_set],
+             "primary_missing_from_selected": [benchmark_id for benchmark_id in primary if benchmark_id not in selected],
+             "secondary_missing_from_selected": [benchmark_id for benchmark_id in secondary if benchmark_id not in selected],
++            "admitted_missing_from_selected": [benchmark_id for benchmark_id in admitted_ids if benchmark_id not in selected],
+             "selected_not_used_in_paper": selected_extras,
+             "top_6_primary_matches": [benchmark_id for benchmark_id in ranked[:6] if benchmark_id in primary],
+             "top_6_secondary_matches": [benchmark_id for benchmark_id in ranked[:6] if benchmark_id in secondary],
++            "top_6_admitted_matches": [benchmark_id for benchmark_id in ranked[:6] if benchmark_id in admitted_id_set],
+             "top_6_primary_missing": [benchmark_id for benchmark_id in primary if benchmark_id not in ranked[:6]],
+             "selected_actual_precision": selected_precision,
+         },
+@@ -155,8 +207,9 @@ def evaluate_case(
+         "selected_primary_recall": recall_at_k(selected, primary, len(selected)),
+         "selected_modeled_recall": selected_modeled_recall,
+         "route": plan["route"],
+-        "expected_route": gold["expected_route"],
+-        "route_correct": plan["route"] == gold["expected_route"],
++        "expected_route": expected_route,
++        "expected_route_at_freeze": expected_route_at_freeze,
++        "route_correct": plan["route"] == expected_route,
+         "leakage_passed": plan["provenance"]["leakage_scan"]["passed"],
+         "matcher_loaded_hidden_labels": plan["provenance"]["blind_gold_loaded"],
+         "status": plan["status"],
+@@ -226,14 +279,18 @@ def render_markdown(payload: dict[str, Any]) -> str:
+                 "",
+                 f"- Selected primary matches: {comparison['selected_primary_matches']}",
+                 f"- Selected secondary matches: {comparison['selected_secondary_matches']}",
++                f"- Selected post-freeze catalog matches: {comparison.get('selected_admitted_matches', [])}",
+                 f"- Primary benchmarks missing from selected portfolio: {comparison['primary_missing_from_selected']}",
+                 f"- Secondary benchmarks missing from selected portfolio: {comparison['secondary_missing_from_selected']}",
++                f"- Post-freeze catalog benchmarks missing from selected portfolio: "
++                f"{comparison.get('admitted_missing_from_selected', [])}",
+                 f"- Selected recommendations not used by the paper: {comparison['selected_not_used_in_paper']}",
+                 f"- Top-6 primary matches: {comparison['top_6_primary_matches']}",
+                 f"- Recall@5 / Recall@6: {case['primary_recall_at_5']:.3f} / {case['primary_recall_at_6']:.3f}",
+                 f"- Selected modeled-benchmark recall: {case['selected_modeled_recall']:.3f}",
+                 f"- Selected actual-benchmark precision: {comparison['selected_actual_precision']:.3f}",
+                 f"- Route: {case['route']} (expected {case['expected_route']})",
++                f"- Expected route at original freeze: {case.get('expected_route_at_freeze', case['expected_route'])}",
+                 f"- Route reason: {case['route_reason']}",
+                 f"- Inferred task coverage: {case['coverage_ratio']:.3f}",
+                 f"- Missing task families: {case['adaptation_plan']['missing_task_families']}",
+@@ -285,6 +342,11 @@ def main() -> int:
+     gold_dir = ROOT / args.gold_dir
+     catalog = load_catalog(ROOT / args.catalog)
+     benchmark_names = {record.benchmark_id: record.name for record in catalog}
++    benchmark_aliases = {
++        alias.casefold().strip(): record.benchmark_id
++        for record in catalog
++        for alias in [record.name, *record.aliases]
++    }
+     results: list[dict[str, Any]] = []
+     for case_id, plan in sorted(plans.items()):
+         gold_path = gold_dir / f"{case_id}.gold.json"
+@@ -292,7 +354,15 @@ def main() -> int:
+         matcher_input = (
+             Path(args.matcher_cases_dir) / f"{case_id}.json"
+         ).as_posix()
+-        results.append(evaluate_case(plan, gold, benchmark_names, matcher_input))
++        results.append(
++            evaluate_case(
++                plan,
++                gold,
++                benchmark_names,
++                benchmark_aliases,
++                matcher_input,
++            )
++        )
+ 
+     aggregate = {
+         "case_count": len(results),

@@ -1,0 +1,71 @@
+{
+  "case_id": "fresh_004",
+  "source_arxiv_id": "2305.14992",
+  "source_title": "Reasoning with Language Model is Planning with World Model",
+  "source_url": "https://arxiv.org/abs/2305.14992",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Reasoning via Planning"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "gsm8k"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "Blocksworld",
+    "PrOntoQA"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Plan Generation",
+    "Math Reasoning",
+    "Logical Reasoning"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Plan Generation",
+      "benchmark_name": "Blocksworld",
+      "task_family": "classical_planning"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Math Reasoning",
+      "benchmark_id": "gsm8k",
+      "task_family": "math_word_problem"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Logical Reasoning",
+      "benchmark_name": "PrOntoQA",
+      "task_family": "logical_reasoning"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "test cases from the \\blocksworld dataset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.14992/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "Math reasoning tasks, such as GSM8k",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.14992/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "performance of our RAP framework on PrOntoQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.14992/sections/experiment.tex"
+      ]
+    }
+  ]
+}

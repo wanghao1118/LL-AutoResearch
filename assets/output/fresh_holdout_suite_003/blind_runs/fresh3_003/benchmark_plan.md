@@ -1,0 +1,66 @@
+# Auto-Bench Plan: fresh3_003
+
+- Status: **HUMAN_REVIEW_REQUIRED**
+- Route: **new_benchmark_synthesis**
+- Task-family coverage: **0.0%**
+- Decision: no catalog task family covers the explicitly stated method domain
+
+## Matcher-Visible Paper Input
+
+### Introduction
+
+Our key contributions include - (i) METHOD_X\ - a system that uses the in-context learning ability of a language model to generate visual programs from natural language instructions for compositional visual tasks (Sec. ); (ii) demonstrating the flexibility of METHOD_X\ on complex visual tasks such as factual knowledge object tagging and language guided image editing (Secs. and ) that have eluded or seen limited success with a single end-to-end model; and (iii) producing visual rationales for these tasks and showing their utility for error analysis and user-driven instruction tuning to improve METHOD_X's performance significantly (Sec. ).
+
+### Method
+
+Over the last few years, the AI community has produced high-performance, task-specific models for many vision and language tasks such as object detection, segmentation, VQA, captioning, and text-to-image generation. While each of these models solves a well-defined but narrow problem, the tasks we usually want to solve in the real world are often broader and loosely defined. To solve such practical tasks, one has to either collect a new task-specific dataset, which can be expensive, or meticulously compose a program that invokes multiple neural models, image processing subroutines ( image resizing, cropping, filtering, and colorspace conversions), and other computation ( database lookup, or arithmetic and logical operations). Manually creating these programs for the infinitely long tail of complex tasks we encounter daily not only requires programming expertise but is also slow, labor intensive, and ultimately insufficient to cover the space of all tasks. What if, we could describe the task in natural language and have an AI system generate and execute the corresponding visual program without any training? \\ language models for METHOD_X. Large language models such as \ have shown a remarkable ability to generalize to new samples for a task having seen a handful of input and output demonstrations in-context. For example, prompting \ with two English-to-French translation examples and a new English phrase [frame=none,backgroundcolor= white ,xleftmargin=.1 , xrightmargin=.1 ] good morning -> bonjour good day -> bonne journée good evening -> produces the French translation ``bonsoir". Note that we did not have to finetune \ to perform the task of translation on the thrid phrase. METHOD_X\ uses this in-context learning ability of \ to output visual programs for natural language instructions. Similar to English and French translation pairs in the example above, we prompt \ with pairs of instructions and the desired high-level program. Fig. shows such a prompt for an image editing task. The programs in the in-context examples are manually written and can typically be constructed without an accompanying image. Each line of a METHOD_X\ program, or a program step, consists of the name of a module, module's input argument names and their values, and an output variable name. METHOD_X\ programs often use output variables from past steps as inputs to future steps. We use descriptive module names (e.g. ``Select", ``ColorPop", ``Replace"), argument names (e.g. ``image", ``object", ``query"), and variable names (e.g. ``IMAGE", ``OBJ") to allow \ to understand the input and output type, and function of each module. During execution the output variables may be used to store arbitrary data types. For instance ``OBJ"s are list of objects in the image, with mask, bounding box, and text ( category name) associated with each object. These in-context examples are fed into \ along with a new natural language instruction. Without observing the image or its content, METHOD_X\ generates a program (bottom of Fig. ) that can be executed on the input image(s) to perform the described task. \\ code/generic_module.py . METHOD_X\ currently supports 20 modules (Fig. ) for enabling capabilities such as image understanding, image manipulation (including generation), knowledge retrieval, and performing arithmetic and logical operations. In METHOD_X, each module is implemented as a Python class (Code. ) that has methods to: (i) parse the line to extract the input argument names and values, and the output variable name; (ii) execute the necessary computation that may involve trained neural models and update the program state with the output variable name and value; and (iii) summarize the step's computation visually using html (used later to create a visual rationale). Adding new modules to METHOD_X\ simply requires implementing and registering a module class, while the execution of the programs using this module is handled automatically by the METHOD_X\ interpreter, which is described next. \\ Execution. The program execution is handled by an interpreter. The interpreter initializes the program state (a dictionary mapping variables names to their values) with the inputs, and steps through the program line-by-line while invoking the correct module with the inputs specified in that line. After executing each step, the program state is updated with the name and value of the step's output. \\ Rationale. In addition to performing the necessary computation, each module class also implements a method called html() to visually summarize the inputs and outputs of the module in an HTML snippet. The interpreter simply stitches the HTML summary of all program steps into a visual rationale (Fig. ) that can be used to analyze the logical correctness of the program as well as inspect the intermediate outputs. The visual rationales also enable users to understand reasons for failure and tweak the natural language instructions minimally to improve performance. See Sec. for more details.
+
+## Inferred Evaluation Profile
+
+- Tasks: none
+- Explicit benchmark counts: {}
+- Declared total evaluation breadth: 0
+- Uncovered tasks: image_generation, visual_reasoning
+- Modalities: image, text
+- Interactions: static
+- Outputs: generated_image, visual_answer
+- Capabilities: evidence_grounding
+
+## Selected Benchmark Portfolio
+
+- No existing benchmark passed the portfolio threshold.
+
+## Top Candidates
+
+1. **GSM8K** (`gsm8k`) — 0.280; tasks=[]
+2. **MMLU** (`mmlu`) — 0.280; tasks=[]
+3. **RealToxicityPrompts** (`realtoxicityprompts`) — 0.280; tasks=[]
+4. **SVAMP** (`svamp`) — 0.280; tasks=[]
+5. **FEVER** (`fever`) — 0.250; tasks=[]
+6. **TriviaQA** (`triviaqa`) — 0.250; tasks=[]
+7. **HotpotQA** (`hotpotqa`) — 0.233; tasks=[]
+8. **GAIA** (`gaia`) — 0.153; tasks=[]
+9. **ALFWorld** (`alfworld`) — 0.120; tasks=[]
+10. **OSWorld** (`osworld`) — 0.120; tasks=[]
+
+## Online Literature Leads
+
+- Online search was disabled or returned no relevant arXiv metadata hits.
+
+## Catalog Admission Proposals
+
+- No benchmark-like online hit met the proposal threshold.
+
+## Adaptation and Synthesis
+
+- Missing task families: ['image_generation', 'visual_reasoning']
+- Synthesis required: True
+- Official and adapted metrics must be reported separately.
+- Test examples stay frozen and never seed synthetic records.
+
+## Human Validation
+
+Current status: **HUMAN_REVIEW_REQUIRED**.
+- Existing-paper blind test: after matching, reveal the source paper and compare its actual benchmarks with Selected and Top-6 using MATCH / PARTIAL / MISMATCH.
+- New method without literature gold: two independent reviewers score construct alignment, task representativeness, metric validity, data quality, leakage control, and execution feasibility.
+Automated retrieval metrics do not approve either validation track.

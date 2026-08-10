@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewer_slots": [
+    "REVIEWER_1",
+    "REVIEWER_2"
+  ],
+  "pairs": [
+    {
+      "case_id": "workflow_demo_base_adaptation",
+      "benchmark_id": "alfworld",
+      "route": "base_benchmark_adaptation",
+      "source_plan": "assets/output/end_to_end_demo/base_adaptation/benchmark_plan.json"
+    }
+  ]
+}

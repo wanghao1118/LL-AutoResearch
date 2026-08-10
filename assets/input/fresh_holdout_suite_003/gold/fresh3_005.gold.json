@@ -1,0 +1,77 @@
+{
+  "case_id": "fresh3_005",
+  "source_arxiv_id": "2305.10601",
+  "source_title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+  "source_url": "https://arxiv.org/abs/2305.10601",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Tree of Thoughts: Deliberate Problem Solving with LM"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "game_of_24"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "Creative Writing",
+    "5x5 Mini Crosswords"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Experiments / Game of 24",
+    "Experiments / Creative Writing",
+    "Experiments / Mini Crosswords"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "primary",
+      "evidence_section": "Game of 24",
+      "task_family": "math_reasoning",
+      "benchmark_id": "game_of_24"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Creative Writing",
+      "task_family": "creative_writing",
+      "benchmark_name": "Creative Writing"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Mini Crosswords",
+      "task_family": "word_puzzle",
+      "benchmark_name": "5x5 Mini Crosswords"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_003/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "Game of 24",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.10601/main.tex"
+      ]
+    },
+    {
+      "term": "Creative Writing",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.10601/main.tex"
+      ]
+    },
+    {
+      "term": "5x5 Crosswords",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.10601/main.tex"
+      ]
+    },
+    {
+      "term": "We propose three tasks",
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.10601/main.tex"
+      ]
+    }
+  ]
+}

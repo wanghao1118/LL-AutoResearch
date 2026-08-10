@@ -1,0 +1,251 @@
+{
+  "schema_version": "1.0",
+  "verdict": "NEEDS_ITERATION",
+  "thresholds": {
+    "minimum_cases": 1,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_selected_modeled_recall": 0.85,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 0.25,
+    "mean_primary_recall_at_6": 0.5,
+    "mean_primary_mrr": 0.3333333333333333,
+    "mean_selected_modeled_recall": 0.75,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_001",
+      "source_arxiv_id": "2310.04406",
+      "source_title": "Language Agent Tree Search Unifies Reasoning Acting and Planning in Language Models",
+      "source_url": "https://arxiv.org/abs/2310.04406",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Unifying Reasoning, Acting, and Planning"
+        ]
+      },
+      "matcher_visible_input": "assets/input/untouched_holdout_cases/holdout_001.json",
+      "gold_evidence_sections": [
+        "HotPotQA",
+        "Programming",
+        "WebShop",
+        "Ablation Study and Additional Analysis"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "HotPotQA",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 15
+        },
+        {
+          "benchmark_id": "humaneval",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "HumanEval",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        },
+        {
+          "benchmark_id": "mbpp",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "MBPP",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 10
+        },
+        {
+          "benchmark_id": "webshop",
+          "role": "primary",
+          "evidence_section": "WebShop",
+          "benchmark_name": "WebShop",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_name": "Game of 24",
+          "role": "unmodeled",
+          "evidence_section": "Ablation Study and Additional Analysis",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "humaneval",
+        "mbpp",
+        "webshop"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [
+        "Game of 24"
+      ],
+      "top_6": [
+        "webarena",
+        "mind2web",
+        "webshop",
+        "scienceworld",
+        "visualwebarena",
+        "humaneval"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mind2web",
+          "benchmark_name": "Mind2Web",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:web_navigation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 4,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "visualwebarena",
+          "benchmark_name": "VisualWebArena",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        }
+      ],
+      "selected": [
+        "webarena",
+        "humaneval",
+        "mind2web",
+        "webshop",
+        "mbpp"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 1,
+          "score": 0.97,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.13854"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 6,
+          "score": 0.593333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "mind2web",
+          "benchmark_name": "Mind2Web",
+          "rank": 2,
+          "score": 0.936667,
+          "selection_role": "supplementary_triangulation:web_navigation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2306.06070"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 3,
+          "score": 0.893333,
+          "selection_role": "supplementary_triangulation:sequential_decision_making",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2207.01206"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 10,
+          "score": 0.593333,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2108.07732"
+        }
+      ],
+      "comparison": {
+        "selected_primary_matches": [
+          "humaneval",
+          "webshop",
+          "mbpp"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [
+          "hotpotqa"
+        ],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "webarena",
+          "mind2web"
+        ],
+        "top_6_primary_matches": [
+          "webshop",
+          "humaneval"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_primary_missing": [
+          "hotpotqa",
+          "mbpp"
+        ],
+        "selected_actual_precision": 0.6
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.25,
+      "primary_recall_at_5": 0.25,
+      "primary_recall_at_6": 0.5,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.3333333333333333,
+      "selected_primary_recall": 0.75,
+      "selected_modeled_recall": 0.75,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    }
+  ]
+}

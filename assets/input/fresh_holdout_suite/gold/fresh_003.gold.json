@@ -1,0 +1,82 @@
+{
+  "case_id": "fresh_003",
+  "source_arxiv_id": "2308.10144",
+  "source_title": "ExpeL: LLM Agents Are Experiential Learners",
+  "source_url": "https://arxiv.org/abs/2308.10144",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "ExpeL: An Experiential Learning Agent"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "hotpotqa",
+    "alfworld",
+    "webshop",
+    "fever"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [],
+  "expected_route": "direct_portfolio",
+  "gold_evidence_sections": [
+    "Experiments / Experimental Setup",
+    "Transfer Learning"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "primary",
+      "evidence_section": "Experiments / Experimental Setup",
+      "benchmark_id": "hotpotqa",
+      "task_family": "knowledge_intensive_qa"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Experiments / Experimental Setup",
+      "benchmark_id": "alfworld",
+      "task_family": "embodied_household"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Experiments / Experimental Setup",
+      "benchmark_id": "webshop",
+      "task_family": "web_navigation"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Experiments / Experimental Setup and Transfer Learning",
+      "benchmark_id": "fever",
+      "task_family": "fact_verification"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "four text-based benchmarks: HotpotQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.10144/main.tex"
+      ]
+    },
+    {
+      "term": "ALFWorld and WebShop",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.10144/main.tex"
+      ]
+    },
+    {
+      "term": "FEVER",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.10144/main.tex"
+      ]
+    },
+    {
+      "term": "In this experiment, we use the HotpotQA dataset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.10144/main.tex"
+      ]
+    }
+  ]
+}

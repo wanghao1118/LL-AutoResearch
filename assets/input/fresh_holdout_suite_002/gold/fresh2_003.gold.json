@@ -1,0 +1,79 @@
+{
+  "case_id": "fresh2_003",
+  "source_arxiv_id": "2207.05608",
+  "source_title": "Inner Monologue: Embodied Reasoning through Planning with Language Models",
+  "source_url": "https://arxiv.org/abs/2207.05608",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Leveraging Embodied Language Feedback",
+      "Problem Statement",
+      "Sources of Feedback"
+    ]
+  },
+  "primary_benchmark_ids": [],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "Ravens-based Simulated Tabletop Rearrangement",
+    "Real-World Tabletop Rearrangement",
+    "Real-World Kitchen Mobile Manipulation"
+  ],
+  "expected_route": "new_benchmark_synthesis",
+  "gold_evidence_sections": [
+    "Experimental Results",
+    "Simulated Tabletop Rearrangement",
+    "Real-World Tabletop Rearrangement",
+    "Real-World Mobile Manipulator in a Kitchen Setting"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Simulated Tabletop Rearrangement",
+      "task_family": "robot_manipulation",
+      "benchmark_name": "Ravens-based Simulated Tabletop Rearrangement"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Real-World Tabletop Rearrangement",
+      "task_family": "robot_manipulation",
+      "benchmark_name": "Real-World Tabletop Rearrangement"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Real-World Mobile Manipulator in a Kitchen Setting",
+      "task_family": "robot_manipulation",
+      "benchmark_name": "Real-World Kitchen Mobile Manipulation"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_002/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "three environments",
+      "source_files": [
+        "assets/input/source_papers/extracted/2207.05608/main.tex"
+      ]
+    },
+    {
+      "term": "Simulated Tabletop Rearrangement",
+      "source_files": [
+        "assets/input/source_papers/extracted/2207.05608/main.tex"
+      ]
+    },
+    {
+      "term": "Real-World Tabletop Rearrangement",
+      "source_files": [
+        "assets/input/source_papers/extracted/2207.05608/main.tex"
+      ]
+    },
+    {
+      "term": "Real-World Mobile Manipulator in a Kitchen Setting",
+      "source_files": [
+        "assets/input/source_papers/extracted/2207.05608/main.tex"
+      ]
+    }
+  ]
+}

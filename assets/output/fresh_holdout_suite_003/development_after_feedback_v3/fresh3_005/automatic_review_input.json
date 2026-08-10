@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "case_id": "fresh3_005",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "math_reasoning"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [
+      "creative_writing",
+      "word_puzzle"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "interactions": [
+      "retrieval_tool"
+    ],
+    "output_types": [
+      "generated_passage",
+      "puzzle_solution"
+    ],
+    "environments": [],
+    "capabilities": [
+      "external_information_retrieval",
+      "long_horizon_planning",
+      "self_reflection"
+    ],
+    "suggested_metrics": [
+      "coherence_score",
+      "letter_accuracy",
+      "puzzle_success_rate",
+      "task_accuracy",
+      "word_accuracy"
+    ],
+    "evidence_terms": {
+      "capability:external_information_retrieval": [
+        "search"
+      ],
+      "capability:long_horizon_planning": [
+        "plan"
+      ],
+      "capability:self_reflection": [
+        "self-evaluation"
+      ],
+      "evaluation:declared_breadth": [
+        "we show method_x obtains superior results on all three tasks by being general and flexible enough to support different levels of thoughts, different ways to generate and evaluate thoughts, and different search algorithms that adapt to the nature of different problems."
+      ],
+      "task:math_reasoning": [
+        "line of equation"
+      ],
+      "uncovered_task:creative_writing": [
+        "writing plan",
+        "paragraph of writing"
+      ],
+      "uncovered_task:word_puzzle": [
+        "lexical reasoning"
+      ]
+    },
+    "declared_evaluation_breadth": 3
+  },
+  "selected_benchmarks": [
+    "game_of_24"
+  ],
+  "top_6": [
+    "game_of_24",
+    "gsm8k",
+    "svamp",
+    "hotpotqa",
+    "toolbench",
+    "fever"
+  ],
+  "route": "base_benchmark_adaptation",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

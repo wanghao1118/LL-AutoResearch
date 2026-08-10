@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto-Bench Blind Literature Audit</title>
+  <style>
+    :root { --ink:#172033; --muted:#606b80; --paper:#f4f6fb; --card:#fff; --line:#d9dfeb; --blue:#2e54ce; --green:#147653; --amber:#9b5b00; }
+    * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:var(--paper); font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    header { padding:38px max(24px,calc((100vw - 1180px)/2)); color:white; background:linear-gradient(125deg,#14213d,#315bd5); }
+    header h1 { margin:0 0 10px; font-size:32px; } header p { max-width:920px; margin:0; opacity:.92; }
+    main { max-width:1180px; margin:26px auto 90px; padding:0 24px; }
+    .protocol,.case { background:var(--card); border:1px solid var(--line); border-radius:15px; box-shadow:0 7px 24px rgba(31,48,84,.08); }
+    .protocol { padding:22px; } .case { margin:26px 0; overflow:hidden; }
+    .case-head { padding:22px 24px; background:#edf2ff; border-bottom:1px solid var(--line); } .case-head h2 { margin:3px 0 8px; }
+    .case-number { color:var(--blue); font-weight:800; letter-spacing:.08em; font-size:12px; } .paper-link { color:var(--blue); font-weight:700; }
+    .case-body { padding:24px; } h3 { margin:26px 0 10px; }
+    table { width:100%; border-collapse:collapse; margin:10px 0 20px; } th,td { border:1px solid var(--line); text-align:left; padding:9px 10px; vertical-align:top; } th { background:#f3f5fa; }
+    .comparison { padding:2px 17px 16px; border-left:4px solid var(--blue); background:#f7f9ff; } dl { display:grid; grid-template-columns:250px 1fr; gap:7px 16px; } dt { font-weight:700; } dd { margin:0; }
+    details { margin:12px 0; border:1px solid var(--line); border-radius:9px; padding:10px 12px; } summary { cursor:pointer; font-weight:700; } pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+    .human-check { margin-top:24px; padding:20px; border:2px solid #b9c7ed; border-radius:12px; } .human-check > label:not(.field) { display:block; margin:10px 0; }
+    .field { display:block; margin-top:14px; font-weight:700; } select,textarea,input[type="text"] { width:100%; margin-top:5px; padding:9px 10px; border:1px solid #aeb8cc; border-radius:8px; background:white; font:inherit; } textarea { min-height:95px; resize:vertical; }
+    .footer { position:sticky; bottom:0; display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:14px 16px; background:rgba(255,255,255,.97); border:1px solid var(--line); border-radius:12px; box-shadow:0 -5px 24px rgba(31,48,84,.12); }
+    button { border:0; border-radius:9px; padding:10px 16px; color:white; background:var(--blue); font-weight:750; cursor:pointer; } #message { color:var(--amber); font-weight:700; }
+    @media(max-width:760px) { dl { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <header><h1>Auto-Bench Blind Literature Audit</h1><p>The matcher first saw only anonymized Introduction and Method text. This post-run page now reveals each source paper and its experiment-derived benchmark list so you can verify whether Auto-Bench recovered the choices made by the paper.</p></header>
+  <main>
+    <section class="protocol">
+      <h2>Human audit protocol</h2>
+      <ol><li>Open the official paper link.</li><li>Inspect the listed experiment sections and confirm the actual benchmark list.</li><li>Compare that list with Selected and Top-6 recommendations.</li><li>Choose MATCH, PARTIAL, or MISMATCH and record the important misses or extras.</li></ol>
+      <label class="field">Reviewer ID<input id="reviewer-id" type="text" placeholder="Your name, initials, or stable internal identifier"></label>
+    </section>
+    <article class="case" data-case-id="case_001">
+      <div class="case-head">
+        <div class="case-number">CASE 1</div>
+        <h2>ReAct: Synergizing Reasoning and Acting in Language Models</h2>
+        <a class="paper-link" href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">Open official arXiv source ↗</a>
+        <p><strong>Source sections used before anonymization:</strong> Introduction: Introduction; Method: ReAct: Synergizing Reasoning + Acting.</p>
+        <p>Matcher phase used only <code>assets/input/blind_cases/case_001.json</code>. Paper identity and actual benchmarks were revealed after the worker exited.</p>
+      </div>
+      <div class="case-body">
+        <h3>Benchmarks actually used by the paper</h3>
+        <table><thead><tr><th>Role</th><th>Benchmark</th><th>Paper section</th><th>Selected</th><th>Rank</th></tr></thead><tbody><tr><td>primary</td><td>HotpotQA</td><td>Knowledge-Intensive Reasoning Tasks</td><td>yes</td><td>3</td></tr><tr><td>primary</td><td>FEVER</td><td>Knowledge-Intensive Reasoning Tasks</td><td>yes</td><td>2</td></tr><tr><td>primary</td><td>ALFWorld</td><td>Decision Making Tasks</td><td>yes</td><td>1</td></tr><tr><td>primary</td><td>WebShop</td><td>Decision Making Tasks</td><td>no</td><td>6</td></tr></tbody></table>
+
+        <h3>Auto-Bench selected portfolio</h3>
+        <table><thead><tr><th>Rank</th><th>Recommendation</th><th>Score</th><th>Role in paper</th></tr></thead><tbody><tr><td>1</td><td><a href="https://arxiv.org/abs/2010.03768" target="_blank" rel="noopener noreferrer">ALFWorld</a></td><td>0.870</td><td>primary</td></tr><tr><td>2</td><td><a href="https://arxiv.org/abs/1803.05355" target="_blank" rel="noopener noreferrer">FEVER</a></td><td>0.890</td><td>primary</td></tr><tr><td>3</td><td><a href="https://arxiv.org/abs/1809.09600" target="_blank" rel="noopener noreferrer">HotpotQA</a></td><td>0.890</td><td>primary</td></tr><tr><td>4</td><td><a href="https://arxiv.org/abs/2307.13854" target="_blank" rel="noopener noreferrer">WebArena</a></td><td>0.730</td><td>not_used_in_paper</td></tr></tbody></table>
+
+        <div class="comparison">
+          <h3>Direct comparison</h3>
+          <dl>
+            <dt>Selected primary matches</dt><dd>alfworld, fever, hotpotqa</dd>
+            <dt>Selected secondary matches</dt><dd>none</dd>
+            <dt>Primary missing from selected</dt><dd>webshop</dd>
+            <dt>Secondary missing from selected</dt><dd>none</dd>
+            <dt>Selected but absent from paper</dt><dd>webarena</dd>
+            <dt>Top-6 primary matches</dt><dd>alfworld, fever, hotpotqa, webshop</dd>
+          </dl>
+        </div>
+
+        <details><summary>Exact anonymized Introduction given to the matcher</summary><pre>Introduction. A unique feature of human intelligence is the ability to seamlessly combine task-oriented actions with verbal reasoning (or inner speech, ), which has been theorized to play an important role in human cognition for enabling self-regulation or strategization and maintaining a working memory . Consider the example of cooking up a dish in the kitchen. Between any two specific actions, we may reason in language in order to track progress (``now that everything is cut, I should heat up the pot of water’’), to handle exceptions or adjust the plan according to the situation (``I don’t have salt, so let me use soy sauce and pepper instead’’), and to realize when external information is needed (``how do I prepare dough? Let me search on the Internet’’). We may also act (open a cookbook to read the recipe, open the fridge, check ingredients) to support the reasoning and to answer questions (``What dish can I make right now?&#x27;&#x27;). This tight synergy between ``acting&#x27;’ and ``reasoning&#x27;’ allows humans to learn new tasks quickly and perform robust decision making or reasoning, even under previously unseen circumstances or facing information uncertainties. Recent results have hinted at the possibility of combining verbal reasoning with interactive decision making in autonomous systems. On one hand, properly prompted large language models (LLMs) have demonstrated emergent capabilities to carry out several steps of reasoning traces to derive answers from questions in arithmetic, commonsense, and symbolic reasoning tasks . However, this ``chain-of-thought’&#x27; reasoning is a static black box, in that the model uses its own internal representations to generate thoughts and is not grounded in the external world, which limits its ability to reason METHOD_Xively or update its knowledge. This can lead to issues like fact hallucination and error propagation over the reasoning process (Figure (1b)). On the other hand, recent work has explored the use of pre-trained language models for planning and acting in interactive environments , with a focus on predicting actions via language priors. These approaches usually convert multi-modal observations into text, use a language model to generate domain-specific actions or plans, and then use a controller to choose or execute them. However, they do not employ language models to reason abstractly about high-level goals or maintain a working memory to support acting, barring who perform a limited form of verbal reasoning to reiterate spatial facts about the current state. Beyond such simple embodied tasks to interact with a few blocks, there have not been studies on how reasoning and acting can be combined in a synergistic manner for general task solving, and if such a combination can bring systematic benefits compared to reasoning or acting alone. In this work, we present METHOD_X, a general paradigm to combine reasoning and acting with language models for solving diverse language reasoning and decision making tasks (Figure ). METHOD_X prompts LLMs to generate both verbal reasoning traces and actions pertaining to a task in an interleaved manner, which allows the model to perform dynamic reasoning to create, maintain, and adjust high-level plans for acting (reason to act), while also interact with the external environments (e.g.\,Wikipedia) to incorporate additional information into reasoning (act to reason). The best approach overall is a combination of METHOD_X and REASONING_BASELINE that allows for the use of both internal knowledge and externally obtained information during reasoning. We also demonstrate the importance of sparse, versatile reasoning in decision making by showing consistent advantages over controlled baselines with actions only. Besides general applicability and performance boost, the combination of reasoning and acting also contributes to model interpretability, trustworthiness, and diagnosability across all domains, as humans can readily distinguish information from model&#x27;s internal knowledge versus external environments, as well as inspect reasoning traces to understand the decision basis of model actions. To summarize, our key contributions are the following: (1) we introduce METHOD_X, a novel prompt-based paradigm to synergize reasoning and acting in language models for general task solving; (2) we perform extensive experiments across diverse benchmarks to showcase the advantage of METHOD_X in a few-shot learning setup over prior approaches that perform either reasoning or action generation in isolation; (3) we present systematic ablations and analysis to understand the importance of acting in reasoning tasks, and reasoning in interactive tasks; (4) we analyze the limitations of METHOD_X under the prompting setup (i.e.\,limited support of reasoning and acting behaviors), and perform initial finetuning experiments showing the potential of METHOD_X to improve with additional training data. Scaling up METHOD_X to train and operate on more tasks and combining it with complementary paradigms like reinforcement learning could further unlock the potential of large language models.</pre></details>
+        <details><summary>Exact anonymized Method given to the matcher</summary><pre>METHOD_X: Synergizing Reasoning + Acting Consider a general setup of an agent interacting with an environment for task solving. At time step , an agent receives an observation from the environment and takes an action following some policy , where is the context to the agent. Learning a policy is challenging when the mapping is highly implicit and requires extensive computation. For example, the agent shown in Figure (1c) is unable to generate the correct final action (Act 4) to finish the QA task as it requires complex reasoning over the trajectory context (Question, Act 1-3, Obs 1-3). Similarly, the agent shown in Figure (2a) fails to comprehend from the context that sinkbasin 1 does not contain peppershaker 1, thus keep producing hallucinating actions. The idea of METHOD_X is simple: we augment the agent&#x27;s action space to , where is the space of language. An action in the language space, which we will refer to as a thought or a reasoning trace, does not affect the external environment, thus leading to no observation feedback. Instead, a thought aims to compose useful information by reasoning over the current context , and update the context to support future reasoning or acting. As shown in Figure , there could be various types of useful thoughts, e.g.\,decomposing task goals and create action plans (2b, Act 1; 1d, Thought 1), injecting commonsense knowledge relevant to task solving (2b, Act 1), extracting important parts from observations (1d, Thought2, 4), track progress and transit action plans (2b, Act 8), handle exceptions and adjust action plans (1d, Thought 3), and so on. However, as the language space is unlimited, learning in this augmented action space is difficult and requires strong language priors. , is prompted with few-shot in-context examples to generate both domain-specific actions and free-form language thoughts for task solving (Figure (1d), (2b)). Each in-context example is a human trajectory of actions, thoughts, and environment observations to solve a task instance (see Appendix ). For the tasks where reasoning is of primary importance (Figure (1)), we alternate the generation of thoughts and actions so that the task-solving trajectory consists of multiple thought-action-observation steps. In contrast, for decision making tasks that potentially involve a large number of actions (Figure (2)), thoughts only need to appear sparsely in the most relevant positions of a trajectory, so we let the language model decide the asynchronous occurrence of thoughts and actions for itself. Since decision making and reasoning capabilities are integrated into a large language model, METHOD_X enjoys several unique features: A) Intuitive and easy to design: Designing METHOD_X prompts is straightforward as human annotators just type down their thoughts in language on top of their actions taken. No ad-hoc format choice, thought design, or example selection is used in this paper. We detail prompt design for each task in Sections and . B) General and flexible: Due to the flexible thought space and thought-action occurrence format, METHOD_X works for diverse tasks with distinct action spaces and reasoning needs, including but not limited to QA, fact verification, text game, and web navigation. We also show in Section additional benefits when finetuning is enabled, and in Section how METHOD_X performance is robust to prompt selections. D) Human aligned and controllable: METHOD_X promises an interpretable sequential decision making and reasoning process where humans can easily inspect reasoning and factual correctness. Moreover, humans can also control or correct the agent behavior on the go by thought editing, as shown in Figure in Section .</pre></details>
+        <details><summary>Complete Top-6 recommendation record</summary><pre>[
+  {
+    &quot;benchmark_id&quot;: &quot;alfworld&quot;,
+    &quot;benchmark_name&quot;: &quot;ALFWorld&quot;,
+    &quot;rank&quot;: 1,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;fever&quot;,
+    &quot;benchmark_name&quot;: &quot;FEVER&quot;,
+    &quot;rank&quot;: 2,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;hotpotqa&quot;,
+    &quot;benchmark_name&quot;: &quot;HotpotQA&quot;,
+    &quot;rank&quot;: 3,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;webarena&quot;,
+    &quot;benchmark_name&quot;: &quot;WebArena&quot;,
+    &quot;rank&quot;: 4,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;scienceworld&quot;,
+    &quot;benchmark_name&quot;: &quot;ScienceWorld&quot;,
+    &quot;rank&quot;: 5,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;webshop&quot;,
+    &quot;benchmark_name&quot;: &quot;WebShop&quot;,
+    &quot;rank&quot;: 6,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  }
+]</pre></details>
+
+        <section class="human-check">
+          <h3>Your literature check</h3>
+          <label><input type="checkbox" data-field="source_verified"> I opened the source paper and verified the named evidence sections.</label>
+          <label><input type="checkbox" data-field="actual_benchmarks_verified"> I confirmed the benchmark list actually used by the paper.</label>
+          <label><input type="checkbox" data-field="comparison_reviewed"> I compared the paper benchmark list with Selected and Top-6 recommendations.</label>
+          <label class="field">Judgement
+            <select data-field="decision"><option value="">Select</option><option>MATCH</option><option>PARTIAL</option><option>MISMATCH</option></select>
+          </label>
+          <label class="field">Notes
+            <textarea data-field="notes" placeholder="Record whether the recommendation recovered the paper benchmarks and which extras or misses matter."></textarea>
+          </label>
+        </section>
+      </div>
+    </article>
+<article class="case" data-case-id="case_002">
+      <div class="case-head">
+        <div class="case-number">CASE 2</div>
+        <h2>Reflexion: Language Agents with Verbal Reinforcement Learning</h2>
+        <a class="paper-link" href="https://arxiv.org/abs/2303.11366" target="_blank" rel="noopener noreferrer">Open official arXiv source ↗</a>
+        <p><strong>Source sections used before anonymization:</strong> Introduction: Introduction; Method: Reflexion: reinforcement via verbal reflection.</p>
+        <p>Matcher phase used only <code>assets/input/blind_cases/case_002.json</code>. Paper identity and actual benchmarks were revealed after the worker exited.</p>
+      </div>
+      <div class="case-body">
+        <h3>Benchmarks actually used by the paper</h3>
+        <table><thead><tr><th>Role</th><th>Benchmark</th><th>Paper section</th><th>Selected</th><th>Rank</th></tr></thead><tbody><tr><td>primary</td><td>ALFWorld</td><td>Sequential decision making: ALFWorld</td><td>no</td><td>6</td></tr><tr><td>primary</td><td>HotpotQA</td><td>Reasoning: HotpotQA</td><td>yes</td><td>4</td></tr><tr><td>primary</td><td>HumanEval</td><td>Programming</td><td>yes</td><td>2</td></tr><tr><td>secondary</td><td>MBPP</td><td>Programming</td><td>no</td><td>5</td></tr><tr><td>unmodeled</td><td>LeetcodeHardGym</td><td>Programming</td><td>no</td><td>outside catalog</td></tr><tr><td>unmodeled</td><td>MultiPL-E language ports</td><td>Programming</td><td>no</td><td>outside catalog</td></tr></tbody></table>
+
+        <h3>Auto-Bench selected portfolio</h3>
+        <table><thead><tr><th>Rank</th><th>Recommendation</th><th>Score</th><th>Role in paper</th></tr></thead><tbody><tr><td>1</td><td><a href="https://arxiv.org/abs/2203.07540" target="_blank" rel="noopener noreferrer">ScienceWorld</a></td><td>0.837</td><td>not_used_in_paper</td></tr><tr><td>2</td><td><a href="https://arxiv.org/abs/2107.03374" target="_blank" rel="noopener noreferrer">HumanEval</a></td><td>0.793</td><td>primary</td></tr><tr><td>3</td><td><a href="https://arxiv.org/abs/2307.16789" target="_blank" rel="noopener noreferrer">ToolBench</a></td><td>0.752</td><td>not_used_in_paper</td></tr><tr><td>4</td><td><a href="https://arxiv.org/abs/1809.09600" target="_blank" rel="noopener noreferrer">HotpotQA</a></td><td>0.647</td><td>primary</td></tr></tbody></table>
+
+        <div class="comparison">
+          <h3>Direct comparison</h3>
+          <dl>
+            <dt>Selected primary matches</dt><dd>humaneval, hotpotqa</dd>
+            <dt>Selected secondary matches</dt><dd>none</dd>
+            <dt>Primary missing from selected</dt><dd>alfworld</dd>
+            <dt>Secondary missing from selected</dt><dd>mbpp</dd>
+            <dt>Selected but absent from paper</dt><dd>scienceworld, toolbench</dd>
+            <dt>Top-6 primary matches</dt><dd>humaneval, hotpotqa, alfworld</dd>
+          </dl>
+        </div>
+
+        <details><summary>Exact anonymized Introduction given to the matcher</summary><pre>Recent works such as ReAct , SayCan , Toolformer , HuggingGPT , generative agents , and WebGPT have demonstrated the feasibility of autonomous decision-making agents that are built on top of a large language model (LLM) core. These methods use LLMs to generate text and `actions` that can be used in API calls and executed in an environment. Since they rely on massive models with an enormous number of parameters, such approaches have been so far limited to using in-context examples as a way of teaching the agents, since more traditional optimization schemes like reinforcement learning with gradient descent require substantial amounts of compute and time. In this paper, we propose an alternative approach called METHOD_X that uses verbal reinforcement to help agents learn from prior failings. METHOD_X converts binary or scalar feedback from the environment into verbal feedback in the form of a textual summary, which is then added as additional context for the LLM agent in the next episode. This self-reflective feedback acts as a `semantic&#x27; gradient signal by providing the agent with a concrete direction to improve upon, helping it learn from prior mistakes to perform better on the task. This is akin to how humans iteratively learn to accomplish complex tasks in a few-shot manner -- by reflecting on their previous failures in order to form an improved plan of attack for the next attempt. For example, in figure , a METHOD_X agent learns to optimize its own behavior to solve decision-making, programming, and reasoning tasks through trial, error, and self-reflection. Generating useful reflective feedback is challenging since it requires a good understanding of where the model made mistakes (i.e. the credit assignment problem ) as well as the ability to generate a summary containing actionable insights for improvement. We explore three ways for doing this -- simple binary environment feedback, pre-defined heuristics for common failure cases, and self-evaluation such as binary classification using LLMs (decision-making) or self-written unit tests (programming). In all implementations, the evaluation signal is amplified to natural language experience summaries which can be stored in long-term memory. METHOD_X has several advantages compared to more traditional RL approaches like policy or value-based learning: 1) it is lightweight and doesn&#x27;t require finetuning the LLM, 2) it allows for more nuanced forms of feedback (e.g. targeted changes in actions), compared to scalar or vector rewards that are challenging to perform accurate credit assignment with, 3) it allows for a more explicit and interpretable form of episodic memory over prior experiences, and 4) it provides more explicit hints for actions in future episodes. At the same time, it does have the disadvantages of relying on the power of the LLM&#x27;s self-evaluation capabilities (or heuristics) and not having a formal guarantee for success. However, as LLM capabilities improve, we only expect this paradigm to get better over time. Across all three types of tasks, we observe METHOD_X agents are better decision-makers, reasoners, and programmers. More concretely, METHOD_X agents improve on decision-making [REDACTED_BENCHMARK] tasks over strong baseline approaches by an absolute 22 in 12 iterative learning steps, and on reasoning questions in [REDACTED_BENCHMARK] by 20 , and Python programming tasks on [REDACTED_BENCHMARK] by as much as 11 . To summarize, our contributions are the following: We propose METHOD_X, a new paradigm for `verbal` reinforcement that parameterizes a policy as an agent&#x27;s memory encoding paired with a choice of LLM parameters. We explore this emergent property of self-reflection in LLMs and empirically show that self-reflection is extremely useful to learn complex tasks over a handful of trials. We introduce LeetcodeHardGym, a code-generation RL gym environment consisting of 40 challenging Leetcode questions (`hard-level`) in 19 programming languages. [t] figures/METHOD_X_tasks.pdf METHOD_X works on decision-making , programming , and reasoning tasks.</pre></details>
+        <details><summary>Exact anonymized Method given to the matcher</summary><pre>[t] .48 figures/METHOD_X_rl.pdf .48 [H] Reinforcement via self-reflection Initialize Actor, Evaluator, Self-Reflection: , , Initialize policy , Generate initial trajectory using Evaluate using Generate initial self-reflection using Set Set not pass or max trials Generate using Evaluate using Generate self-reflection using Append to Increment (a) Diagram of METHOD_X. (b) METHOD_X reinforcement algorithm -10pt We develop a modular formulation for METHOD_X, utilizing three distinct models: an Actor, denoted as , which generates text and actions; an Evaluator model, represented by , that scores the outputs produced by ; and a Self-Reflection model, denoted as , which generates verbal reinforcement cues to assist the Actor in self-improvement. We provide a detailed description of each of these models and subsequently elucidate their collaborative functioning within the METHOD_X framework. Actor. The Actor is built upon a large language model (LLM) that is specifically prompted to generate the necessary text and actions conditioned on the state observations. Analogous to traditional policy-based RL setups, we sample an action or generation, , from the current policy at time , receive an observation from the environment . We explore various Actor models, including Chain of Thought and ReAct . These diverse generation models allow us to explore different aspects of text and action generation within the METHOD_X framework, providing valuable insights into their performance and effectiveness. In addition, we also add a memory component mem that provides additional context to this agent. This adaption was inspired by , who suggest a policy iteration approach using in-context learning. Details on how this is populated are provided below. Evaluator. The Evaluator component of the METHOD_X framework plays a crucial role in assessing the quality of the generated outputs produced by the Actor. It takes as input a generated trajectory and computes a reward score that reflects its performance within the given task context. Defining effective value and reward functions that apply to semantic spaces is difficult, so we investigate several variants of the Evaluator model. For reasoning tasks, we explore reward functions based on exact match (EM) grading, ensuring that the generated output aligns closely with the expected solution. In decision-making tasks, we employ pre-defined heuristic functions that are tailored to specific evaluation criteria. Additionally, we experiment with using a different instantiation of an LLM itself as an Evaluator, generating rewards for decision-making and programming tasks. This multi-faceted approach to Evaluator design allows us to examine different strategies for scoring generated outputs, offering insights into their effectiveness and suitability across a range of tasks. Self-reflection. The Self-Reflection model instantiated as an LLM, plays a crucial role in the METHOD_X framework by generating verbal self-reflections to provide valuable feedback for future trials. Given a sparse reward signal, such as a binary success status (success/fail), the current trajectory, and its persistent memory mem, the self-reflection model generates nuanced and specific feedback. This feedback, which is more informative than scalar rewards, is then stored in the agent&#x27;s memory (mem). For instance, in a multi-step decision-making task, when the agent receives a failure signal, it can infer that a specific action led to subsequent incorrect actions and . The agent can then verbally state that it should have taken a different action, , which would have resulted in and , and store this experience in its memory. In subsequent trials, the agent can leverage its past experiences to adapt its decision-making approach at time by choosing action . This iterative process of trial, error, self-reflection, and persisting memory enables the agent to rapidly improve its decision-making ability in various environments by utilizing informative feedback signals. Memory. Core components of the METHOD_X process are the notion of short-term and long-term memory. At inference time, the Actor conditions its decisions on short and long-term memory, similar to the way that humans remember fine-grain recent details while also recalling distilled important experiences from long-term memory. In the RL setup, the trajectory history serves as the short-term memory while outputs from the Self-Reflection model are stored in long-term memory. These two memory components work together to provide context that is specific but also influenced by lessons learned over several trials, which is a key advantage of METHOD_X agents over other LLM action choice works. The METHOD_X process. METHOD_X is formalized as an iterative optimization process in . In the first trial, the Actor produces a trajectory by interacting with the environment. The Evaluator then produces a score which is computed as . is only a scalar reward for trial that improves as task-specific performance increases. After the first trial, to amplify to a feedback form that can be used for improvement by an LLM, the Self-Reflection model analyzes the set of to produce a summary which is stored in the memory mem. is a verbal experience feedback for trial . The Actor, Evaluator, and Self-Reflection models work together through trials in a loop until the Evaluator deems to be correct. As mentioned in , the memory component of METHOD_X is crucial to its effectiveness. After each trial , , is appended mem. In practice, we bound mem by a maximum number of stored experiences, (usually set to 1-3) to adhere to max context LLM limitations.</pre></details>
+        <details><summary>Complete Top-6 recommendation record</summary><pre>[
+  {
+    &quot;benchmark_id&quot;: &quot;scienceworld&quot;,
+    &quot;benchmark_name&quot;: &quot;ScienceWorld&quot;,
+    &quot;rank&quot;: 1,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;humaneval&quot;,
+    &quot;benchmark_name&quot;: &quot;HumanEval&quot;,
+    &quot;rank&quot;: 2,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;toolbench&quot;,
+    &quot;benchmark_name&quot;: &quot;ToolBench&quot;,
+    &quot;rank&quot;: 3,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;hotpotqa&quot;,
+    &quot;benchmark_name&quot;: &quot;HotpotQA&quot;,
+    &quot;rank&quot;: 4,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;mbpp&quot;,
+    &quot;benchmark_name&quot;: &quot;MBPP&quot;,
+    &quot;rank&quot;: 5,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;secondary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;alfworld&quot;,
+    &quot;benchmark_name&quot;: &quot;ALFWorld&quot;,
+    &quot;rank&quot;: 6,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  }
+]</pre></details>
+
+        <section class="human-check">
+          <h3>Your literature check</h3>
+          <label><input type="checkbox" data-field="source_verified"> I opened the source paper and verified the named evidence sections.</label>
+          <label><input type="checkbox" data-field="actual_benchmarks_verified"> I confirmed the benchmark list actually used by the paper.</label>
+          <label><input type="checkbox" data-field="comparison_reviewed"> I compared the paper benchmark list with Selected and Top-6 recommendations.</label>
+          <label class="field">Judgement
+            <select data-field="decision"><option value="">Select</option><option>MATCH</option><option>PARTIAL</option><option>MISMATCH</option></select>
+          </label>
+          <label class="field">Notes
+            <textarea data-field="notes" placeholder="Record whether the recommendation recovered the paper benchmarks and which extras or misses matter."></textarea>
+          </label>
+        </section>
+      </div>
+    </article>
+<article class="case" data-case-id="case_003">
+      <div class="case-head">
+        <div class="case-number">CASE 3</div>
+        <h2>SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering</h2>
+        <a class="paper-link" href="https://arxiv.org/abs/2405.15793" target="_blank" rel="noopener noreferrer">Open official arXiv source ↗</a>
+        <p><strong>Source sections used before anonymization:</strong> Introduction: Introduction; Method: The Agent-Computer Interface, SWE-agent: Designing an ACI for Software Engineering.</p>
+        <p>Matcher phase used only <code>assets/input/blind_cases/case_003.json</code>. Paper identity and actual benchmarks were revealed after the worker exited.</p>
+      </div>
+      <div class="case-body">
+        <h3>Benchmarks actually used by the paper</h3>
+        <table><thead><tr><th>Role</th><th>Benchmark</th><th>Paper section</th><th>Selected</th><th>Rank</th></tr></thead><tbody><tr><td>primary</td><td>SWE-bench</td><td>Experimental Setup</td><td>yes</td><td>1</td></tr><tr><td>secondary</td><td>HumanEvalFix</td><td>Experimental Setup</td><td>no</td><td>4</td></tr></tbody></table>
+
+        <h3>Auto-Bench selected portfolio</h3>
+        <table><thead><tr><th>Rank</th><th>Recommendation</th><th>Score</th><th>Role in paper</th></tr></thead><tbody><tr><td>1</td><td><a href="https://arxiv.org/abs/2310.06770" target="_blank" rel="noopener noreferrer">SWE-bench</a></td><td>0.623</td><td>primary</td></tr><tr><td>2</td><td><a href="https://arxiv.org/abs/2107.03374" target="_blank" rel="noopener noreferrer">HumanEval</a></td><td>0.593</td><td>not_used_in_paper</td></tr></tbody></table>
+
+        <div class="comparison">
+          <h3>Direct comparison</h3>
+          <dl>
+            <dt>Selected primary matches</dt><dd>swe_bench</dd>
+            <dt>Selected secondary matches</dt><dd>none</dd>
+            <dt>Primary missing from selected</dt><dd>none</dd>
+            <dt>Secondary missing from selected</dt><dd>humanevalfix</dd>
+            <dt>Selected but absent from paper</dt><dd>humaneval</dd>
+            <dt>Top-6 primary matches</dt><dd>swe_bench</dd>
+          </dl>
+        </div>
+
+        <details><summary>Exact anonymized Introduction given to the matcher</summary><pre>Introduction. Recent work has demonstrated the efficacy of LM agents for code generation with execution feedback . However, applying agents to more complex code tasks like software engineering remains unexplored. To solve programming tasks, LM agents are typically designed to use existing applications, such as the Linux shell or Python interpreter . However, to perform more complex programming tasks such as software engineering , human engineers benefit from sophisticated applications like VSCode with powerful tools and extensions. Inspired by human-computer interaction (HCI) studies on the efficacy of user interfaces for humans , we investigate whether LM agents could similarly benefit from better-designed interfaces for performing software engineering tasks. [ht] figures/swe_agent_overview.pdf METHOD_X is an LM interacting with a computer through an specialized computer interaction interface (INTERFACE_X), which includes the commands the agent uses and the format of the feedback from the computer. Consider the simple setting of an agent interacting directly with a Linux shell . In practice, we find that LM agents can struggle to reliably take actions in this environment. For example, it fails to provide simple commands to edit a small file segment, and does not provide any feedback if the user makes an invalid edit. These deficits substantially hamper performance, motivating the need for an specialized computer interaction interface (INTERFACE_X), i.e., an abstraction layer between the LM agent and computer, to enhance the LM agent&#x27;s abilities in computer environments (Figure ). From this effort, we introduce METHOD_X, an agent composed of an LM and INTERFACE_X, that can interact with a computer to solve challenging real-world software engineering problems, such as those proposed in [REDACTED_BENCHMARK] . In contrast to the Linux Shell&#x27;s granular, highly configurable action space, METHOD_X&#x27;s INTERFACE_X instead offers a small set of simple actions for viewing, searching through and editing files. The INTERFACE_X uses guardrails to prevent common mistakes, and an agent receives specific, concise feedback about a command&#x27;s effects at every turn. The results show that METHOD_X solves 10.7 percentage points more instances than the baseline agent, which uses only the default Linux shell. Although our INTERFACE_X was developed for GPT-4 Turbo, we show that it is portable to a different LM; METHOD_X with Claude 3 Opus can solve 10.5 of the benchmark tasks. Our contributions are twofold. First, we introduce the concept of the specialized computer interaction interface (INTERFACE_X) and demonstrate how careful INTERFACE_X design can substantially improve LM agent performance without modifying the underlying LM&#x27;s weights. Second, we build, evaluate, and open-source METHOD_X, a system that provides LMs an INTERFACE_X for solving real-world software engineering tasks. Unlike prior works that independently explore the merits of tool use, prompting techniques, and code execution in interactive settings, our approach unifies these factors within the INTERFACE_X framework. We show that crafting LM-centric interactive components has meaningful effects on downstream task performance.</pre></details>
+        <details><summary>Exact anonymized Method given to the matcher</summary><pre>The specialized computer interaction interface. An LM acts as an agent when it interacts with an environment by iteratively taking actions and receiving feedback . Typically, the environment has hard constraints, as in robotics, where agents control actuators in the physical world. On the other hand, digital environments can be molded by abstractions in the form of application programming interfaces and user interfaces for software and humans respectively. Naturally, existing interfaces have been designed with one of these users in mind. We argue that LM agents represent a new category of end user, with their own needs and abilities. We refer to the interface LM agents use to interact with computers as the specialized computer interaction interface (INTERFACE_X). Figure illustrates how INTERFACE_Xs provide LM agents with important functionality to interface with computers, similar to how code editors also help humans use computers more effectively. [ht] figures/INTERFACE_X-ui.pdf Specialized applications like IDEs (e.g., VSCode, PyCharm) make scientists and software engineers more efficient and effective at computer tasks. Similarly, INTERFACE_X design aims to create a suitable interface that makes LM agents more effective at digital work such as software engineering. Disparities in humans&#x27; and LMs&#x27; abilities and limitations motivates different interface design guidelines. For instance, the current generation of LMs lack the visual understanding abilities to directly operate GUI-based applications with rich visual components and signals. However, many of the features provided by these applications, such as syntax checking and navigation tools, could be useful to LM agents if they were presented in a suitable manner. Additionally, humans can flexibly ignore unnecessary information, whereas all content has a fixed cost in memory and computation for LMs and distracting context can harm performance . Therefore, LM agents may be more effective at interacting with computers when provided an interface that was built informed by these differences. Ultimately, a well-designed INTERFACE_X should help the LM agent understand the state of the application given previous changes, manage history to avoid unnecessary context from prior observations, and provide actions that models can use efficiently and reliably. The INTERFACE_X specifies both the commands available to the LM and how the environment state is communicated back to the LM. It also tracks the history of all previous commands and observations and, at each step, manages how these should be formatted and combined with high-level instructions into a single input for the LM. In this paper, we assume a fixed LM and focus on designing the INTERFACE_X to improve its performance. This means that we shape the actions, their documentation, and environment feedback to complement an LM&#x27;s limitations and abilities. We draw inspiration from the field of HCI, where user studies elicit insights about how compatible different interfaces are with respect to human intuition and performance . We use two approaches to enhance performance on a development set: (1) manually inspect agent behavior to identify difficulties and propose improvements, and (2) run a grid search to select the best INTERFACE_X configuration. Taking these two actions resulted in several insights about design principles that seem especially important for building effective INTERFACE_Xs: [leftmargin=*] Actions should be simple and easy to understand for agents. Many bash commands have documentation that includes dozens of options. Simple commands with a few options and concise documentation are easier for agents to use, reducing the need for demonstrations or fine-tuning. This is a defining principle for all METHOD_X commands that we describe in Section . Actions should be compact and efficient. Important operations (e.g., file navigation, editing) should be consolidated into as few actions as possible. Efficient actions help agents make meaningful progress towards a goal in a single step. A poor design would therefore have many simple actions that must be composed across multiple turns for a higher order operation to take effect. We show this idea in action in the Editing and Search interface analyses in Section . Environment feedback should be informative but concise. High quality feedback should provide the agent with substantive information about the current environment state (and the effect of the agent&#x27;s recent actions) without unnecessary details. For instance, when editing a file, updating the agent about revised content is helpful. Figures , and Table show this. Guardrails mitigate error propagation and hasten recovery. Like humans, LMs make mistakes when editing or searching and can struggle to recover from these errors. Building in guardrails, such as a code syntax checker that automatically detects mistakes, can help agents recognize and quickly correct errors. We show the effect of editing guardrails in Table . Analysis and ablation studies in Section demonstrate how alternative INTERFACE_Xs affect LM performance. Our studies shows how these principles appear recurrently across actions, feedback, and workflows. METHOD_X: Designing an INTERFACE_X for Software Engineering . Here we describe how METHOD_X provides an INTERFACE_X for LMs to act as software engineering agents, enabling them to effectively search, navigate, edit, and execute code commands. The INTERFACE_X comprises several principal components, including search/navigation, file viewer, file editor, and context management. At each step, METHOD_X generates a thought and a command, then incorporates the feedback from the command&#x27;s execution in the environment (ReAct; ). Built atop the Linux shell, METHOD_X also allows access to common Linux commands and utilities when needed. Search and navigation. Navigating codebases requires finding the relevant file and content. A common strategy to do this involves looking up terms that might be useful, e.g., files, functions, or class definitions mentioned in an issue. We introduce the special commands find file, search file, and search dir, which output a summary of search results when searching for filenames and strings within files or directories. Figure shows examples of these search result formats. The find file command searches for filenames in the repository, while the search file and search dir locates strings in a file(s) of a subdirectory. Our interface encourages efficient searches by suppressing verbose results. The search commands return at most 50 results for each search query; if a search exceeds this number, we do not report the results and instead suggest that the agent write a more specific query. [t] 0.48 figures/file_viewer_example.pdf Observation from the file viewer. [t] 0.48 figures/file_editor_example.pdf Action using the edit interface. The file viewer and edit command are integrated. (a) The file viewer shows the agent the open file&#x27;s content with line numbers. (b) The agent invokes the edit function to replace lines 404-407 in the open file. After the edit, the file viewer shows the agent the now updated version of the file. File viewer. After finding a file they want to view, agents use the interactive file viewer by calling the command open on the relevant file path. The file viewer presents a window of at most 100 lines of the file at a time. The agent can move this window with the commands scroll down and scroll up or access a specific line with the goto command. To fINTERFACE_Xlitate in-file navigation and code localization, we display: the full path of the open file, the total number of lines in the file, the number of lines omitted before and after the current window, and the line number (prepended to each visible line). Figure shows an example of this interface. File editor. We provide a few commands that let LMs create and edit files. The edit command works in conjunction with the file viewer, allowing agents to replace a specific range of lines in the open file. This command takes 3 required arguments: the start line, end line, and replacement text. In a single step, agents can replace all lines between the start and end lines with the replacement text, as shown in Figure . After edits are applied, the file viewer automatically displays the updated content, helping the agent observe the effects of its edit immediately without invoking additional commands. Figure shows an example agent response, including a file edit. Similar to how humans can use tools like syntax highlighting to help them notice format errors when editing files in an IDE, we integrate a code linter into the edit function to alert the agent of mistakes it may have introduced when editing a file. Select errors from the linter are shown to the agent along with a snippet of the file contents before/after the error was introduced. Invalid edits are discarded, and the agent is asked to try editing the file again. Context management. The METHOD_X system uses informative prompts, error messages, and history processors to keep agent context concise and informative. Agents receive instructions, documentation, and demonstrations on the correct use of bash and INTERFACE_X commands. At each step, the system instructs them to generate both a thought and an action . Malformed generations trigger an error response, shown in Figure , asking the agent to try again, which is repeated until a valid generation is received. Once received, all past error messages except the first are omitted. The agent&#x27;s environment responses display computer output using the template shown in Figure ; however, if no output is generated, a specific message (``Your command ran successfully and did not produce any output&#x27;&#x27;) is included to enhance clarity. To further improve context relevance, observations preceding the last are each collapsed into a single line, shown in Figure . By removing most content from prior observations, we maintain essential information about the plan and action history while reducing unnecessary context, which allows for more interaction cycles and avoids showing outdated file information. provides further implementation details.</pre></details>
+        <details><summary>Complete Top-6 recommendation record</summary><pre>[
+  {
+    &quot;benchmark_id&quot;: &quot;swe_bench&quot;,
+    &quot;benchmark_name&quot;: &quot;SWE-bench&quot;,
+    &quot;rank&quot;: 1,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;humaneval&quot;,
+    &quot;benchmark_name&quot;: &quot;HumanEval&quot;,
+    &quot;rank&quot;: 2,
+    &quot;selected&quot;: true,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;mbpp&quot;,
+    &quot;benchmark_name&quot;: &quot;MBPP&quot;,
+    &quot;rank&quot;: 3,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;humanevalfix&quot;,
+    &quot;benchmark_name&quot;: &quot;HumanEvalFix&quot;,
+    &quot;rank&quot;: 4,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;secondary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;gaia&quot;,
+    &quot;benchmark_name&quot;: &quot;GAIA&quot;,
+    &quot;rank&quot;: 5,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;hotpotqa&quot;,
+    &quot;benchmark_name&quot;: &quot;HotpotQA&quot;,
+    &quot;rank&quot;: 6,
+    &quot;selected&quot;: false,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  }
+]</pre></details>
+
+        <section class="human-check">
+          <h3>Your literature check</h3>
+          <label><input type="checkbox" data-field="source_verified"> I opened the source paper and verified the named evidence sections.</label>
+          <label><input type="checkbox" data-field="actual_benchmarks_verified"> I confirmed the benchmark list actually used by the paper.</label>
+          <label><input type="checkbox" data-field="comparison_reviewed"> I compared the paper benchmark list with Selected and Top-6 recommendations.</label>
+          <label class="field">Judgement
+            <select data-field="decision"><option value="">Select</option><option>MATCH</option><option>PARTIAL</option><option>MISMATCH</option></select>
+          </label>
+          <label class="field">Notes
+            <textarea data-field="notes" placeholder="Record whether the recommendation recovered the paper benchmarks and which extras or misses matter."></textarea>
+          </label>
+        </section>
+      </div>
+    </article>
+
+    <div class="footer"><button id="download" type="button">Validate and download audit JSON</button><span id="progress"></span><span id="message" role="status"></span></div>
+  </main>
+  <script id="audit-scope" type="application/json">{"case_ids": ["case_001", "case_002", "case_003"]}</script>
+  <script>
+    const scope = JSON.parse(document.getElementById('audit-scope').textContent);
+    function collect(validate) {
+      const reviewerId = document.getElementById('reviewer-id').value.trim();
+      const errors = [];
+      if (!reviewerId) errors.push('Reviewer ID is empty');
+      const reviews = Array.from(document.querySelectorAll('.case')).map((card) => {
+        const caseId = card.dataset.caseId;
+        const sourceVerified = card.querySelector('[data-field="source_verified"]').checked;
+        const actualVerified = card.querySelector('[data-field="actual_benchmarks_verified"]').checked;
+        const comparisonReviewed = card.querySelector('[data-field="comparison_reviewed"]').checked;
+        const decision = card.querySelector('[data-field="decision"]').value;
+        const notes = card.querySelector('[data-field="notes"]').value.trim();
+        if (validate && !sourceVerified) errors.push(caseId + ': source paper not verified');
+        if (validate && !actualVerified) errors.push(caseId + ': actual benchmarks not verified');
+        if (validate && !comparisonReviewed) errors.push(caseId + ': comparison not reviewed');
+        if (validate && !decision) errors.push(caseId + ': judgement is empty');
+        if (validate && !notes) errors.push(caseId + ': notes are empty');
+        return {case_id:caseId, source_verified:sourceVerified, actual_benchmarks_verified:actualVerified, comparison_reviewed:comparisonReviewed, decision:decision || null, notes:notes || null};
+      });
+      return {payload:{schema_version:1, reviewer_id:reviewerId || null, reviews:reviews}, errors:errors};
+    }
+    function updateProgress() {
+      const reviews = collect(false).payload.reviews;
+      const complete = reviews.filter((row) => row.source_verified && row.actual_benchmarks_verified && row.comparison_reviewed && row.decision && row.notes).length;
+      document.getElementById('progress').textContent = 'Complete ' + complete + ' / ' + scope.case_ids.length;
+    }
+    document.querySelectorAll('input,select,textarea').forEach((element) => element.addEventListener('input', updateProgress));
+    document.getElementById('download').addEventListener('click', () => {
+      const result = collect(true); const message = document.getElementById('message');
+      if (result.errors.length) { message.textContent = result.errors.join('; '); return; }
+      const blob = new Blob([JSON.stringify(result.payload, null, 2) + '\n'], {type:'application/json'});
+      const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = 'literature_audit_submission.json'; anchor.click(); URL.revokeObjectURL(anchor.href);
+      message.textContent = 'Audit JSON downloaded';
+    });
+    updateProgress();
+  </script>
+</body>
+</html>

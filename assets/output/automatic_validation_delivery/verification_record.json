@@ -1,0 +1,195 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-08-10",
+  "branch": "add/auto-bench",
+  "result": "PASS",
+  "baseline_definition": "latest untouched fresh Suite 003 result, frozen before v3 feedback changes",
+  "modified_definition": "Suite 003 post-gold feedback regression plus no-human-validation workflow",
+  "baseline_behavior": {
+    "command": "python3 -c 'import json; x=json.load(open('\"'\"'assets/output/automatic_literature_review/fresh_holdout_suite_003.json'\"'\"')); print(json.dumps({'\"'\"'evidence_class'\"'\"':x['\"'\"'evidence_class'\"'\"'],'\"'\"'status'\"'\"':x['\"'\"'status'\"'\"'],'\"'\"'decision_counts'\"'\"':x['\"'\"'decision_counts'\"'\"']},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+    "inputs": [
+      "assets/output/automatic_literature_review/fresh_holdout_suite_003.json"
+    ],
+    "literal_output": "{\"evidence_class\":\"fresh_holdout\",\"status\":\"AUTOMATED_LITERATURE_AUDIT_MISMATCH\",\"decision_counts\":{\"MATCH\":0,\"PARTIAL\":4,\"MISMATCH\":1}}\n",
+    "exit_status": 0
+  },
+  "modified_behavior": {
+    "command": "python3 -c 'import json; x=json.load(open('\"'\"'assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json'\"'\"')); print(json.dumps({'\"'\"'evidence_class'\"'\"':x['\"'\"'evidence_class'\"'\"'],'\"'\"'status'\"'\"':x['\"'\"'status'\"'\"'],'\"'\"'decision_counts'\"'\"':x['\"'\"'decision_counts'\"'\"']},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+    "inputs": [
+      "assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json"
+    ],
+    "literal_output": "{\"evidence_class\":\"feedback_regression\",\"status\":\"AUTOMATED_LITERATURE_AUDIT_PARTIAL\",\"decision_counts\":{\"MATCH\":3,\"PARTIAL\":2,\"MISMATCH\":0}}\n",
+    "exit_status": 0
+  },
+  "behavior_interpretation": {
+    "authoritative_fresh_result": "0 MATCH / 4 PARTIAL / 1 MISMATCH",
+    "feedback_v3_result": "3 MATCH / 2 PARTIAL / 0 MISMATCH",
+    "generalization_claim_allowed_for_feedback_v3": false,
+    "human_submission_required": false,
+    "completion_status": "AUTOMATED_LITERATURE_VALIDATION_NEEDS_ITERATION"
+  },
+  "modified_artifact": "assets/output/automatic_validation_delivery/auto_bench_automatic_validation.tar.gz",
+  "modified_artifact_file_count": 59,
+  "patch": "assets/output/automatic_validation_delivery/automatic_validation_changes.patch",
+  "patch_changed_file_count": 46,
+  "rollback": "assets/output/automatic_validation_delivery/rollback_automatic_validation.sh",
+  "checks": [
+    {
+      "name": "authoritative_fresh_baseline",
+      "command": "python3 -c 'import json; x=json.load(open('\"'\"'assets/output/automatic_literature_review/fresh_holdout_suite_003.json'\"'\"')); print(json.dumps({'\"'\"'evidence_class'\"'\"':x['\"'\"'evidence_class'\"'\"'],'\"'\"'status'\"'\"':x['\"'\"'status'\"'\"'],'\"'\"'decision_counts'\"'\"':x['\"'\"'decision_counts'\"'\"']},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/automatic_literature_review/fresh_holdout_suite_003.json"
+      ],
+      "literal_stdout": "{\"evidence_class\":\"fresh_holdout\",\"status\":\"AUTOMATED_LITERATURE_AUDIT_MISMATCH\",\"decision_counts\":{\"MATCH\":0,\"PARTIAL\":4,\"MISMATCH\":1}}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "post_gold_feedback_v3",
+      "command": "python3 -c 'import json; x=json.load(open('\"'\"'assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json'\"'\"')); print(json.dumps({'\"'\"'evidence_class'\"'\"':x['\"'\"'evidence_class'\"'\"'],'\"'\"'status'\"'\"':x['\"'\"'status'\"'\"'],'\"'\"'decision_counts'\"'\"':x['\"'\"'decision_counts'\"'\"']},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json"
+      ],
+      "literal_stdout": "{\"evidence_class\":\"feedback_regression\",\"status\":\"AUTOMATED_LITERATURE_AUDIT_PARTIAL\",\"decision_counts\":{\"MATCH\":3,\"PARTIAL\":2,\"MISMATCH\":0}}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "modified_workflow_behavior",
+      "command": "python3 -c 'import json; p=json.load(open('\"'\"'assets/output/final_verification/match/benchmark_plan.json'\"'\"')); m=json.load(open('\"'\"'assets/output/final_verification/base_run/workflow_manifest.json'\"'\"')); print(json.dumps({'\"'\"'plan_status'\"'\"':p['\"'\"'status'\"'\"'],'\"'\"'legacy_human_status'\"'\"':p['\"'\"'human_review'\"'\"']['\"'\"'status'\"'\"'],'\"'\"'human_submission_required'\"'\"':m['\"'\"'human_submission_required'\"'\"'],'\"'\"'synthesis_status'\"'\"':m['\"'\"'synthesis_execution'\"'\"']['\"'\"'status'\"'\"'],'\"'\"'verification_statuses'\"'\"':[x['\"'\"'verification_status'\"'\"'] for x in m['\"'\"'synthesis_execution'\"'\"']['\"'\"'modules'\"'\"']]},separators=('\"'\"','\"'\"','\"'\"':'\"'\"')))'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/final_verification/match/benchmark_plan.json",
+        "assets/output/final_verification/base_run/workflow_manifest.json"
+      ],
+      "literal_stdout": "{\"plan_status\":\"AUTOMATIC_LITERATURE_CHECK_PENDING\",\"legacy_human_status\":\"NOT_REQUIRED\",\"human_submission_required\":false,\"synthesis_status\":\"DRAFTS_READY_FOR_AUTOMATIC_VALIDATION\",\"verification_statuses\":[\"PASS\",\"PASS\",\"PASS\"]}\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "compile",
+      "command": "python3 -m compileall -q autobench step15_audit_completion.py tests/test_autobench.py",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "autobench/",
+        "step15_audit_completion.py",
+        "tests/test_autobench.py"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "unit_tests",
+      "command": "python3 -m unittest tests.test_autobench",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "tests/test_autobench.py"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "............................................\n----------------------------------------------------------------------\nRan 44 tests in 0.212s\n\nOK\n",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "patch_reverse_check",
+      "command": "git apply --reverse --check /Users/yzb/Desktop/research/exp31_autoresearch/assets/output/automatic_validation_delivery/automatic_validation_changes.patch",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/automatic_validation_delivery/automatic_validation_changes.patch"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "rollback_script_check",
+      "command": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/automatic_validation_delivery/rollback_automatic_validation.sh --check",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/automatic_validation_delivery/rollback_automatic_validation.sh",
+        "assets/output/automatic_validation_delivery/automatic_validation_changes.patch"
+      ],
+      "literal_stdout": "rollback_check=PASS\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "modified_artifact_extract",
+      "command": "tar -xzf /Users/yzb/Desktop/research/exp31_autoresearch/assets/output/automatic_validation_delivery/auto_bench_automatic_validation.tar.gz -C /var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-delivery-2phaekzk",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "assets/output/automatic_validation_delivery/auto_bench_automatic_validation.tar.gz"
+      ],
+      "literal_stdout": "",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "modified_artifact_cli_smoke",
+      "command": "python3 -m autobench --help",
+      "cwd": "/var/folders/88/96m1fk_9233574gjsbbvjr340000gn/T/auto-bench-delivery-2phaekzk",
+      "inputs": [
+        "assets/output/automatic_validation_delivery/auto_bench_automatic_validation.tar.gz"
+      ],
+      "literal_stdout": "usage: __main__.py [-h] {match,run,synthesize,auto-review,review} ...\n\nBlind method-to-benchmark matching workflow\n\npositional arguments:\n  {match,run,synthesize,auto-review,review}\n    match               generate a benchmark plan\n    run                 run matching, optional synthesis, and automatic-\n                        validation preparation\n    synthesize          create provenance-preserving draft records\n    auto-review         compare a sealed blind evaluation with source-paper\n                        evidence automatically\n    review              legacy independent-review evaluator; not required by\n                        the current workflow\n\noptional arguments:\n  -h, --help            show this help message and exit\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    },
+    {
+      "name": "active_workflow_static_check",
+      "command": "python3 -c 'from pathlib import Path\nactive=['\"'\"'autobench/pipeline.py'\"'\"','\"'\"'autobench/workflow.py'\"'\"','\"'\"'step15_audit_completion.py'\"'\"']\nforbidden=['\"'\"'HUMAN_REVIEW_REQUIRED'\"'\"','\"'\"'MACHINE_WORKFLOW_READY_HUMAN_GATES_PENDING'\"'\"','\"'\"'human_review_packet.csv'\"'\"','\"'\"'reviewer_1_packet.html'\"'\"']\nfor path in active:\n text=Path(path).read_text()\n for token in forbidden:\n  assert token not in text,(path,token)\nhtml=Path('\"'\"'assets/output/automatic_literature_review/auto_bench_progress.html'\"'\"').read_text()\nassert '\"'\"'...'\"'\"' not in html\nassert html.count('\"'\"'class=\"bar-fill '\"'\"') == 18\nassert html.count('\"'\"'class=\"metric-value\"'\"'\"') == 18\nprint('\"'\"'active_workflow_static_check=PASS'\"'\"')'",
+      "cwd": "/Users/yzb/Desktop/research/exp31_autoresearch",
+      "inputs": [
+        "autobench/pipeline.py",
+        "autobench/workflow.py",
+        "step15_audit_completion.py",
+        "assets/output/automatic_literature_review/auto_bench_progress.html"
+      ],
+      "literal_stdout": "active_workflow_static_check=PASS\n",
+      "literal_stderr": "",
+      "exit_status": 0,
+      "accepted_exit_statuses": [
+        0
+      ],
+      "passed": true
+    }
+  ]
+}

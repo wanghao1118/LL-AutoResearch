@@ -1,38 +1,13 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "autoresearch"
+name = "auto-bench-workflow"
 version = "0.1.0"
-description = "Evidence-grounded research search MVP for paper discovery, field mapping, and gap analysis."
-readme = "README.md"
-requires-python = ">=3.11"
-license = { text = "MIT" }
-authors = [{ name = "AutoResearch" }]
-dependencies = [
-  "beautifulsoup4>=4.12.0",
-  "httpx>=0.27.0",
-  "pydantic>=2.7.0",
-  "pymupdf>=1.24.0",
-  "rapidfuzz>=3.9.0",
-  "rich>=13.7.0",
-  "typer>=0.12.0",
-]
+description = "Blind method-to-benchmark matching, adaptation, synthesis, and human review workflow"
+requires-python = ">=3.10"
+dependencies = []
 
-[project.optional-dependencies]
-dev = [
-  "pytest>=8.0.0",
-  "ruff>=0.5.0",
-]
-
-[project.scripts]
-autoresearch = "autoresearch.cli:app"
-autoresearch-server = "autoresearch.web_server:main"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.ruff]
-line-length = 100
-target-version = "py311"
+[tool.setuptools]
+packages = ["autobench"]

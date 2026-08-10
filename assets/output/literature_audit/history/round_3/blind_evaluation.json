@@ -1,0 +1,1421 @@
+{
+  "schema_version": "1.0",
+  "verdict": "PASS",
+  "thresholds": {
+    "minimum_cases": 3,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "mean_selected_modeled_recall": 0.85,
+    "mean_selected_actual_precision": 0.6,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 3,
+    "mean_primary_recall_at_5": 0.9166666666666666,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.8333333333333334,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 0.7222222222222222,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "case_001",
+      "source_arxiv_id": "2210.03629",
+      "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "source_url": "https://arxiv.org/abs/2210.03629",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "ReAct: Synergizing Reasoning + Acting"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_001.json",
+      "gold_evidence_sections": [
+        "Knowledge-Intensive Reasoning Tasks",
+        "Decision Making Tasks"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        },
+        {
+          "benchmark_id": "fever",
+          "role": "primary",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "benchmark_name": "FEVER",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_id": "alfworld",
+          "role": "primary",
+          "evidence_section": "Decision Making Tasks",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_id": "webshop",
+          "role": "primary",
+          "evidence_section": "Decision Making Tasks",
+          "benchmark_name": "WebShop",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "fever",
+        "alfworld",
+        "webshop"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [],
+      "top_6": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "visualwebarena",
+          "benchmark_name": "VisualWebArena",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "primary"
+        }
+      ],
+      "selected": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 1,
+          "score": 0.778,
+          "selection_role": "core_task_coverage",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.13854"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "score": 0.678,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 3,
+          "score": 0.634,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1803.05355"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "score": 0.634,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "visualwebarena",
+          "benchmark_name": "VisualWebArena",
+          "rank": 5,
+          "score": 0.738,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2401.13649"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 6,
+          "score": 0.701333,
+          "selection_role": "supplementary_triangulation:sequential_decision_making,web_navigation",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2207.01206"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "embodied_household",
+          "fact_verification",
+          "knowledge_intensive_qa",
+          "sequential_decision_making",
+          "web_navigation"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "audio",
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser",
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory",
+          "classification_label",
+          "short_answer",
+          "supporting_evidence"
+        ],
+        "environments": [
+          "knowledge_base",
+          "website"
+        ],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "evidence_score",
+          "exact_match",
+          "label_accuracy",
+          "task_success_rate",
+          "token_f1",
+          "trajectory_efficiency"
+        ],
+        "evidence_terms": {
+          "capability:evidence_grounding": [
+            "grounded",
+            "factual"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan",
+            "trajectory"
+          ],
+          "capability:reasoning_action_interleaving": [
+            "reasoning and acting",
+            "thought-action-observation",
+            "interleave"
+          ],
+          "capability:tool_use": [
+            "action"
+          ],
+          "task:embodied_household": [
+            "embodied"
+          ],
+          "task:fact_verification": [
+            "fact verification"
+          ],
+          "task:knowledge_intensive_qa": [
+            "answer questions",
+            "wikipedia"
+          ],
+          "task:sequential_decision_making": [
+            "sequential decision",
+            "action-observation",
+            "trajectory",
+            "interactive environment"
+          ],
+          "task:web_navigation": [
+            "web navigation"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.870",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "webarena",
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "visualwebarena",
+          "webshop"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "action_trace_logging",
+          "attribute_level_scoring",
+          "claim_only_protocol",
+          "evidence_retrieval_wrapper",
+          "instruction_constraint_expansion",
+          "label_and_evidence_scoring",
+          "question_only_protocol",
+          "site_subset",
+          "state_reset_audit",
+          "supporting_fact_audit",
+          "task_template_extension",
+          "task_type_stratification",
+          "unseen_environment_split",
+          "visual_dependency_stratification",
+          "website_action_wrapper",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "audio",
+            "text",
+            "web"
+          ],
+          "interactions": [
+            "browser",
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "classification_label",
+            "short_answer",
+            "supporting_evidence"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "evidence_score",
+            "exact_match",
+            "label_accuracy",
+            "task_success_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ],
+          "evidence_terms": {
+            "task:embodied_household": [
+              "embodied"
+            ],
+            "task:fact_verification": [
+              "fact verification"
+            ],
+            "task:knowledge_intensive_qa": [
+              "answer questions",
+              "wikipedia"
+            ],
+            "task:sequential_decision_making": [
+              "sequential decision",
+              "action-observation",
+              "trajectory",
+              "interactive environment"
+            ],
+            "task:web_navigation": [
+              "web navigation"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "embodied_household",
+            "fact_verification",
+            "knowledge_intensive_qa",
+            "sequential_decision_making",
+            "web_navigation"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "audio",
+            "text",
+            "web"
+          ],
+          "interactions": [
+            "browser",
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "classification_label",
+            "short_answer",
+            "supporting_evidence"
+          ],
+          "capabilities": [
+            "evidence_grounding",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "reasoning_action_interleaving",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "evidence_score",
+            "exact_match",
+            "label_accuracy",
+            "task_success_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "webshop"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "webarena",
+          "visualwebarena"
+        ],
+        "top_6_primary_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "webshop"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.6666666666666666
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.5,
+      "primary_recall_at_5": 0.75,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.5,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "case_002",
+      "source_arxiv_id": "2303.11366",
+      "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2303.11366",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Reflexion: reinforcement via verbal reflection"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_002.json",
+      "gold_evidence_sections": [
+        "Sequential decision making: ALFWorld",
+        "Reasoning: HotpotQA",
+        "Programming"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "alfworld",
+          "role": "primary",
+          "evidence_section": "Sequential decision making: ALFWorld",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Reasoning: HotpotQA",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_id": "humaneval",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "HumanEval",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 5
+        },
+        {
+          "benchmark_id": "mbpp",
+          "role": "secondary",
+          "evidence_section": "Programming",
+          "benchmark_name": "MBPP",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 6
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "LeetcodeHardGym",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "role": "secondary",
+          "evidence_section": "Programming",
+          "benchmark_name": "MultiPL-E",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        }
+      ],
+      "primary_gold": [
+        "alfworld",
+        "hotpotqa",
+        "humaneval",
+        "leetcodehardgym"
+      ],
+      "secondary_gold": [
+        "mbpp",
+        "multipl_e"
+      ],
+      "unmodeled_gold": [],
+      "top_6": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "specialized_capability:multilingual_code_generation",
+          "paper_role": "secondary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 5,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 6,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "secondary"
+        }
+      ],
+      "selected": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 1,
+          "score": 0.756667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2303.11366"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 2,
+          "score": 0.623333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "score": 0.433333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "rank": 4,
+          "score": 0.58,
+          "selection_role": "specialized_capability:multilingual_code_generation",
+          "paper_role": "secondary",
+          "source_url": "https://arxiv.org/abs/2208.08227"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 5,
+          "score": 0.58,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 6,
+          "score": 0.58,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "secondary",
+          "source_url": "https://arxiv.org/abs/2108.07732"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_generation",
+          "knowledge_intensive_qa",
+          "sequential_decision_making"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory",
+          "function_implementation",
+          "short_answer"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [
+          "episodic_memory",
+          "iterative_improvement",
+          "long_horizon_planning",
+          "multilingual_code_generation",
+          "self_reflection",
+          "test_based_verification",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "exact_match",
+          "pass_at_1",
+          "task_success_rate",
+          "test_pass_rate",
+          "token_f1",
+          "trajectory_efficiency"
+        ],
+        "evidence_terms": {
+          "capability:episodic_memory": [
+            "episodic memory",
+            "prior experiences"
+          ],
+          "capability:iterative_improvement": [
+            "future episode"
+          ],
+          "capability:long_horizon_planning": [
+            "plan",
+            "trajectory"
+          ],
+          "capability:multilingual_code_generation": [
+            "programming languages"
+          ],
+          "capability:self_reflection": [
+            "self-reflection",
+            "reflective feedback",
+            "self-evaluation"
+          ],
+          "capability:test_based_verification": [
+            "unit tests"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "api"
+          ],
+          "task:code_generation": [
+            "programming",
+            "unit tests",
+            "code generation"
+          ],
+          "task:knowledge_intensive_qa": [
+            "reasoning questions"
+          ],
+          "task:sequential_decision_making": [
+            "trajectory",
+            "sparse reward"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.647",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "leetcodehardgym",
+          "alfworld",
+          "hotpotqa",
+          "multipl_e",
+          "humaneval",
+          "mbpp"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "action_trace_logging",
+          "difficulty_curriculum",
+          "difficulty_rebalancing",
+          "hidden_unit_tests",
+          "iterative_feedback_wrapper",
+          "language_family_stratification",
+          "language_port",
+          "question_only_protocol",
+          "supporting_fact_audit",
+          "task_type_stratification",
+          "unseen_environment_split",
+          "wikipedia_retrieval_wrapper"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "function_implementation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "episodic_memory",
+            "iterative_improvement",
+            "long_horizon_planning",
+            "multilingual_code_generation",
+            "self_reflection",
+            "test_based_verification",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "exact_match",
+            "pass_at_1",
+            "task_success_rate",
+            "test_pass_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ],
+          "evidence_terms": {
+            "task:code_generation": [
+              "programming",
+              "unit tests",
+              "code generation"
+            ],
+            "task:knowledge_intensive_qa": [
+              "reasoning questions"
+            ],
+            "task:sequential_decision_making": [
+              "trajectory",
+              "sparse reward"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_generation",
+            "knowledge_intensive_qa",
+            "sequential_decision_making"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "interactive_environment",
+            "retrieval_tool"
+          ],
+          "output_types": [
+            "action_trajectory",
+            "function_implementation",
+            "short_answer"
+          ],
+          "capabilities": [
+            "episodic_memory",
+            "iterative_improvement",
+            "long_horizon_planning",
+            "multilingual_code_generation",
+            "self_reflection",
+            "test_based_verification",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "exact_match",
+            "pass_at_1",
+            "task_success_rate",
+            "test_pass_rate",
+            "token_f1",
+            "trajectory_efficiency"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "leetcodehardgym",
+          "alfworld",
+          "hotpotqa",
+          "humaneval"
+        ],
+        "selected_secondary_matches": [
+          "multipl_e",
+          "mbpp"
+        ],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [],
+        "top_6_primary_matches": [
+          "leetcodehardgym",
+          "alfworld",
+          "hotpotqa",
+          "humaneval"
+        ],
+        "top_6_secondary_matches": [
+          "multipl_e",
+          "mbpp"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 1.0
+      },
+      "primary_recall_at_1": 0.25,
+      "primary_recall_at_3": 0.75,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "case_003",
+      "source_arxiv_id": "2405.15793",
+      "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "source_url": "https://arxiv.org/abs/2405.15793",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "The Agent-Computer Interface",
+          "SWE-agent: Designing an ACI for Software Engineering"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_003.json",
+      "gold_evidence_sections": [
+        "Experimental Setup"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "swe_bench",
+          "role": "primary",
+          "evidence_section": "Experimental Setup",
+          "benchmark_name": "SWE-bench",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "role": "secondary",
+          "evidence_section": "Experimental Setup",
+          "benchmark_name": "HumanEvalFix",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        }
+      ],
+      "primary_gold": [
+        "swe_bench"
+      ],
+      "secondary_gold": [
+        "humanevalfix"
+      ],
+      "unmodeled_gold": [],
+      "top_6": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym",
+        "mbpp",
+        "multipl_e"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 2,
+          "selected": true,
+          "selection_role": "core_task_coverage",
+          "paper_role": "secondary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 3,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 4,
+          "selected": true,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 5,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "rank": 6,
+          "selected": false,
+          "selection_role": null,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "score": 0.746667,
+          "selection_role": "core_task_coverage",
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2310.06770"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 2,
+          "score": 0.653333,
+          "selection_role": "core_task_coverage",
+          "paper_role": "secondary",
+          "source_url": "https://arxiv.org/abs/2308.07124"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 3,
+          "score": 0.48,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "rank": 4,
+          "score": 0.48,
+          "selection_role": "supplementary_triangulation:code_generation",
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2303.11366"
+        }
+      ],
+      "profile": {
+        "task_families": [
+          "code_debugging",
+          "code_generation",
+          "code_issue_resolution"
+        ],
+        "uncovered_task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool",
+          "shell"
+        ],
+        "output_types": [
+          "function_implementation",
+          "repaired_program",
+          "repository_patch"
+        ],
+        "environments": [
+          "code_executor",
+          "software_repository"
+        ],
+        "capabilities": [
+          "code_editing",
+          "external_information_retrieval",
+          "long_horizon_planning",
+          "repository_navigation",
+          "tool_use"
+        ],
+        "suggested_metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ],
+        "evidence_terms": {
+          "capability:code_editing": [
+            "editing files",
+            "edit function",
+            "file editor",
+            "code linter"
+          ],
+          "capability:external_information_retrieval": [
+            "search"
+          ],
+          "capability:long_horizon_planning": [
+            "plan"
+          ],
+          "capability:repository_navigation": [
+            "repository",
+            "codebase",
+            "file viewer"
+          ],
+          "capability:tool_use": [
+            "action",
+            "tool",
+            "shell",
+            "computer"
+          ],
+          "task:code_debugging": [
+            "code syntax checker",
+            "code linter",
+            "format errors",
+            "edit function"
+          ],
+          "task:code_generation": [
+            "programming",
+            "code generation"
+          ],
+          "task:code_issue_resolution": [
+            "software engineering problem",
+            "repository"
+          ]
+        }
+      },
+      "coverage_ratio": 1.0,
+      "route_reason": "portfolio covers 100.0% of inferred task families; weakest task-normalized selected compatibility is 0.693",
+      "adaptation_plan": {
+        "base_benchmarks": [
+          "swe_bench",
+          "humanevalfix",
+          "humaneval",
+          "leetcodehardgym"
+        ],
+        "retain": [
+          "official task semantics and unmodified test examples",
+          "official metric definitions reported separately",
+          "source IDs, split names, and license/access metadata"
+        ],
+        "add": [
+          "method-specific interaction wrapper without exposing test labels",
+          "capability-targeted challenge split for uncovered requirements",
+          "cost, latency, and failure-state logging when the method is interactive"
+        ],
+        "missing_task_families": [],
+        "adaptation_hooks": [
+          "bug_type_stratification",
+          "cost_logging",
+          "difficulty_curriculum",
+          "feedback_wrapper",
+          "hidden_unit_tests",
+          "issue_category_stratification",
+          "iterative_feedback_wrapper",
+          "language_port",
+          "repository_holdout",
+          "test_patch_isolation"
+        ],
+        "split_policy": {
+          "development": "derive transformations from train/development data only",
+          "validation": "freeze prompts and thresholds before hidden-test execution",
+          "test": "retain official test data; no synthesis seed may originate from test examples"
+        }
+      },
+      "synthesis_plan": {
+        "required": false,
+        "target_task_families": [],
+        "construct_definition": {
+          "status": "NOT_REQUIRED",
+          "task_families": [],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool",
+            "shell"
+          ],
+          "output_types": [
+            "function_implementation",
+            "repaired_program",
+            "repository_patch"
+          ],
+          "capabilities": [
+            "code_editing",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "repository_navigation",
+            "tool_use"
+          ],
+          "candidate_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ],
+          "evidence_terms": {
+            "task:code_debugging": [
+              "code syntax checker",
+              "code linter",
+              "format errors",
+              "edit function"
+            ],
+            "task:code_generation": [
+              "programming",
+              "code generation"
+            ],
+            "task:code_issue_resolution": [
+              "software engineering problem",
+              "repository"
+            ]
+          }
+        },
+        "source_policy": "use only licensed train/development records from named base benchmarks",
+        "generation_modules": [
+          {
+            "name": "compositional_recombination",
+            "purpose": "combine independent train-split constraints while preserving executable gold checks"
+          },
+          {
+            "name": "counterfactual_perturbation",
+            "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+          },
+          {
+            "name": "interaction_wrapper",
+            "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+          }
+        ],
+        "record_schema": [
+          "synthetic_id",
+          "source_benchmark",
+          "source_split",
+          "source_record_ids",
+          "transformation",
+          "input",
+          "expected_output",
+          "deterministic_checks",
+          "human_review_status"
+        ],
+        "quality_gates": [
+          "exact and near-duplicate filtering against every split",
+          "deterministic execution or answer verification where available",
+          "stratified human review by task family and difficulty",
+          "pilot inter-rater agreement before scaling annotation",
+          "frozen test set before method tuning"
+        ],
+        "profile_snapshot": {
+          "task_families": [
+            "code_debugging",
+            "code_generation",
+            "code_issue_resolution"
+          ],
+          "uncovered_task_families": [],
+          "modalities": [
+            "code",
+            "text"
+          ],
+          "interactions": [
+            "retrieval_tool",
+            "shell"
+          ],
+          "output_types": [
+            "function_implementation",
+            "repaired_program",
+            "repository_patch"
+          ],
+          "capabilities": [
+            "code_editing",
+            "external_information_retrieval",
+            "long_horizon_planning",
+            "repository_navigation",
+            "tool_use"
+          ],
+          "suggested_metrics": [
+            "pass_at_1",
+            "test_pass_rate"
+          ]
+        },
+        "catalog_admission_proposals": []
+      },
+      "catalog_admission_proposals": [],
+      "comparison": {
+        "selected_primary_matches": [
+          "swe_bench"
+        ],
+        "selected_secondary_matches": [
+          "humanevalfix"
+        ],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "humaneval",
+          "leetcodehardgym"
+        ],
+        "top_6_primary_matches": [
+          "swe_bench"
+        ],
+        "top_6_secondary_matches": [
+          "humanevalfix"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.5
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "selected_modeled_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    }
+  ]
+}

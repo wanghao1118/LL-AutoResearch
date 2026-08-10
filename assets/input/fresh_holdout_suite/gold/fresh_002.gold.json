@@ -1,0 +1,90 @@
+{
+  "case_id": "fresh_002",
+  "source_arxiv_id": "2308.09687",
+  "source_title": "Graph of Thoughts: Solving Elaborate Problems with Large Language Models",
+  "source_url": "https://arxiv.org/abs/2308.09687",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Graph of Thoughts",
+      "Architecture"
+    ]
+  },
+  "primary_benchmark_ids": [],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "Sorting task suite",
+    "Set Intersection task suite",
+    "Keyword Counting task suite",
+    "Document Merging task suite"
+  ],
+  "expected_route": "new_benchmark_synthesis",
+  "gold_evidence_sections": [
+    "Example Use Cases",
+    "Evaluation"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Example Use Cases / Sorting",
+      "benchmark_name": "Sorting task suite",
+      "task_family": "sorting"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Example Use Cases / Set Operations",
+      "benchmark_name": "Set Intersection task suite",
+      "task_family": "set_intersection"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Example Use Cases / Keyword Counting",
+      "benchmark_name": "Keyword Counting task suite",
+      "task_family": "keyword_counting"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Example Use Cases / Document Merging",
+      "benchmark_name": "Document Merging task suite",
+      "task_family": "document_merging"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "\\subsection{Sorting}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.09687/cases.tex"
+      ]
+    },
+    {
+      "term": "set intersection",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.09687/cases.tex",
+        "assets/input/source_papers/extracted/2308.09687/eval.tex"
+      ]
+    },
+    {
+      "term": "\\subsection{Keyword Counting}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.09687/cases.tex"
+      ]
+    },
+    {
+      "term": "\\subsection{Document Merging}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.09687/cases.tex"
+      ]
+    },
+    {
+      "term": "results of the analysis are in",
+      "source_files": [
+        "assets/input/source_papers/extracted/2308.09687/eval.tex"
+      ]
+    }
+  ]
+}

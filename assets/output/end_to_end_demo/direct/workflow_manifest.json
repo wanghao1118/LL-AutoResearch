@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "case_id": "case_001",
+  "status": "HUMAN_REVIEW_REQUIRED",
+  "route": "direct_portfolio",
+  "coverage_ratio": 1.0,
+  "blind_input_fields": [
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "blind_gold_loaded": false,
+  "leakage_scan_passed": true,
+  "outputs": {
+    "json": "assets/output/end_to_end_demo/direct/benchmark_plan.json",
+    "markdown": "assets/output/end_to_end_demo/direct/benchmark_plan.md",
+    "review_packet": "assets/output/end_to_end_demo/direct/human_review_packet.csv"
+  },
+  "synthesis_execution": {
+    "status": "NOT_REQUIRED",
+    "route": "direct_portfolio",
+    "reason": "the selected portfolio covers every inferred task family",
+    "modules": []
+  },
+  "human_review": {
+    "item_count": 6,
+    "review_row_count": 12,
+    "scope": "assets/output/end_to_end_demo/direct/human_review/review_scope.json",
+    "master_csv": "assets/output/end_to_end_demo/direct/human_review/master_review_packet.csv",
+    "submission_template": "assets/output/end_to_end_demo/direct/human_review/review_submission_template.json",
+    "assignments": {
+      "REVIEWER_1": "assets/output/end_to_end_demo/direct/human_review/reviewer_1_assignment.json",
+      "REVIEWER_2": "assets/output/end_to_end_demo/direct/human_review/reviewer_2_assignment.json"
+    },
+    "html_packets": {
+      "REVIEWER_1": "assets/output/end_to_end_demo/direct/human_review/reviewer_1_packet.html",
+      "REVIEWER_2": "assets/output/end_to_end_demo/direct/human_review/reviewer_2_packet.html"
+    }
+  },
+  "next_action": "complete both independent reviewer packets and merge their JSON submissions"
+}

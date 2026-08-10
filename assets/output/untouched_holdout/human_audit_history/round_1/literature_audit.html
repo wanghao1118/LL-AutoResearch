@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto-Bench Untouched Holdout Literature Audit</title>
+  <style>
+    :root { --ink:#172033; --muted:#606b80; --paper:#f4f6fb; --card:#fff; --line:#d9dfeb; --blue:#2e54ce; --green:#147653; --amber:#9b5b00; }
+    * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:var(--paper); font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    header { padding:38px max(24px,calc((100vw - 1180px)/2)); color:white; background:linear-gradient(125deg,#14213d,#315bd5); }
+    header h1 { margin:0 0 10px; font-size:32px; } header p { max-width:920px; margin:0; opacity:.92; }
+    main { max-width:1180px; margin:26px auto 90px; padding:0 24px; }
+    .protocol,.case { background:var(--card); border:1px solid var(--line); border-radius:15px; box-shadow:0 7px 24px rgba(31,48,84,.08); }
+    .protocol { padding:22px; } .case { margin:26px 0; overflow:hidden; }
+    .case-head { padding:22px 24px; background:#edf2ff; border-bottom:1px solid var(--line); } .case-head h2 { margin:3px 0 8px; }
+    .case-number { color:var(--blue); font-weight:800; letter-spacing:.08em; font-size:12px; } .paper-link { color:var(--blue); font-weight:700; }
+    .case-body { padding:24px; } h3 { margin:26px 0 10px; }
+    table { width:100%; border-collapse:collapse; margin:10px 0 20px; } th,td { border:1px solid var(--line); text-align:left; padding:9px 10px; vertical-align:top; } th { background:#f3f5fa; }
+    .comparison { padding:2px 17px 16px; border-left:4px solid var(--blue); background:#f7f9ff; } dl { display:grid; grid-template-columns:250px 1fr; gap:7px 16px; } dt { font-weight:700; } dd { margin:0; }
+    details { margin:12px 0; border:1px solid var(--line); border-radius:9px; padding:10px 12px; } summary { cursor:pointer; font-weight:700; } pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+    .human-check { margin-top:24px; padding:20px; border:2px solid #b9c7ed; border-radius:12px; } .human-check > label:not(.field) { display:block; margin:10px 0; } .carried { padding:10px 12px; color:var(--green); background:#edf9f4; border-left:4px solid var(--green); }
+    .field { display:block; margin-top:14px; font-weight:700; } select,textarea,input[type="text"] { width:100%; margin-top:5px; padding:9px 10px; border:1px solid #aeb8cc; border-radius:8px; background:white; font:inherit; } textarea { min-height:95px; resize:vertical; }
+    .footer { position:sticky; bottom:0; display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:14px 16px; background:rgba(255,255,255,.97); border:1px solid var(--line); border-radius:12px; box-shadow:0 -5px 24px rgba(31,48,84,.12); }
+    button { border:0; border-radius:9px; padding:10px 16px; color:white; background:var(--blue); font-weight:750; cursor:pointer; } #message { color:var(--amber); font-weight:700; }
+    @media(max-width:760px) { dl { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <header><h1>Auto-Bench Untouched Holdout Literature Audit</h1><p>The matcher first saw only anonymized Introduction and Method text. This post-run page now reveals each source paper and its experiment-derived benchmark list so you can verify whether Auto-Bench recovered the choices made by the paper.</p></header>
+  <main>
+    <section class="protocol">
+      <h2>Human audit protocol</h2>
+      <ol><li>Open the official paper link unless its unchanged source check is carried from the prior round.</li><li>Confirm the actual benchmark list unless that unchanged check is carried forward.</li><li>Compare the current Selected and Top-6 recommendations with the paper benchmark list.</li><li>Read route and synthesis information as supporting context.</li><li>Choose MATCH, PARTIAL, or MISMATCH and record the important misses or extras.</li></ol>
+      <label class="field">Reviewer ID<input id="reviewer-id" type="text" value="" placeholder="Your name, initials, or stable internal identifier"></label>
+    </section>
+
+    <article class="case" data-case-id="holdout_001">
+      <div class="case-head">
+        <div class="case-number">CASE 1</div>
+        <h2>Language Agent Tree Search Unifies Reasoning Acting and Planning in Language Models</h2>
+        <a class="paper-link" href="https://arxiv.org/abs/2310.04406" target="_blank" rel="noopener noreferrer">Open official arXiv source ↗</a>
+        <p><strong>Source sections used before anonymization:</strong> Introduction: Introduction; Method: Unifying Reasoning, Acting, and Planning.</p>
+        <p>Matcher phase used only <code>assets/input/untouched_holdout_cases/holdout_001.json</code>. Paper identity and actual benchmarks were revealed after the worker exited.</p>
+      </div>
+      <div class="case-body">
+        <h3>Benchmarks actually used by the paper</h3>
+        <table><thead><tr><th>Role</th><th>Benchmark</th><th>Paper section</th><th>Selected</th><th>Rank</th></tr></thead><tbody><tr><td>primary</td><td>HotpotQA</td><td>HotPotQA</td><td>no</td><td>15</td></tr><tr><td>primary</td><td>HumanEval</td><td>Programming</td><td>yes</td><td>6</td></tr><tr><td>primary</td><td>MBPP</td><td>Programming</td><td>yes</td><td>10</td></tr><tr><td>primary</td><td>WebShop</td><td>WebShop</td><td>yes</td><td>3</td></tr><tr><td>unmodeled</td><td>Game of 24</td><td>Ablation Study and Additional Analysis</td><td>no</td><td>outside catalog</td></tr></tbody></table>
+
+        <h3>Auto-Bench selected portfolio</h3>
+        <table><thead><tr><th>Rank</th><th>Recommendation</th><th>Score</th><th>Selection role</th><th>Role in paper</th></tr></thead><tbody><tr><td>1</td><td><a href="https://arxiv.org/abs/2307.13854" target="_blank" rel="noopener noreferrer">WebArena</a></td><td>0.970</td><td>core_task_coverage</td><td>not_used_in_paper</td></tr><tr><td>6</td><td><a href="https://arxiv.org/abs/2107.03374" target="_blank" rel="noopener noreferrer">HumanEval</a></td><td>0.593</td><td>core_task_coverage</td><td>primary</td></tr><tr><td>2</td><td><a href="https://arxiv.org/abs/2306.06070" target="_blank" rel="noopener noreferrer">Mind2Web</a></td><td>0.937</td><td>supplementary_triangulation:web_navigation</td><td>not_used_in_paper</td></tr><tr><td>3</td><td><a href="https://arxiv.org/abs/2207.01206" target="_blank" rel="noopener noreferrer">WebShop</a></td><td>0.893</td><td>supplementary_triangulation:sequential_decision_making</td><td>primary</td></tr><tr><td>10</td><td><a href="https://arxiv.org/abs/2108.07732" target="_blank" rel="noopener noreferrer">MBPP</a></td><td>0.593</td><td>supplementary_triangulation:code_generation</td><td>primary</td></tr></tbody></table>
+
+        <div class="comparison">
+          <h3>Direct comparison</h3>
+          <dl>
+            <dt>Selected primary matches</dt><dd>humaneval, webshop, mbpp</dd>
+            <dt>Selected secondary matches</dt><dd>none</dd>
+            <dt>Primary missing from selected</dt><dd>hotpotqa</dd>
+            <dt>Secondary missing from selected</dt><dd>none</dd>
+            <dt>Selected but absent from paper</dt><dd>webarena, mind2web</dd>
+            <dt>Top-6 primary matches</dt><dd>webshop, humaneval</dd>
+          </dl>
+        </div>
+
+
+        <details><summary>Exact anonymized Introduction given to the matcher</summary><pre>General autonomous agents capable of reasoning and decision-making in a variety of environments have been of longstanding interest in the field of artificial intelligence. While this has traditionally been studied in reinforcement learning, the recent rise of language models (LMs) with strong reasoning and general adaptability offers an alternative paradigm. Not only have LMs excelled in standard natural language processing (NLP) tasks such as summarization and language inference , but they have also been adapted to an increasingly diverse set of tasks that often require advanced common-sense reasoning or quantitative skills . In addition, LMs are capable of performing in complex environments that involve knowledge and reasoning, such as web navigation , tool-use , and open-ended games . figures/METHOD_X_teaser.pdf -0.1in Overview of METHOD_X. Serving as a unified framework, METHOD_X leverages an external environment and an MCTS-based search algorithm to improve reasoning and decision-making. -0.2in Reasoning and acting abilities have been further improved by prompting techniques that augment LMs with feedback or observations from an external environment, as exemplified by ReAct and other work . This eliminates the need to rely entirely on the base abilities of LMs, enhancing them through external tools or semantic feedback. Despite such strengths, these methods are reflexive and fall short of humans&#x27; deliberate and thoughtful decision-making characteristics to solve problems . In particular, they fail to consider multiple reasoning paths or to plan ahead. Recent search-guided LM work addresses this issue by searching over multiple reasoning chains. While enabling planning, such methods operate in isolation, lacking the incorporation of external feedback that can improve reasoning. 0.04in To overcome these challenges, we propose METHOD_X (METHOD_X) -- a unified framework for decision-making and reasoning with language models. As illustrated in Fig. , METHOD_X synergizes LM reasoning, acting, and planning strategies by expanding ReAct into a search over a combinatorial space of possible reasoning and acting steps. This effort is nontrivial -- adapting search algorithms to language agents and shifting from non-interactive tasks to interactive ones requires a substantial novel design on nodes, prompts, and search algorithms. In particular, nodes and prompts must effectively store and retrieve external feedback, with the search algorithm incorporating this information into useful heuristics for value assignment. Indeed, our empirical evaluation, as demonstrated on [REDACTED_BENCHMARK] in Sec. , reveals that a simple combination of existing methods is inadequate, even failing to surpass internal reasoning performance, despite having access to the ground truth answer from the environment. 0.04in Our key insight underpinning METHOD_X is adapting Monte Carlo Tree Search (MCTS), inspired by its success in model-based reinforcement learning and the observation that many LM tasks allow reverting to earlier steps, to language agents, repurposing pretrained LMs as agents with LM-powered value functions and self-reflections for cleverer exploration. Leveraging the general capabilities and in-context learning abilities of modern LMs, we use language as an interface between each component, allowing METHOD_X to adapt planning to environmental conditions without additional training. To the best of our knowledge, METHOD_X is the first framework that incorporates reasoning, acting, and planning to enhance LM performance. Notably, METHOD_X doubles the performance of ReAct on [REDACTED_BENCHMARK] and raises the average score by on [REDACTED_BENCHMARK] with GPT-3.5. When used with GPT-4, METHOD_X achieves a Pass@1 rate on [REDACTED_BENCHMARK] , setting the state of the art. 0.04in Our contributions are the following: 1) We introduce METHOD_X, a framework based on Monte Carlo Tree Search to construct the best trajectory from sampled actions, enabling more flexible and adaptive problem-solving compared with reflexive prompting methods. 2) We propose a novel value function that guides the search process and incorporates successful heuristics such as self-refinement and self-consistency. 3) By integrating external feedback and self-reflection, METHOD_X enhances model sensibility and enables agents to learn from experience, surpassing reasoning-based search methods. Through experiments across diverse domains, including programming, interactive question-answering (QA), web navigation, and math, we demonstrate the versatility of METHOD_X for enhancing autonomous reasoning and decision-making.</pre></details>
+        <details><summary>Exact anonymized Method given to the matcher</summary><pre>LM Agent. Depending on the base prompting framework design, METHOD_X supports sequential reasoning or decision-making tasks. At time step , an agent receives an observation from the environment and takes an action following some policy . We initialize the agent with to leverage the useful language representations of an LM as a base decision-maker. We follow the ReAct instantiation, in which the action space consists of both the space of permissible actions and the language space of reasoning traces . Actions directly affect the environment and result in observation, while thoughts are used to formalize decisions by organizing information, planning future actions, or injecting internal knowledge. The exact instantiation of the action space depends on the particular environment -- for decision-making tasks actions might consist of commands on a website, while for reasoning tasks the action space might be limited to a few external tools or APIs. In environments without feedback, such as reasoning tasks, we use CoT as the base prompting framework. Instead of greedily decoding one trajectory or solution, we sample actions from using the current state. This is based on the intuition that for complex decision-making tasks, there is likely to be a range of potential trajectories or reasoning paths that are correct . Sampling a diverse set of candidates at each step mitigates the stochastic nature of LM text generation and enables greater exploration in both the decision-making and reasoning space. We wrap within our proposed search algorithm to deliberately construct the best trajectory from sampled actions. METHOD_X. [t] figures/phases.pdf -1.2in Overview of the six operations in METHOD_X. A node is selected, expanded, evaluated, then simulated until a terminal node is reached, and then the resulting value is backpropagated. If the trajectory fails, a reflection is generated and used as additional context for future trials. These operations are performed in succession until the budget is reached or the task is successful. -0.1in The main component of METHOD_X is a search algorithm that controls the problem-solving process with planning. To find the most promising trajectory and systemically balance exploration with exploitation, we adopt a variant of MCTS that frames decision-making as a tree search, in which each node represents a state comprising the original input , action sequence , and observation sequence , where is a token in the text sequence. Our main technical contribution is adapting MCTS to language agents. METHOD_X repurposes as an agent, state evaluator, and feedback generator, leveraging the useful language representations of modern LMs to facilitate planning. While standard MCTS and RAP rely on internal dynamics models to facilitate simulation, METHOD_X uses environment interaction and does not require a world model. As depicted in Fig. , METHOD_X consists of a series of operations -- selection, expansion, evaluation, simulation, backpropagation, and reflection -- performed in succession until the task is successfully completed or a computational limit is reached after sampling trajectories. The full pseudocode of METHOD_X can be found in Sec. in the Appendix. Selection. In the first operation, the algorithm identifies a segment of the current tree most suitable for subsequent expansion. Starting from the root node, denoted as the initial state \(s_0\), a child node is selected at each tree level until a leaf node is reached. To balance exploration and exploitation, we use the UCT algorithm as shown in Eq. . 0.5mm Expansion. After selecting a node, the second operation expands the tree by sampling actions from , as described in the prior section. The environment receives each action and returns corresponding feedback as an observation. This results in new child nodes added to the tree. This tree is stored in an external long-term memory structure. 0.5mm Evaluation. The third operation assigns a scalar value to each new child node for selection and backpropagation. This value effectively quantifies the agent&#x27;s progress in task completion, serving as a heuristic to steer the search algorithm towards the most promising regions of the tree. As METHOD_X does not involve training, we propose a novel value function for this setting based on two components: (1) a self-generated LM score and (2) a self-consistency score. Inspired by ToT, we repurpose into a value function by prompting it to reason about a given state. To obtain a scalar value, we instruct to end its reasoning trace with a score indicating the correctness of the trajectory. Our key distinction from ToT is that we obtain this value after obtaining the environmental feedback, improving value assignment. This also enables scaling to more challenging environments, as it is difficult for LMs to improve their responses without external feedback . Additionally, to further improve value assignment, we introduce an additional heuristic based on self-consistency , in which actions sampled multiple times at the same state tend to be more accurate. This results in the overall value function: V(s) = * LM (s) + (1- ) * SC (s), where is a hyperparameter. Notably, our method offers enhanced flexibility over programmed heuristics and greater efficiency than learned heuristics . Simulation. The fourth operation expands the currently selected node until a terminal state is reached. At each depth level, we sample and evaluate nodes with the same operations but prioritize nodes of the highest value. Reaching a terminal state provides objective feedback on the correctness of a trajectory. If the task is completed successfully, then METHOD_X terminates the search. If the solution is partially successful or unsuccessful, then we perform two additional operations as described below. The success of a trajectory is determined by the design of the specific environment, such as finalizing a purchase in web navigation environments. Backpropagation. This operation updates the values of the tree based on the outcome of a trajectory. For each node in the trajectory from root (initial state ) of the searching tree to leaf (terminal state ), its value is updated to reflect the outcome of the simulation by and , where is the reward. These updated values are used in the UCT formula (Eq. ) to guide the selection of the next node. Reflection. In addition to the environmental feedback, we leverage self-reflection to further refine the decision-making process . Upon encountering an unsuccessful terminal node, is prompted with the trajectory and final reward to provide a verbal self-reflection that summarizes the errors in the reasoning or acting process and proposes superior alternatives. We store both failed trajectories and corresponding reflections in the memory. In subsequent iterations, these are integrated as additional context to the agent and value function, refining both through in-context learning. This imparts a semantic gradient signal more useful than a scalar value, enabling the agent to learn from trial and error without the cost of expensive optimization such as reinforcement learning. Discussion. Conceptually, METHOD_X has several notable advantages as a general framework for reasoning and decision-making with LM agents. (1) Generality: METHOD_X supports both reasoning and decision-making tasks by defining a shared space of thoughts and actions. (2) Deliberation: Leveraging MCTS and LM value function in METHOD_X ensures a principled search that selects options with high value while exploring promising alternatives. (3) Adaptability: Incorporating external feedback through observations and self-reflection in METHOD_X enables greater adaptation during problem-solving. (4) Flexibility: METHOD_X can accommodate different scenarios, environments, and resource stipulations by modifying state design and tree dimensions. (5) Modularity: The base LM agent, reflection generator, and value function can be independently altered and adapted to individual LM properties.</pre></details>
+        <details><summary>Complete Top-6 recommendation record</summary><pre>[
+  {
+    &quot;benchmark_id&quot;: &quot;webarena&quot;,
+    &quot;benchmark_name&quot;: &quot;WebArena&quot;,
+    &quot;rank&quot;: 1,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;core_task_coverage&quot;,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;mind2web&quot;,
+    &quot;benchmark_name&quot;: &quot;Mind2Web&quot;,
+    &quot;rank&quot;: 2,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;supplementary_triangulation:web_navigation&quot;,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;webshop&quot;,
+    &quot;benchmark_name&quot;: &quot;WebShop&quot;,
+    &quot;rank&quot;: 3,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;supplementary_triangulation:sequential_decision_making&quot;,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;scienceworld&quot;,
+    &quot;benchmark_name&quot;: &quot;ScienceWorld&quot;,
+    &quot;rank&quot;: 4,
+    &quot;selected&quot;: false,
+    &quot;selection_role&quot;: null,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;visualwebarena&quot;,
+    &quot;benchmark_name&quot;: &quot;VisualWebArena&quot;,
+    &quot;rank&quot;: 5,
+    &quot;selected&quot;: false,
+    &quot;selection_role&quot;: null,
+    &quot;paper_role&quot;: &quot;not_used_in_paper&quot;
+  },
+  {
+    &quot;benchmark_id&quot;: &quot;humaneval&quot;,
+    &quot;benchmark_name&quot;: &quot;HumanEval&quot;,
+    &quot;rank&quot;: 6,
+    &quot;selected&quot;: true,
+    &quot;selection_role&quot;: &quot;core_task_coverage&quot;,
+    &quot;paper_role&quot;: &quot;primary&quot;
+  }
+]</pre></details>
+
+        <section class="human-check">
+          <h3>Your literature check</h3>
+
+          <label><input type="checkbox" data-field="source_verified"> I opened the source paper and verified the named evidence sections.</label>
+          <label><input type="checkbox" data-field="actual_benchmarks_verified"> I confirmed the benchmark list actually used by the paper.</label>
+          <label><input type="checkbox" data-field="comparison_reviewed"> I compared the paper benchmark list with Selected and Top-6 recommendations.</label>
+          <label class="field">Judgement
+            <select data-field="decision"><option value="">Select</option><option>MATCH</option><option>PARTIAL</option><option>MISMATCH</option></select>
+          </label>
+          <label class="field">Notes
+            <textarea data-field="notes" placeholder="Record whether the recommendation recovered the paper benchmarks and which extras or misses matter."></textarea>
+          </label>
+        </section>
+      </div>
+    </article>
+
+    <div class="footer"><button id="download" type="button">Validate and download audit JSON</button><span id="progress"></span><span id="message" role="status"></span></div>
+  </main>
+  <script id="audit-scope" type="application/json">{"audit_id": "auto_bench_untouched_holdout_literature_audit_round_1_holdout_001", "scope_snapshot": [{"case_id": "holdout_001", "selected_benchmark_ids": ["webarena", "humaneval", "mind2web", "webshop", "mbpp"], "top_6_benchmark_ids": ["webarena", "mind2web", "webshop", "scienceworld", "visualwebarena", "humaneval"], "route": "direct_portfolio"}], "case_ids": ["holdout_001"], "iteration": 1, "submission_filename": "literature_audit_submission_holdout_1.json"}</script>
+  <script>
+    const scope = JSON.parse(document.getElementById('audit-scope').textContent);
+    function collect(validate) {
+      const reviewerId = document.getElementById('reviewer-id').value.trim();
+      const errors = [];
+      if (!reviewerId) errors.push('Reviewer ID is empty');
+      const reviews = Array.from(document.querySelectorAll('.case')).map((card) => {
+        const caseId = card.dataset.caseId;
+        const sourceVerified = card.querySelector('[data-field="source_verified"]').checked;
+        const actualVerified = card.querySelector('[data-field="actual_benchmarks_verified"]').checked;
+        const comparisonReviewed = card.querySelector('[data-field="comparison_reviewed"]').checked;
+        const decision = card.querySelector('[data-field="decision"]').value;
+        const notes = card.querySelector('[data-field="notes"]').value.trim();
+        if (validate && !sourceVerified) errors.push(caseId + ': source paper not verified');
+        if (validate && !actualVerified) errors.push(caseId + ': actual benchmarks not verified');
+        if (validate && !comparisonReviewed) errors.push(caseId + ': comparison not reviewed');
+        if (validate && !decision) errors.push(caseId + ': judgement is empty');
+        if (validate && !notes) errors.push(caseId + ': notes are empty');
+        return {case_id:caseId, source_verified:sourceVerified, actual_benchmarks_verified:actualVerified, comparison_reviewed:comparisonReviewed, decision:decision || null, notes:notes || null};
+      });
+      return {payload:{schema_version:2, audit_id:scope.audit_id, iteration:scope.iteration, scope_snapshot:scope.scope_snapshot, reviewer_id:reviewerId || null, reviews:reviews}, errors:errors};
+    }
+    function updateProgress() {
+      const reviews = collect(false).payload.reviews;
+      const complete = reviews.filter((row) => row.source_verified && row.actual_benchmarks_verified && row.comparison_reviewed && row.decision && row.notes).length;
+      document.getElementById('progress').textContent = 'Complete ' + complete + ' / ' + scope.case_ids.length;
+    }
+    document.querySelectorAll('input,select,textarea').forEach((element) => element.addEventListener('input', updateProgress));
+    document.getElementById('download').addEventListener('click', () => {
+      const result = collect(true); const message = document.getElementById('message');
+      if (result.errors.length) { message.textContent = result.errors.join('; '); return; }
+      const blob = new Blob([JSON.stringify(result.payload, null, 2) + '\n'], {type:'application/json'});
+      const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = scope.submission_filename; anchor.click(); URL.revokeObjectURL(anchor.href);
+      message.textContent = 'Audit JSON downloaded';
+    });
+    updateProgress();
+  </script>
+</body>
+</html>

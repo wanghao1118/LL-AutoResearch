@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_002",
+  "selection_finalized_after_matcher_freeze": true,
+  "selection_frozen_before_source_experiment_inspection": true,
+  "selection_input": [
+    "official arXiv title",
+    "official arXiv abstract"
+  ],
+  "abstract_evidence_logs": [
+    "assets/log/fresh_suite002_abstract_preselection_html.log",
+    "assets/log/fresh_suite002_fifth_candidate_abstract.log"
+  ],
+  "exclusions": [
+    "all suite001 and previous holdout papers",
+    "papers used in earlier feedback regression",
+    "pure benchmark papers",
+    "surveys"
+  ],
+  "coverage_goal": [
+    "program-aided mathematical reasoning",
+    "tool-augmented NLP",
+    "embodied robotic planning",
+    "classical planning",
+    "visual program execution"
+  ],
+  "papers": [
+    {
+      "case_id": "fresh2_001",
+      "arxiv_id": "2211.10435",
+      "title": "PAL: Program-aided Language Models",
+      "source_url": "https://arxiv.org/abs/2211.10435",
+      "selection_reason": "program-execution reasoning across mathematical, symbolic, and algorithmic tasks"
+    },
+    {
+      "case_id": "fresh2_002",
+      "arxiv_id": "2305.18323",
+      "title": "ReWOO: Decoupling Reasoning from Observations for Efficient Augmented Language Models",
+      "source_url": "https://arxiv.org/abs/2305.18323",
+      "selection_reason": "tool-augmented language modeling with retrieval, action, efficiency, and tool-failure claims"
+    },
+    {
+      "case_id": "fresh2_003",
+      "arxiv_id": "2207.05608",
+      "title": "Inner Monologue: Embodied Reasoning through Planning with Language Models",
+      "source_url": "https://arxiv.org/abs/2207.05608",
+      "selection_reason": "closed-loop language feedback for simulated and real robot manipulation"
+    },
+    {
+      "case_id": "fresh2_004",
+      "arxiv_id": "2304.11477",
+      "title": "LLM+P: Empowering Large Language Models with Optimal Planning Proficiency",
+      "source_url": "https://arxiv.org/abs/2304.11477",
+      "selection_reason": "natural-language-to-PDDL planning over diverse classical-planning scenarios"
+    },
+    {
+      "case_id": "fresh2_005",
+      "arxiv_id": "2303.08128",
+      "title": "ViperGPT: Visual Inference via Python Execution for Reasoning",
+      "source_url": "https://arxiv.org/abs/2303.08128",
+      "selection_reason": "code-generated composition of vision-language modules for complex visual tasks"
+    }
+  ],
+  "gold_state": "REVEALED_AFTER_SEALED_BLIND_RUN",
+  "gold_files": [
+    "assets/input/fresh_holdout_suite_002/gold/fresh2_001.gold.json",
+    "assets/input/fresh_holdout_suite_002/gold/fresh2_002.gold.json",
+    "assets/input/fresh_holdout_suite_002/gold/fresh2_003.gold.json",
+    "assets/input/fresh_holdout_suite_002/gold/fresh2_004.gold.json",
+    "assets/input/fresh_holdout_suite_002/gold/fresh2_005.gold.json"
+  ]
+}

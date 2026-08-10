@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "case_ids": [
+    "holdout_001"
+  ],
+  "fixture_frozen_before_first_matching": true,
+  "matcher_changed_after_gold_reveal": false,
+  "evaluation_exit_status": 1,
+  "first_run_verdict": "NEEDS_ITERATION",
+  "first_run_evaluation": "assets/output/untouched_holdout/first_run_evaluation.json"
+}

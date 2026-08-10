@@ -1,0 +1,92 @@
+{
+  "schema_version": 2,
+  "audit_id": "auto_bench_blind_literature_audit_round_3_case_001_case_002_case_003",
+  "iteration": 3,
+  "scope_snapshot": [
+    {
+      "case_id": "case_001",
+      "selected_benchmark_ids": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "top_6_benchmark_ids": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "visualwebarena",
+        "webshop"
+      ],
+      "route": "direct_portfolio"
+    },
+    {
+      "case_id": "case_002",
+      "selected_benchmark_ids": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "top_6_benchmark_ids": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "route": "direct_portfolio"
+    },
+    {
+      "case_id": "case_003",
+      "selected_benchmark_ids": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym"
+      ],
+      "top_6_benchmark_ids": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "leetcodehardgym",
+        "mbpp",
+        "multipl_e"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "reviewer_id": "yzb",
+  "reviews": [
+    {
+      "case_id": "case_001",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "MATCH",
+      "notes": "Synthetic validator fixture for the current Round 3 scope."
+    },
+    {
+      "case_id": "case_002",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "MATCH",
+      "notes": "Synthetic validator fixture for the current Round 3 scope."
+    },
+    {
+      "case_id": "case_003",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": true,
+      "decision": "MATCH",
+      "notes": "Synthetic validator fixture for the current Round 3 scope."
+    }
+  ]
+}

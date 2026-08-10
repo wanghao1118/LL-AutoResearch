@@ -1,0 +1,8 @@
+{
+  "case_id": "workflow_demo_new_synthesis",
+  "introduction": "We study conditional polyphonic music generation from audio motifs and affect descriptions.",
+  "method": "The method emits multi-track audio events while preserving harmonic structure, timbre, and long-range rhythm.",
+  "constraints": {
+    "output_modality": "audio"
+  }
+}

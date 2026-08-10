@@ -1,0 +1,7 @@
+case_id,benchmark_id,reviewer_slot,reviewer_id,construct_alignment,task_representativeness,metric_validity,data_quality,leakage_control,execution_feasibility,provenance_confirmed,independence_attested,decision,notes
+fresh2_002,alfworld,REVIEWER_1,,,,,,,,,,,
+fresh2_002,alfworld,REVIEWER_2,,,,,,,,,,,
+fresh2_002,triviaqa,REVIEWER_1,,,,,,,,,,,
+fresh2_002,triviaqa,REVIEWER_2,,,,,,,,,,,
+fresh2_002,hotpotqa,REVIEWER_1,,,,,,,,,,,
+fresh2_002,hotpotqa,REVIEWER_2,,,,,,,,,,,

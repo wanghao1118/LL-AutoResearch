@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auto-Bench 自动论文核对进展</title>
+<style>
+:root{--bg:#07111f;--panel:#0d1b2d;--panel2:#10243b;--line:#24415f;--text:#eef6ff;--muted:#9fb3c8;--blue:#4ca5ff;--violet:#9a7bff;--green:#35d39a;--amber:#ffbf69;--red:#ff6b7c;--shadow:0 22px 52px rgba(0,0,0,.32)}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 12% 4%,#183e63 0,#07111f 38%),var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5} .page{max-width:1440px;margin:0 auto;padding:44px 34px 64px} .hero{display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:stretch;margin-bottom:28px} .hero-main,.status-card,.section{background:linear-gradient(145deg,rgba(16,36,59,.96),rgba(9,25,43,.96));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)} .hero-main{padding:34px} .kicker,.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#78bfff;font-weight:800} h1{font-size:clamp(34px,5vw,68px);line-height:1.02;margin:12px 0 16px;max-width:920px} .hero-main p{font-size:18px;color:#c5d5e6;max-width:880px;margin:0} .status-card{padding:28px;display:flex;flex-direction:column;justify-content:space-between} .status-card .label{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.12em} .status-value{font-size:22px;font-weight:850;color:var(--amber);overflow-wrap:anywhere;margin:12px 0} .status-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px} .status-meta div{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px} .status-meta span{display:block;color:var(--muted);font-size:12px} .status-meta strong{display:block;margin-top:4px;font-size:18px} .section{padding:28px;margin-top:24px} .section-heading{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:20px} h2{font-size:26px;margin:0} .section-heading p{margin:0;color:var(--muted);max-width:720px;text-align:right} .flow{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;align-items:stretch} .flow-step{position:relative;background:#0a192b;border:1px solid #274968;border-radius:15px;padding:16px 12px;min-height:100px} .flow-step:not(:last-child)::after{content:"→";position:absolute;right:-10px;top:36%;z-index:2;color:#69b9ff;font-weight:900;background:#0b192a;border-radius:999px;width:20px;text-align:center} .flow-step b{display:block;color:#7bc4ff;margin-bottom:7px} .flow-step span{font-size:13px;color:#c4d2df} .rounds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px} .round-card{border:1px solid var(--line);background:rgba(6,20,35,.72);border-radius:18px;padding:20px} .round-card.fresh{border-top:4px solid var(--blue)} .round-card.feedback{border-top:4px solid var(--violet)} .round-card header{display:flex;justify-content:space-between;align-items:start;gap:16px} .round-card h3{margin:3px 0 0;font-size:22px} .class-badge{font-size:11px;font-weight:800;border-radius:999px;padding:6px 9px;white-space:nowrap} .class-badge.fresh{background:rgba(76,165,255,.14);color:#87c8ff} .class-badge.feedback{background:rgba(154,123,255,.15);color:#c3b2ff} .decision-row{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0} .pill,.decision{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:850} .match{background:rgba(53,211,154,.14);color:#6ce8bb} .partial{background:rgba(255,191,105,.14);color:#ffd092} .mismatch{background:rgba(255,107,124,.14);color:#ff99a6} .metrics{display:grid;gap:11px} .metric-row{display:grid;grid-template-columns:112px 1fr 58px;gap:10px;align-items:center} .metric-label{font-size:13px;color:#c4d3e2} .bar-track{height:10px;background:#172c42;border:1px solid #28465f;border-radius:999px;overflow:hidden} .bar-fill{height:100%;border-radius:999px} .bar-fill.blue{background:linear-gradient(90deg,#2b80d5,var(--blue))} .bar-fill.violet{background:linear-gradient(90deg,#7357d8,var(--violet))} .bar-fill.green{background:linear-gradient(90deg,#15966c,var(--green))} .metric-value{font-variant-numeric:tabular-nums;font-size:13px;text-align:right;color:#fff} .detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:17px 0 0} .detail-grid div{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);border-radius:10px;padding:9px} dt{font-size:11px;color:var(--muted)} dd{margin:3px 0 0;font-size:14px;font-weight:750;font-variant-numeric:tabular-nums} .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:15px} table{border-collapse:collapse;width:100%;min-width:1080px;background:rgba(5,17,30,.65)} th,td{padding:13px 14px;text-align:left;border-bottom:1px solid #1d3852;vertical-align:top} th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#8eb3d3;background:#0e2338} td{font-size:13px;color:#d5e2ee} tr:last-child td{border-bottom:0} .paper-title{display:block;color:var(--muted);font-size:12px;margin-top:4px;max-width:320px} .callout-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px} .callout{border:1px solid var(--line);background:rgba(5,18,31,.72);border-radius:16px;padding:19px} .callout h3{margin:0 0 8px;font-size:18px} .callout p,.callout li{color:#c3d1df;font-size:14px} .callout ul{padding-left:19px;margin-bottom:0} .path{font-family:"SFMono-Regular",Consolas,monospace;font-size:12px;overflow-wrap:anywhere;color:#91cdfc} footer{margin-top:28px;text-align:center;color:#829bb2;font-size:12px} @media(max-width:1050px){.hero{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.flow-step::after{display:none}.rounds{grid-template-columns:1fr}} @media(max-width:680px){.page{padding:22px 14px 40px}.hero-main,.status-card,.section{padding:20px}.flow{grid-template-columns:1fr}.section-heading{display:block}.section-heading p{text-align:left;margin-top:8px}.detail-grid{grid-template-columns:1fr 1fr}.callout-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:98px 1fr 54px}}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="hero-main"><div class="kicker">Auto-Bench · Automatic Literature Validation</div><h1>盲匹配、自动论文核对、再进入新鲜集</h1><p>用户不再填写人工评测 JSON。matcher 在 gold-free worker 中只读取 Introduction 和 Method；worker 退出后 evaluator 对照论文 benchmark 证据，输出可执行的优化信号。</p></div>
+    <aside class="status-card"><div><div class="label">Authoritative completion status</div><div class="status-value">AUTOMATED_LITERATURE_VALIDATION_NEEDS_ITERATION</div></div><div class="status-meta"><div><span>Machine ready</span><strong>true</strong></div><div><span>Human submission</span><strong>false</strong></div><div><span>Fresh review</span><strong>0 / 4 / 1</strong></div><div><span>Feedback v3</span><strong>3 / 2 / 0</strong></div></div></aside>
+  </section>
+
+  <section class="section"><div class="section-heading"><div><div class="eyebrow">Execution boundary</div><h2>当前自动闭环</h2></div><p>fresh baseline 决定泛化状态；feedback regression 只验证修复是否覆盖已揭示错误。</p></div><div class="flow">
+    <div class="flow-step"><b>01 输入</b><span>匿名 Introduction + Method</span></div>
+    <div class="flow-step"><b>02 盲跑</b><span>gold-free 临时 worker</span></div>
+    <div class="flow-step"><b>03 封存</b><span>保存 plan、route 与 provenance</span></div>
+    <div class="flow-step"><b>04 揭示</b><span>读取论文 benchmark 证据</span></div>
+    <div class="flow-step"><b>05 核对</b><span>MATCH / PARTIAL / MISMATCH</span></div>
+    <div class="flow-step"><b>06 优化</b><span>按 typed error 修改通用规则</span></div>
+    <div class="flow-step"><b>07 新鲜集</b><span>冻结后测试下一组论文</span></div>
+  </div></section>
+
+  <section class="section"><div class="section-heading"><div><div class="eyebrow">Measured rounds</div><h2>三套 fresh 与三轮 feedback</h2></div><p>所有条形图的数值标签位于柱体外侧；表中保留完整四位小数。</p></div><div class="rounds"><article class="round-card fresh">
+      <header><div><span class="eyebrow">Suite 001</span><h3>fresh baseline</h3></div><span class="class-badge fresh">fresh_holdout</span></header>
+      <div class="decision-row"><span class="pill match">MATCH 0</span><span class="pill partial">PARTIAL 1</span><span class="pill mismatch">MISMATCH 4</span></div>
+      <div class="metrics">
+        <div class="metric-row">
+      <div class="metric-label">Recall@5</div>
+      <div class="bar-track" aria-label="Recall@5 0.5000"><div class="bar-fill blue" style="width:50.00%"></div></div>
+      <div class="metric-value">0.5000</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Recall@6</div>
+      <div class="bar-track" aria-label="Recall@6 0.5000"><div class="bar-fill violet" style="width:50.00%"></div></div>
+      <div class="metric-value">0.5000</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Route accuracy</div>
+      <div class="bar-track" aria-label="Route accuracy 0.2000"><div class="bar-fill green" style="width:20.00%"></div></div>
+      <div class="metric-value">0.2000</div>
+    </div>
+      </div>
+      <dl class="detail-grid">
+        <div><dt>MRR</dt><dd>0.3187</dd></div>
+        <div><dt>Selected recall</dt><dd>0.2500</dd></div>
+        <div><dt>Selected precision</dt><dd>0.0667</dd></div>
+        <div><dt>Blind checks</dt><dd>PASS</dd></div>
+      </dl>
+    </article><article class="round-card feedback">
+      <header><div><span class="eyebrow">Suite 001</span><h3>feedback v1</h3></div><span class="class-badge feedback">feedback_regression</span></header>
+      <div class="decision-row"><span class="pill match">MATCH 3</span><span class="pill partial">PARTIAL 2</span><span class="pill mismatch">MISMATCH 0</span></div>
+      <div class="metrics">
+        <div class="metric-row">
+      <div class="metric-label">Recall@5</div>
+      <div class="bar-track" aria-label="Recall@5 0.9000"><div class="bar-fill blue" style="width:90.00%"></div></div>
+      <div class="metric-value">0.9000</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Recall@6</div>
+      <div class="bar-track" aria-label="Recall@6 0.9000"><div class="bar-fill violet" style="width:90.00%"></div></div>
+      <div class="metric-value">0.9000</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Route accuracy</div>
+      <div class="bar-track" aria-label="Route accuracy 1.0000"><div class="bar-fill green" style="width:100.00%"></div></div>
+      <div class="metric-value">1.0000</div>
+    </div>
+      </div>
+      <dl class="detail-grid">
+        <div><dt>MRR</dt><dd>0.6500</dd></div>
+        <div><dt>Selected recall</dt><dd>0.6500</dd></div>
+        <div><dt>Selected precision</dt><dd>0.4667</dd></div>
+        <div><dt>Blind checks</dt><dd>PASS</dd></div>
+      </dl>
+    </article><article class="round-card fresh">
+      <header><div><span class="eyebrow">Suite 002</span><h3>fresh baseline</h3></div><span class="class-badge fresh">fresh_holdout</span></header>
+      <div class="decision-row"><span class="pill match">MATCH 0</span><span class="pill partial">PARTIAL 2</span><span class="pill mismatch">MISMATCH 3</span></div>
+      <div class="metrics">
+        <div class="metric-row">
+      <div class="metric-label">Recall@5</div>
+      <div class="bar-track" aria-label="Recall@5 0.9333"><div class="bar-fill blue" style="width:93.33%"></div></div>
+      <div class="metric-value">0.9333</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Recall@6</div>
+      <div class="bar-track" aria-label="Recall@6 0.9333"><div class="bar-fill violet" style="width:93.33%"></div></div>
+      <div class="metric-value">0.9333</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Route accuracy</div>
+      <div class="bar-track" aria-label="Route accuracy 0.0000"><div class="bar-fill green" style="width:0.00%"></div></div>
+      <div class="metric-value">0.0000</div>
+    </div>
+      </div>
+      <dl class="detail-grid">
+        <div><dt>MRR</dt><dd>0.3000</dd></div>
+        <div><dt>Selected recall</dt><dd>0.9333</dd></div>
+        <div><dt>Selected precision</dt><dd>0.3333</dd></div>
+        <div><dt>Blind checks</dt><dd>PASS</dd></div>
+      </dl>
+    </article><article class="round-card feedback">
+      <header><div><span class="eyebrow">Suite 002</span><h3>feedback v2</h3></div><span class="class-badge feedback">feedback_regression</span></header>
+      <div class="decision-row"><span class="pill match">MATCH 4</span><span class="pill partial">PARTIAL 1</span><span class="pill mismatch">MISMATCH 0</span></div>
+      <div class="metrics">
+        <div class="metric-row">
+      <div class="metric-label">Recall@5</div>
+      <div class="bar-track" aria-label="Recall@5 0.9333"><div class="bar-fill blue" style="width:93.33%"></div></div>
+      <div class="metric-value">0.9333</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Recall@6</div>
+      <div class="bar-track" aria-label="Recall@6 0.9333"><div class="bar-fill violet" style="width:93.33%"></div></div>
+      <div class="metric-value">0.9333</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Route accuracy</div>
+      <div class="bar-track" aria-label="Route accuracy 1.0000"><div class="bar-fill green" style="width:100.00%"></div></div>
+      <div class="metric-value">1.0000</div>
+    </div>
+      </div>
+      <dl class="detail-grid">
+        <div><dt>MRR</dt><dd>0.4000</dd></div>
+        <div><dt>Selected recall</dt><dd>0.9333</dd></div>
+        <div><dt>Selected precision</dt><dd>0.4000</dd></div>
+        <div><dt>Blind checks</dt><dd>PASS</dd></div>
+      </dl>
+    </article><article class="round-card fresh">
+      <header><div><span class="eyebrow">Suite 003</span><h3>fresh baseline</h3></div><span class="class-badge fresh">fresh_holdout</span></header>
+      <div class="decision-row"><span class="pill match">MATCH 0</span><span class="pill partial">PARTIAL 4</span><span class="pill mismatch">MISMATCH 1</span></div>
+      <div class="metrics">
+        <div class="metric-row">
+      <div class="metric-label">Recall@5</div>
+      <div class="bar-track" aria-label="Recall@5 0.6333"><div class="bar-fill blue" style="width:63.33%"></div></div>
+      <div class="metric-value">0.6333</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Recall@6</div>
+      <div class="bar-track" aria-label="Recall@6 0.7333"><div class="bar-fill violet" style="width:73.33%"></div></div>
+      <div class="metric-value">0.7333</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Route accuracy</div>
+      <div class="bar-track" aria-label="Route accuracy 0.4000"><div class="bar-fill green" style="width:40.00%"></div></div>
+      <div class="metric-value">0.4000</div>
+    </div>
+      </div>
+      <dl class="detail-grid">
+        <div><dt>MRR</dt><dd>0.4125</dd></div>
+        <div><dt>Selected recall</dt><dd>0.6333</dd></div>
+        <div><dt>Selected precision</dt><dd>0.3000</dd></div>
+        <div><dt>Blind checks</dt><dd>PASS</dd></div>
+      </dl>
+    </article><article class="round-card feedback">
+      <header><div><span class="eyebrow">Suite 003</span><h3>feedback v3</h3></div><span class="class-badge feedback">feedback_regression</span></header>
+      <div class="decision-row"><span class="pill match">MATCH 3</span><span class="pill partial">PARTIAL 2</span><span class="pill mismatch">MISMATCH 0</span></div>
+      <div class="metrics">
+        <div class="metric-row">
+      <div class="metric-label">Recall@5</div>
+      <div class="bar-track" aria-label="Recall@5 1.0000"><div class="bar-fill blue" style="width:100.00%"></div></div>
+      <div class="metric-value">1.0000</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Recall@6</div>
+      <div class="bar-track" aria-label="Recall@6 1.0000"><div class="bar-fill violet" style="width:100.00%"></div></div>
+      <div class="metric-value">1.0000</div>
+    </div>
+        <div class="metric-row">
+      <div class="metric-label">Route accuracy</div>
+      <div class="bar-track" aria-label="Route accuracy 1.0000"><div class="bar-fill green" style="width:100.00%"></div></div>
+      <div class="metric-value">1.0000</div>
+    </div>
+      </div>
+      <dl class="detail-grid">
+        <div><dt>MRR</dt><dd>0.6000</dd></div>
+        <div><dt>Selected recall</dt><dd>0.9000</dd></div>
+        <div><dt>Selected precision</dt><dd>0.5000</dd></div>
+        <div><dt>Blind checks</dt><dd>PASS</dd></div>
+      </dl>
+    </article></div></section>
+
+  <section class="section"><div class="section-heading"><div><div class="eyebrow">Suite 003 case audit</div><h2>逐论文 baseline → feedback v3</h2></div><p>v3 消除了 MISMATCH，但 Toolformer 与 ProgPrompt 仍保留具体 benchmark 或环境粒度缺口。</p></div><div class="table-wrap"><table><thead><tr><th>Case / Paper</th><th>Fresh</th><th>Feedback v3</th><th>Fresh missing</th><th>v3 missing</th><th>v3 error types</th></tr></thead><tbody><tr>
+      <td><strong>fresh3_001</strong><span class="paper-title">Toolformer: Language Models Can Teach Themselves to Use Tools</span></td>
+      <td><span class="decision partial">PARTIAL</span></td>
+      <td><span class="decision partial">PARTIAL</span></td>
+      <td>svamp</td>
+      <td>svamp</td>
+      <td>CATALOG_GAP, PORTFOLIO_RECALL_GAP, PORTFOLIO_PRECISION_GAP</td>
+    </tr><tr>
+      <td><strong>fresh3_002</strong><span class="paper-title">ProgPrompt: Generating Situated Robot Task Plans using Large Language Models</span></td>
+      <td><span class="decision partial">PARTIAL</span></td>
+      <td><span class="decision partial">PARTIAL</span></td>
+      <td>none</td>
+      <td>none</td>
+      <td>CATALOG_GAP, PORTFOLIO_PRECISION_GAP</td>
+    </tr><tr>
+      <td><strong>fresh3_003</strong><span class="paper-title">Visual Programming: Compositional visual reasoning without training</span></td>
+      <td><span class="decision partial">PARTIAL</span></td>
+      <td><span class="decision match">MATCH</span></td>
+      <td>none</td>
+      <td>none</td>
+      <td>CATALOG_GAP</td>
+    </tr><tr>
+      <td><strong>fresh3_004</strong><span class="paper-title">Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks</span></td>
+      <td><span class="decision partial">PARTIAL</span></td>
+      <td><span class="decision match">MATCH</span></td>
+      <td>tabmwp</td>
+      <td>none</td>
+      <td>CATALOG_GAP</td>
+    </tr><tr>
+      <td><strong>fresh3_005</strong><span class="paper-title">Tree of Thoughts: Deliberate Problem Solving with Large Language Models</span></td>
+      <td><span class="decision mismatch">MISMATCH</span></td>
+      <td><span class="decision match">MATCH</span></td>
+      <td>game_of_24</td>
+      <td>none</td>
+      <td>CATALOG_GAP</td>
+    </tr></tbody></table></div></section>
+
+  <section class="section"><div class="section-heading"><div><div class="eyebrow">Decision and next gate</div><h2>为什么当前仍是 NEEDS_ITERATION</h2></div></div><div class="callout-grid">
+    <article class="callout"><h3>权威证据</h3><p>最新真正未见的 Suite 003 baseline 为 <strong>0 MATCH / 4 PARTIAL / 1 MISMATCH</strong>。因此自动核对已完成，但泛化质量尚未通过。</p><p class="path">assets/output/automatic_literature_review/fresh_holdout_suite_003.json</p></article>
+    <article class="callout"><h3>本轮修复</h3><p>v3 feedback regression 达到 <strong>3 MATCH / 2 PARTIAL / 0 MISMATCH</strong>，Recall@5 与 Recall@6 均为 1.0000，route accuracy 为 1.0000。</p><p class="path">assets/output/automatic_literature_review/fresh_holdout_suite_003_feedback_v3.json</p></article>
+    <article class="callout"><h3>盲协议 caveat</h3><p>Suite 003 的 matcher 与论文选择先冻结，worker 仍只见 Introduction/Method；但协调进程在 blind run 前的宏观 inventory 曾显示部分 Experiment 行。该事实已记录，下一套 fresh suite 将禁止协调日志在 worker 完成前显示 Experiment。</p></article>
+    <article class="callout"><h3>Suite 004 门槛</h3><ul><li>冻结 v3 matcher 后再选论文</li><li>至少 5 篇未见论文</li><li>所有 worker exit status 为 0</li><li>source evidence 与 blind checks 全部通过</li><li>全部 case 为 MATCH 才进入 COMPLETE</li></ul></article>
+  </div></section>
+  <footer>Generated from repository JSON artifacts · human_submission_required=false · no user review file is pending</footer>
+</main>
+</body>
+</html>

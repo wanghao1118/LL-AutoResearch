@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "reviewer": "AUTO_LITERATURE_EVALUATOR",
+  "validation_mode": "post_match_source_comparison",
+  "human_submission_required": false,
+  "evidence_class": "feedback_regression",
+  "status": "AUTOMATED_LITERATURE_AUDIT_CONFIRMED",
+  "case_count": 1,
+  "decision_counts": {
+    "MATCH": 1,
+    "PARTIAL": 0,
+    "MISMATCH": 0
+  },
+  "all_source_evidence_complete": true,
+  "all_blind_checks_passed": true,
+  "aggregate": {
+    "case_count": 1,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 1.0,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 1.0,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "holdout_001",
+      "source_title": "Language Agent Tree Search Unifies Reasoning Acting and Planning in Language Models",
+      "source_url": "https://arxiv.org/abs/2310.04406",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Unifying Reasoning, Acting, and Planning"
+        ]
+      },
+      "gold_evidence_sections": [
+        "HotPotQA",
+        "Programming",
+        "WebShop",
+        "Ablation Study and Additional Analysis"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "webshop",
+        "game_of_24",
+        "hotpotqa",
+        "humaneval",
+        "mbpp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "evidence_section": "HotPotQA",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "evidence_section": "Programming",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "evidence_section": "Programming",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "evidence_section": "WebShop",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "evidence_section": "Ablation Study and Additional Analysis",
+          "role": "admitted_after_freeze"
+        }
+      ],
+      "selected_matches": [
+        "webshop",
+        "hotpotqa",
+        "humaneval",
+        "mbpp",
+        "game_of_24"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [],
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [],
+      "optimization_feedback": []
+    }
+  ]
+}

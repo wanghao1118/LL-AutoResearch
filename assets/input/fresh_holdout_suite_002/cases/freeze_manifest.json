@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_002",
+  "case_ids": [
+    "fresh2_001",
+    "fresh2_002",
+    "fresh2_003",
+    "fresh2_004",
+    "fresh2_005"
+  ],
+  "fixture_frozen_before_first_matching": true,
+  "gold_directory_exists": false,
+  "gold_directory_passed_to_matcher": false,
+  "matcher_change_after_suite_freeze": false,
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "experiment_content_inspected": false,
+  "experiment_headings_enumerated_after_selection": true,
+  "cases": [
+    {
+      "case_id": "fresh2_001",
+      "visible_chars": 7158,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/intro.tex",
+        "assets/input/source_papers/extracted/2211.10435/sections/method.tex"
+      ]
+    },
+    {
+      "case_id": "fresh2_002",
+      "visible_chars": 10747,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.18323/sections/_s1_introduction.tex",
+        "assets/input/source_papers/extracted/2305.18323/sections/_s3_method.tex"
+      ]
+    },
+    {
+      "case_id": "fresh2_003",
+      "visible_chars": 6660,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2207.05608/main.tex",
+        "assets/input/source_papers/extracted/2207.05608/main.tex"
+      ]
+    },
+    {
+      "case_id": "fresh2_004",
+      "visible_chars": 9090,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/intro.tex",
+        "assets/input/source_papers/extracted/2304.11477/contents/method.tex"
+      ]
+    },
+    {
+      "case_id": "fresh2_005",
+      "visible_chars": 11629,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex",
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex"
+      ]
+    }
+  ]
+}

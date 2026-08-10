@@ -1,0 +1,74 @@
+{
+  "case_id": "case_002",
+  "source_arxiv_id": "2303.11366",
+  "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+  "source_url": "https://arxiv.org/abs/2303.11366",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Reflexion: reinforcement via verbal reflection"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "alfworld",
+    "hotpotqa",
+    "humaneval",
+    "leetcodehardgym"
+  ],
+  "secondary_benchmark_ids": [
+    "mbpp",
+    "multipl_e"
+  ],
+  "unmodeled_benchmarks": [],
+  "expected_route": "direct_portfolio",
+  "gold_evidence_sections": [
+    "Sequential decision making: ALFWorld",
+    "Reasoning: HotpotQA",
+    "Programming"
+  ],
+  "benchmark_evidence": [
+    {
+      "benchmark_id": "alfworld",
+      "role": "primary",
+      "evidence_section": "Sequential decision making: ALFWorld"
+    },
+    {
+      "benchmark_id": "hotpotqa",
+      "role": "primary",
+      "evidence_section": "Reasoning: HotpotQA"
+    },
+    {
+      "benchmark_id": "humaneval",
+      "role": "primary",
+      "evidence_section": "Programming"
+    },
+    {
+      "benchmark_id": "mbpp",
+      "role": "secondary",
+      "evidence_section": "Programming"
+    },
+    {
+      "benchmark_id": "leetcodehardgym",
+      "role": "primary",
+      "evidence_section": "Programming"
+    },
+    {
+      "benchmark_id": "multipl_e",
+      "role": "secondary",
+      "evidence_section": "Programming"
+    }
+  ],
+  "matcher_visible": false,
+  "leakage_scan": {
+    "passed": true,
+    "benchmark_alias_hits": [],
+    "identity_hits": [],
+    "generic_evaluation_terms": [
+      "benchmark",
+      "evaluation",
+      "experiment"
+    ]
+  }
+}

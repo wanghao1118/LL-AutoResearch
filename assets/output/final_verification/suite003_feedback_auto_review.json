@@ -1,0 +1,594 @@
+{
+  "schema_version": "1.0",
+  "reviewer": "AUTO_LITERATURE_EVALUATOR",
+  "validation_mode": "post_match_source_comparison",
+  "human_submission_required": false,
+  "evidence_class": "feedback_regression",
+  "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+  "case_count": 5,
+  "decision_counts": {
+    "MATCH": 3,
+    "PARTIAL": 2,
+    "MISMATCH": 0
+  },
+  "all_source_evidence_complete": true,
+  "all_blind_checks_passed": true,
+  "aggregate": {
+    "case_count": 5,
+    "mean_primary_recall_at_5": 1.0,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.6,
+    "mean_selected_modeled_recall": 0.9,
+    "mean_selected_actual_precision": 0.5,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "fresh3_001",
+      "source_title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "source_url": "https://arxiv.org/abs/2302.04761",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Approach",
+          "Tools"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Downstream Tasks / LAMA",
+        "Experiments / Math Datasets",
+        "Experiments / Question Answering",
+        "Experiments / Multilingual Question Answering",
+        "Experiments / Temporal Datasets",
+        "Experiments / Language Modeling"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [
+        "triviaqa",
+        "gsm8k"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "evidence_section": "Math Datasets",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": "triviaqa",
+          "benchmark_name": "TriviaQA",
+          "evidence_section": "Question Answering",
+          "role": "primary",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "SQuAD subset of LAMA",
+          "evidence_section": "LAMA",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Google-RE subset of LAMA",
+          "evidence_section": "LAMA",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "T-REx subset of LAMA",
+          "evidence_section": "LAMA",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "ASDiv",
+          "evidence_section": "Math Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "MAWPS",
+          "evidence_section": "Math Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Web Questions",
+          "evidence_section": "Question Answering",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Natural Questions",
+          "evidence_section": "Question Answering",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "MLQA",
+          "evidence_section": "Multilingual Question Answering",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "TempLAMA",
+          "evidence_section": "Temporal Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Dateset",
+          "evidence_section": "Temporal Datasets",
+          "role": "unmodeled",
+          "task_family": "tool_augmented_nlp"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "WikiText",
+          "evidence_section": "Language Modeling",
+          "role": "unmodeled",
+          "task_family": "language_modeling"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "CCNet language-modeling subset",
+          "evidence_section": "Language Modeling",
+          "role": "unmodeled",
+          "task_family": "language_modeling"
+        }
+      ],
+      "selected_matches": [
+        "triviaqa"
+      ],
+      "missing": [
+        "svamp"
+      ],
+      "extras": [
+        "gsm8k"
+      ],
+      "unmodeled": [
+        "SQuAD subset of LAMA",
+        "Google-RE subset of LAMA",
+        "T-REx subset of LAMA",
+        "ASDiv",
+        "MAWPS",
+        "Web Questions",
+        "Natural Questions",
+        "MLQA",
+        "TempLAMA",
+        "Dateset",
+        "WikiText",
+        "CCNet language-modeling subset"
+      ],
+      "actual_unmodeled_task_families": [
+        "language_modeling",
+        "math_reasoning",
+        "tool_augmented_nlp"
+      ],
+      "inferred_task_families": [
+        "knowledge_intensive_qa",
+        "language_modeling",
+        "math_reasoning",
+        "tool_augmented_nlp"
+      ],
+      "inferred_uncovered_task_families": [
+        "language_modeling",
+        "tool_augmented_nlp"
+      ],
+      "matched_unmodeled_task_families": [
+        "language_modeling",
+        "math_reasoning",
+        "tool_augmented_nlp"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 0.5,
+      "selected_actual_precision": 0.5,
+      "error_types": [
+        "CATALOG_GAP",
+        "PORTFOLIO_RECALL_GAP",
+        "PORTFOLIO_PRECISION_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog",
+        "improve task, modality, environment, or suite-breadth inference for missed paper choices",
+        "tighten specialization and environment gates for paper-external selections"
+      ]
+    },
+    {
+      "case_id": "fresh3_002",
+      "source_title": "ProgPrompt: Generating Situated Robot Task Plans using Large Language Models",
+      "source_url": "https://arxiv.org/abs/2209.11302",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Our Method: ProgPrompt"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Simulation Experiments",
+        "Experiments / Real-Robot Experiments"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [
+        "alfworld"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "VirtualHome Household Task Set",
+          "evidence_section": "Simulation Experiments",
+          "role": "unmodeled",
+          "task_family": "embodied_household"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Physical Robot Tabletop Task Set",
+          "evidence_section": "Real-Robot Experiments",
+          "role": "unmodeled",
+          "task_family": "robot_manipulation"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [],
+      "extras": [
+        "alfworld"
+      ],
+      "unmodeled": [
+        "VirtualHome Household Task Set",
+        "Physical Robot Tabletop Task Set"
+      ],
+      "actual_unmodeled_task_families": [
+        "embodied_household",
+        "robot_manipulation"
+      ],
+      "inferred_task_families": [
+        "embodied_household",
+        "robot_manipulation"
+      ],
+      "inferred_uncovered_task_families": [
+        "robot_manipulation"
+      ],
+      "matched_unmodeled_task_families": [
+        "embodied_household",
+        "robot_manipulation"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP",
+        "PORTFOLIO_PRECISION_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog",
+        "tighten specialization and environment gates for paper-external selections"
+      ]
+    },
+    {
+      "case_id": "fresh3_003",
+      "source_title": "Visual Programming: Compositional visual reasoning without training",
+      "source_url": "https://arxiv.org/abs/2211.11559",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Visual Programming"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Tasks / Compositional Visual Question Answering",
+        "Tasks / Zero-Shot Reasoning on Image Pairs",
+        "Tasks / Factual Knowledge Object Tagging",
+        "Tasks / Image Editing with Natural Language"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": null,
+          "benchmark_name": "GQA",
+          "evidence_section": "Compositional Visual Question Answering",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "NLVRv2",
+          "evidence_section": "Zero-Shot Reasoning on Image Pairs",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Factual Knowledge Object Tagging",
+          "evidence_section": "Factual Knowledge Object Tagging",
+          "role": "unmodeled",
+          "task_family": "visual_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Language-Guided Image Editing",
+          "evidence_section": "Image Editing with Natural Language",
+          "role": "unmodeled",
+          "task_family": "image_editing"
+        }
+      ],
+      "selected_matches": [],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "GQA",
+        "NLVRv2",
+        "Factual Knowledge Object Tagging",
+        "Language-Guided Image Editing"
+      ],
+      "actual_unmodeled_task_families": [
+        "image_editing",
+        "visual_reasoning"
+      ],
+      "inferred_task_families": [
+        "image_editing",
+        "visual_reasoning"
+      ],
+      "inferred_uncovered_task_families": [
+        "image_editing",
+        "visual_reasoning"
+      ],
+      "matched_unmodeled_task_families": [
+        "image_editing",
+        "visual_reasoning"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "new_benchmark_synthesis",
+      "expected_route": "new_benchmark_synthesis",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh3_004",
+      "source_title": "Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks",
+      "source_url": "https://arxiv.org/abs/2211.12588",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Program of Thoughts"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Experimental Setup / Datasets"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "tabmwp",
+        "gsm8k",
+        "svamp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "gsm8k",
+          "benchmark_name": "GSM8K",
+          "evidence_section": "Datasets",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": "svamp",
+          "benchmark_name": "SVAMP",
+          "evidence_section": "Datasets",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": "tabmwp",
+          "benchmark_name": "TabMWP",
+          "evidence_section": "Datasets",
+          "role": "primary",
+          "task_family": "tabular_math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "AQuA",
+          "evidence_section": "Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "MultiArith",
+          "evidence_section": "Datasets",
+          "role": "unmodeled",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "FinQA",
+          "evidence_section": "Datasets",
+          "role": "unmodeled",
+          "task_family": "financial_numerical_qa"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "ConvFinQA",
+          "evidence_section": "Datasets",
+          "role": "unmodeled",
+          "task_family": "financial_numerical_qa"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "TATQA",
+          "evidence_section": "Datasets",
+          "role": "unmodeled",
+          "task_family": "financial_numerical_qa"
+        }
+      ],
+      "selected_matches": [
+        "tabmwp",
+        "gsm8k",
+        "svamp"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "AQuA",
+        "MultiArith",
+        "FinQA",
+        "ConvFinQA",
+        "TATQA"
+      ],
+      "actual_unmodeled_task_families": [
+        "financial_numerical_qa",
+        "math_reasoning"
+      ],
+      "inferred_task_families": [
+        "financial_numerical_qa",
+        "math_reasoning",
+        "math_word_problem",
+        "tabular_math_reasoning"
+      ],
+      "inferred_uncovered_task_families": [
+        "financial_numerical_qa"
+      ],
+      "matched_unmodeled_task_families": [
+        "financial_numerical_qa",
+        "math_reasoning"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    },
+    {
+      "case_id": "fresh3_005",
+      "source_title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+      "source_url": "https://arxiv.org/abs/2305.10601",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Tree of Thoughts: Deliberate Problem Solving with LM"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experiments / Game of 24",
+        "Experiments / Creative Writing",
+        "Experiments / Mini Crosswords"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "game_of_24"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "game_of_24",
+          "benchmark_name": "Game of 24",
+          "evidence_section": "Game of 24",
+          "role": "primary",
+          "task_family": "math_reasoning"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "Creative Writing",
+          "evidence_section": "Creative Writing",
+          "role": "unmodeled",
+          "task_family": "creative_writing"
+        },
+        {
+          "benchmark_id": null,
+          "benchmark_name": "5x5 Mini Crosswords",
+          "evidence_section": "Mini Crosswords",
+          "role": "unmodeled",
+          "task_family": "word_puzzle"
+        }
+      ],
+      "selected_matches": [
+        "game_of_24"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [
+        "Creative Writing",
+        "5x5 Mini Crosswords"
+      ],
+      "actual_unmodeled_task_families": [
+        "creative_writing",
+        "word_puzzle"
+      ],
+      "inferred_task_families": [
+        "creative_writing",
+        "math_reasoning",
+        "word_puzzle"
+      ],
+      "inferred_uncovered_task_families": [
+        "creative_writing",
+        "word_puzzle"
+      ],
+      "matched_unmodeled_task_families": [
+        "creative_writing",
+        "word_puzzle"
+      ],
+      "missing_unmodeled_task_families": [],
+      "unmodeled_task_family_recall": 1.0,
+      "route": "base_benchmark_adaptation",
+      "expected_route": "base_benchmark_adaptation",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [
+        "CATALOG_GAP"
+      ],
+      "optimization_feedback": [
+        "verify and type the paper-backed benchmarks that remain outside the catalog"
+      ]
+    }
+  ]
+}

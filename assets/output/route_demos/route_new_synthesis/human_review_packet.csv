@@ -1,0 +1,3 @@
+case_id,benchmark_id,reviewer_slot,reviewer_id,construct_alignment,task_representativeness,metric_validity,data_quality,leakage_control,execution_feasibility,provenance_confirmed,independence_attested,decision,notes
+route_new_synthesis,NO_DIRECT_MATCH,REVIEWER_1,,,,,,,,,,,
+route_new_synthesis,NO_DIRECT_MATCH,REVIEWER_2,,,,,,,,,,,

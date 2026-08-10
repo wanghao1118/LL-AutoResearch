@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/Wjk5wuHWvUNp+nRDoN768fSoxPs</id>
+  <title>arXiv Query: search_query=&amp;id_list=2401.13649,2307.16789&amp;start=0&amp;max_results=5</title>
+  <updated>2026-08-08T17:28:59Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=5&amp;id_list=2401.13649,2307.16789" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>2</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2307.16789v2</id>
+    <title>ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs</title>
+    <updated>2023-10-03T14:45:48Z</updated>
+    <link href="https://arxiv.org/abs/2307.16789v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2307.16789v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Despite the advancements of open-source large language models (LLMs), e.g., LLaMA, they remain significantly limited in tool-use capabilities, i.e., using external tools (APIs) to fulfill human instructions. The reason is that current instruction tuning largely focuses on basic language tasks but ignores the tool-use domain. This is in contrast to the excellent tool-use capabilities of state-of-the-art (SOTA) closed-source LLMs, e.g., ChatGPT. To bridge this gap, we introduce ToolLLM, a general tool-use framework encompassing data construction, model training, and evaluation. We first present ToolBench, an instruction-tuning dataset for tool use, which is constructed automatically using ChatGPT. Specifically, the construction can be divided into three stages: (i) API collection: we collect 16,464 real-world RESTful APIs spanning 49 categories from RapidAPI Hub; (ii) instruction generation: we prompt ChatGPT to generate diverse instructions involving these APIs, covering both single-tool and multi-tool scenarios; (iii) solution path annotation: we use ChatGPT to search for a valid solution path (chain of API calls) for each instruction. To enhance the reasoning capabilities of LLMs, we develop a novel depth-first search-based decision tree algorithm. It enables LLMs to evaluate multiple reasoning traces and expand the search space. Moreover, to evaluate the tool-use capabilities of LLMs, we develop an automatic evaluator: ToolEval. Based on ToolBench, we fine-tune LLaMA to obtain an LLM ToolLLaMA, and equip it with a neural API retriever to recommend appropriate APIs for each instruction. Experiments show that ToolLLaMA demonstrates a remarkable ability to execute complex instructions and generalize to unseen APIs, and exhibits comparable performance to ChatGPT. Our ToolLLaMA also demonstrates strong zero-shot generalization ability in an out-of-distribution tool-use dataset: APIBench.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-07-31T15:56:53Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yujia Qin</name>
+    </author>
+    <author>
+      <name>Shihao Liang</name>
+    </author>
+    <author>
+      <name>Yining Ye</name>
+    </author>
+    <author>
+      <name>Kunlun Zhu</name>
+    </author>
+    <author>
+      <name>Lan Yan</name>
+    </author>
+    <author>
+      <name>Yaxi Lu</name>
+    </author>
+    <author>
+      <name>Yankai Lin</name>
+    </author>
+    <author>
+      <name>Xin Cong</name>
+    </author>
+    <author>
+      <name>Xiangru Tang</name>
+    </author>
+    <author>
+      <name>Bill Qian</name>
+    </author>
+    <author>
+      <name>Sihan Zhao</name>
+    </author>
+    <author>
+      <name>Lauren Hong</name>
+    </author>
+    <author>
+      <name>Runchu Tian</name>
+    </author>
+    <author>
+      <name>Ruobing Xie</name>
+    </author>
+    <author>
+      <name>Jie Zhou</name>
+    </author>
+    <author>
+      <name>Mark Gerstein</name>
+    </author>
+    <author>
+      <name>Dahai Li</name>
+    </author>
+    <author>
+      <name>Zhiyuan Liu</name>
+    </author>
+    <author>
+      <name>Maosong Sun</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2401.13649v2</id>
+    <title>VisualWebArena: Evaluating Multimodal Agents on Realistic Visual Web Tasks</title>
+    <updated>2024-06-06T02:01:09Z</updated>
+    <link href="https://arxiv.org/abs/2401.13649v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2401.13649v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Autonomous agents capable of planning, reasoning, and executing actions on the web offer a promising avenue for automating computer tasks. However, the majority of existing benchmarks primarily focus on text-based agents, neglecting many natural tasks that require visual information to effectively solve. Given that most computer interfaces cater to human perception, visual information often augments textual data in ways that text-only models struggle to harness effectively. To bridge this gap, we introduce VisualWebArena, a benchmark designed to assess the performance of multimodal web agents on realistic \textit{visually grounded tasks}. VisualWebArena comprises of a set of diverse and complex web-based tasks that evaluate various capabilities of autonomous multimodal agents. To perform on this benchmark, agents need to accurately process image-text inputs, interpret natural language instructions, and execute actions on websites to accomplish user-defined objectives. We conduct an extensive evaluation of state-of-the-art LLM-based autonomous agents, including several multimodal models. Through extensive quantitative and qualitative analysis, we identify several limitations of text-only LLM agents, and reveal gaps in the capabilities of state-of-the-art multimodal language agents. VisualWebArena provides a framework for evaluating multimodal autonomous language agents, and offers insights towards building stronger autonomous agents for the web. Our code, baseline models, and data is publicly available at https://jykoh.com/vwa.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-01-24T18:35:21Z</published>
+    <arxiv:comment>Accepted to ACL 2024. 24 pages. Project page: https://jykoh.com/vwa</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Jing Yu Koh</name>
+    </author>
+    <author>
+      <name>Robert Lo</name>
+    </author>
+    <author>
+      <name>Lawrence Jang</name>
+    </author>
+    <author>
+      <name>Vikram Duvvur</name>
+    </author>
+    <author>
+      <name>Ming Chong Lim</name>
+    </author>
+    <author>
+      <name>Po-Yu Huang</name>
+    </author>
+    <author>
+      <name>Graham Neubig</name>
+    </author>
+    <author>
+      <name>Shuyan Zhou</name>
+    </author>
+    <author>
+      <name>Ruslan Salakhutdinov</name>
+    </author>
+    <author>
+      <name>Daniel Fried</name>
+    </author>
+  </entry>
+</feed>

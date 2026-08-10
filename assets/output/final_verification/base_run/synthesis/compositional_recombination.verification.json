@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "source_benchmark": "local_demo_base",
+  "source_split": "train",
+  "transformation": "compositional_recombination",
+  "base_record_count": 2,
+  "synthetic_record_count": 1,
+  "unique_synthetic_ids": true,
+  "source_ids_resolved": true,
+  "verified_expected_outputs": 1,
+  "automatic_validation_status": "PENDING"
+}

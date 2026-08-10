@@ -1,0 +1,214 @@
+{
+  "case_id": "fresh2_001",
+  "source_arxiv_id": "2211.10435",
+  "source_title": "PAL: Program-aided Language Models",
+  "source_url": "https://arxiv.org/abs/2211.10435",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Background: Few-shot Prompting",
+      "Program-aided Language Models"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "gsm8k",
+    "svamp"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "ASDiv",
+    "SingleOp",
+    "SingleEq",
+    "AddSub",
+    "MultiArith",
+    "GSM-Hard",
+    "Reasoning about Colored Objects",
+    "Penguins in a Table",
+    "Date Understanding",
+    "Object Counting",
+    "Repeat Copy"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Experimental Setup",
+    "Mathematical Reasoning",
+    "Symbolic Reasoning",
+    "Algorithmic Tasks",
+    "Appendix: Datasets"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "primary",
+      "evidence_section": "Mathematical Reasoning",
+      "task_family": "math_reasoning",
+      "benchmark_id": "gsm8k"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Mathematical Reasoning",
+      "task_family": "math_reasoning",
+      "benchmark_id": "svamp"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Appendix: Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "ASDiv"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Appendix: Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "SingleOp"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Appendix: Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "SingleEq"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Appendix: Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "AddSub"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Appendix: Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "MultiArith"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Appendix: Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "GSM-Hard"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Symbolic Reasoning",
+      "task_family": "symbolic_reasoning",
+      "benchmark_name": "Reasoning about Colored Objects"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Symbolic Reasoning",
+      "task_family": "symbolic_reasoning",
+      "benchmark_name": "Penguins in a Table"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Symbolic Reasoning",
+      "task_family": "symbolic_reasoning",
+      "benchmark_name": "Date Understanding"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Algorithmic Tasks",
+      "task_family": "symbolic_reasoning",
+      "benchmark_name": "Object Counting"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Algorithmic Tasks",
+      "task_family": "symbolic_reasoning",
+      "benchmark_name": "Repeat Copy"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_002/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "eight mathematical word problem datasets",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/maths.tex"
+      ]
+    },
+    {
+      "term": "\\gsm~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/experiments.tex",
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\svamp~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/experiments.tex",
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\asdiv~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/experiments.tex",
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\singleop~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\singleeq~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\addsub~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\multiarith~",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "\\gsmhard",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/maths.tex",
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "Reasoning about Colored Objects",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "Penguins in a Table",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "Date Understanding",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "Object Counting",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    },
+    {
+      "term": "Repeat Copy",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.10435/sections/appendix.tex"
+      ]
+    }
+  ]
+}

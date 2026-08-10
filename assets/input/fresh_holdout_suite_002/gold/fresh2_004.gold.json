@@ -1,0 +1,126 @@
+{
+  "case_id": "fresh2_004",
+  "source_arxiv_id": "2304.11477",
+  "source_title": "LLM+P: Empowering Large Language Models with Optimal Planning Proficiency",
+  "source_url": "https://arxiv.org/abs/2304.11477",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Method"
+    ]
+  },
+  "primary_benchmark_ids": [],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "Blocksworld",
+    "Barman",
+    "Floortile",
+    "Grippers",
+    "Storage",
+    "Termes",
+    "Tyreworld"
+  ],
+  "expected_route": "new_benchmark_synthesis",
+  "gold_evidence_sections": [
+    "Experiments / Benchmark Problems"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Blocksworld"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Barman"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Floortile"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Grippers"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Storage"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Termes"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Benchmark Problems",
+      "task_family": "classical_planning",
+      "benchmark_name": "Tyreworld"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_002/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "seven robot planning domains",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\blocksworld{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\barman{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\floortile{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\grippers{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\storage{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\termes{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    },
+    {
+      "term": "\\tyreworld{}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.11477/contents/experiments.tex"
+      ]
+    }
+  ]
+}

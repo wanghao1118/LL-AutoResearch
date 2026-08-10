@@ -1,0 +1,101 @@
+{
+  "case_id": "fresh2_005",
+  "source_arxiv_id": "2303.08128",
+  "source_title": "ViperGPT: Visual Inference via Python Execution for Reasoning",
+  "source_url": "https://arxiv.org/abs/2303.08128",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Method",
+      "Program Generation",
+      "Modules and Their API",
+      "Program Execution"
+    ]
+  },
+  "primary_benchmark_ids": [],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "RefCOCO",
+    "RefCOCO+",
+    "GQA",
+    "OK-VQA",
+    "NExT-QA"
+  ],
+  "expected_route": "new_benchmark_synthesis",
+  "gold_evidence_sections": [
+    "Evaluation",
+    "Visual Grounding",
+    "Compositional Image Question Answering",
+    "External Knowledge-dependent Image Question Answering",
+    "Video Causal/Temporal Reasoning"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Visual Grounding",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "RefCOCO"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Visual Grounding",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "RefCOCO+"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Compositional Image Question Answering",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "GQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "External Knowledge-dependent Image Question Answering",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "OK-VQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Video Causal/Temporal Reasoning",
+      "task_family": "visual_reasoning",
+      "benchmark_name": "NExT-QA"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_002/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "RefCOCO",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex"
+      ]
+    },
+    {
+      "term": "RefCOCO+",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex"
+      ]
+    },
+    {
+      "term": "GQA dataset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex"
+      ]
+    },
+    {
+      "term": "OK-VQA dataset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex"
+      ]
+    },
+    {
+      "term": "NExT-QA dataset",
+      "source_files": [
+        "assets/input/source_papers/extracted/2303.08128/egpaper_final.tex"
+      ]
+    }
+  ]
+}

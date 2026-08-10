@@ -1,0 +1,5 @@
+case_id,benchmark_id,reviewer_slot,reviewer_id,construct_alignment,task_representativeness,metric_validity,data_quality,leakage_control,execution_feasibility,provenance_confirmed,independence_attested,decision,notes
+fresh3_004,gsm8k,REVIEWER_1,,,,,,,,,,,
+fresh3_004,gsm8k,REVIEWER_2,,,,,,,,,,,
+fresh3_004,svamp,REVIEWER_1,,,,,,,,,,,
+fresh3_004,svamp,REVIEWER_2,,,,,,,,,,,

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "artifact_role": "verification_record",
+  "workspace": "/Users/yzb/Desktop/research/exp31_autoresearch",
+  "baseline": {
+    "command": "python3 -c 'import json; from pathlib import Path; ps=[Path(\"assets/output/untouched_holdout/human_audit_history/round_1/blind_evaluation.json\"),Path(\"assets/output/untouched_holdout_2/current_human_audit_history/round_1/blind_evaluation.json\")]; print(json.dumps([{\"path\":str(p),\"verdict\":(d:=json.loads(p.read_text()))[\"verdict\"],\"selected\":d[\"cases\"][0][\"selected\"],\"aggregate\":d[\"aggregate\"]} for p in ps],ensure_ascii=False,sort_keys=True))'",
+    "inputs": [
+      "assets/output/untouched_holdout/human_audit_history/round_1/blind_evaluation.json",
+      "assets/output/untouched_holdout_2/current_human_audit_history/round_1/blind_evaluation.json"
+    ],
+    "literal_output": "[{\"aggregate\": {\"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false, \"case_count\": 1, \"mean_primary_mrr\": 0.3333333333333333, \"mean_primary_recall_at_5\": 0.25, \"mean_primary_recall_at_6\": 0.5, \"mean_selected_actual_precision\": 0.6, \"mean_selected_modeled_recall\": 0.75, \"route_accuracy\": 1.0}, \"path\": \"assets/output/untouched_holdout/human_audit_history/round_1/blind_evaluation.json\", \"selected\": [\"webarena\", \"humaneval\", \"mind2web\", \"webshop\", \"mbpp\"], \"verdict\": \"NEEDS_ITERATION\"}, {\"aggregate\": {\"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false, \"case_count\": 1, \"mean_primary_mrr\": 1.0, \"mean_primary_recall_at_5\": 1.0, \"mean_primary_recall_at_6\": 1.0, \"mean_selected_actual_precision\": 0.6666666666666666, \"mean_selected_modeled_recall\": 1.0, \"route_accuracy\": 1.0}, \"path\": \"assets/output/untouched_holdout_2/current_human_audit_history/round_1/blind_evaluation.json\", \"selected\": [\"hotpotqa\", \"gsm8k\", \"toolbench\"], \"verdict\": \"PASS\"}]\n",
+    "exit_status": 0
+  },
+  "modified_readback": {
+    "command": "python3 -c 'import json; from pathlib import Path; ps=[Path(\"assets/output/untouched_holdout/latest_evaluation.json\"),Path(\"assets/output/untouched_holdout_2/post_admission_evaluation.json\")]; print(json.dumps([{\"path\":str(p),\"verdict\":(d:=json.loads(p.read_text()))[\"verdict\"],\"selected\":d[\"cases\"][0][\"selected\"],\"aggregate\":d[\"aggregate\"]} for p in ps],ensure_ascii=False,sort_keys=True))'",
+    "inputs": [
+      "assets/output/untouched_holdout/latest_evaluation.json",
+      "assets/output/untouched_holdout_2/post_admission_evaluation.json"
+    ],
+    "literal_output": "[{\"aggregate\": {\"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false, \"case_count\": 1, \"mean_primary_mrr\": 1.0, \"mean_primary_recall_at_5\": 1.0, \"mean_primary_recall_at_6\": 1.0, \"mean_selected_actual_precision\": 1.0, \"mean_selected_modeled_recall\": 1.0, \"route_accuracy\": 1.0}, \"path\": \"assets/output/untouched_holdout/latest_evaluation.json\", \"selected\": [\"webshop\", \"game_of_24\", \"hotpotqa\", \"humaneval\", \"mbpp\"], \"verdict\": \"PASS\"}, {\"aggregate\": {\"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false, \"case_count\": 1, \"mean_primary_mrr\": 0.3333333333333333, \"mean_primary_recall_at_5\": 1.0, \"mean_primary_recall_at_6\": 1.0, \"mean_selected_actual_precision\": 1.0, \"mean_selected_modeled_recall\": 1.0, \"route_accuracy\": 1.0}, \"path\": \"assets/output/untouched_holdout_2/post_admission_evaluation.json\", \"selected\": [\"triviaqa\", \"realtoxicityprompts\", \"gsm8k\", \"hotpotqa\", \"svamp\", \"ambignq\", \"tabmwp\"], \"verdict\": \"PASS\"}]\n",
+    "exit_status": 0
+  },
+  "modified_execution": [
+    {
+      "command": "python3 step2_run_blind_matching.py",
+      "inputs": [
+        "assets/input/blind_cases",
+        "configs/benchmark_catalog.json"
+      ],
+      "literal_output": "{\"case_id\": \"case_001\", \"exit_status\": 0, \"hidden_labels_present_in_sandbox\": false}\n{\"case_id\": \"case_002\", \"exit_status\": 0, \"hidden_labels_present_in_sandbox\": false}\n{\"case_id\": \"case_003\", \"exit_status\": 0, \"hidden_labels_present_in_sandbox\": false}\n{\"manifest\": \"assets/output/blind_runs/run_manifest.json\"}\n",
+      "exit_status": 0
+    },
+    {
+      "command": "python3 step3_evaluate_blind_results.py",
+      "inputs": [
+        "assets/output/blind_runs",
+        "assets/input/blind_gold"
+      ],
+      "literal_output": "{\"verdict\": \"PASS\", \"case_count\": 3, \"mean_primary_recall_at_5\": 0.9166666666666666, \"mean_primary_recall_at_6\": 1.0, \"mean_primary_mrr\": 0.8333333333333334, \"mean_selected_modeled_recall\": 1.0, \"mean_selected_actual_precision\": 0.7222222222222222, \"route_accuracy\": 1.0, \"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false}\n",
+      "exit_status": 0
+    },
+    {
+      "command": "python3 step9_run_untouched_holdout.py --replay",
+      "inputs": [
+        "assets/input/untouched_holdout_cases",
+        "assets/input/untouched_holdout_gold"
+      ],
+      "literal_output": "{\"case_id\": \"holdout_001\", \"exit_status\": 0, \"hidden_labels_present_in_sandbox\": false}\n{\"manifest\": \"assets/output/untouched_holdout/runs/run_manifest.json\"}\n{\"verdict\": \"PASS\", \"case_count\": 1, \"mean_primary_recall_at_5\": 1.0, \"mean_primary_recall_at_6\": 1.0, \"mean_primary_mrr\": 1.0, \"mean_selected_modeled_recall\": 1.0, \"mean_selected_actual_precision\": 1.0, \"route_accuracy\": 1.0, \"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false}\n{\"first_run_preserved\": true, \"case_count\": 1, \"mean_primary_recall_at_5\": 1.0, \"mean_primary_recall_at_6\": 1.0, \"mean_primary_mrr\": 1.0, \"mean_selected_modeled_recall\": 1.0, \"mean_selected_actual_precision\": 1.0, \"route_accuracy\": 1.0, \"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false}\n",
+      "exit_status": 0
+    },
+    {
+      "command": "python3 step2_run_blind_matching.py --cases-dir assets/input/untouched_holdout_2_cases --case-pattern 'holdout_*.json' --output-dir assets/output/untouched_holdout_2/post_admission_runs",
+      "inputs": [
+        "assets/input/untouched_holdout_2_cases",
+        "configs/benchmark_catalog.json"
+      ],
+      "literal_output": "{\"case_id\": \"holdout_002\", \"exit_status\": 0, \"hidden_labels_present_in_sandbox\": false}\n{\"manifest\": \"assets/output/untouched_holdout_2/post_admission_runs/run_manifest.json\"}\n",
+      "exit_status": 0
+    },
+    {
+      "command": "python3 step3_evaluate_blind_results.py --runs-dir assets/output/untouched_holdout_2/post_admission_runs --gold-dir assets/input/untouched_holdout_2_gold --matcher-cases-dir assets/input/untouched_holdout_2_cases --output assets/output/untouched_holdout_2/post_admission_evaluation.json --report assets/output/untouched_holdout_2/post_admission_evaluation.md --minimum-cases 1",
+      "inputs": [
+        "assets/output/untouched_holdout_2/post_admission_runs",
+        "assets/input/untouched_holdout_2_gold"
+      ],
+      "literal_output": "{\"verdict\": \"PASS\", \"case_count\": 1, \"mean_primary_recall_at_5\": 1.0, \"mean_primary_recall_at_6\": 1.0, \"mean_primary_mrr\": 0.3333333333333333, \"mean_selected_modeled_recall\": 1.0, \"mean_selected_actual_precision\": 1.0, \"route_accuracy\": 1.0, \"all_leakage_checks_passed\": true, \"any_matcher_loaded_hidden_labels\": false}\n",
+      "exit_status": 0
+    }
+  ],
+  "tests": {
+    "command": "python3 -m unittest discover -s tests -p 'test_*.py' -v",
+    "inputs": [
+      "tests/test_autobench.py"
+    ],
+    "literal_output": "test_arxiv_query_compiler_keeps_task_phrase_and_filters_noise (test_autobench.AutoBenchTest) ... ok\ntest_base_adaptation_and_new_synthesis_routes (test_autobench.AutoBenchTest) ... ok\ntest_benchmark_like_online_hit_becomes_review_only_admission_proposal (test_autobench.AutoBenchTest) ... ok\ntest_benchmarking_study_is_not_a_catalog_resource_proposal (test_autobench.AutoBenchTest) ... ok\ntest_blind_cases_have_no_catalog_alias (test_autobench.AutoBenchTest) ... ok\ntest_blind_runner_source_does_not_reference_hidden_label_directory (test_autobench.AutoBenchTest) ... ok\ntest_catalog_admission_maps_search_alias_back_to_profile_task (test_autobench.AutoBenchTest) ... ok\ntest_catalog_admission_resolves_the_second_holdout_coverage_gap (test_autobench.AutoBenchTest) ... ok\ntest_catalog_has_primary_sources_and_unique_ids (test_autobench.AutoBenchTest) ... ok\ntest_completion_gate_uses_only_the_current_audit_final_verdict (test_autobench.AutoBenchTest) ... ok\ntest_completion_status_preserves_completed_human_quality_gaps (test_autobench.AutoBenchTest) ... ok\ntest_current_second_holdout_plan_has_a_separate_human_gate (test_autobench.AutoBenchTest) ... ok\ntest_every_gold_benchmark_name_is_hidden_from_matcher_input (test_autobench.AutoBenchTest) ... ok\ntest_explicit_human_rejection_overrides_high_scores (test_autobench.AutoBenchTest) ... ok\ntest_frozen_scope_prevents_omitted_item_approval (test_autobench.AutoBenchTest) ... ok\ntest_holdout_feedback_generalizes_to_task_and_modality_boundaries (test_autobench.AutoBenchTest) ... ok\ntest_human_feedback_driven_profiles_and_portfolios (test_autobench.AutoBenchTest) ... ok\ntest_human_review_gate_requires_independent_reviewers (test_autobench.AutoBenchTest) ... ok\ntest_hyphenated_task_phrases_use_the_same_profile_normalization (test_autobench.AutoBenchTest) ... ok\ntest_incomplete_human_template_stays_pending (test_autobench.AutoBenchTest) ... ok\ntest_independent_html_assignments_include_full_context_without_gold (test_autobench.AutoBenchTest) ... ok\ntest_leakage_gate_rejects_benchmark_name (test_autobench.AutoBenchTest) ... ok\ntest_literature_audit_requires_complete_human_comparison (test_autobench.AutoBenchTest) ... ok\ntest_literature_cases_recover_all_primary_benchmarks_in_top_six (test_autobench.AutoBenchTest) ... ok\ntest_online_literature_hit_contributes_to_candidate_score (test_autobench.AutoBenchTest) ... ok\ntest_paper_identity_is_revealed_only_in_post_run_gold (test_autobench.AutoBenchTest) ... ok\ntest_query_planner_expands_task_aliases_without_paper_identity (test_autobench.AutoBenchTest) ... ok\ntest_review_matrix_never_hides_an_incomplete_item (test_autobench.AutoBenchTest) ... ok\ntest_round_comparison_preserves_human_feedback_and_exposes_remaining_gap (test_autobench.AutoBenchTest) ... ok\ntest_round_three_delta_audit_targets_only_the_feedback_case (test_autobench.AutoBenchTest) ... ok\ntest_second_holdout_catalog_admission_resolves_missing_domain (test_autobench.AutoBenchTest) ... ok\ntest_second_holdout_first_result_is_preserved_before_feedback_changes (test_autobench.AutoBenchTest) ... ok\ntest_second_holdout_has_an_independent_human_audit (test_autobench.AutoBenchTest) ... ok\ntest_second_holdout_was_frozen_before_the_first_revision_run (test_autobench.AutoBenchTest) ... ok\ntest_single_command_workflow_covers_all_three_routes (test_autobench.AutoBenchTest) ... ok\ntest_source_revealed_literature_audit_contains_direct_comparison (test_autobench.AutoBenchTest) ... ok\ntest_synthesis_rejects_test_sources_and_verifies_exact_gold (test_autobench.AutoBenchTest) ... ok\ntest_synthetic_records_preserve_provenance_and_pending_state (test_autobench.AutoBenchTest) ... ok\ntest_task_balanced_ranking_preserves_cross_domain_holdout_coverage (test_autobench.AutoBenchTest) ... ok\ntest_topical_online_hit_without_benchmark_name_adds_partial_evidence (test_autobench.AutoBenchTest) ... ok\ntest_uncovered_explicit_task_forces_adaptation_and_synthesis (test_autobench.AutoBenchTest) ... ok\ntest_untouched_holdout_first_result_is_preserved (test_autobench.AutoBenchTest) ... ok\ntest_untouched_holdout_has_an_independent_human_audit (test_autobench.AutoBenchTest) ... ok\ntest_untouched_holdout_was_frozen_with_separate_gold (test_autobench.AutoBenchTest) ... ok\n\n----------------------------------------------------------------------\nRan 44 tests in 0.210s\n\nOK\n",
+    "exit_status": 0
+  },
+  "rollback": {
+    "command": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/feedback_round2_delivery/rollback_feedback_round2.sh /tmp/autobench-round2-rollback.ln705H /Users/yzb/Desktop/research/exp31_autoresearch/assets/output/feedback_round2_delivery/auto_bench_feedback_round2.patch",
+    "input_copy": "/tmp/autobench-round2-rollback.ln705H",
+    "literal_output": "Executing rollback on an isolated file-for-file copy: /tmp/autobench-round2-rollback.ln705H\ncopied_files= 15\nROLLED_BACK feedback_round2 code and documentation delta under /tmp/autobench-round2-rollback.ln705H\nrollback_marker=baseline_restored\nreapply_mismatches= []\nrollback_and_reapply=PASS\ntemporary_copy_retained=/tmp/autobench-round2-rollback.ln705H\n",
+    "exit_status": 0,
+    "result": "rollback_marker=baseline_restored; rollback_and_reapply=PASS; reapply_mismatches=[]"
+  },
+  "roles": {
+    "modified_artifact": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/feedback_round2_delivery/round2_corrected_benchmark_results.json",
+    "patch": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/feedback_round2_delivery/auto_bench_feedback_round2.patch",
+    "verification_record": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/feedback_round2_delivery/verification_record.json",
+    "rollback": "/Users/yzb/Desktop/research/exp31_autoresearch/assets/output/feedback_round2_delivery/rollback_feedback_round2.sh"
+  }
+}

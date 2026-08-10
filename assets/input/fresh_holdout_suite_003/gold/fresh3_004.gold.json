@@ -1,0 +1,134 @@
+{
+  "case_id": "fresh3_004",
+  "source_arxiv_id": "2211.12588",
+  "source_title": "Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks",
+  "source_url": "https://arxiv.org/abs/2211.12588",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "Program of Thoughts"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "gsm8k",
+    "svamp",
+    "tabmwp"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "AQuA",
+    "MultiArith",
+    "FinQA",
+    "ConvFinQA",
+    "TATQA"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Experiments / Experimental Setup / Datasets"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "primary",
+      "evidence_section": "Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_id": "gsm8k"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_id": "svamp"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Datasets",
+      "task_family": "tabular_math_reasoning",
+      "benchmark_id": "tabmwp"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "AQuA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Datasets",
+      "task_family": "math_reasoning",
+      "benchmark_name": "MultiArith"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Datasets",
+      "task_family": "financial_numerical_qa",
+      "benchmark_name": "FinQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Datasets",
+      "task_family": "financial_numerical_qa",
+      "benchmark_name": "ConvFinQA"
+    },
+    {
+      "role": "unmodeled",
+      "evidence_section": "Datasets",
+      "task_family": "financial_numerical_qa",
+      "benchmark_name": "TATQA"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite_003/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "GSM8K",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "AQuA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "SVAMP",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "MultiArith",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "TabMWP",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "FinQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "ConvFinQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    },
+    {
+      "term": "TATQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/experiment.tex"
+      ]
+    }
+  ]
+}

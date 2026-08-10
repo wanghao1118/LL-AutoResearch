@@ -1,0 +1,218 @@
+[
+  {
+    "case_id": "case_001",
+    "benchmark_id": "webarena",
+    "reviewer_slot": "REVIEWER_1",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "webarena",
+    "reviewer_slot": "REVIEWER_2",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "alfworld",
+    "reviewer_slot": "REVIEWER_1",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "alfworld",
+    "reviewer_slot": "REVIEWER_2",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "fever",
+    "reviewer_slot": "REVIEWER_1",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "fever",
+    "reviewer_slot": "REVIEWER_2",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "hotpotqa",
+    "reviewer_slot": "REVIEWER_1",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "hotpotqa",
+    "reviewer_slot": "REVIEWER_2",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "visualwebarena",
+    "reviewer_slot": "REVIEWER_1",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "visualwebarena",
+    "reviewer_slot": "REVIEWER_2",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "webshop",
+    "reviewer_slot": "REVIEWER_1",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  },
+  {
+    "case_id": "case_001",
+    "benchmark_id": "webshop",
+    "reviewer_slot": "REVIEWER_2",
+    "reviewer_id": null,
+    "scores": {
+      "construct_alignment": null,
+      "task_representativeness": null,
+      "metric_validity": null,
+      "data_quality": null,
+      "leakage_control": null,
+      "execution_feasibility": null
+    },
+    "provenance_confirmed": null,
+    "independence_attested": null,
+    "decision": null,
+    "notes": null
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "case_id": "case_001",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "route": "direct_portfolio",
+  "coverage_ratio": 1.0,
+  "blind_input_fields": [
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "blind_gold_loaded": false,
+  "leakage_scan_passed": true,
+  "outputs": {
+    "json": "assets/output/final_verification/direct_run/benchmark_plan.json",
+    "markdown": "assets/output/final_verification/direct_run/benchmark_plan.md",
+    "automatic_review_input": "assets/output/final_verification/direct_run/automatic_review_input.json"
+  },
+  "synthesis_execution": {
+    "status": "NOT_REQUIRED",
+    "route": "direct_portfolio",
+    "reason": "the selected portfolio covers every inferred task family",
+    "modules": []
+  },
+  "automatic_validation": {
+    "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+    "human_submission_required": false,
+    "input": "assets/output/final_verification/direct_run/automatic_review_input.json",
+    "synthesis_verifications": [],
+    "next_step": "after the blind matcher exits, load source-paper benchmark evidence and run the automatic literature evaluator"
+  },
+  "human_submission_required": false,
+  "next_action": "run automatic post-match source comparison and feed its typed errors into optimization"
+}

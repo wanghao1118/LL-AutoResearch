@@ -1,0 +1,30 @@
+[
+  {
+    "case_id": "route_base_adaptation",
+    "route": "base_benchmark_adaptation",
+    "coverage_ratio": 0.5,
+    "selected_benchmarks": [
+      "alfworld"
+    ],
+    "synthesis_required": true,
+    "status": "HUMAN_REVIEW_REQUIRED",
+    "outputs": {
+      "json": "assets/output/route_demos/route_base_adaptation/benchmark_plan.json",
+      "markdown": "assets/output/route_demos/route_base_adaptation/benchmark_plan.md",
+      "review_packet": "assets/output/route_demos/route_base_adaptation/human_review_packet.csv"
+    }
+  },
+  {
+    "case_id": "route_new_synthesis",
+    "route": "new_benchmark_synthesis",
+    "coverage_ratio": 0.0,
+    "selected_benchmarks": [],
+    "synthesis_required": true,
+    "status": "HUMAN_REVIEW_REQUIRED",
+    "outputs": {
+      "json": "assets/output/route_demos/route_new_synthesis/benchmark_plan.json",
+      "markdown": "assets/output/route_demos/route_new_synthesis/benchmark_plan.md",
+      "review_packet": "assets/output/route_demos/route_new_synthesis/human_review_packet.csv"
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "status": "LITERATURE_AUDIT_CONFIRMED",
+  "reason": "the human audit confirmed every source-paper comparison",
+  "reviewer_id": "yzb",
+  "audit_id": "auto_bench_blind_literature_audit_round_3_case_001_case_002_case_003",
+  "expected_case_ids": [
+    "case_001",
+    "case_002",
+    "case_003"
+  ],
+  "pending_case_ids": [],
+  "items": [
+    {
+      "case_id": "case_001",
+      "status": "MATCH",
+      "notes": "Synthetic validator fixture for the current Round 3 scope."
+    },
+    {
+      "case_id": "case_002",
+      "status": "MATCH",
+      "notes": "Synthetic validator fixture for the current Round 3 scope."
+    },
+    {
+      "case_id": "case_003",
+      "status": "MATCH",
+      "notes": "Synthetic validator fixture for the current Round 3 scope."
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "case_id": "case_001",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "embodied_household",
+      "fact_verification",
+      "knowledge_intensive_qa",
+      "sequential_decision_making",
+      "web_navigation"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [],
+    "modalities": [
+      "text",
+      "web"
+    ],
+    "interactions": [
+      "browser",
+      "interactive_environment",
+      "retrieval_tool"
+    ],
+    "output_types": [
+      "action_trajectory",
+      "classification_label",
+      "short_answer",
+      "supporting_evidence"
+    ],
+    "environments": [
+      "knowledge_base",
+      "website"
+    ],
+    "capabilities": [
+      "evidence_grounding",
+      "external_information_retrieval",
+      "long_horizon_planning",
+      "reasoning_action_interleaving",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "evidence_score",
+      "exact_match",
+      "label_accuracy",
+      "task_success_rate",
+      "token_f1",
+      "trajectory_efficiency"
+    ],
+    "evidence_terms": {
+      "capability:evidence_grounding": [
+        "grounded",
+        "factual"
+      ],
+      "capability:external_information_retrieval": [
+        "search"
+      ],
+      "capability:long_horizon_planning": [
+        "plan",
+        "trajectory"
+      ],
+      "capability:reasoning_action_interleaving": [
+        "reasoning and acting",
+        "thought-action-observation",
+        "interleave"
+      ],
+      "capability:tool_use": [
+        "action"
+      ],
+      "task:embodied_household": [
+        "embodied"
+      ],
+      "task:fact_verification": [
+        "fact verification"
+      ],
+      "task:knowledge_intensive_qa": [
+        "answer questions",
+        "wikipedia"
+      ],
+      "task:sequential_decision_making": [
+        "sequential decision",
+        "action-observation",
+        "trajectory",
+        "interactive environment"
+      ],
+      "task:web_navigation": [
+        "web navigation"
+      ]
+    },
+    "declared_evaluation_breadth": 0
+  },
+  "selected_benchmarks": [
+    "webarena",
+    "alfworld",
+    "fever",
+    "hotpotqa",
+    "triviaqa",
+    "webshop"
+  ],
+  "top_6": [
+    "webarena",
+    "alfworld",
+    "fever",
+    "hotpotqa",
+    "triviaqa",
+    "webshop"
+  ],
+  "route": "direct_portfolio",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

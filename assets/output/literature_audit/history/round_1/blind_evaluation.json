@@ -1,0 +1,577 @@
+{
+  "schema_version": "1.0",
+  "verdict": "PASS",
+  "thresholds": {
+    "minimum_cases": 3,
+    "mean_primary_recall_at_5": 0.8,
+    "mean_primary_recall_at_6": 0.9,
+    "route_accuracy": 0.6666666666666666,
+    "all_leakage_checks_passed": true,
+    "matcher_hidden_label_access": false
+  },
+  "aggregate": {
+    "case_count": 3,
+    "mean_primary_recall_at_5": 0.8055555555555556,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.8333333333333334,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "case_001",
+      "source_arxiv_id": "2210.03629",
+      "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "source_url": "https://arxiv.org/abs/2210.03629",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "ReAct: Synergizing Reasoning + Acting"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_001.json",
+      "gold_evidence_sections": [
+        "Knowledge-Intensive Reasoning Tasks",
+        "Decision Making Tasks"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 3
+        },
+        {
+          "benchmark_id": "fever",
+          "role": "primary",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "benchmark_name": "FEVER",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_id": "alfworld",
+          "role": "primary",
+          "evidence_section": "Decision Making Tasks",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "webshop",
+          "role": "primary",
+          "evidence_section": "Decision Making Tasks",
+          "benchmark_name": "WebShop",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 6
+        }
+      ],
+      "primary_gold": [
+        "hotpotqa",
+        "fever",
+        "alfworld",
+        "webshop"
+      ],
+      "secondary_gold": [],
+      "unmodeled_gold": [],
+      "top_6": [
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "webarena",
+        "scienceworld",
+        "webshop"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 1,
+          "selected": true,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 2,
+          "selected": true,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "selected": true,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 4,
+          "selected": true,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 5,
+          "selected": false,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "rank": 6,
+          "selected": false,
+          "paper_role": "primary"
+        }
+      ],
+      "selected": [
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "webarena"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 1,
+          "score": 0.87,
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2010.03768"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "rank": 2,
+          "score": 0.89,
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1803.05355"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 3,
+          "score": 0.89,
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        },
+        {
+          "benchmark_id": "webarena",
+          "benchmark_name": "WebArena",
+          "rank": 4,
+          "score": 0.73,
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.13854"
+        }
+      ],
+      "comparison": {
+        "selected_primary_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [
+          "webshop"
+        ],
+        "secondary_missing_from_selected": [],
+        "selected_not_used_in_paper": [
+          "webarena"
+        ],
+        "top_6_primary_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "webshop"
+        ],
+        "top_6_secondary_matches": [],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.75
+      },
+      "primary_recall_at_1": 0.25,
+      "primary_recall_at_3": 0.75,
+      "primary_recall_at_5": 0.75,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 0.75,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "case_002",
+      "source_arxiv_id": "2303.11366",
+      "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2303.11366",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Reflexion: reinforcement via verbal reflection"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_002.json",
+      "gold_evidence_sections": [
+        "Sequential decision making: ALFWorld",
+        "Reasoning: HotpotQA",
+        "Programming"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "alfworld",
+          "role": "primary",
+          "evidence_section": "Sequential decision making: ALFWorld",
+          "benchmark_name": "ALFWorld",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 6
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "role": "primary",
+          "evidence_section": "Reasoning: HotpotQA",
+          "benchmark_name": "HotpotQA",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 4
+        },
+        {
+          "benchmark_id": "humaneval",
+          "role": "primary",
+          "evidence_section": "Programming",
+          "benchmark_name": "HumanEval",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 2
+        },
+        {
+          "benchmark_id": "mbpp",
+          "role": "secondary",
+          "evidence_section": "Programming",
+          "benchmark_name": "MBPP",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 5
+        },
+        {
+          "benchmark_name": "LeetcodeHardGym",
+          "role": "unmodeled",
+          "evidence_section": "Programming",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        },
+        {
+          "benchmark_name": "MultiPL-E language ports",
+          "role": "unmodeled",
+          "evidence_section": "Programming",
+          "selected_by_autobench": false,
+          "rank_in_autobench": null
+        }
+      ],
+      "primary_gold": [
+        "alfworld",
+        "hotpotqa",
+        "humaneval"
+      ],
+      "secondary_gold": [
+        "mbpp"
+      ],
+      "unmodeled_gold": [
+        "LeetcodeHardGym",
+        "MultiPL-E language ports"
+      ],
+      "top_6": [
+        "scienceworld",
+        "humaneval",
+        "toolbench",
+        "hotpotqa",
+        "mbpp",
+        "alfworld"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 1,
+          "selected": true,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 2,
+          "selected": true,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 3,
+          "selected": true,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "selected": true,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 5,
+          "selected": false,
+          "paper_role": "secondary"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "rank": 6,
+          "selected": false,
+          "paper_role": "primary"
+        }
+      ],
+      "selected": [
+        "scienceworld",
+        "humaneval",
+        "toolbench",
+        "hotpotqa"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "scienceworld",
+          "benchmark_name": "ScienceWorld",
+          "rank": 1,
+          "score": 0.836667,
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2203.07540"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 2,
+          "score": 0.793333,
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        },
+        {
+          "benchmark_id": "toolbench",
+          "benchmark_name": "ToolBench",
+          "rank": 3,
+          "score": 0.751667,
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2307.16789"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 4,
+          "score": 0.646667,
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/1809.09600"
+        }
+      ],
+      "comparison": {
+        "selected_primary_matches": [
+          "humaneval",
+          "hotpotqa"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [
+          "alfworld"
+        ],
+        "secondary_missing_from_selected": [
+          "mbpp"
+        ],
+        "selected_not_used_in_paper": [
+          "scienceworld",
+          "toolbench"
+        ],
+        "top_6_primary_matches": [
+          "humaneval",
+          "hotpotqa",
+          "alfworld"
+        ],
+        "top_6_secondary_matches": [
+          "mbpp"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.5
+      },
+      "primary_recall_at_1": 0.0,
+      "primary_recall_at_3": 0.3333333333333333,
+      "primary_recall_at_5": 0.6666666666666666,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 0.5,
+      "selected_primary_recall": 0.6666666666666666,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "case_id": "case_003",
+      "source_arxiv_id": "2405.15793",
+      "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "source_url": "https://arxiv.org/abs/2405.15793",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "The Agent-Computer Interface",
+          "SWE-agent: Designing an ACI for Software Engineering"
+        ]
+      },
+      "matcher_visible_input": "assets/input/blind_cases/case_003.json",
+      "gold_evidence_sections": [
+        "Experimental Setup"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "swe_bench",
+          "role": "primary",
+          "evidence_section": "Experimental Setup",
+          "benchmark_name": "SWE-bench",
+          "selected_by_autobench": true,
+          "rank_in_autobench": 1
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "role": "secondary",
+          "evidence_section": "Experimental Setup",
+          "benchmark_name": "HumanEvalFix",
+          "selected_by_autobench": false,
+          "rank_in_autobench": 4
+        }
+      ],
+      "primary_gold": [
+        "swe_bench"
+      ],
+      "secondary_gold": [
+        "humanevalfix"
+      ],
+      "unmodeled_gold": [],
+      "top_6": [
+        "swe_bench",
+        "humaneval",
+        "mbpp",
+        "humanevalfix",
+        "gaia",
+        "hotpotqa"
+      ],
+      "top_6_details": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "selected": true,
+          "paper_role": "primary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 2,
+          "selected": true,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "rank": 3,
+          "selected": false,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "rank": 4,
+          "selected": false,
+          "paper_role": "secondary"
+        },
+        {
+          "benchmark_id": "gaia",
+          "benchmark_name": "GAIA",
+          "rank": 5,
+          "selected": false,
+          "paper_role": "not_used_in_paper"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "rank": 6,
+          "selected": false,
+          "paper_role": "not_used_in_paper"
+        }
+      ],
+      "selected": [
+        "swe_bench",
+        "humaneval"
+      ],
+      "selected_recommendations": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "rank": 1,
+          "score": 0.623333,
+          "paper_role": "primary",
+          "source_url": "https://arxiv.org/abs/2310.06770"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "rank": 2,
+          "score": 0.593333,
+          "paper_role": "not_used_in_paper",
+          "source_url": "https://arxiv.org/abs/2107.03374"
+        }
+      ],
+      "comparison": {
+        "selected_primary_matches": [
+          "swe_bench"
+        ],
+        "selected_secondary_matches": [],
+        "primary_missing_from_selected": [],
+        "secondary_missing_from_selected": [
+          "humanevalfix"
+        ],
+        "selected_not_used_in_paper": [
+          "humaneval"
+        ],
+        "top_6_primary_matches": [
+          "swe_bench"
+        ],
+        "top_6_secondary_matches": [
+          "humanevalfix"
+        ],
+        "top_6_primary_missing": [],
+        "selected_actual_precision": 0.5
+      },
+      "primary_recall_at_1": 1.0,
+      "primary_recall_at_3": 1.0,
+      "primary_recall_at_5": 1.0,
+      "primary_recall_at_6": 1.0,
+      "secondary_recall_at_6": 1.0,
+      "primary_mrr": 1.0,
+      "selected_primary_recall": 1.0,
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "leakage_passed": true,
+      "matcher_loaded_hidden_labels": false,
+      "status": "HUMAN_REVIEW_REQUIRED"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "workflow_demo_base_adaptation",
+  "introduction": "We study an agent that follows a laboratory protocol in an interactive simulator, observes assay outcomes, and revises the procedure.",
+  "method": "The method decomposes a wet-lab objective into reagent preparation, instrument operation, measurement, and verification subgoals. It executes action-observation trajectories with long-horizon planning.",
+  "constraints": {
+    "evaluation_budget": "small pilot",
+    "interactive_execution": true
+  }
+}

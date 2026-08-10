@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "case_id": "workflow_demo_base_adaptation",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "scientific_experiment_planning",
+      "sequential_decision_making"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [],
+    "modalities": [
+      "text"
+    ],
+    "interactions": [
+      "interactive_environment"
+    ],
+    "output_types": [
+      "action_trajectory"
+    ],
+    "environments": [],
+    "capabilities": [
+      "long_horizon_planning",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "task_success_rate",
+      "trajectory_efficiency"
+    ],
+    "evidence_terms": {
+      "capability:long_horizon_planning": [
+        "long horizon",
+        "subgoal",
+        "plan"
+      ],
+      "capability:tool_use": [
+        "action"
+      ],
+      "task:scientific_experiment_planning": [
+        "laboratory protocol",
+        "wet lab",
+        "reagent",
+        "assay"
+      ],
+      "task:sequential_decision_making": [
+        "long horizon",
+        "action-observation"
+      ]
+    },
+    "declared_evaluation_breadth": 0
+  },
+  "selected_benchmarks": [
+    "alfworld"
+  ],
+  "top_6": [
+    "alfworld",
+    "scienceworld",
+    "webarena",
+    "webshop",
+    "toolbench",
+    "mind2web"
+  ],
+  "route": "base_benchmark_adaptation",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

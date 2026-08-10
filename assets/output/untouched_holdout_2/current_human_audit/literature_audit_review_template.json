@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "audit_id": "auto_bench_current_holdout_002_literature_audit_round_2_holdout_002",
+  "iteration": 2,
+  "scope_snapshot": [
+    {
+      "case_id": "holdout_002",
+      "selected_benchmark_ids": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq",
+        "tabmwp"
+      ],
+      "top_6_benchmark_ids": [
+        "triviaqa",
+        "realtoxicityprompts",
+        "gsm8k",
+        "hotpotqa",
+        "svamp",
+        "ambignq"
+      ],
+      "route": "direct_portfolio"
+    }
+  ],
+  "reviewer_id": "yzb",
+  "reviews": [
+    {
+      "case_id": "holdout_002",
+      "source_verified": true,
+      "actual_benchmarks_verified": true,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    }
+  ]
+}

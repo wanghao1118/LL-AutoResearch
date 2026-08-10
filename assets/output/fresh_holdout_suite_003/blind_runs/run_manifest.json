@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "runner": "gold_free_temporary_sandbox",
+  "online_search": false,
+  "cases": [
+    {
+      "case_id": "fresh3_001",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "autobench",
+        "match",
+        "--input",
+        "input.json",
+        "--catalog",
+        "catalog.json",
+        "--output",
+        "output"
+      ],
+      "worker_exit_status": 0,
+      "worker_stdout": "{\"json\": \"output/benchmark_plan.json\", \"markdown\": \"output/benchmark_plan.md\", \"review_packet\": \"output/human_review_packet.csv\"}",
+      "worker_stderr": "",
+      "sandbox_inventory": [
+        "autobench/",
+        "catalog.json",
+        "input.json",
+        "home/",
+        "output/"
+      ],
+      "hidden_labels_present_in_sandbox": false,
+      "output_dir": "assets/output/fresh_holdout_suite_003/blind_runs/fresh3_001"
+    },
+    {
+      "case_id": "fresh3_002",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "autobench",
+        "match",
+        "--input",
+        "input.json",
+        "--catalog",
+        "catalog.json",
+        "--output",
+        "output"
+      ],
+      "worker_exit_status": 0,
+      "worker_stdout": "{\"json\": \"output/benchmark_plan.json\", \"markdown\": \"output/benchmark_plan.md\", \"review_packet\": \"output/human_review_packet.csv\"}",
+      "worker_stderr": "",
+      "sandbox_inventory": [
+        "autobench/",
+        "catalog.json",
+        "input.json",
+        "home/",
+        "output/"
+      ],
+      "hidden_labels_present_in_sandbox": false,
+      "output_dir": "assets/output/fresh_holdout_suite_003/blind_runs/fresh3_002"
+    },
+    {
+      "case_id": "fresh3_003",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "autobench",
+        "match",
+        "--input",
+        "input.json",
+        "--catalog",
+        "catalog.json",
+        "--output",
+        "output"
+      ],
+      "worker_exit_status": 0,
+      "worker_stdout": "{\"json\": \"output/benchmark_plan.json\", \"markdown\": \"output/benchmark_plan.md\", \"review_packet\": \"output/human_review_packet.csv\"}",
+      "worker_stderr": "",
+      "sandbox_inventory": [
+        "autobench/",
+        "catalog.json",
+        "input.json",
+        "home/",
+        "output/"
+      ],
+      "hidden_labels_present_in_sandbox": false,
+      "output_dir": "assets/output/fresh_holdout_suite_003/blind_runs/fresh3_003"
+    },
+    {
+      "case_id": "fresh3_004",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "autobench",
+        "match",
+        "--input",
+        "input.json",
+        "--catalog",
+        "catalog.json",
+        "--output",
+        "output"
+      ],
+      "worker_exit_status": 0,
+      "worker_stdout": "{\"json\": \"output/benchmark_plan.json\", \"markdown\": \"output/benchmark_plan.md\", \"review_packet\": \"output/human_review_packet.csv\"}",
+      "worker_stderr": "",
+      "sandbox_inventory": [
+        "autobench/",
+        "catalog.json",
+        "input.json",
+        "home/",
+        "output/"
+      ],
+      "hidden_labels_present_in_sandbox": false,
+      "output_dir": "assets/output/fresh_holdout_suite_003/blind_runs/fresh3_004"
+    },
+    {
+      "case_id": "fresh3_005",
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "-m",
+        "autobench",
+        "match",
+        "--input",
+        "input.json",
+        "--catalog",
+        "catalog.json",
+        "--output",
+        "output"
+      ],
+      "worker_exit_status": 0,
+      "worker_stdout": "{\"json\": \"output/benchmark_plan.json\", \"markdown\": \"output/benchmark_plan.md\", \"review_packet\": \"output/human_review_packet.csv\"}",
+      "worker_stderr": "",
+      "sandbox_inventory": [
+        "autobench/",
+        "catalog.json",
+        "input.json",
+        "home/",
+        "output/"
+      ],
+      "hidden_labels_present_in_sandbox": false,
+      "output_dir": "assets/output/fresh_holdout_suite_003/blind_runs/fresh3_005"
+    }
+  ]
+}

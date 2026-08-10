@@ -1,0 +1,249 @@
+{
+  "schema_version": "1.0",
+  "reviewer": "AUTO_LITERATURE_EVALUATOR",
+  "validation_mode": "post_match_source_comparison",
+  "human_submission_required": false,
+  "evidence_class": "feedback_regression",
+  "status": "AUTOMATED_LITERATURE_AUDIT_PARTIAL",
+  "case_count": 3,
+  "decision_counts": {
+    "MATCH": 1,
+    "PARTIAL": 2,
+    "MISMATCH": 0
+  },
+  "all_source_evidence_complete": true,
+  "all_blind_checks_passed": true,
+  "aggregate": {
+    "case_count": 3,
+    "mean_primary_recall_at_5": 0.9166666666666666,
+    "mean_primary_recall_at_6": 1.0,
+    "mean_primary_mrr": 0.8333333333333334,
+    "mean_selected_modeled_recall": 1.0,
+    "mean_selected_actual_precision": 0.7222222222222222,
+    "route_accuracy": 1.0,
+    "all_leakage_checks_passed": true,
+    "any_matcher_loaded_hidden_labels": false
+  },
+  "cases": [
+    {
+      "case_id": "case_001",
+      "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "source_url": "https://arxiv.org/abs/2210.03629",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "ReAct: Synergizing Reasoning + Acting"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Knowledge-Intensive Reasoning Tasks",
+        "Decision Making Tasks"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [
+        "webarena",
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "triviaqa",
+        "webshop"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "fever",
+          "benchmark_name": "FEVER",
+          "evidence_section": "Knowledge-Intensive Reasoning Tasks",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "evidence_section": "Decision Making Tasks",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "webshop",
+          "benchmark_name": "WebShop",
+          "evidence_section": "Decision Making Tasks",
+          "role": "primary"
+        }
+      ],
+      "selected_matches": [
+        "alfworld",
+        "fever",
+        "hotpotqa",
+        "webshop"
+      ],
+      "missing": [],
+      "extras": [
+        "webarena",
+        "triviaqa"
+      ],
+      "unmodeled": [],
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.6666666666666666,
+      "error_types": [
+        "PORTFOLIO_PRECISION_GAP"
+      ],
+      "optimization_feedback": [
+        "tighten specialization and environment gates for paper-external selections"
+      ]
+    },
+    {
+      "case_id": "case_002",
+      "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2303.11366",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "Reflexion: reinforcement via verbal reflection"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Sequential decision making: ALFWorld",
+        "Reasoning: HotpotQA",
+        "Programming"
+      ],
+      "source_evidence_complete": true,
+      "decision": "MATCH",
+      "selected": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "multipl_e",
+        "humaneval",
+        "mbpp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "alfworld",
+          "benchmark_name": "ALFWorld",
+          "evidence_section": "Sequential decision making: ALFWorld",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "hotpotqa",
+          "benchmark_name": "HotpotQA",
+          "evidence_section": "Reasoning: HotpotQA",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "humaneval",
+          "benchmark_name": "HumanEval",
+          "evidence_section": "Programming",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "mbpp",
+          "benchmark_name": "MBPP",
+          "evidence_section": "Programming",
+          "role": "secondary"
+        },
+        {
+          "benchmark_id": "leetcodehardgym",
+          "benchmark_name": "LeetcodeHardGym",
+          "evidence_section": "Programming",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "multipl_e",
+          "benchmark_name": "MultiPL-E",
+          "evidence_section": "Programming",
+          "role": "secondary"
+        }
+      ],
+      "selected_matches": [
+        "leetcodehardgym",
+        "alfworld",
+        "hotpotqa",
+        "humaneval",
+        "multipl_e",
+        "mbpp"
+      ],
+      "missing": [],
+      "extras": [],
+      "unmodeled": [],
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 1.0,
+      "error_types": [],
+      "optimization_feedback": []
+    },
+    {
+      "case_id": "case_003",
+      "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "source_url": "https://arxiv.org/abs/2405.15793",
+      "source_input_sections": {
+        "introduction": [
+          "Introduction"
+        ],
+        "method": [
+          "The Agent-Computer Interface",
+          "SWE-agent: Designing an ACI for Software Engineering"
+        ]
+      },
+      "gold_evidence_sections": [
+        "Experimental Setup"
+      ],
+      "source_evidence_complete": true,
+      "decision": "PARTIAL",
+      "selected": [
+        "swe_bench",
+        "humanevalfix",
+        "humaneval",
+        "mbpp"
+      ],
+      "actual_benchmarks": [
+        {
+          "benchmark_id": "swe_bench",
+          "benchmark_name": "SWE-bench",
+          "evidence_section": "Experimental Setup",
+          "role": "primary"
+        },
+        {
+          "benchmark_id": "humanevalfix",
+          "benchmark_name": "HumanEvalFix",
+          "evidence_section": "Experimental Setup",
+          "role": "secondary"
+        }
+      ],
+      "selected_matches": [
+        "swe_bench",
+        "humanevalfix"
+      ],
+      "missing": [],
+      "extras": [
+        "humaneval",
+        "mbpp"
+      ],
+      "unmodeled": [],
+      "route": "direct_portfolio",
+      "expected_route": "direct_portfolio",
+      "route_correct": true,
+      "selected_modeled_recall": 1.0,
+      "selected_actual_precision": 0.5,
+      "error_types": [
+        "PORTFOLIO_PRECISION_GAP"
+      ],
+      "optimization_feedback": [
+        "tighten specialization and environment gates for paper-external selections"
+      ]
+    }
+  ]
+}

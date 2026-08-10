@@ -1,201 +1,135 @@
-# AutoResearch
+# Auto-Bench Skill
 
-AutoResearch is an evidence-grounded research workflow engine. The first MVP focuses only on
-Auto Search:
+这是一个 **Codex Skill**，不是需要部署的独立系统或服务。
 
-```text
-research topic -> papers -> paper cards -> field map -> gap evidence report
-```
+Auto-Bench 根据论文的 **Introduction + Method** 或用户提出的新 Method，自动完成：
 
-It is intentionally not a paper-writing machine. The goal is to produce a research map that can
-support group discussion and later method/benchmark design.
+1. 提取任务、模态、交互、输出、环境和能力需求；
+2. 推荐覆盖不同评测构造的 benchmark portfolio，而不是只给一个 benchmark；
+3. 设计指标、baseline 和执行要求；
+4. 判断应该直接复用、基于基础 benchmark 改造，还是新建 benchmark；
+5. 对已有论文，在盲匹配完成后自动核对论文采用的 benchmark；
+6. 输出 Match、Partial、Mismatch 和下一轮优化信号，不要求用户填写人工评测文件。
 
-## Quick Start
+## Skill 位置
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-
-autoresearch search "medical VLM temporal lesion change analysis" --limit 20 --full-text-limit 6
-```
-
-AutoResearch can run with an explicit domain profile:
-
-```bash
-autoresearch search "medical VLM temporal lesion change analysis" --profile medical-vlm
-autoresearch search "GUI agent benchmark real-world workflow" --profile gui-agent
-```
-
-To generate a profile from a topic before running search:
-
-```bash
-autoresearch profile "GUI agent benchmark real-world workflow"
-```
-
-To regenerate the UI from an existing run:
-
-```bash
-autoresearch dashboard outputs/medical-vlm-temporal-lesion-change-analysis
-```
-
-To regenerate the Chinese synthesis and UI from an existing run:
-
-```bash
-autoresearch synthesize outputs/gui-agent-benchmark-real-world-workflow
-```
-
-To serve generated dashboards through a small read-only web server:
-
-```bash
-AUTORESEARCH_PORT=8766 autoresearch-server
-```
-
-Open `http://127.0.0.1:8766/`. Deployment notes for ECS / Nginx are in
-`docs/DEPLOY.md`.
-
-To let Codex act as the manual LLM reviewer for MOC, Gap, and opportunities:
-
-```bash
-autoresearch codex-packet outputs/gui-agent-benchmark-real-world-workflow
-# Ask Codex to read codex_review_packet.json and write codex_review_result.json.
-autoresearch codex-apply \
-  outputs/gui-agent-benchmark-real-world-workflow \
-  outputs/gui-agent-benchmark-real-world-workflow/codex_review_result.json
-```
-
-The detailed workflow is documented in `docs/CODEX_REVIEW_WORKFLOW.md`. Codex Review is the current
-main research-judgment path: automated code collects evidence, and Codex reviews/refines MOC, Gap,
-and research opportunities.
-
-The next search-quality plan is documented in `docs/PROFILE_AWARE_SOURCE_RANKER_PLAN.md`. It keeps
-steps small: first label core/adjacent/noise evidence, then connect the labels to ranking and UI.
-
-Optional Semantic Scholar API key:
-
-```bash
-export SEMANTIC_SCHOLAR_API_KEY="..."
-```
-
-Optional Unpaywall email for open-access PDF enrichment:
-
-```bash
-export UNPAYWALL_EMAIL="you@example.com"
-```
-
-Experimental API-based paper-card extraction:
-
-```bash
-export AUTORESEARCH_LLM_API_KEY="..."
-export AUTORESEARCH_LLM_MODEL="..."
-export AUTORESEARCH_LLM_BASE_URL="https://api.openai.com/v1"
-
-autoresearch search "medical VLM temporal lesion change analysis" --llm-card-limit 5
-```
-
-This is not the current main path. The main path is Codex Review through `codex-packet` and
-`codex-apply`.
-
-Outputs are written to:
+仓库源文件：
 
 ```text
-outputs/<topic-slug>/
-  dashboard.html
-  domain_profile.json
-  raw/
-  source_coverage.md
-  search_result.json
-  synthesis.json
-  analysis_report.md
-  codex_review_packet.md
-  codex_review_packet.json
-  codex_review_result.template.json
-  paper_cards.json
-  paper_insights.json
-  influences.json
-  open_access.json
-  llm_extractions.json
-  field_map.json
-  topic_moc.json
-  topic_moc.md
-  comparison_matrix.json
-  comparison_matrix.md
-  gaps.json
-  gap_evidence_chains.md
-  research_opportunities.json
-  research_opportunities.md
-  report.md
-  weakness_report.md
+skills/auto-bench/
+├── SKILL.md
+├── agents/openai.yaml
+├── assets/benchmark_catalog.json
+├── references/
+│   ├── input-schema.md
+│   ├── output-contract.md
+│   └── paper-evidence-schema.md
+└── scripts/
+    ├── run_auto_bench.py
+    ├── review_plan.py
+    └── autobench/
 ```
 
-## Current MVP
+本机安装位置：
 
-- Query planning from a high-level research direction.
-- Domain Profile v1: `auto`, `medical-vlm`, `gui-agent`, `llm-agent`, or a custom JSON profile can
-  define core concepts, query terms, capability dimensions, benchmark keywords, metric keywords, and
-  gap lenses before search starts.
-- Multi-source paper collection from arXiv, OpenAlex, PubMed, Europe PMC, CrossRef, and OpenReview.
-- Failure-tolerant source execution with warnings.
-- DOI / PMID / arXiv / OpenAlex / fuzzy-title deduplication.
-- Explainable ranking using lexical relevance, recency, citation count, source reliability, and
-  research-signal keywords.
-- Optional PDF/HTML full-text fetching for top-ranked papers.
-- Section splitting for abstract, methods, experiments, results, limitations, and related sections.
-- Source stability guard: local arXiv cache, shorter arXiv timeout, and per-run source skipping after
-  repeated consecutive failures.
-- Semantic Scholar enrichment for citation counts, influential citation counts, references, fields
-  of study, venue, and open-access PDF links.
-- Unpaywall enrichment for DOI-based open-access landing pages and PDF links.
-- Paper card extraction from title, abstract, metadata, and section-aware full text when available.
-- Profile-grounded paper card coverage tags, including capability-specific tags such as
-  `capability:real-world-long-horizon-workflow` or
-  `capability:lesion-level-temporal-change-reasoning`.
-- Paper Card v2 fields with problem, method family, core assumption, evidence type, missing
-  capability, relation-to-topic, gap hint, per-field evidence snippets, extraction status, and
-  coverage tags.
-- Profile-aware non-medical paper-card heuristics so GUI/LLM agent runs do not reuse medical-only
-  task, gap-hint, method-family, dataset, metric, or localization templates.
-- Optional LLM-backed Paper Card refinement through an OpenAI-compatible chat-completions endpoint.
-  It is disabled by default and only updates fields that cite existing evidence snippet IDs.
-- Paper Insight Cards that capture problem, method core, evidence, assumption, limitation,
-  cross-paper relation, inspiration, and experimentable gap.
-- Topic MOC v2 generation for core concepts, paper groups, problem spaces, shared assumptions,
-  method families, datasets/benchmarks, covered capabilities, missing capabilities, open questions,
-  and possible experiments.
-- Cross-paper comparison matrix across paper groups: problem space, method family, temporal input,
-  lesion localization, change evaluation, location consistency, benchmark/metric coverage, and gap
-  hints.
-- Lightweight field mapping by task, method, dataset, metric, and model type.
-- Evidence-grounded gap finding with source URLs, snippets, section labels, support/counter counts,
-  and confidence score reasons.
-- Profile-grounded Gap Finder that can generate coverage, benchmark, and metric gaps for the
-  selected domain instead of only using the medical VLM demo rules.
-- Gap Evidence Chain v2 paper-level judgments: each paper is marked as support, counter, or unclear
-  for each gap, with missing evidence and influence signals.
-- Gap evidence chain Markdown export plus evidence-backed research opportunity generation.
-- Chinese synthesis layer that lets Codex stand in for the later LLM step by summarizing Domain
-  Profile, source quality, MOC takeaways, Gap evidence chains, limitations, and next actions into
-  `analysis_report.md` and `synthesis.json`.
-- Codex-in-the-loop review mode: `codex-packet` exports evidence for manual Codex review, and
-  `codex-apply` imports Codex's structured JSON judgment back into MOC, Gap evidence chains,
-  research opportunities, synthesis, reports, and the dashboard.
-- Dashboard clearly marks whether current research judgments are `Rule-generated` or
-  `Codex-reviewed`.
-- Weakness report optimized for research discussion: how each weakness emerges, evidence chain,
-  counter evidence, why still open, experimentable idea, and verification plan.
-- Static local dashboard UI for source health, paper cards, MOC problem spaces, gap evidence chains,
-  research opportunities, and synthesis.
-- Dashboard UI labels and rule-generated research signals are localized in Chinese while preserving
-  original paper titles and evidence snippets.
-- Dashboard top actions switch between Chinese in-page tabs instead of jumping to Markdown exports.
-- Dashboard shows the active Domain Profile, core concepts, capability dimensions, benchmark/metric
-  keywords, and gap lenses.
-- Paper cards, MOC problem spaces, Gap evidence chains, and research opportunities are expandable
-  detail panels, with an LLM extraction summary shown at the top of the page.
-- Source coverage report and readiness gate for validating search breadth before interpreting
-  preliminary weaknesses.
-- Markdown and JSON artifact export.
+```text
+${CODEX_HOME:-$HOME/.codex}/skills/auto-bench
+```
 
-## Design Principle
+## 触发方式
 
-Every gap should be traceable to evidence. If evidence is weak, AutoResearch should say so.
+可以直接说：
+
+- `用 $auto-bench 根据这篇论文的 Introduction 和 Method 推荐 benchmark。`
+- `用 $auto-bench 给我的新 Method 设计 benchmark、指标和 baseline。`
+- `用 $auto-bench 核对你推荐的 benchmark 与论文实际使用的是否一致。`
+- `这项创新没有现成 benchmark，帮我设计 base adaptation 或新 benchmark。`
+
+Skill 也支持隐式触发，例如“根据论文 Method 找 benchmark”“自动设计评测集”“给研究创新设计 benchmark”。
+
+## Skill 工作流
+
+```mermaid
+flowchart LR
+  A["Introduction + Method"] --> B["Auto-Bench Skill"]
+  B --> C["Evaluation Profile"]
+  C --> D["Benchmark Portfolio"]
+  D --> E{"Route"}
+  E -->|完整覆盖| F["Direct Reuse"]
+  E -->|部分覆盖| G["Base Adaptation"]
+  E -->|无覆盖| H["New Benchmark"]
+  F --> I["Automatic Paper Check"]
+  G --> I
+  H --> I
+  I --> J["Typed Optimization Feedback"]
+```
+
+对已有论文，Skill 先只使用 Introduction/Method 生成并保存 plan，再读取 Experiment/Evaluation 中的 benchmark 证据进行自动核对。对用户的新 Method，没有来源论文 gold 时，自动核对状态为 `NOT_APPLICABLE`，但仍输出完整 benchmark 设计方案。
+
+## 可移植脚本
+
+### 生成 benchmark 计划
+
+```bash
+SKILL_ROOT="${CODEX_HOME:-$HOME/.codex}/skills/auto-bench"
+python3 "$SKILL_ROOT/scripts/run_auto_bench.py" match \
+  --input /PATH/method_input.json \
+  --output /PATH/auto_bench_plan
+```
+
+### 执行 adaptation 或 synthesis
+
+```bash
+python3 "$SKILL_ROOT/scripts/run_auto_bench.py" run \
+  --input /PATH/method_input.json \
+  --output /PATH/auto_bench_run \
+  --base-records /PATH/train_or_development_records.jsonl \
+  --source-benchmark BASE_BENCHMARK \
+  --source-split train \
+  --transformation interaction_wrapper
+```
+
+### 自动与论文核对
+
+```bash
+python3 "$SKILL_ROOT/scripts/review_plan.py" \
+  --plan /PATH/auto_bench_plan/benchmark_plan.json \
+  --paper-evidence /PATH/paper_evidence.json \
+  --output-json /PATH/automatic_literature_review.json \
+  --output-markdown /PATH/automatic_literature_review.md \
+  --evidence-class fresh_holdout
+```
+
+输入与证据 schema 位于 Skill 的 `references/`。
+
+## 安装
+
+```bash
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+cp -R skills/auto-bench "${CODEX_HOME:-$HOME/.codex}/skills/auto-bench"
+```
+
+安装后重开一个 Codex task，即可通过 `$auto-bench` 调用。
+
+## 验证
+
+```bash
+python3 "$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py" skills/auto-bench
+python3 skills/auto-bench/scripts/run_auto_bench.py --help
+python3 skills/auto-bench/scripts/review_plan.py --help
+```
+
+当前验证结果：
+
+- 官方 Skill validator：通过；
+- 路径隐私检查：通过；
+- 仓库源与安装副本：一致；
+- 临时目录独立运行：通过；
+- `match`、`run`、三种 synthesis verification、自动论文核对：通过；
+- Skill 文件数：21；
+- benchmark catalog：26 条记录；
+- 用户人工评测：不需要。
+
+## 仓库其他目录
+
+根目录的 `autobench/`、`assets/` 和旧 `step*.py` 是开发 Auto-Bench Skill 时使用的实验原型、盲测集和回归证据。真正需要安装和发布的产品是 `skills/auto-bench/`。

@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "fresh_holdout_suite_003",
+  "case_ids": [
+    "fresh3_001",
+    "fresh3_002",
+    "fresh3_003",
+    "fresh3_004",
+    "fresh3_005"
+  ],
+  "fixture_frozen_before_first_matching": true,
+  "gold_directory_exists": false,
+  "gold_directory_passed_to_matcher": false,
+  "matcher_change_after_suite_freeze": false,
+  "visible_fields": [
+    "case_id",
+    "introduction",
+    "method",
+    "constraints"
+  ],
+  "experiment_content_inspected": false,
+  "experiment_headings_enumerated_after_selection": true,
+  "cases": [
+    {
+      "case_id": "fresh3_001",
+      "visible_chars": 11727,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2302.04761/main.tex",
+        "assets/input/source_papers/extracted/2302.04761/main.tex"
+      ]
+    },
+    {
+      "case_id": "fresh3_002",
+      "visible_chars": 9080,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2209.11302/main.tex",
+        "assets/input/source_papers/extracted/2209.11302/main.tex"
+      ]
+    },
+    {
+      "case_id": "fresh3_003",
+      "visible_chars": 5669,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex",
+        "assets/input/source_papers/extracted/2211.11559/PaperForReview.tex"
+      ]
+    },
+    {
+      "case_id": "fresh3_004",
+      "visible_chars": 8352,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2211.12588/sections/introduction.tex",
+        "assets/input/source_papers/extracted/2211.12588/sections/model.tex"
+      ]
+    },
+    {
+      "case_id": "fresh3_005",
+      "visible_chars": 11073,
+      "leakage_passed": true,
+      "source_files": [
+        "assets/input/source_papers/extracted/2305.10601/main.tex",
+        "assets/input/source_papers/extracted/2305.10601/main.tex"
+      ]
+    }
+  ]
+}

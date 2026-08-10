@@ -1,0 +1,67 @@
+{
+  "case_id": "fresh_005",
+  "source_arxiv_id": "2304.09842",
+  "source_title": "Chameleon: Plug-and-Play Compositional Reasoning with Large Language Models",
+  "source_url": "https://arxiv.org/abs/2304.09842",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "General Framework",
+      "Module Inventory",
+      "Applications"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "tabmwp"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [
+    "ScienceQA"
+  ],
+  "expected_route": "base_benchmark_adaptation",
+  "gold_evidence_sections": [
+    "Applications of Chameleon",
+    "Science Question Answering",
+    "Tabular Mathematical Reasoning",
+    "Experiments"
+  ],
+  "benchmark_evidence": [
+    {
+      "role": "unmodeled",
+      "evidence_section": "Applications / Science Question Answering",
+      "benchmark_name": "ScienceQA",
+      "task_family": "multimodal_science_qa"
+    },
+    {
+      "role": "primary",
+      "evidence_section": "Applications / Tabular Mathematical Reasoning",
+      "benchmark_id": "tabmwp",
+      "task_family": "tabular_math_reasoning"
+    }
+  ],
+  "matcher_visible": false,
+  "gold_constructed_after_blind_run": true,
+  "pre_gold_run_record": "assets/output/fresh_holdout_suite/pre_gold_run_record.json",
+  "source_evidence_checks": [
+    {
+      "term": "two challenging tasks: ScienceQA",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.09842/body.tex"
+      ]
+    },
+    {
+      "term": "and TabMWP",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.09842/body.tex"
+      ]
+    },
+    {
+      "term": "\\section{Experiments}",
+      "source_files": [
+        "assets/input/source_papers/extracted/2304.09842/body.tex"
+      ]
+    }
+  ]
+}

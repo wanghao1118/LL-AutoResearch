@@ -1,0 +1,1199 @@
+{
+  "case_id": "case_003",
+  "status": "HUMAN_REVIEW_REQUIRED",
+  "visible_input": {
+    "introduction": "Introduction. Recent work has demonstrated the efficacy of LM agents for code generation with execution feedback . However, applying agents to more complex code tasks like software engineering remains unexplored. To solve programming tasks, LM agents are typically designed to use existing applications, such as the Linux shell or Python interpreter . However, to perform more complex programming tasks such as software engineering , human engineers benefit from sophisticated applications like VSCode with powerful tools and extensions. Inspired by human-computer interaction (HCI) studies on the efficacy of user interfaces for humans , we investigate whether LM agents could similarly benefit from better-designed interfaces for performing software engineering tasks. [ht] figures/swe_agent_overview.pdf METHOD_X is an LM interacting with a computer through an specialized computer interaction interface (INTERFACE_X), which includes the commands the agent uses and the format of the feedback from the computer. Consider the simple setting of an agent interacting directly with a Linux shell . In practice, we find that LM agents can struggle to reliably take actions in this environment. For example, it fails to provide simple commands to edit a small file segment, and does not provide any feedback if the user makes an invalid edit. These deficits substantially hamper performance, motivating the need for an specialized computer interaction interface (INTERFACE_X), i.e., an abstraction layer between the LM agent and computer, to enhance the LM agent's abilities in computer environments (Figure ). From this effort, we introduce METHOD_X, an agent composed of an LM and INTERFACE_X, that can interact with a computer to solve challenging real-world software engineering problems, such as those proposed in [REDACTED_BENCHMARK] . In contrast to the Linux Shell's granular, highly configurable action space, METHOD_X's INTERFACE_X instead offers a small set of simple actions for viewing, searching through and editing files. The INTERFACE_X uses guardrails to prevent common mistakes, and an agent receives specific, concise feedback about a command's effects at every turn. The results show that METHOD_X solves 10.7 percentage points more instances than the baseline agent, which uses only the default Linux shell. Although our INTERFACE_X was developed for GPT-4 Turbo, we show that it is portable to a different LM; METHOD_X with Claude 3 Opus can solve 10.5 of the benchmark tasks. Our contributions are twofold. First, we introduce the concept of the specialized computer interaction interface (INTERFACE_X) and demonstrate how careful INTERFACE_X design can substantially improve LM agent performance without modifying the underlying LM's weights. Second, we build, evaluate, and open-source METHOD_X, a system that provides LMs an INTERFACE_X for solving real-world software engineering tasks. Unlike prior works that independently explore the merits of tool use, prompting techniques, and code execution in interactive settings, our approach unifies these factors within the INTERFACE_X framework. We show that crafting LM-centric interactive components has meaningful effects on downstream task performance.",
+    "method": "The specialized computer interaction interface. An LM acts as an agent when it interacts with an environment by iteratively taking actions and receiving feedback . Typically, the environment has hard constraints, as in robotics, where agents control actuators in the physical world. On the other hand, digital environments can be molded by abstractions in the form of application programming interfaces and user interfaces for software and humans respectively. Naturally, existing interfaces have been designed with one of these users in mind. We argue that LM agents represent a new category of end user, with their own needs and abilities. We refer to the interface LM agents use to interact with computers as the specialized computer interaction interface (INTERFACE_X). Figure illustrates how ACIs provide LM agents with important functionality to interface with computers, similar to how code editors also help humans use computers more effectively. [ht] figures/INTERFACE_X-ui.pdf Specialized applications like IDEs (e.g., VSCode, PyCharm) make scientists and software engineers more efficient and effective at computer tasks. Similarly, INTERFACE_X design aims to create a suitable interface that makes LM agents more effective at digital work such as software engineering. Disparities in humans' and LMs' abilities and limitations motivates different interface design guidelines. For instance, the current generation of LMs lack the visual understanding abilities to directly operate GUI-based applications with rich visual components and signals. However, many of the features provided by these applications, such as syntax checking and navigation tools, could be useful to LM agents if they were presented in a suitable manner. Additionally, humans can flexibly ignore unnecessary information, whereas all content has a fixed cost in memory and computation for LMs and distracting context can harm performance . Therefore, LM agents may be more effective at interacting with computers when provided an interface that was built informed by these differences. Ultimately, a well-designed INTERFACE_X should help the LM agent understand the state of the application given previous changes, manage history to avoid unnecessary context from prior observations, and provide actions that models can use efficiently and reliably. The INTERFACE_X specifies both the commands available to the LM and how the environment state is communicated back to the LM. It also tracks the history of all previous commands and observations and, at each step, manages how these should be formatted and combined with high-level instructions into a single input for the LM. In this paper, we assume a fixed LM and focus on designing the INTERFACE_X to improve its performance. This means that we shape the actions, their documentation, and environment feedback to complement an LM's limitations and abilities. We draw inspiration from the field of HCI, where user studies elicit insights about how compatible different interfaces are with respect to human intuition and performance . We use two approaches to enhance performance on a development set: (1) manually inspect agent behavior to identify difficulties and propose improvements, and (2) run a grid search to select the best INTERFACE_X configuration. Taking these two actions resulted in several insights about design principles that seem especially important for building effective ACIs: [leftmargin=*] Actions should be simple and easy to understand for agents. Many bash commands have documentation that includes dozens of options. Simple commands with a few options and concise documentation are easier for agents to use, reducing the need for demonstrations or fine-tuning. This is a defining principle for all METHOD_X commands that we describe in Section . Actions should be compact and efficient. Important operations (e.g., file navigation, editing) should be consolidated into as few actions as possible. Efficient actions help agents make meaningful progress towards a goal in a single step. A poor design would therefore have many simple actions that must be composed across multiple turns for a higher order operation to take effect. We show this idea in action in the Editing and Search interface analyses in Section . Environment feedback should be informative but concise. High quality feedback should provide the agent with substantive information about the current environment state (and the effect of the agent's recent actions) without unnecessary details. For instance, when editing a file, updating the agent about revised content is helpful. Figures , and Table show this. Guardrails mitigate error propagation and hasten recovery. Like humans, LMs make mistakes when editing or searching and can struggle to recover from these errors. Building in guardrails, such as a code syntax checker that automatically detects mistakes, can help agents recognize and quickly correct errors. We show the effect of editing guardrails in Table . Analysis and ablation studies in Section demonstrate how alternative ACIs affect LM performance. Our studies shows how these principles appear recurrently across actions, feedback, and workflows. METHOD_X: Designing an INTERFACE_X for Software Engineering . Here we describe how METHOD_X provides an INTERFACE_X for LMs to act as software engineering agents, enabling them to effectively search, navigate, edit, and execute code commands. The INTERFACE_X comprises several principal components, including search/navigation, file viewer, file editor, and context management. At each step, METHOD_X generates a thought and a command, then incorporates the feedback from the command's execution in the environment (ReAct; ). Built atop the Linux shell, METHOD_X also allows access to common Linux commands and utilities when needed. Search and navigation. Navigating codebases requires finding the relevant file and content. A common strategy to do this involves looking up terms that might be useful, e.g., files, functions, or class definitions mentioned in an issue. We introduce the special commands find file, search file, and search dir, which output a summary of search results when searching for filenames and strings within files or directories. Figure shows examples of these search result formats. The find file command searches for filenames in the repository, while the search file and search dir locates strings in a file(s) of a subdirectory. Our interface encourages efficient searches by suppressing verbose results. The search commands return at most 50 results for each search query; if a search exceeds this number, we do not report the results and instead suggest that the agent write a more specific query. [t] 0.48 figures/file_viewer_example.pdf Observation from the file viewer. [t] 0.48 figures/file_editor_example.pdf Action using the edit interface. The file viewer and edit command are integrated. (a) The file viewer shows the agent the open file's content with line numbers. (b) The agent invokes the edit function to replace lines 404-407 in the open file. After the edit, the file viewer shows the agent the now updated version of the file. File viewer. After finding a file they want to view, agents use the interactive file viewer by calling the command open on the relevant file path. The file viewer presents a window of at most 100 lines of the file at a time. The agent can move this window with the commands scroll down and scroll up or access a specific line with the goto command. To facilitate in-file navigation and code localization, we display: the full path of the open file, the total number of lines in the file, the number of lines omitted before and after the current window, and the line number (prepended to each visible line). Figure shows an example of this interface. File editor. We provide a few commands that let LMs create and edit files. The edit command works in conjunction with the file viewer, allowing agents to replace a specific range of lines in the open file. This command takes 3 required arguments: the start line, end line, and replacement text. In a single step, agents can replace all lines between the start and end lines with the replacement text, as shown in Figure . After edits are applied, the file viewer automatically displays the updated content, helping the agent observe the effects of its edit immediately without invoking additional commands. Figure shows an example agent response, including a file edit. Similar to how humans can use tools like syntax highlighting to help them notice format errors when editing files in an IDE, we integrate a code linter into the edit function to alert the agent of mistakes it may have introduced when editing a file. Select errors from the linter are shown to the agent along with a snippet of the file contents before/after the error was introduced. Invalid edits are discarded, and the agent is asked to try editing the file again. Context management. The METHOD_X system uses informative prompts, error messages, and history processors to keep agent context concise and informative. Agents receive instructions, documentation, and demonstrations on the correct use of bash and INTERFACE_X commands. At each step, the system instructs them to generate both a thought and an action . Malformed generations trigger an error response, shown in Figure , asking the agent to try again, which is repeated until a valid generation is received. Once received, all past error messages except the first are omitted. The agent's environment responses display computer output using the template shown in Figure ; however, if no output is generated, a specific message (``Your command ran successfully and did not produce any output'') is included to enhance clarity. To further improve context relevance, observations preceding the last are each collapsed into a single line, shown in Figure . By removing most content from prior observations, we maintain essential information about the plan and action history while reducing unnecessary context, which allows for more interaction cycles and avoids showing outdated file information. provides further implementation details.",
+    "constraints": {
+      "input_scope": [
+        "introduction",
+        "method"
+      ],
+      "paper_identity_hidden": true,
+      "benchmark_names_redacted": true,
+      "experiment_sections_excluded": true
+    }
+  },
+  "profile": {
+    "task_families": [
+      "code_debugging",
+      "code_generation",
+      "code_issue_resolution"
+    ],
+    "uncovered_task_families": [],
+    "modalities": [
+      "code",
+      "text"
+    ],
+    "interactions": [
+      "retrieval_tool",
+      "shell"
+    ],
+    "output_types": [
+      "function_implementation",
+      "repaired_program",
+      "repository_patch"
+    ],
+    "environments": [
+      "code_executor",
+      "software_repository"
+    ],
+    "capabilities": [
+      "code_editing",
+      "external_information_retrieval",
+      "long_horizon_planning",
+      "repository_navigation",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "pass_at_1",
+      "test_pass_rate"
+    ],
+    "evidence_terms": {
+      "capability:code_editing": [
+        "editing files",
+        "edit function",
+        "file editor",
+        "code linter"
+      ],
+      "capability:external_information_retrieval": [
+        "search"
+      ],
+      "capability:long_horizon_planning": [
+        "plan"
+      ],
+      "capability:repository_navigation": [
+        "repository",
+        "codebase",
+        "file viewer"
+      ],
+      "capability:tool_use": [
+        "action",
+        "tool",
+        "shell",
+        "computer"
+      ],
+      "task:code_debugging": [
+        "code syntax checker",
+        "code linter",
+        "format errors",
+        "edit function"
+      ],
+      "task:code_generation": [
+        "programming",
+        "code generation"
+      ],
+      "task:code_issue_resolution": [
+        "software engineering problem",
+        "repository"
+      ]
+    }
+  },
+  "search_queries": [
+    "\"code debugging\" benchmark dataset evaluation code text",
+    "\"code generation\" benchmark dataset evaluation code text",
+    "\"code issue resolution\" benchmark dataset evaluation code text",
+    "\"code debugging\" agent benchmark retrieval_tool shell",
+    "\"code generation\" agent benchmark retrieval_tool shell",
+    "\"code issue resolution\" agent benchmark retrieval_tool shell",
+    "agent benchmark code editing external information retrieval long horizon planning"
+  ],
+  "search_hits": [],
+  "catalog_admission_proposals": [],
+  "ranked_candidates": [
+    {
+      "benchmark_id": "swe_bench",
+      "name": "SWE-bench",
+      "score": 0.853333,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 0.8,
+        "metric": 0.666667,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "code_debugging",
+          "code_issue_resolution"
+        ],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "shell"
+        ],
+        "output_types": [
+          "repository_patch"
+        ],
+        "environments": [
+          "code_executor",
+          "software_repository"
+        ],
+        "capabilities": [
+          "code_editing",
+          "long_horizon_planning",
+          "repository_navigation",
+          "tool_use"
+        ],
+        "metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2310.06770"
+      ],
+      "source_url": "https://arxiv.org/abs/2310.06770",
+      "metrics": [
+        "pass_at_1",
+        "test_pass_rate",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "issue_category_stratification",
+        "repository_holdout",
+        "test_patch_isolation",
+        "cost_logging"
+      ]
+    },
+    {
+      "benchmark_id": "humanevalfix",
+      "name": "HumanEvalFix",
+      "score": 0.76,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 0.5,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "code_debugging",
+          "code_generation"
+        ],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "repaired_program"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [
+          "code_editing"
+        ],
+        "metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2308.07124"
+      ],
+      "source_url": "https://arxiv.org/abs/2308.07124",
+      "metrics": [
+        "pass_at_1",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "bug_type_stratification",
+        "language_port",
+        "feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "humaneval",
+      "name": "HumanEval",
+      "score": 0.693333,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 0.0,
+        "metric": 0.666667,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "code_generation"
+        ],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "function_implementation"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [],
+        "metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2107.03374"
+      ],
+      "source_url": "https://arxiv.org/abs/2107.03374",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "language_port",
+        "iterative_feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "mbpp",
+      "name": "MBPP",
+      "score": 0.693333,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 0.0,
+        "metric": 0.666667,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "code_generation"
+        ],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "function_implementation"
+        ],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [],
+        "metrics": [
+          "pass_at_1",
+          "test_pass_rate"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2108.07732"
+      ],
+      "source_url": "https://arxiv.org/abs/2108.07732",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "difficulty_rebalancing",
+        "iterative_feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "hotpotqa",
+      "name": "HotpotQA",
+      "score": 0.266667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval",
+          "long_horizon_planning"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1809.09600"
+      ],
+      "source_url": "https://arxiv.org/abs/1809.09600",
+      "metrics": [
+        "exact_match",
+        "token_f1",
+        "evidence_score"
+      ],
+      "adaptation_hooks": [
+        "question_only_protocol",
+        "wikipedia_retrieval_wrapper",
+        "supporting_fact_audit"
+      ]
+    },
+    {
+      "benchmark_id": "toolbench",
+      "name": "ToolBench",
+      "score": 0.266667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2307.16789"
+      ],
+      "source_url": "https://arxiv.org/abs/2307.16789",
+      "metrics": [
+        "task_success_rate",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "api_domain_subset",
+        "tool_availability_snapshot",
+        "execution_verification"
+      ]
+    },
+    {
+      "benchmark_id": "gaia",
+      "name": "GAIA",
+      "score": 0.256667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.5,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [
+          "code_executor"
+        ],
+        "capabilities": [
+          "external_information_retrieval",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2311.12983"
+      ],
+      "source_url": "https://arxiv.org/abs/2311.12983",
+      "metrics": [
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "capability_level_split",
+        "tool_trace_logging",
+        "answer_normalization"
+      ]
+    },
+    {
+      "benchmark_id": "fever",
+      "name": "FEVER",
+      "score": 0.25,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.5,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "external_information_retrieval"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1803.05355"
+      ],
+      "source_url": "https://arxiv.org/abs/1803.05355",
+      "metrics": [
+        "label_accuracy",
+        "evidence_score"
+      ],
+      "adaptation_hooks": [
+        "claim_only_protocol",
+        "evidence_retrieval_wrapper",
+        "label_and_evidence_scoring"
+      ]
+    },
+    {
+      "benchmark_id": "agentbench",
+      "name": "AgentBench",
+      "score": 0.233333,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.666667,
+        "interaction": 0.333333,
+        "output": 0.0,
+        "environment": 0.333333,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "code",
+          "text"
+        ],
+        "interactions": [
+          "shell"
+        ],
+        "output_types": [],
+        "environments": [
+          "software_repository"
+        ],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2308.03688"
+      ],
+      "source_url": "https://arxiv.org/abs/2308.03688",
+      "metrics": [
+        "task_success_rate",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "environment_subset",
+        "per_environment_metrics",
+        "tool_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "alfworld",
+      "name": "ALFWorld",
+      "score": 0.186667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2010.03768"
+      ],
+      "source_url": "https://arxiv.org/abs/2010.03768",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "task_type_stratification",
+        "unseen_environment_split",
+        "action_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "scienceworld",
+      "name": "ScienceWorld",
+      "score": 0.186667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2203.07540"
+      ],
+      "source_url": "https://arxiv.org/abs/2203.07540",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "task_family_subset",
+        "difficulty_curriculum",
+        "action_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "mind2web",
+      "name": "Mind2Web",
+      "score": 0.16,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2306.06070"
+      ],
+      "source_url": "https://arxiv.org/abs/2306.06070",
+      "metrics": [
+        "element_accuracy",
+        "operation_f1",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "cross_domain_split",
+        "live_browser_replay",
+        "element_grounding_audit"
+      ]
+    },
+    {
+      "benchmark_id": "osworld",
+      "name": "OSWorld",
+      "score": 0.16,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2404.07972"
+      ],
+      "source_url": "https://arxiv.org/abs/2404.07972",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "application_subset",
+        "task_template_extension",
+        "environment_snapshot"
+      ]
+    },
+    {
+      "benchmark_id": "webarena",
+      "name": "WebArena",
+      "score": 0.16,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2307.13854"
+      ],
+      "source_url": "https://arxiv.org/abs/2307.13854",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "site_subset",
+        "task_template_extension",
+        "state_reset_audit"
+      ]
+    },
+    {
+      "benchmark_id": "visualwebarena",
+      "name": "VisualWebArena",
+      "score": 0.14,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.333333,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2401.13649"
+      ],
+      "source_url": "https://arxiv.org/abs/2401.13649",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "visual_dependency_stratification",
+        "site_subset",
+        "state_reset_audit"
+      ]
+    },
+    {
+      "benchmark_id": "webshop",
+      "name": "WebShop",
+      "score": 0.126667,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.666667,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2207.01206"
+      ],
+      "source_url": "https://arxiv.org/abs/2207.01206",
+      "metrics": [
+        "task_success_rate",
+        "attribute_score",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "instruction_constraint_expansion",
+        "website_action_wrapper",
+        "attribute_level_scoring"
+      ]
+    },
+    {
+      "benchmark_id": "mmlu",
+      "name": "MMLU",
+      "score": 0.12,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2009.03300"
+      ],
+      "source_url": "https://arxiv.org/abs/2009.03300",
+      "metrics": [
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "subject_subset",
+        "answer_order_randomization"
+      ]
+    },
+    {
+      "benchmark_id": "gsm8k",
+      "name": "GSM8K",
+      "score": 0.024,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "math-only benchmark outside inferred task families"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2110.14168"
+      ],
+      "source_url": "https://arxiv.org/abs/2110.14168",
+      "metrics": [
+        "exact_match",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "reasoning_trace_wrapper",
+        "difficulty_stratification"
+      ]
+    }
+  ],
+  "selected_benchmarks": [
+    "swe_bench",
+    "humanevalfix",
+    "humaneval"
+  ],
+  "portfolio_roles": {
+    "swe_bench": "core_task_coverage",
+    "humanevalfix": "core_task_coverage",
+    "humaneval": "supplementary_triangulation:code_generation"
+  },
+  "coverage_ratio": 1.0,
+  "route": "direct_portfolio",
+  "route_reason": "portfolio covers 100.0% of inferred task families; weakest selected compatibility is 0.693",
+  "metric_plan": [
+    {
+      "benchmark_id": "swe_bench",
+      "official_metrics": [
+        "pass_at_1",
+        "test_pass_rate",
+        "task_success_rate"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "humanevalfix",
+      "official_metrics": [
+        "pass_at_1",
+        "test_pass_rate"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "humaneval",
+      "official_metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    }
+  ],
+  "adaptation_plan": {
+    "base_benchmarks": [
+      "swe_bench",
+      "humanevalfix",
+      "humaneval"
+    ],
+    "retain": [
+      "official task semantics and unmodified test examples",
+      "official metric definitions reported separately",
+      "source IDs, split names, and license/access metadata"
+    ],
+    "add": [
+      "method-specific interaction wrapper without exposing test labels",
+      "capability-targeted challenge split for uncovered requirements",
+      "cost, latency, and failure-state logging when the method is interactive"
+    ],
+    "missing_task_families": [],
+    "adaptation_hooks": [
+      "bug_type_stratification",
+      "cost_logging",
+      "feedback_wrapper",
+      "hidden_unit_tests",
+      "issue_category_stratification",
+      "iterative_feedback_wrapper",
+      "language_port",
+      "repository_holdout",
+      "test_patch_isolation"
+    ],
+    "split_policy": {
+      "development": "derive transformations from train/development data only",
+      "validation": "freeze prompts and thresholds before hidden-test execution",
+      "test": "retain official test data; no synthesis seed may originate from test examples"
+    }
+  },
+  "synthesis_plan": {
+    "required": false,
+    "target_task_families": [],
+    "construct_definition": {
+      "status": "NOT_REQUIRED",
+      "task_families": [],
+      "uncovered_task_families": [],
+      "modalities": [
+        "code",
+        "text"
+      ],
+      "interactions": [
+        "retrieval_tool",
+        "shell"
+      ],
+      "output_types": [
+        "function_implementation",
+        "repaired_program",
+        "repository_patch"
+      ],
+      "capabilities": [
+        "code_editing",
+        "external_information_retrieval",
+        "long_horizon_planning",
+        "repository_navigation",
+        "tool_use"
+      ],
+      "candidate_metrics": [
+        "pass_at_1",
+        "test_pass_rate"
+      ],
+      "evidence_terms": {
+        "task:code_debugging": [
+          "code syntax checker",
+          "code linter",
+          "format errors",
+          "edit function"
+        ],
+        "task:code_generation": [
+          "programming",
+          "code generation"
+        ],
+        "task:code_issue_resolution": [
+          "software engineering problem",
+          "repository"
+        ]
+      }
+    },
+    "source_policy": "use only licensed train/development records from named base benchmarks",
+    "generation_modules": [
+      {
+        "name": "compositional_recombination",
+        "purpose": "combine independent train-split constraints while preserving executable gold checks"
+      },
+      {
+        "name": "counterfactual_perturbation",
+        "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+      },
+      {
+        "name": "interaction_wrapper",
+        "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+      }
+    ],
+    "record_schema": [
+      "synthetic_id",
+      "source_benchmark",
+      "source_split",
+      "source_record_ids",
+      "transformation",
+      "input",
+      "expected_output",
+      "deterministic_checks",
+      "human_review_status"
+    ],
+    "quality_gates": [
+      "exact and near-duplicate filtering against every split",
+      "deterministic execution or answer verification where available",
+      "stratified human review by task family and difficulty",
+      "pilot inter-rater agreement before scaling annotation",
+      "frozen test set before method tuning"
+    ],
+    "profile_snapshot": {
+      "task_families": [
+        "code_debugging",
+        "code_generation",
+        "code_issue_resolution"
+      ],
+      "uncovered_task_families": [],
+      "modalities": [
+        "code",
+        "text"
+      ],
+      "interactions": [
+        "retrieval_tool",
+        "shell"
+      ],
+      "output_types": [
+        "function_implementation",
+        "repaired_program",
+        "repository_patch"
+      ],
+      "capabilities": [
+        "code_editing",
+        "external_information_retrieval",
+        "long_horizon_planning",
+        "repository_navigation",
+        "tool_use"
+      ],
+      "suggested_metrics": [
+        "pass_at_1",
+        "test_pass_rate"
+      ]
+    },
+    "catalog_admission_proposals": []
+  },
+  "human_review": {
+    "status": "HUMAN_REVIEW_REQUIRED",
+    "validation_tracks": {
+      "literature_recovery": {
+        "timing": "post_match_only",
+        "input": "revealed source paper, actual benchmarks, Selected, and Top-6",
+        "decision_values": [
+          "MATCH",
+          "PARTIAL",
+          "MISMATCH"
+        ]
+      },
+      "new_method_suitability": {
+        "timing": "before_research_use",
+        "input": "method text, candidate evidence, metrics, adaptation, and synthesis plan",
+        "decision_values": [
+          "APPROVE",
+          "REJECT"
+        ]
+      }
+    },
+    "required_reviewer_slots": [
+      "REVIEWER_1",
+      "REVIEWER_2"
+    ],
+    "minimum_reviewers": 2,
+    "rubric_dimensions": [
+      "construct_alignment",
+      "task_representativeness",
+      "metric_validity",
+      "data_quality",
+      "leakage_control",
+      "execution_feasibility"
+    ],
+    "rubric_guidance": {
+      "construct_alignment": "Success measures the capability claimed by the method rather than a proxy.",
+      "task_representativeness": "Tasks cover the intended use, difficulty range, and important failure modes.",
+      "metric_validity": "Metrics are meaningful, reproducible, and separate official from adapted results.",
+      "data_quality": "Labels, splits, and any synthetic transformations have auditable quality.",
+      "leakage_control": "Hidden labels and test examples stay isolated from matching, synthesis, and tuning.",
+      "execution_feasibility": "The full protocol can run with the stated tools, data access, and compute."
+    },
+    "score_range": [
+      1,
+      5
+    ],
+    "acceptance_rules": {
+      "mean_score_at_least": 4.0,
+      "every_dimension_at_least": 3.0,
+      "provenance_confirmed_by_all": true,
+      "independence_attested_by_all": true,
+      "explicit_approval_by_all": true,
+      "nonempty_justification_by_all": true,
+      "maximum_pairwise_dimension_gap": 1.0
+    },
+    "reviews": []
+  },
+  "provenance": {
+    "input_fields": [
+      "introduction",
+      "method",
+      "constraints"
+    ],
+    "blind_gold_loaded": false,
+    "leakage_scan": {
+      "passed": true,
+      "benchmark_alias_hits": [],
+      "identity_hits": [],
+      "generic_evaluation_terms": [
+        "benchmark"
+      ]
+    },
+    "catalog": "catalog.json",
+    "catalog_records": 18,
+    "online_search": false,
+    "decision_backend": "deterministic_profile_and_weighted_compatibility_v1"
+  }
+}

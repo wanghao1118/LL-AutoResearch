@@ -1,0 +1,10 @@
+{
+  "status": "HUMAN_LITERATURE_AUDIT_REQUIRED",
+  "audit_id": "auto_bench_untouched_holdout_002_literature_audit_round_1_holdout_002",
+  "expected_case_ids": [
+    "holdout_002"
+  ],
+  "pending_case_ids": [
+    "holdout_002"
+  ]
+}

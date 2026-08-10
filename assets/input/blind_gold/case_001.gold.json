@@ -1,0 +1,56 @@
+{
+  "case_id": "case_001",
+  "source_arxiv_id": "2210.03629",
+  "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+  "source_url": "https://arxiv.org/abs/2210.03629",
+  "source_input_sections": {
+    "introduction": [
+      "Introduction"
+    ],
+    "method": [
+      "ReAct: Synergizing Reasoning + Acting"
+    ]
+  },
+  "primary_benchmark_ids": [
+    "hotpotqa",
+    "fever",
+    "alfworld",
+    "webshop"
+  ],
+  "secondary_benchmark_ids": [],
+  "unmodeled_benchmarks": [],
+  "expected_route": "direct_portfolio",
+  "gold_evidence_sections": [
+    "Knowledge-Intensive Reasoning Tasks",
+    "Decision Making Tasks"
+  ],
+  "benchmark_evidence": [
+    {
+      "benchmark_id": "hotpotqa",
+      "role": "primary",
+      "evidence_section": "Knowledge-Intensive Reasoning Tasks"
+    },
+    {
+      "benchmark_id": "fever",
+      "role": "primary",
+      "evidence_section": "Knowledge-Intensive Reasoning Tasks"
+    },
+    {
+      "benchmark_id": "alfworld",
+      "role": "primary",
+      "evidence_section": "Decision Making Tasks"
+    },
+    {
+      "benchmark_id": "webshop",
+      "role": "primary",
+      "evidence_section": "Decision Making Tasks"
+    }
+  ],
+  "matcher_visible": false,
+  "leakage_scan": {
+    "passed": true,
+    "benchmark_alias_hits": [],
+    "identity_hits": [],
+    "generic_evaluation_terms": []
+  }
+}

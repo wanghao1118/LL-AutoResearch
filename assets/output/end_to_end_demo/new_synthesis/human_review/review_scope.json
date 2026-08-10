@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewer_slots": [
+    "REVIEWER_1",
+    "REVIEWER_2"
+  ],
+  "pairs": [
+    {
+      "case_id": "workflow_demo_new_synthesis",
+      "benchmark_id": "NO_DIRECT_MATCH",
+      "route": "new_benchmark_synthesis",
+      "source_plan": "assets/output/end_to_end_demo/new_synthesis/benchmark_plan.json"
+    }
+  ]
+}

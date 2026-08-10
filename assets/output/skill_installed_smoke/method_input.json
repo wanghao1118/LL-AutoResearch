@@ -1,0 +1,8 @@
+{
+  "case_id": "installed_skill_smoke",
+  "introduction": "We study multimodal web agents that understand screenshots and complete shopping tasks on websites.",
+  "method": "The agent plans browser actions, observes visual feedback, and uses self-reflection after failed trajectories.",
+  "constraints": {
+    "target_setting": "online store"
+  }
+}

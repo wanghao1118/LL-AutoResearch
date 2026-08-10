@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "case_id": "fresh2_002",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "knowledge_intensive_qa"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [
+      "tool_augmented_nlp"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "interactions": [
+      "interactive_environment",
+      "retrieval_tool"
+    ],
+    "output_types": [
+      "short_answer"
+    ],
+    "environments": [
+      "knowledge_base"
+    ],
+    "capabilities": [
+      "evidence_grounding",
+      "external_information_retrieval",
+      "long_horizon_planning",
+      "reasoning_action_interleaving",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "answer_accuracy",
+      "exact_match",
+      "token_f1",
+      "tool_execution_success"
+    ],
+    "evidence_terms": {
+      "capability:evidence_grounding": [
+        "grounded",
+        "evidence"
+      ],
+      "capability:external_information_retrieval": [
+        "retrieve",
+        "search",
+        "external knowledge"
+      ],
+      "capability:long_horizon_planning": [
+        "plan"
+      ],
+      "capability:reasoning_action_interleaving": [
+        "thought-action-observation",
+        "interleave"
+      ],
+      "capability:tool_use": [
+        "action",
+        "tool",
+        "api"
+      ],
+      "evaluation:declared_breadth": [
+        "-4mm to holistically evaluate method_x, we conduct experiments over six multi step and knowledge intensive nlp benchmarks and a curated dataset."
+      ],
+      "task:knowledge_intensive_qa": [
+        "external knowledge"
+      ],
+      "uncovered_task:tool_augmented_nlp": [
+        "tool augmented llm",
+        "augmented language model",
+        "knowledge intensive nlp benchmark",
+        "multi step and knowledge intensive nlp",
+        "use external tools"
+      ]
+    },
+    "declared_evaluation_breadth": 6
+  },
+  "selected_benchmarks": [
+    "triviaqa",
+    "hotpotqa"
+  ],
+  "top_6": [
+    "triviaqa",
+    "hotpotqa",
+    "fever",
+    "alfworld",
+    "scienceworld",
+    "toolbench"
+  ],
+  "route": "base_benchmark_adaptation",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

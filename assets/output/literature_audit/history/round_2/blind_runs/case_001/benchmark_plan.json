@@ -1,0 +1,1366 @@
+{
+  "case_id": "case_001",
+  "status": "HUMAN_REVIEW_REQUIRED",
+  "visible_input": {
+    "introduction": "Introduction. A unique feature of human intelligence is the ability to seamlessly combine task-oriented actions with verbal reasoning (or inner speech, ), which has been theorized to play an important role in human cognition for enabling self-regulation or strategization and maintaining a working memory . Consider the example of cooking up a dish in the kitchen. Between any two specific actions, we may reason in language in order to track progress (``now that everything is cut, I should heat up the pot of water’’), to handle exceptions or adjust the plan according to the situation (``I don’t have salt, so let me use soy sauce and pepper instead’’), and to realize when external information is needed (``how do I prepare dough? Let me search on the Internet’’). We may also act (open a cookbook to read the recipe, open the fridge, check ingredients) to support the reasoning and to answer questions (``What dish can I make right now?''). This tight synergy between ``acting'’ and ``reasoning'’ allows humans to learn new tasks quickly and perform robust decision making or reasoning, even under previously unseen circumstances or facing information uncertainties. Recent results have hinted at the possibility of combining verbal reasoning with interactive decision making in autonomous systems. On one hand, properly prompted large language models (LLMs) have demonstrated emergent capabilities to carry out several steps of reasoning traces to derive answers from questions in arithmetic, commonsense, and symbolic reasoning tasks . However, this ``chain-of-thought’' reasoning is a static black box, in that the model uses its own internal representations to generate thoughts and is not grounded in the external world, which limits its ability to reason reactively or update its knowledge. This can lead to issues like fact hallucination and error propagation over the reasoning process (Figure (1b)). On the other hand, recent work has explored the use of pre-trained language models for planning and acting in interactive environments , with a focus on predicting actions via language priors. These approaches usually convert multi-modal observations into text, use a language model to generate domain-specific actions or plans, and then use a controller to choose or execute them. However, they do not employ language models to reason abstractly about high-level goals or maintain a working memory to support acting, barring who perform a limited form of verbal reasoning to reiterate spatial facts about the current state. Beyond such simple embodied tasks to interact with a few blocks, there have not been studies on how reasoning and acting can be combined in a synergistic manner for general task solving, and if such a combination can bring systematic benefits compared to reasoning or acting alone. In this work, we present METHOD_X, a general paradigm to combine reasoning and acting with language models for solving diverse language reasoning and decision making tasks (Figure ). METHOD_X prompts LLMs to generate both verbal reasoning traces and actions pertaining to a task in an interleaved manner, which allows the model to perform dynamic reasoning to create, maintain, and adjust high-level plans for acting (reason to act), while also interact with the external environments (e.g.\\,Wikipedia) to incorporate additional information into reasoning (act to reason). The best approach overall is a combination of METHOD_X and REASONING_BASELINE that allows for the use of both internal knowledge and externally obtained information during reasoning. We also demonstrate the importance of sparse, versatile reasoning in decision making by showing consistent advantages over controlled baselines with actions only. Besides general applicability and performance boost, the combination of reasoning and acting also contributes to model interpretability, trustworthiness, and diagnosability across all domains, as humans can readily distinguish information from model's internal knowledge versus external environments, as well as inspect reasoning traces to understand the decision basis of model actions. To summarize, our key contributions are the following: (1) we introduce METHOD_X, a novel prompt-based paradigm to synergize reasoning and acting in language models for general task solving; (2) we perform extensive experiments across diverse benchmarks to showcase the advantage of METHOD_X in a few-shot learning setup over prior approaches that perform either reasoning or action generation in isolation; (3) we present systematic ablations and analysis to understand the importance of acting in reasoning tasks, and reasoning in interactive tasks; (4) we analyze the limitations of METHOD_X under the prompting setup (i.e.\\,limited support of reasoning and acting behaviors), and perform initial finetuning experiments showing the potential of METHOD_X to improve with additional training data. Scaling up METHOD_X to train and operate on more tasks and combining it with complementary paradigms like reinforcement learning could further unlock the potential of large language models.",
+    "method": "METHOD_X: Synergizing Reasoning + Acting Consider a general setup of an agent interacting with an environment for task solving. At time step , an agent receives an observation from the environment and takes an action following some policy , where is the context to the agent. Learning a policy is challenging when the mapping is highly implicit and requires extensive computation. For example, the agent shown in Figure (1c) is unable to generate the correct final action (Act 4) to finish the QA task as it requires complex reasoning over the trajectory context (Question, Act 1-3, Obs 1-3). Similarly, the agent shown in Figure (2a) fails to comprehend from the context that sinkbasin 1 does not contain peppershaker 1, thus keep producing hallucinating actions. The idea of METHOD_X is simple: we augment the agent's action space to , where is the space of language. An action in the language space, which we will refer to as a thought or a reasoning trace, does not affect the external environment, thus leading to no observation feedback. Instead, a thought aims to compose useful information by reasoning over the current context , and update the context to support future reasoning or acting. As shown in Figure , there could be various types of useful thoughts, e.g.\\,decomposing task goals and create action plans (2b, Act 1; 1d, Thought 1), injecting commonsense knowledge relevant to task solving (2b, Act 1), extracting important parts from observations (1d, Thought2, 4), track progress and transit action plans (2b, Act 8), handle exceptions and adjust action plans (1d, Thought 3), and so on. However, as the language space is unlimited, learning in this augmented action space is difficult and requires strong language priors. , is prompted with few-shot in-context examples to generate both domain-specific actions and free-form language thoughts for task solving (Figure (1d), (2b)). Each in-context example is a human trajectory of actions, thoughts, and environment observations to solve a task instance (see Appendix ). For the tasks where reasoning is of primary importance (Figure (1)), we alternate the generation of thoughts and actions so that the task-solving trajectory consists of multiple thought-action-observation steps. In contrast, for decision making tasks that potentially involve a large number of actions (Figure (2)), thoughts only need to appear sparsely in the most relevant positions of a trajectory, so we let the language model decide the asynchronous occurrence of thoughts and actions for itself. Since decision making and reasoning capabilities are integrated into a large language model, METHOD_X enjoys several unique features: A) Intuitive and easy to design: Designing METHOD_X prompts is straightforward as human annotators just type down their thoughts in language on top of their actions taken. No ad-hoc format choice, thought design, or example selection is used in this paper. We detail prompt design for each task in Sections and . B) General and flexible: Due to the flexible thought space and thought-action occurrence format, METHOD_X works for diverse tasks with distinct action spaces and reasoning needs, including but not limited to QA, fact verification, text game, and web navigation. We also show in Section additional benefits when finetuning is enabled, and in Section how METHOD_X performance is robust to prompt selections. D) Human aligned and controllable: METHOD_X promises an interpretable sequential decision making and reasoning process where humans can easily inspect reasoning and factual correctness. Moreover, humans can also control or correct the agent behavior on the go by thought editing, as shown in Figure in Section .",
+    "constraints": {
+      "input_scope": [
+        "introduction",
+        "method"
+      ],
+      "paper_identity_hidden": true,
+      "benchmark_names_redacted": true,
+      "experiment_sections_excluded": true
+    }
+  },
+  "profile": {
+    "task_families": [
+      "embodied_household",
+      "fact_verification",
+      "knowledge_intensive_qa",
+      "sequential_decision_making",
+      "web_navigation"
+    ],
+    "uncovered_task_families": [],
+    "modalities": [
+      "audio",
+      "text",
+      "web"
+    ],
+    "interactions": [
+      "browser",
+      "interactive_environment",
+      "retrieval_tool"
+    ],
+    "output_types": [
+      "action_trajectory",
+      "classification_label",
+      "short_answer",
+      "supporting_evidence"
+    ],
+    "environments": [
+      "knowledge_base",
+      "website"
+    ],
+    "capabilities": [
+      "evidence_grounding",
+      "external_information_retrieval",
+      "long_horizon_planning",
+      "reasoning_action_interleaving",
+      "tool_use"
+    ],
+    "suggested_metrics": [
+      "evidence_score",
+      "exact_match",
+      "label_accuracy",
+      "task_success_rate",
+      "token_f1",
+      "trajectory_efficiency"
+    ],
+    "evidence_terms": {
+      "capability:evidence_grounding": [
+        "grounded",
+        "factual"
+      ],
+      "capability:external_information_retrieval": [
+        "search"
+      ],
+      "capability:long_horizon_planning": [
+        "plan",
+        "trajectory"
+      ],
+      "capability:reasoning_action_interleaving": [
+        "reasoning and acting",
+        "thought-action-observation",
+        "interleave"
+      ],
+      "capability:tool_use": [
+        "action"
+      ],
+      "task:embodied_household": [
+        "embodied"
+      ],
+      "task:fact_verification": [
+        "fact verification"
+      ],
+      "task:knowledge_intensive_qa": [
+        "answer questions",
+        "wikipedia"
+      ],
+      "task:sequential_decision_making": [
+        "sequential decision",
+        "action-observation",
+        "trajectory",
+        "interactive environment"
+      ],
+      "task:web_navigation": [
+        "web navigation"
+      ]
+    }
+  },
+  "search_queries": [
+    "\"embodied household\" benchmark dataset evaluation audio text web",
+    "\"fact verification\" benchmark dataset evaluation audio text web",
+    "\"knowledge intensive qa\" benchmark dataset evaluation audio text web",
+    "\"sequential decision making\" benchmark dataset evaluation audio text web",
+    "\"web navigation\" benchmark dataset evaluation audio text web",
+    "\"embodied household\" agent benchmark browser interactive_environment retrieval_tool",
+    "\"fact verification\" agent benchmark browser interactive_environment retrieval_tool",
+    "\"knowledge intensive qa\" agent benchmark browser interactive_environment retrieval_tool"
+  ],
+  "search_hits": [],
+  "catalog_admission_proposals": [],
+  "ranked_candidates": [
+    {
+      "benchmark_id": "webarena",
+      "name": "WebArena",
+      "score": 0.97,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 1.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "sequential_decision_making",
+          "web_navigation"
+        ],
+        "modalities": [
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser",
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [
+          "website"
+        ],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2307.13854"
+      ],
+      "source_url": "https://arxiv.org/abs/2307.13854",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "site_subset",
+        "task_template_extension",
+        "state_reset_audit"
+      ]
+    },
+    {
+      "benchmark_id": "fever",
+      "name": "FEVER",
+      "score": 0.89,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "fact_verification"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "classification_label",
+          "supporting_evidence"
+        ],
+        "environments": [
+          "knowledge_base"
+        ],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval"
+        ],
+        "metrics": [
+          "evidence_score",
+          "label_accuracy"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1803.05355"
+      ],
+      "source_url": "https://arxiv.org/abs/1803.05355",
+      "metrics": [
+        "label_accuracy",
+        "evidence_score"
+      ],
+      "adaptation_hooks": [
+        "claim_only_protocol",
+        "evidence_retrieval_wrapper",
+        "label_and_evidence_scoring"
+      ]
+    },
+    {
+      "benchmark_id": "hotpotqa",
+      "name": "HotpotQA",
+      "score": 0.89,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 0.5,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "knowledge_intensive_qa"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "short_answer",
+          "supporting_evidence"
+        ],
+        "environments": [
+          "knowledge_base"
+        ],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "long_horizon_planning"
+        ],
+        "metrics": [
+          "evidence_score",
+          "exact_match",
+          "token_f1"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/1809.09600"
+      ],
+      "source_url": "https://arxiv.org/abs/1809.09600",
+      "metrics": [
+        "exact_match",
+        "token_f1",
+        "evidence_score"
+      ],
+      "adaptation_hooks": [
+        "question_only_protocol",
+        "wikipedia_retrieval_wrapper",
+        "supporting_fact_audit"
+      ]
+    },
+    {
+      "benchmark_id": "alfworld",
+      "name": "ALFWorld",
+      "score": 0.87,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 1.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "embodied_household",
+          "sequential_decision_making"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2010.03768"
+      ],
+      "source_url": "https://arxiv.org/abs/2010.03768",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "task_type_stratification",
+        "unseen_environment_split",
+        "action_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "mind2web",
+      "name": "Mind2Web",
+      "score": 0.936667,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 1.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 1.0,
+        "metric": 0.333333,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "web_navigation"
+        ],
+        "modalities": [
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [
+          "website"
+        ],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2306.06070"
+      ],
+      "source_url": "https://arxiv.org/abs/2306.06070",
+      "metrics": [
+        "element_accuracy",
+        "operation_f1",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "cross_domain_split",
+        "live_browser_replay",
+        "element_grounding_audit"
+      ]
+    },
+    {
+      "benchmark_id": "webshop",
+      "name": "WebShop",
+      "score": 0.893333,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 1.0,
+        "output": 0.5,
+        "environment": 1.0,
+        "capability": 1.0,
+        "metric": 0.666667,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "sequential_decision_making",
+          "web_navigation"
+        ],
+        "modalities": [
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser",
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [
+          "website"
+        ],
+        "capabilities": [
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2207.01206"
+      ],
+      "source_url": "https://arxiv.org/abs/2207.01206",
+      "metrics": [
+        "task_success_rate",
+        "attribute_score",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "instruction_constraint_expansion",
+        "website_action_wrapper",
+        "attribute_level_scoring"
+      ]
+    },
+    {
+      "benchmark_id": "scienceworld",
+      "name": "ScienceWorld",
+      "score": 0.87,
+      "component_scores": {
+        "task": 1.0,
+        "modality": 1.0,
+        "interaction": 1.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "sequential_decision_making"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2203.07540"
+      ],
+      "source_url": "https://arxiv.org/abs/2203.07540",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "task_family_subset",
+        "difficulty_curriculum",
+        "action_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "visualwebarena",
+      "name": "VisualWebArena",
+      "score": 0.823333,
+      "component_scores": {
+        "task": 0.666667,
+        "modality": 0.666667,
+        "interaction": 1.0,
+        "output": 1.0,
+        "environment": 1.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "sequential_decision_making",
+          "web_navigation"
+        ],
+        "modalities": [
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser",
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [
+          "website"
+        ],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2401.13649"
+      ],
+      "source_url": "https://arxiv.org/abs/2401.13649",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "visual_dependency_stratification",
+        "site_subset",
+        "state_reset_audit"
+      ]
+    },
+    {
+      "benchmark_id": "osworld",
+      "name": "OSWorld",
+      "score": 0.65,
+      "component_scores": {
+        "task": 0.5,
+        "modality": 0.5,
+        "interaction": 1.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 1.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "sequential_decision_making"
+        ],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate",
+          "trajectory_efficiency"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2404.07972"
+      ],
+      "source_url": "https://arxiv.org/abs/2404.07972",
+      "metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "adaptation_hooks": [
+        "application_subset",
+        "task_template_extension",
+        "environment_snapshot"
+      ]
+    },
+    {
+      "benchmark_id": "toolbench",
+      "name": "ToolBench",
+      "score": 0.465,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 1.0,
+        "output": 0.5,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate"
+        ]
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2307.16789"
+      ],
+      "source_url": "https://arxiv.org/abs/2307.16789",
+      "metrics": [
+        "task_success_rate",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "api_domain_subset",
+        "tool_availability_snapshot",
+        "execution_verification"
+      ]
+    },
+    {
+      "benchmark_id": "gaia",
+      "name": "GAIA",
+      "score": 0.32,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 1.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 1.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment",
+          "retrieval_tool"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "evidence_grounding",
+          "external_information_retrieval",
+          "tool_use"
+        ],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2311.12983"
+      ],
+      "source_url": "https://arxiv.org/abs/2311.12983",
+      "metrics": [
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "capability_level_split",
+        "tool_trace_logging",
+        "answer_normalization"
+      ]
+    },
+    {
+      "benchmark_id": "mmlu",
+      "name": "MMLU",
+      "score": 0.24,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "classification_label"
+        ],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [],
+      "evidence": [
+        "https://arxiv.org/abs/2009.03300"
+      ],
+      "source_url": "https://arxiv.org/abs/2009.03300",
+      "metrics": [
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "subject_subset",
+        "answer_order_randomization"
+      ]
+    },
+    {
+      "benchmark_id": "agentbench",
+      "name": "AgentBench",
+      "score": 0.119667,
+      "component_scores": {
+        "task": 0.5,
+        "modality": 0.666667,
+        "interaction": 0.666667,
+        "output": 0.5,
+        "environment": 0.666667,
+        "capability": 1.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [
+          "sequential_decision_making",
+          "web_navigation"
+        ],
+        "modalities": [
+          "text",
+          "web"
+        ],
+        "interactions": [
+          "browser",
+          "interactive_environment"
+        ],
+        "output_types": [
+          "action_trajectory"
+        ],
+        "environments": [
+          "knowledge_base",
+          "website"
+        ],
+        "capabilities": [
+          "long_horizon_planning",
+          "reasoning_action_interleaving",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate"
+        ]
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2308.03688"
+      ],
+      "source_url": "https://arxiv.org/abs/2308.03688",
+      "metrics": [
+        "task_success_rate",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "environment_subset",
+        "per_environment_metrics",
+        "tool_trace_logging"
+      ]
+    },
+    {
+      "benchmark_id": "gsm8k",
+      "name": "GSM8K",
+      "score": 0.053,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 1.0,
+        "interaction": 0.0,
+        "output": 1.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.5,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [
+          "short_answer"
+        ],
+        "environments": [],
+        "capabilities": [],
+        "metrics": [
+          "exact_match"
+        ]
+      },
+      "hard_mismatches": [
+        "math-only benchmark outside inferred task families"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2110.14168"
+      ],
+      "source_url": "https://arxiv.org/abs/2110.14168",
+      "metrics": [
+        "exact_match",
+        "task_accuracy"
+      ],
+      "adaptation_hooks": [
+        "reasoning_trace_wrapper",
+        "difficulty_stratification"
+      ]
+    },
+    {
+      "benchmark_id": "swe_bench",
+      "name": "SWE-bench",
+      "score": 0.039333,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.5,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.4,
+        "metric": 0.333333,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [
+          "interactive_environment"
+        ],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [
+          "long_horizon_planning",
+          "tool_use"
+        ],
+        "metrics": [
+          "task_success_rate"
+        ]
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2310.06770"
+      ],
+      "source_url": "https://arxiv.org/abs/2310.06770",
+      "metrics": [
+        "pass_at_1",
+        "test_pass_rate",
+        "task_success_rate"
+      ],
+      "adaptation_hooks": [
+        "issue_category_stratification",
+        "repository_holdout",
+        "test_patch_isolation",
+        "cost_logging"
+      ]
+    },
+    {
+      "benchmark_id": "humaneval",
+      "name": "HumanEval",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2107.03374"
+      ],
+      "source_url": "https://arxiv.org/abs/2107.03374",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "language_port",
+        "iterative_feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "humanevalfix",
+      "name": "HumanEvalFix",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2308.07124"
+      ],
+      "source_url": "https://arxiv.org/abs/2308.07124",
+      "metrics": [
+        "pass_at_1",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "bug_type_stratification",
+        "language_port",
+        "feedback_wrapper"
+      ]
+    },
+    {
+      "benchmark_id": "mbpp",
+      "name": "MBPP",
+      "score": 0.012,
+      "component_scores": {
+        "task": 0.0,
+        "modality": 0.5,
+        "interaction": 0.0,
+        "output": 0.0,
+        "environment": 0.0,
+        "capability": 0.0,
+        "metric": 0.0,
+        "literature": 0.0
+      },
+      "matched_requirements": {
+        "task_families": [],
+        "modalities": [
+          "text"
+        ],
+        "interactions": [],
+        "output_types": [],
+        "environments": [],
+        "capabilities": [],
+        "metrics": []
+      },
+      "hard_mismatches": [
+        "code benchmark for a method without code input or output"
+      ],
+      "evidence": [
+        "https://arxiv.org/abs/2108.07732"
+      ],
+      "source_url": "https://arxiv.org/abs/2108.07732",
+      "metrics": [
+        "pass_at_1",
+        "pass_at_k",
+        "test_pass_rate"
+      ],
+      "adaptation_hooks": [
+        "hidden_unit_tests",
+        "difficulty_rebalancing",
+        "iterative_feedback_wrapper"
+      ]
+    }
+  ],
+  "selected_benchmarks": [
+    "webarena",
+    "fever",
+    "hotpotqa",
+    "alfworld",
+    "mind2web",
+    "webshop"
+  ],
+  "portfolio_roles": {
+    "webarena": "core_task_coverage",
+    "fever": "core_task_coverage",
+    "hotpotqa": "core_task_coverage",
+    "alfworld": "core_task_coverage",
+    "mind2web": "supplementary_triangulation:web_navigation",
+    "webshop": "supplementary_triangulation:sequential_decision_making"
+  },
+  "coverage_ratio": 1.0,
+  "route": "direct_portfolio",
+  "route_reason": "portfolio covers 100.0% of inferred task families; weakest selected compatibility is 0.870",
+  "metric_plan": [
+    {
+      "benchmark_id": "webarena",
+      "official_metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "fever",
+      "official_metrics": [
+        "label_accuracy",
+        "evidence_score"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "hotpotqa",
+      "official_metrics": [
+        "exact_match",
+        "token_f1",
+        "evidence_score"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "alfworld",
+      "official_metrics": [
+        "task_success_rate",
+        "trajectory_efficiency"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "mind2web",
+      "official_metrics": [
+        "element_accuracy",
+        "operation_f1",
+        "task_success_rate"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    },
+    {
+      "benchmark_id": "webshop",
+      "official_metrics": [
+        "task_success_rate",
+        "attribute_score",
+        "trajectory_efficiency"
+      ],
+      "reporting_rule": "report official metrics unchanged; adapted metrics use a separate namespace"
+    }
+  ],
+  "adaptation_plan": {
+    "base_benchmarks": [
+      "webarena",
+      "fever",
+      "hotpotqa",
+      "alfworld",
+      "mind2web",
+      "webshop"
+    ],
+    "retain": [
+      "official task semantics and unmodified test examples",
+      "official metric definitions reported separately",
+      "source IDs, split names, and license/access metadata"
+    ],
+    "add": [
+      "method-specific interaction wrapper without exposing test labels",
+      "capability-targeted challenge split for uncovered requirements",
+      "cost, latency, and failure-state logging when the method is interactive"
+    ],
+    "missing_task_families": [],
+    "adaptation_hooks": [
+      "action_trace_logging",
+      "attribute_level_scoring",
+      "claim_only_protocol",
+      "cross_domain_split",
+      "element_grounding_audit",
+      "evidence_retrieval_wrapper",
+      "instruction_constraint_expansion",
+      "label_and_evidence_scoring",
+      "live_browser_replay",
+      "question_only_protocol",
+      "site_subset",
+      "state_reset_audit",
+      "supporting_fact_audit",
+      "task_template_extension",
+      "task_type_stratification",
+      "unseen_environment_split",
+      "website_action_wrapper",
+      "wikipedia_retrieval_wrapper"
+    ],
+    "split_policy": {
+      "development": "derive transformations from train/development data only",
+      "validation": "freeze prompts and thresholds before hidden-test execution",
+      "test": "retain official test data; no synthesis seed may originate from test examples"
+    }
+  },
+  "synthesis_plan": {
+    "required": false,
+    "target_task_families": [],
+    "construct_definition": {
+      "status": "NOT_REQUIRED",
+      "task_families": [],
+      "uncovered_task_families": [],
+      "modalities": [
+        "audio",
+        "text",
+        "web"
+      ],
+      "interactions": [
+        "browser",
+        "interactive_environment",
+        "retrieval_tool"
+      ],
+      "output_types": [
+        "action_trajectory",
+        "classification_label",
+        "short_answer",
+        "supporting_evidence"
+      ],
+      "capabilities": [
+        "evidence_grounding",
+        "external_information_retrieval",
+        "long_horizon_planning",
+        "reasoning_action_interleaving",
+        "tool_use"
+      ],
+      "candidate_metrics": [
+        "evidence_score",
+        "exact_match",
+        "label_accuracy",
+        "task_success_rate",
+        "token_f1",
+        "trajectory_efficiency"
+      ],
+      "evidence_terms": {
+        "task:embodied_household": [
+          "embodied"
+        ],
+        "task:fact_verification": [
+          "fact verification"
+        ],
+        "task:knowledge_intensive_qa": [
+          "answer questions",
+          "wikipedia"
+        ],
+        "task:sequential_decision_making": [
+          "sequential decision",
+          "action-observation",
+          "trajectory",
+          "interactive environment"
+        ],
+        "task:web_navigation": [
+          "web navigation"
+        ]
+      }
+    },
+    "source_policy": "use only licensed train/development records from named base benchmarks",
+    "generation_modules": [
+      {
+        "name": "compositional_recombination",
+        "purpose": "combine independent train-split constraints while preserving executable gold checks"
+      },
+      {
+        "name": "counterfactual_perturbation",
+        "purpose": "change one controlled factor and regenerate the expected answer with a deterministic verifier"
+      },
+      {
+        "name": "interaction_wrapper",
+        "purpose": "convert static examples into tool or environment episodes with logged action contracts"
+      }
+    ],
+    "record_schema": [
+      "synthetic_id",
+      "source_benchmark",
+      "source_split",
+      "source_record_ids",
+      "transformation",
+      "input",
+      "expected_output",
+      "deterministic_checks",
+      "human_review_status"
+    ],
+    "quality_gates": [
+      "exact and near-duplicate filtering against every split",
+      "deterministic execution or answer verification where available",
+      "stratified human review by task family and difficulty",
+      "pilot inter-rater agreement before scaling annotation",
+      "frozen test set before method tuning"
+    ],
+    "profile_snapshot": {
+      "task_families": [
+        "embodied_household",
+        "fact_verification",
+        "knowledge_intensive_qa",
+        "sequential_decision_making",
+        "web_navigation"
+      ],
+      "uncovered_task_families": [],
+      "modalities": [
+        "audio",
+        "text",
+        "web"
+      ],
+      "interactions": [
+        "browser",
+        "interactive_environment",
+        "retrieval_tool"
+      ],
+      "output_types": [
+        "action_trajectory",
+        "classification_label",
+        "short_answer",
+        "supporting_evidence"
+      ],
+      "capabilities": [
+        "evidence_grounding",
+        "external_information_retrieval",
+        "long_horizon_planning",
+        "reasoning_action_interleaving",
+        "tool_use"
+      ],
+      "suggested_metrics": [
+        "evidence_score",
+        "exact_match",
+        "label_accuracy",
+        "task_success_rate",
+        "token_f1",
+        "trajectory_efficiency"
+      ]
+    },
+    "catalog_admission_proposals": []
+  },
+  "human_review": {
+    "status": "HUMAN_REVIEW_REQUIRED",
+    "validation_tracks": {
+      "literature_recovery": {
+        "timing": "post_match_only",
+        "input": "revealed source paper, actual benchmarks, Selected, and Top-6",
+        "decision_values": [
+          "MATCH",
+          "PARTIAL",
+          "MISMATCH"
+        ]
+      },
+      "new_method_suitability": {
+        "timing": "before_research_use",
+        "input": "method text, candidate evidence, metrics, adaptation, and synthesis plan",
+        "decision_values": [
+          "APPROVE",
+          "REJECT"
+        ]
+      }
+    },
+    "required_reviewer_slots": [
+      "REVIEWER_1",
+      "REVIEWER_2"
+    ],
+    "minimum_reviewers": 2,
+    "rubric_dimensions": [
+      "construct_alignment",
+      "task_representativeness",
+      "metric_validity",
+      "data_quality",
+      "leakage_control",
+      "execution_feasibility"
+    ],
+    "rubric_guidance": {
+      "construct_alignment": "Success measures the capability claimed by the method rather than a proxy.",
+      "task_representativeness": "Tasks cover the intended use, difficulty range, and important failure modes.",
+      "metric_validity": "Metrics are meaningful, reproducible, and separate official from adapted results.",
+      "data_quality": "Labels, splits, and any synthetic transformations have auditable quality.",
+      "leakage_control": "Hidden labels and test examples stay isolated from matching, synthesis, and tuning.",
+      "execution_feasibility": "The full protocol can run with the stated tools, data access, and compute."
+    },
+    "score_range": [
+      1,
+      5
+    ],
+    "acceptance_rules": {
+      "mean_score_at_least": 4.0,
+      "every_dimension_at_least": 3.0,
+      "provenance_confirmed_by_all": true,
+      "independence_attested_by_all": true,
+      "explicit_approval_by_all": true,
+      "nonempty_justification_by_all": true,
+      "maximum_pairwise_dimension_gap": 1.0
+    },
+    "reviews": []
+  },
+  "provenance": {
+    "input_fields": [
+      "introduction",
+      "method",
+      "constraints"
+    ],
+    "blind_gold_loaded": false,
+    "leakage_scan": {
+      "passed": true,
+      "benchmark_alias_hits": [],
+      "identity_hits": [],
+      "generic_evaluation_terms": []
+    },
+    "catalog": "catalog.json",
+    "catalog_records": 18,
+    "online_search": false,
+    "decision_backend": "deterministic_profile_and_weighted_compatibility_v1"
+  }
+}

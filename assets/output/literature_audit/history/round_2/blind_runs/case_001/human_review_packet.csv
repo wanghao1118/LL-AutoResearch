@@ -1,0 +1,13 @@
+case_id,benchmark_id,reviewer_slot,reviewer_id,construct_alignment,task_representativeness,metric_validity,data_quality,leakage_control,execution_feasibility,provenance_confirmed,independence_attested,decision,notes
+case_001,webarena,REVIEWER_1,,,,,,,,,,,
+case_001,webarena,REVIEWER_2,,,,,,,,,,,
+case_001,fever,REVIEWER_1,,,,,,,,,,,
+case_001,fever,REVIEWER_2,,,,,,,,,,,
+case_001,hotpotqa,REVIEWER_1,,,,,,,,,,,
+case_001,hotpotqa,REVIEWER_2,,,,,,,,,,,
+case_001,alfworld,REVIEWER_1,,,,,,,,,,,
+case_001,alfworld,REVIEWER_2,,,,,,,,,,,
+case_001,mind2web,REVIEWER_1,,,,,,,,,,,
+case_001,mind2web,REVIEWER_2,,,,,,,,,,,
+case_001,webshop,REVIEWER_1,,,,,,,,,,,
+case_001,webshop,REVIEWER_2,,,,,,,,,,,

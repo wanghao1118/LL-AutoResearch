@@ -1,0 +1,255 @@
+{
+  "schema_version": "1.0",
+  "comparison": "literature_audit_round_1_to_round_2",
+  "interpretation": "Round 2 is a feedback-driven regression on the same papers, not a new untouched holdout. A fresh-paper audit is still needed for an unbiased generalization estimate.",
+  "aggregate": {
+    "previous_human_status": "LITERATURE_AUDIT_PARTIAL",
+    "before": {
+      "mean_primary_recall_at_5": 0.8055555555555556,
+      "mean_primary_recall_at_6": 1.0,
+      "mean_primary_mrr": 0.8333333333333334,
+      "mean_selected_modeled_recall": 0.5833333333333334,
+      "mean_selected_actual_precision": 0.5833333333333334
+    },
+    "after": {
+      "mean_primary_recall_at_5": 0.9166666666666666,
+      "mean_primary_recall_at_6": 1.0,
+      "mean_primary_mrr": 0.6666666666666666,
+      "mean_selected_modeled_recall": 1.0,
+      "mean_selected_actual_precision": 0.7111111111111111
+    },
+    "delta": {
+      "mean_primary_recall_at_5": 0.11111111111111105,
+      "mean_primary_recall_at_6": 0.0,
+      "mean_primary_mrr": -0.16666666666666674,
+      "mean_selected_modeled_recall": 0.41666666666666663,
+      "mean_selected_actual_precision": 0.12777777777777777
+    }
+  },
+  "cases": [
+    {
+      "case_id": "case_001",
+      "source_title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "source_url": "https://arxiv.org/abs/2210.03629",
+      "previous_human_decision": "MATCH",
+      "previous_human_notes": "论文实际使用了4个Benchmark，而你候选也给选了4个Benchmark，其中有3个是符合论文的，其中有一个排在了候选第6的位置。属于基本match的选择。",
+      "before": {
+        "selected": [
+          "alfworld",
+          "fever",
+          "hotpotqa",
+          "webarena"
+        ],
+        "modeled_gold": [
+          "hotpotqa",
+          "fever",
+          "alfworld",
+          "webshop"
+        ],
+        "selected_matches": [
+          "alfworld",
+          "fever",
+          "hotpotqa"
+        ],
+        "selected_missing": [
+          "webshop"
+        ],
+        "selected_extras": [
+          "webarena"
+        ],
+        "selected_modeled_recall": 0.75,
+        "selected_actual_precision": 0.75,
+        "rank_by_modeled_gold": {
+          "hotpotqa": 3,
+          "fever": 2,
+          "alfworld": 1,
+          "webshop": 6
+        }
+      },
+      "after": {
+        "selected": [
+          "webarena",
+          "fever",
+          "hotpotqa",
+          "alfworld",
+          "mind2web",
+          "webshop"
+        ],
+        "modeled_gold": [
+          "hotpotqa",
+          "fever",
+          "alfworld",
+          "webshop"
+        ],
+        "selected_matches": [
+          "fever",
+          "hotpotqa",
+          "alfworld",
+          "webshop"
+        ],
+        "selected_missing": [],
+        "selected_extras": [
+          "webarena",
+          "mind2web"
+        ],
+        "selected_modeled_recall": 1.0,
+        "selected_actual_precision": 0.6666666666666666,
+        "rank_by_modeled_gold": {
+          "hotpotqa": 3,
+          "fever": 2,
+          "alfworld": 4,
+          "webshop": 6
+        }
+      },
+      "delta": {
+        "selected_modeled_recall": 0.25,
+        "selected_actual_precision": -0.08333333333333337
+      },
+      "unmodeled_gold": []
+    },
+    {
+      "case_id": "case_002",
+      "source_title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "source_url": "https://arxiv.org/abs/2303.11366",
+      "previous_human_decision": "PARTIAL",
+      "previous_human_notes": "论文采用了5个Benchmark，并使用MultiPL-E语言端口。你在选择中选了4个Benchmark，只与原论文有1个重合。感觉重合率不是很高，而且候选的AlfWord是排在第6，MPEPP是排在第5，而且没有选择用MultiPL-E语言端口，这个差距还是蛮大的。",
+      "before": {
+        "selected": [
+          "scienceworld",
+          "humaneval",
+          "toolbench",
+          "hotpotqa"
+        ],
+        "modeled_gold": [
+          "alfworld",
+          "hotpotqa",
+          "humaneval",
+          "mbpp"
+        ],
+        "selected_matches": [
+          "humaneval",
+          "hotpotqa"
+        ],
+        "selected_missing": [
+          "alfworld",
+          "mbpp"
+        ],
+        "selected_extras": [
+          "scienceworld",
+          "toolbench"
+        ],
+        "selected_modeled_recall": 0.5,
+        "selected_actual_precision": 0.5,
+        "rank_by_modeled_gold": {
+          "alfworld": 6,
+          "hotpotqa": 4,
+          "humaneval": 2,
+          "mbpp": 5
+        }
+      },
+      "after": {
+        "selected": [
+          "scienceworld",
+          "humaneval",
+          "hotpotqa",
+          "mbpp",
+          "alfworld"
+        ],
+        "modeled_gold": [
+          "alfworld",
+          "hotpotqa",
+          "humaneval",
+          "mbpp"
+        ],
+        "selected_matches": [
+          "humaneval",
+          "hotpotqa",
+          "mbpp",
+          "alfworld"
+        ],
+        "selected_missing": [],
+        "selected_extras": [
+          "scienceworld"
+        ],
+        "selected_modeled_recall": 1.0,
+        "selected_actual_precision": 0.8,
+        "rank_by_modeled_gold": {
+          "alfworld": 5,
+          "hotpotqa": 3,
+          "humaneval": 2,
+          "mbpp": 4
+        }
+      },
+      "delta": {
+        "selected_modeled_recall": 0.5,
+        "selected_actual_precision": 0.30000000000000004
+      },
+      "unmodeled_gold": [
+        "LeetcodeHardGym",
+        "MultiPL-E language ports"
+      ]
+    },
+    {
+      "case_id": "case_003",
+      "source_title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "source_url": "https://arxiv.org/abs/2405.15793",
+      "previous_human_decision": "PARTIAL",
+      "previous_human_notes": "论文选用了两个Benchmark，而你也采用了两个Benchmark。有一个是和论文符合的，另外一个是Human Aerial Fix，而你用的是Human Aerial，应该是它的子集吧，感觉是部分符合的。",
+      "before": {
+        "selected": [
+          "swe_bench",
+          "humaneval"
+        ],
+        "modeled_gold": [
+          "swe_bench",
+          "humanevalfix"
+        ],
+        "selected_matches": [
+          "swe_bench"
+        ],
+        "selected_missing": [
+          "humanevalfix"
+        ],
+        "selected_extras": [
+          "humaneval"
+        ],
+        "selected_modeled_recall": 0.5,
+        "selected_actual_precision": 0.5,
+        "rank_by_modeled_gold": {
+          "swe_bench": 1,
+          "humanevalfix": 4
+        }
+      },
+      "after": {
+        "selected": [
+          "swe_bench",
+          "humanevalfix",
+          "humaneval"
+        ],
+        "modeled_gold": [
+          "swe_bench",
+          "humanevalfix"
+        ],
+        "selected_matches": [
+          "swe_bench",
+          "humanevalfix"
+        ],
+        "selected_missing": [],
+        "selected_extras": [
+          "humaneval"
+        ],
+        "selected_modeled_recall": 1.0,
+        "selected_actual_precision": 0.6666666666666666,
+        "rank_by_modeled_gold": {
+          "swe_bench": 1,
+          "humanevalfix": 2
+        }
+      },
+      "delta": {
+        "selected_modeled_recall": 0.5,
+        "selected_actual_precision": 0.16666666666666663
+      },
+      "unmodeled_gold": []
+    }
+  ]
+}

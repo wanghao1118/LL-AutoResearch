@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "case_id": "fresh2_001",
+  "status": "AUTOMATIC_LITERATURE_CHECK_PENDING",
+  "human_submission_required": false,
+  "profile": {
+    "task_families": [
+      "math_reasoning"
+    ],
+    "task_benchmark_counts": {},
+    "uncovered_task_families": [
+      "symbolic_reasoning"
+    ],
+    "modalities": [
+      "text"
+    ],
+    "interactions": [
+      "static"
+    ],
+    "output_types": [
+      "structured_answer"
+    ],
+    "environments": [],
+    "capabilities": [
+      "reasoning_action_interleaving",
+      "test_based_verification"
+    ],
+    "suggested_metrics": [
+      "answer_accuracy",
+      "task_accuracy"
+    ],
+    "evidence_terms": {
+      "capability:reasoning_action_interleaving": [
+        "interleave"
+      ],
+      "capability:test_based_verification": [
+        "compiler"
+      ],
+      "evaluation:declared_breadth": [
+        "we demonstrate the effectiveness of method_x across 13 arithmetic and symbolic reasoning tasks."
+      ],
+      "task:math_reasoning": [
+        "mathematical reasoning"
+      ],
+      "uncovered_task:symbolic_reasoning": [
+        "symbolic reasoning",
+        "symbolic reasoning task"
+      ]
+    },
+    "declared_evaluation_breadth": 13
+  },
+  "selected_benchmarks": [
+    "gsm8k",
+    "svamp"
+  ],
+  "top_6": [
+    "gsm8k",
+    "svamp",
+    "mmlu",
+    "realtoxicityprompts",
+    "fever",
+    "hotpotqa"
+  ],
+  "route": "base_benchmark_adaptation",
+  "blind_gold_loaded": false,
+  "next_automatic_step": "evaluate the sealed matcher output against source-paper benchmark evidence, then call autobench.auto_literature_review.write_review"
+}

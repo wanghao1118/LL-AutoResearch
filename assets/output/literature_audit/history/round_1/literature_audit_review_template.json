@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewer_id": null,
+  "reviews": [
+    {
+      "case_id": "case_001",
+      "source_verified": null,
+      "actual_benchmarks_verified": null,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    },
+    {
+      "case_id": "case_002",
+      "source_verified": null,
+      "actual_benchmarks_verified": null,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    },
+    {
+      "case_id": "case_003",
+      "source_verified": null,
+      "actual_benchmarks_verified": null,
+      "comparison_reviewed": null,
+      "decision": null,
+      "notes": null
+    }
+  ]
+}
