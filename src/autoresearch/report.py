@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .autobench import write_autobench_report
 from .schema import (
     ComparisonMatrix,
     GapEvidence,
@@ -564,9 +565,12 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
         output_dir,
         artifacts.topic,
     )
+    autobench_path = (
+        write_autobench_report(artifacts.autobench, output_dir) if artifacts.autobench else None
+    )
 
     lines = [
-        f"# Auto Search Report: {artifacts.topic}",
+        f"# AutoResearch Report: {artifacts.topic}",
         "",
         f"Generated at: `{artifacts.generated_at}`",
         "",
@@ -622,6 +626,8 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
     lines.append(f"- Research opportunities: `{opportunity_path.name}`")
     lines.append(f"- Weakness report: `{weakness_path.name}`")
     lines.append(f"- Weakness evidence completion: `{weakness_completion_path.name}`")
+    if autobench_path:
+        lines.append(f"- AutoBench benchmark coverage: `{autobench_path.name}`")
     if artifacts.synthesis:
         lines.append("- LLM-style synthesis: `analysis_report.md`")
 

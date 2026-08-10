@@ -1,10 +1,11 @@
 # AutoResearch
 
-AutoResearch is an evidence-grounded research workflow engine. The first MVP focuses only on
-Auto Search:
+AutoResearch is an evidence-grounded research workflow engine. The current workflow contains
+Auto Search and the AutoBench module:
 
 ```text
-research topic -> papers -> paper cards -> field map -> gap evidence report
+research topic -> papers -> paper cards -> field map -> weakness evidence
+               -> AutoBench coverage decision -> reuse / adapt / construct benchmark
 ```
 
 It is intentionally not a paper-writing machine. The goal is to produce a research map that can
@@ -44,6 +45,16 @@ To regenerate the Chinese synthesis and UI from an existing run:
 ```bash
 autoresearch synthesize outputs/gui-agent-benchmark-real-world-workflow
 ```
+
+To recompute AutoBench from an existing AutoResearch run:
+
+```bash
+autoresearch bench outputs/gui-agent-benchmark-real-world-workflow
+```
+
+AutoBench evaluates every Weakness independently. It reports which benchmark from which paper can
+prove each evaluation dimension, which dimensions remain uncovered, and whether the route should be
+direct reuse, base-benchmark adaptation, or new benchmark construction.
 
 To serve generated dashboards through a small read-only web server:
 
@@ -124,6 +135,8 @@ outputs/<topic-slug>/
   gap_evidence_chains.md
   research_opportunities.json
   research_opportunities.md
+  autobench.json
+  autobench.md
   report.md
   weakness_report.md
 ```
@@ -173,6 +186,10 @@ outputs/<topic-slug>/
 - Gap Evidence Chain v2 paper-level judgments: each paper is marked as support, counter, or unclear
   for each gap, with missing evidence and influence signals.
 - Gap evidence chain Markdown export plus evidence-backed research opportunity generation.
+- AutoBench module inside the AutoResearch system: maps every Weakness to benchmark candidates from
+  the same literature run, records source-paper and section provenance, identifies the dimensions
+  each candidate can prove, and chooses direct reuse, base-benchmark adaptation, or new benchmark
+  construction.
 - Chinese synthesis layer that lets Codex stand in for the later LLM step by summarizing Domain
   Profile, source quality, MOC takeaways, Gap evidence chains, limitations, and next actions into
   `analysis_report.md` and `synthesis.json`.

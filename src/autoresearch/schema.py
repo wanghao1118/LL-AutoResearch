@@ -390,6 +390,45 @@ class ResearchOpportunity(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
 
 
+class BenchmarkCandidateEvidence(BaseModel):
+    benchmark_name: str
+    source_paper: str
+    source_url: str = ""
+    dataset: str = ""
+    task: str = ""
+    metrics: list[str] = Field(default_factory=list)
+    covered_dimensions: list[str] = Field(default_factory=list)
+    source_sections: list[str] = Field(default_factory=list)
+    source_evidence_status: str = "structured_paper_card"
+    evidence_snippets: list[EvidenceSnippet] = Field(default_factory=list)
+    coverage_ratio: float = 0.0
+    coverage_reason: str = ""
+
+
+class WeaknessBenchmarkAssessment(BaseModel):
+    weakness_statement: str
+    decision: str = "no_existing_benchmark"
+    route: str = "new_benchmark_construction"
+    required_dimensions: list[str] = Field(default_factory=list)
+    benchmark_candidates: list[BenchmarkCandidateEvidence] = Field(default_factory=list)
+    proven_parts: list[str] = Field(default_factory=list)
+    missing_evaluation_dimensions: list[str] = Field(default_factory=list)
+    requires_benchmark_adaptation: bool = False
+    requires_new_benchmark: bool = True
+    rationale: str = ""
+    construction_plan: list[str] = Field(default_factory=list)
+
+
+class AutoBenchReport(BaseModel):
+    topic: str
+    status: str = "complete"
+    source_scope: str = "paper_introduction_and_method_with_structured_card_fallback"
+    assessments: list[WeaknessBenchmarkAssessment] = Field(default_factory=list)
+    existing_count: int = 0
+    partial_count: int = 0
+    new_benchmark_count: int = 0
+
+
 class SynthesisGapSummary(BaseModel):
     gap: str
     judgment: str = ""
@@ -436,6 +475,7 @@ class SearchArtifacts(BaseModel):
     gaps: list[GapEvidence]
     weakness_cards: list[WeaknessCard] = Field(default_factory=list)
     research_opportunities: list[ResearchOpportunity] = Field(default_factory=list)
+    autobench: AutoBenchReport | None = None
     synthesis: SynthesisReport | None = None
     warnings: list[str] = Field(default_factory=list)
 
@@ -502,3 +542,7 @@ class SearchArtifacts(BaseModel):
             + "]\n",
             encoding="utf-8",
         )
+        if self.autobench:
+            (output_dir / "autobench.json").write_text(
+                self.autobench.model_dump_json(indent=2), encoding="utf-8"
+            )

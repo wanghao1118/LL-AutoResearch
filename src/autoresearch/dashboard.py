@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .autobench import ensure_autobench_report
 from .schema import SearchArtifacts
 from .weakness import ensure_weakness_cards
 
@@ -15,13 +16,15 @@ def load_artifacts(path: Path) -> SearchArtifacts:
     artifact_path = path
     if path.is_dir():
         artifact_path = path / "search_result.json"
-    return ensure_weakness_cards(
-        SearchArtifacts.model_validate_json(artifact_path.read_text(encoding="utf-8"))
+    return ensure_autobench_report(
+        ensure_weakness_cards(
+            SearchArtifacts.model_validate_json(artifact_path.read_text(encoding="utf-8"))
+        )
     )
 
 
 def write_dashboard(artifacts: SearchArtifacts, output_dir: Path) -> Path:
-    artifacts = ensure_weakness_cards(artifacts)
+    artifacts = ensure_autobench_report(ensure_weakness_cards(artifacts))
     output_dir.mkdir(parents=True, exist_ok=True)
     html = HTML_TEMPLATE.replace("__AUTORESEARCH_DATA__", _safe_json(artifacts))
     path = output_dir / "dashboard.html"
@@ -402,6 +405,7 @@ HTML_TEMPLATE = """<!doctype html>
         <button class="link-button" data-tab-go="papers" type="button">论文依据</button>
         <button class="link-button" data-tab-go="moc" type="button">MOC</button>
         <button class="link-button" data-tab-go="gaps" type="button">Weakness 证据链</button>
+        <button class="link-button" data-tab-go="autobench" type="button">AutoBench</button>
       </div>
     </header>
 
@@ -414,6 +418,7 @@ HTML_TEMPLATE = """<!doctype html>
       <button class="tab-button" data-tab="papers">论文依据</button>
       <button class="tab-button" data-tab="moc">MOC</button>
       <button class="tab-button" data-tab="gaps">Weakness 证据链</button>
+      <button class="tab-button" data-tab="autobench">AutoBench</button>
       <button class="tab-button" data-tab="opportunities">后续方向</button>
       <button class="tab-button" data-tab="overview">系统信息</button>
     </nav>
@@ -423,6 +428,7 @@ HTML_TEMPLATE = """<!doctype html>
     <section id="papers" class="section"></section>
     <section id="moc" class="section"></section>
     <section id="gaps" class="section"></section>
+    <section id="autobench" class="section"></section>
     <section id="opportunities" class="section"></section>
     <section id="synthesis" class="section"></section>
   </main>
@@ -1202,6 +1208,7 @@ HTML_TEMPLATE = """<!doctype html>
         metric("核心证据", tiers.core || 0, `相邻 ${tiers.adjacent || 0}；噪声 ${tiers.noise || 0}`),
         metric("MOC 空间", mocCount, "问题空间分组"),
         metric("Gap", data.gaps?.length || 0, "带证据的判断"),
+        metric("AutoBench", data.autobench?.assessments?.length || 0, "Weakness 的 Benchmark 覆盖判断"),
         metric("研究机会", data.research_opportunities?.length || 0, "候选项目方向"),
         metric("综合分析", statusLabel(data.synthesis?.status), "Codex 代替 LLM 生成"),
         metric("判断来源", source.label, source.note),
@@ -1544,6 +1551,77 @@ HTML_TEMPLATE = """<!doctype html>
       `;
     };
 
+    const renderAutobench = () => {
+      const report = data.autobench || { assessments: [] };
+      const decisionLabels = {
+        existing_benchmark: "存在可直接使用的 Benchmark",
+        partial_benchmark: "部分覆盖，需要改造 Benchmark",
+        no_existing_benchmark: "没有现成 Benchmark，需要构造",
+      };
+      document.getElementById("autobench").innerHTML = `
+        <div class="toolbar">
+          <div>
+            <h2>AutoBench：Weakness → Benchmark</h2>
+            <p class="subtle">逐项说明候选 Benchmark 来自哪篇论文、能证明什么、还缺什么评估维度。</p>
+          </div>
+          <div class="badge-row">
+            <span class="badge teal">现成 ${esc(report.existing_count || 0)}</span>
+            <span class="badge warn">需改造 ${esc(report.partial_count || 0)}</span>
+            <span class="badge danger">需新建 ${esc(report.new_benchmark_count || 0)}</span>
+          </div>
+        </div>
+        ${(report.assessments || []).map((assessment, idx) => `
+          <details class="card fold-card" ${idx === 0 ? "open" : ""}>
+            <summary class="fold-summary">
+              <div>
+                <h3>Weakness ${idx + 1}: ${esc(zh(assessment.weakness_statement))}</h3>
+                <p class="subtle">${esc(decisionLabels[assessment.decision] || assessment.decision)}</p>
+              </div>
+            </summary>
+            <div class="fold-content">
+              <div class="gap-detail-grid">
+                <section class="gap-detail-box">
+                  <h4>所需评估维度</h4>
+                  <ul class="evidence-list">${(assessment.required_dimensions || []).map(item => `<li>${esc(zh(item))}</li>`).join("")}</ul>
+                </section>
+                <section class="gap-detail-box">
+                  <h4>已能证明</h4>
+                  <ul class="evidence-list">${(assessment.proven_parts || []).map(item => `<li>${esc(zh(item))}</li>`).join("") || "<li>无</li>"}</ul>
+                </section>
+                <section class="gap-detail-box">
+                  <h4>仍缺维度</h4>
+                  <ul class="evidence-list">${(assessment.missing_evaluation_dimensions || []).map(item => `<li>${esc(zh(item))}</li>`).join("") || "<li>无</li>"}</ul>
+                </section>
+                <section class="gap-detail-box">
+                  <h4>执行路由</h4>
+                  <p><code>${esc(assessment.route)}</code></p>
+                  <p>${esc(zh(assessment.rationale))}</p>
+                </section>
+              </div>
+              <h3 style="margin-top:16px;">候选 Benchmark 与论文依据</h3>
+              <div class="grid-2">
+                ${(assessment.benchmark_candidates || []).map(candidate => `
+                  <article class="card">
+                    <h4>${esc(candidate.benchmark_name)}</h4>
+                    <dl class="kv">
+                      <dt>来源论文</dt><dd><a href="${esc(candidate.source_url)}" target="_blank" rel="noreferrer">${esc(candidate.source_paper)}</a></dd>
+                      <dt>来源章节</dt><dd>${join(candidate.source_sections)}</dd>
+                      <dt>证据状态</dt><dd>${esc(candidate.source_evidence_status)}</dd>
+                      <dt>任务</dt><dd>${esc(zh(candidate.task || "not explicit"))}</dd>
+                      <dt>指标</dt><dd>${join(candidate.metrics)}</dd>
+                      <dt>能证明</dt><dd>${join(candidate.covered_dimensions)}</dd>
+                    </dl>
+                  </article>
+                `).join("") || `<div class="empty">当前论文集合中没有匹配候选。</div>`}
+              </div>
+              <h3 style="margin-top:16px;">下一步</h3>
+              <ol class="evidence-list">${(assessment.construction_plan || []).map(item => `<li>${esc(zh(item))}</li>`).join("")}</ol>
+            </div>
+          </details>
+        `).join("") || `<div class="empty">本次没有 Weakness 可供 AutoBench 判断。</div>`}
+      `;
+    };
+
     const renderOpportunities = () => {
       const opportunities = data.research_opportunities || [];
       document.getElementById("opportunities").innerHTML = `
@@ -1678,6 +1756,7 @@ HTML_TEMPLATE = """<!doctype html>
       renderPapers();
       renderMoc();
       renderGaps();
+      renderAutobench();
       renderOpportunities();
       renderSynthesis();
     };

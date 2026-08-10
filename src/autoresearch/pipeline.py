@@ -5,6 +5,7 @@ from pathlib import Path
 
 from rich.console import Console
 
+from .autobench import build_autobench_report
 from .collectors import (
     search_arxiv,
     search_crossref,
@@ -210,6 +211,7 @@ def run_search(
         research_opportunities=research_opportunities,
         warnings=warnings,
     )
+    artifacts.autobench = build_autobench_report(artifacts)
     artifacts.synthesis = build_synthesis(artifacts)
     artifacts.write_json(output_dir)
     write_analysis_report(artifacts, output_dir)

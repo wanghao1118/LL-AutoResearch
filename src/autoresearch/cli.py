@@ -5,6 +5,7 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from .autobench import build_autobench_report
 from .codex_review import apply_codex_review_to_output, write_codex_review_packet
 from .dashboard import load_artifacts, write_dashboard
 from .domain_profile import generate_domain_profile, save_domain_profile
@@ -82,6 +83,13 @@ def search(
     console.print(f"[bold green]Done[/bold green] wrote artifacts to {output_dir}")
     console.print(f"Papers: {len(artifacts.ranked_papers)}")
     console.print(f"Weaknesses: {len(artifacts.weakness_cards)}")
+    if artifacts.autobench:
+        console.print(
+            "AutoBench: "
+            f"existing={artifacts.autobench.existing_count}, "
+            f"partial={artifacts.autobench.partial_count}, "
+            f"new={artifacts.autobench.new_benchmark_count}"
+        )
     console.print(f"Report: {output_dir / 'report.md'}")
     console.print(f"Dashboard: {output_dir / 'dashboard.html'}")
 
@@ -103,6 +111,30 @@ def synthesize(
     path = write_dashboard(artifacts, target_dir)
     console.print(f"[bold green]Done[/bold green] wrote synthesis to {analysis_path}")
     console.print(f"Dashboard: {path}")
+
+
+@app.command()
+def bench(
+    artifact_path: Path = typer.Argument(  # noqa: B008
+        ...,
+        help="AutoResearch output directory or search_result.json path.",
+    ),
+) -> None:
+    """Build AutoBench decisions from an existing AutoSearch run."""
+    artifacts = load_artifacts(artifact_path)
+    target_dir = artifact_path if artifact_path.is_dir() else artifact_path.parent
+    artifacts.autobench = build_autobench_report(artifacts)
+    artifacts.write_json(target_dir)
+    write_report(artifacts, target_dir)
+    dashboard_path = write_dashboard(artifacts, target_dir)
+    report = artifacts.autobench
+    console.print(f"[bold green]Done[/bold green] wrote AutoBench artifacts to {target_dir}")
+    console.print(
+        f"Existing: {report.existing_count}; Partial: {report.partial_count}; "
+        f"New benchmark: {report.new_benchmark_count}"
+    )
+    console.print(f"Report: {target_dir / 'autobench.md'}")
+    console.print(f"Dashboard: {dashboard_path}")
 
 
 @app.command("codex-packet")

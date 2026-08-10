@@ -93,6 +93,8 @@ def test_write_dashboard_creates_static_html(tmp_path):
     assert "当前领域 Profile" in html
     assert "论文依据" in html
     assert "Weakness 证据链" in html
+    assert "AutoBench" in html
+    assert "Weakness → Benchmark" in html
     assert "判断来源" in html
     assert "Seed 起点" in html
     assert "Paper Seed 库" in html
@@ -108,6 +110,7 @@ def test_write_dashboard_creates_static_html(tmp_path):
     assert "Codex-reviewed" in html
     assert "LLM 抽取概况" in html
     assert "data-tab-go=\"gaps\"" in html
+    assert "data-tab-go=\"autobench\"" in html
     assert "fold-summary" in html
     assert "原始题名" in html
     assert "原文证据片段（默认收起）" in html
