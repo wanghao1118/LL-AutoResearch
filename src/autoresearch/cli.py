@@ -6,11 +6,18 @@ import typer
 from rich.console import Console
 
 from .bench import (
+    BenchMOC,
+    BenchMOCReviewResult,
+    apply_bench_moc_review,
+    build_bench_moc_review_packet,
+    generate_bench_moc,
     match_benchmarks,
     search_benchmarks,
     understand_benchmark,
     write_bench_card_report,
     write_bench_evidence_block,
+    write_bench_moc,
+    write_bench_moc_review_packet,
 )
 from .bench.catalog import list_seed_benches
 from .codex_review import apply_codex_review_to_output, write_codex_review_packet
@@ -168,6 +175,81 @@ def bench_search(
             f"matched={', '.join(result.matched_keywords) or 'none'} "
             f"domain={', '.join(result.domain[:3]) or 'none'}"
         )
+
+
+@bench_app.command("moc")
+def bench_moc(
+    output_root: Path = typer.Option(  # noqa: B008
+        DEFAULT_OUTPUT_ROOT,
+        help="Directory for Bench MOC artifacts.",
+    ),
+) -> None:
+    """Generate a rule-based Bench MOC from the seed BenchCard catalog."""
+    moc = generate_bench_moc()
+    json_path, md_path = write_bench_moc(moc, output_root=output_root)
+    console.print("[bold green]Done[/bold green] wrote Bench MOC")
+    console.print(f"Problem spaces: {len(moc.problem_spaces)}")
+    console.print(f"Relations: {len(moc.relations)}")
+    console.print(f"Benchmark-level weaknesses: {len(moc.benchmark_level_weaknesses)}")
+    console.print(f"JSON: {json_path}")
+    console.print(f"Markdown: {md_path}")
+
+
+@bench_app.command("moc-packet")
+def bench_moc_packet(
+    output_root: Path = typer.Option(  # noqa: B008
+        DEFAULT_OUTPUT_ROOT,
+        help="Directory for Bench MOC review artifacts.",
+    ),
+    moc_path: Path | None = typer.Option(  # noqa: B008
+        None,
+        help="Existing bench_moc.json to package. Defaults to outputs/bench-moc/bench_moc.json.",
+    ),
+) -> None:
+    """Export a Codex Review packet for the Bench MOC."""
+    default_moc_path = output_root / "bench-moc" / "bench_moc.json"
+    target_path = moc_path or default_moc_path
+    if target_path.exists():
+        moc = BenchMOC.model_validate_json(target_path.read_text(encoding="utf-8"))
+    else:
+        moc = generate_bench_moc()
+        write_bench_moc(moc, output_root=output_root)
+    packet = build_bench_moc_review_packet(moc)
+    packet_md, packet_json, template_json = write_bench_moc_review_packet(packet, output_root=output_root)
+    console.print("[bold green]Done[/bold green] wrote Bench MOC Codex Review packet")
+    console.print(f"Packet Markdown: {packet_md}")
+    console.print(f"Packet JSON: {packet_json}")
+    console.print(f"Result template: {template_json}")
+
+
+@bench_app.command("moc-apply")
+def bench_moc_apply(
+    review_result_path: Path = typer.Argument(  # noqa: B008
+        ...,
+        help="Filled bench_moc_review_result JSON.",
+    ),
+    output_root: Path = typer.Option(  # noqa: B008
+        DEFAULT_OUTPUT_ROOT,
+        help="Directory for Bench MOC artifacts.",
+    ),
+    moc_path: Path | None = typer.Option(  # noqa: B008
+        None,
+        help="Existing bench_moc.json. Defaults to outputs/bench-moc/bench_moc.json.",
+    ),
+) -> None:
+    """Apply a Codex Review result back into the Bench MOC."""
+    target_moc_path = moc_path or output_root / "bench-moc" / "bench_moc.json"
+    if target_moc_path.exists():
+        moc = BenchMOC.model_validate_json(target_moc_path.read_text(encoding="utf-8"))
+    else:
+        moc = generate_bench_moc()
+        write_bench_moc(moc, output_root=output_root)
+    review = BenchMOCReviewResult.model_validate_json(review_result_path.read_text(encoding="utf-8"))
+    reviewed = apply_bench_moc_review(moc, review)
+    json_path, md_path = write_bench_moc(reviewed, output_root=output_root, reviewed=True)
+    console.print("[bold green]Done[/bold green] applied Bench MOC Codex Review")
+    console.print(f"Reviewed JSON: {json_path}")
+    console.print(f"Reviewed Markdown: {md_path}")
 
 
 @app.command()

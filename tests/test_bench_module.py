@@ -3,7 +3,22 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from autoresearch.bench.matcher import infer_requirements, match_benchmarks
-from autoresearch.bench.report import write_bench_card_report, write_bench_evidence_block
+from autoresearch.bench.moc import (
+    apply_bench_moc_review,
+    build_bench_moc_review_packet,
+    generate_bench_moc,
+)
+from autoresearch.bench.report import (
+    write_bench_card_report,
+    write_bench_evidence_block,
+    write_bench_moc,
+    write_bench_moc_review_packet,
+)
+from autoresearch.bench.schema import (
+    BenchmarkWeaknessReview,
+    BenchMOCReviewResult,
+    BenchProblemSpaceReview,
+)
 from autoresearch.bench.understand import search_benchmarks, understand_benchmark
 from autoresearch.cli import app
 
@@ -109,6 +124,81 @@ def test_search_benchmarks_by_keyword():
     assert any("openai" in item.matched_keywords for item in results)
 
 
+def test_generate_bench_moc_contains_problem_spaces_and_weaknesses():
+    moc = generate_bench_moc()
+    space_names = [space.name for space in moc.problem_spaces]
+    weakness_claims = [weakness.claim for weakness in moc.benchmark_level_weaknesses]
+
+    assert "真实工作流评估" in space_names
+    assert "GUI Agent 任务完成评估" in space_names
+    assert any("跨 Bench 分数不能直接横向比较" in claim for claim in weakness_claims)
+    assert any("失败" in claim for claim in weakness_claims)
+
+
+def test_bench_moc_relations_capture_gui_and_workflow_links():
+    moc = generate_bench_moc()
+    relation_keys = {
+        (relation.source_bench, relation.target_bench, relation.relation_type) for relation in moc.relations
+    }
+
+    assert any(
+        {"OSWorld", "AndroidWorld"} == {source, target} and relation_type == "same_capability"
+        for source, target, relation_type in relation_keys
+    )
+    assert any(
+        "GUI-RobustEval" in {source, target} and relation_type == "complementary"
+        for source, target, relation_type in relation_keys
+    )
+
+
+def test_write_bench_moc_and_review_packet(tmp_path: Path):
+    moc = generate_bench_moc()
+    moc_json, moc_md = write_bench_moc(moc, output_root=tmp_path)
+    packet = build_bench_moc_review_packet(moc)
+    packet_md, packet_json, template_json = write_bench_moc_review_packet(packet, output_root=tmp_path)
+
+    assert moc_json.exists()
+    assert moc_md.exists()
+    assert "Bench MOC" in moc_md.read_text(encoding="utf-8")
+    assert packet_md.exists()
+    assert packet_json.exists()
+    assert template_json.exists()
+    assert "problem_space_reviews" in template_json.read_text(encoding="utf-8")
+
+
+def test_apply_bench_moc_review_refines_problem_space_and_weakness():
+    moc = generate_bench_moc()
+    original_claim = moc.benchmark_level_weaknesses[0].claim
+    review = BenchMOCReviewResult(
+        overall_verdict="keep-with-revision",
+        summary="MOC 初稿可用，但问题空间命名需要更精确。",
+        problem_space_reviews=[
+            BenchProblemSpaceReview(
+                space_id="real_world_workflow",
+                verdict="keep",
+                rename_to="真实工作流产物与任务完成评估",
+                reason="OSWorld 更偏 GUI 操作，应作为相邻证据阅读。",
+            )
+        ],
+        weakness_reviews=[
+            BenchmarkWeaknessReview(
+                claim=original_claim,
+                verdict="keep",
+                revision="跨 workflow Bench 的分数不能直接横向比较，因为任务、指标和 judge 口径不统一。",
+                evidence=["metric_mismatch relations"],
+                confidence="high",
+            )
+        ],
+    )
+
+    reviewed = apply_bench_moc_review(moc, review)
+
+    assert reviewed.generation_status == "codex-reviewed"
+    assert reviewed.review_summary == review.summary
+    assert any(space.name == "真实工作流产物与任务完成评估" for space in reviewed.problem_spaces)
+    assert reviewed.benchmark_level_weaknesses[0].review_status == "codex-reviewed"
+
+
 def test_bench_match_cli(tmp_path: Path):
     runner = CliRunner()
 
@@ -157,3 +247,40 @@ def test_bench_search_cli():
     assert result.exit_code == 0
     assert "Bench search" in result.output
     assert "FAB" in result.output
+
+
+def test_bench_moc_cli_roundtrip(tmp_path: Path):
+    runner = CliRunner()
+
+    moc_result = runner.invoke(app, ["bench", "moc", "--output-root", str(tmp_path)])
+    assert moc_result.exit_code == 0
+    assert "Bench MOC" in moc_result.output
+
+    packet_result = runner.invoke(app, ["bench", "moc-packet", "--output-root", str(tmp_path)])
+    assert packet_result.exit_code == 0
+    assert list(tmp_path.glob("bench-moc/bench_moc_review_packet.md"))
+
+    review = BenchMOCReviewResult(
+        overall_verdict="keep",
+        summary="测试写回。",
+        problem_space_reviews=[
+            BenchProblemSpaceReview(space_id="real_world_workflow", verdict="keep", rename_to="真实工作流评估")
+        ],
+    )
+    review_path = tmp_path / "bench_moc_review_result.json"
+    review_path.write_text(review.model_dump_json(indent=2), encoding="utf-8")
+
+    apply_result = runner.invoke(
+        app,
+        [
+            "bench",
+            "moc-apply",
+            str(review_path),
+            "--output-root",
+            str(tmp_path),
+        ],
+    )
+
+    assert apply_result.exit_code == 0
+    assert "applied Bench MOC Codex Review" in apply_result.output
+    assert list(tmp_path.glob("bench-moc/bench_moc_reviewed.md"))

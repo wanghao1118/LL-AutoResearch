@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ..utils import slugify
-from .schema import BenchCard, BenchEvidenceBlock
+from .schema import BenchCard, BenchEvidenceBlock, BenchMOC, BenchMOCReviewPacket
 
 VERDICT_ZH = {
     "sufficient": "基本可用",
@@ -184,6 +184,170 @@ def write_bench_card_report(
     return json_path, md_path
 
 
+def render_bench_moc_markdown(moc: BenchMOC) -> str:
+    lines = [
+        f"# {moc.title}",
+        "",
+        "## 状态",
+        "",
+        f"- 生成状态：{moc.generation_status}",
+        f"- 问题空间数量：{len(moc.problem_spaces)}",
+        f"- Bench 关系数量：{len(moc.relations)}",
+        f"- Benchmark-level weakness 数量：{len(moc.benchmark_level_weaknesses)}",
+    ]
+    if moc.review_summary:
+        lines.extend(["", f"- Codex Review 总结：{moc.review_summary}"])
+    lines.extend(["", "## 1. 问题空间", ""])
+    for index, space in enumerate(moc.problem_spaces, start=1):
+        lines.extend(
+            [
+                f"### {index}. {space.name}",
+                "",
+                f"- ID：`{space.space_id}`",
+                f"- 描述：{space.description}",
+                f"- 置信度：{CONFIDENCE_ZH.get(space.confidence, space.confidence)}",
+                f"- 核心 Bench：{_join(space.core_benches)}",
+                f"- 相邻 Bench：{_join(space.adjacent_benches)}",
+                f"- 共享能力：{_join(space.shared_capabilities)}",
+                f"- 共享指标：{_join(space.shared_metrics)}",
+                "",
+                "共同弱点 / 需要核验:",
+                "",
+                *_bullet_lines(space.common_weaknesses),
+                "",
+            ]
+        )
+    lines.extend(["## 2. Bench 关系", ""])
+    for relation in moc.relations:
+        lines.extend(
+            [
+                f"### {relation.source_bench} -> {relation.target_bench}",
+                "",
+                f"- 关系类型：{RELATION_TYPE_ZH.get(relation.relation_type, relation.relation_type)}",
+                f"- 置信度：{CONFIDENCE_ZH.get(relation.confidence, relation.confidence)}",
+                f"- 判断理由：{relation.rationale}",
+                "",
+                "证据字段:",
+                "",
+                *_bullet_lines(relation.evidence),
+                "",
+            ]
+        )
+    lines.extend(["## 3. Benchmark-level Weakness", ""])
+    for weakness in moc.benchmark_level_weaknesses:
+        lines.extend(
+            [
+                f"### {weakness.claim}",
+                "",
+                f"- 类型：{WEAKNESS_TYPE_ZH.get(weakness.weakness_type, weakness.weakness_type)}",
+                f"- 严重程度：{CONFIDENCE_ZH.get(weakness.severity, weakness.severity)}",
+                f"- 审查状态：{weakness.review_status}",
+                f"- 涉及 Bench：{_join(weakness.involved_benches)}",
+                "",
+                "支持证据:",
+                "",
+                *_bullet_lines(weakness.evidence),
+                "",
+                "反证 / 限定:",
+                "",
+                *_bullet_lines(weakness.counter_evidence),
+                "",
+            ]
+        )
+    lines.extend(["## 4. 备注", "", *_bullet_lines(moc.notes), ""])
+    return "\n".join(lines)
+
+
+def write_bench_moc(
+    moc: BenchMOC,
+    output_root: Path = Path("outputs"),
+    *,
+    reviewed: bool = False,
+) -> tuple[Path, Path]:
+    output_dir = output_root / "bench-moc"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    stem = "bench_moc_reviewed" if reviewed else "bench_moc"
+    json_path = output_dir / f"{stem}.json"
+    md_path = output_dir / f"{stem}.md"
+    json_path.write_text(moc.model_dump_json(indent=2), encoding="utf-8")
+    md_path.write_text(render_bench_moc_markdown(moc), encoding="utf-8")
+    return json_path, md_path
+
+
+def render_bench_moc_review_packet_markdown(packet: BenchMOCReviewPacket) -> str:
+    lines = [
+        "# Bench MOC Codex Review Packet",
+        "",
+        "## 审查说明",
+        "",
+        *_bullet_lines(packet.instructions),
+        "",
+        "## 审查问题",
+        "",
+        *_bullet_lines(packet.review_questions),
+        "",
+        "## 待审查 MOC 摘要",
+        "",
+        f"- 标题：{packet.moc.title}",
+        f"- 问题空间：{len(packet.moc.problem_spaces)}",
+        f"- Bench 关系：{len(packet.moc.relations)}",
+        f"- Benchmark-level weakness：{len(packet.moc.benchmark_level_weaknesses)}",
+        "",
+        "## 问题空间",
+        "",
+    ]
+    for space in packet.moc.problem_spaces:
+        lines.extend(
+            [
+                f"### {space.name} (`{space.space_id}`)",
+                "",
+                f"- 核心 Bench：{_join(space.core_benches)}",
+                f"- 相邻 Bench：{_join(space.adjacent_benches)}",
+                f"- 共同弱点：{_join(space.common_weaknesses)}",
+                "",
+            ]
+        )
+    lines.extend(["## Benchmark-level Weakness", ""])
+    for weakness in packet.moc.benchmark_level_weaknesses:
+        lines.extend(
+            [
+                f"### {weakness.claim}",
+                "",
+                f"- 涉及 Bench：{_join(weakness.involved_benches)}",
+                f"- 证据：{_join(weakness.evidence)}",
+                f"- 反证 / 限定：{_join(weakness.counter_evidence)}",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## 输出模板",
+            "",
+            (
+                "请填写同目录下的 `bench_moc_review_result.template.json`，再用 "
+                "`autoresearch bench moc-apply <review-result.json>` 写回。"
+            ),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def write_bench_moc_review_packet(
+    packet: BenchMOCReviewPacket,
+    output_root: Path = Path("outputs"),
+) -> tuple[Path, Path, Path]:
+    output_dir = output_root / "bench-moc"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    packet_json = output_dir / "bench_moc_review_packet.json"
+    packet_md = output_dir / "bench_moc_review_packet.md"
+    template_json = output_dir / "bench_moc_review_result.template.json"
+    packet_json.write_text(packet.model_dump_json(indent=2), encoding="utf-8")
+    packet_md.write_text(render_bench_moc_review_packet_markdown(packet), encoding="utf-8")
+    template_json.write_text(_json_dump(packet.result_template), encoding="utf-8")
+    return packet_md, packet_json, template_json
+
+
 def _join(values: list[str]) -> str:
     return ", ".join(values) if values else "无"
 
@@ -253,3 +417,27 @@ def _dedupe(values: list[str]) -> list[str]:
         seen.add(normalized)
         result.append(value)
     return result
+
+
+RELATION_TYPE_ZH = {
+    "same_capability": "相同/相近能力",
+    "complementary": "互补",
+    "domain_specialization": "领域特化",
+    "metric_mismatch": "指标口径不同",
+    "reproducibility_risk": "复现风险相关",
+    "incomparable": "不可直接比较",
+}
+
+WEAKNESS_TYPE_ZH = {
+    "coverage_gap": "覆盖缺口",
+    "domain_generalization_risk": "领域外推风险",
+    "failure_diagnosis_gap": "失败诊断缺口",
+    "metric_mismatch": "指标不一致",
+    "reproducibility_risk": "复现风险",
+}
+
+
+def _json_dump(value: dict) -> str:
+    import json
+
+    return json.dumps(value, ensure_ascii=False, indent=2)

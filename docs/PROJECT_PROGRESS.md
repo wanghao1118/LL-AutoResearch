@@ -403,6 +403,50 @@
   - PR creation URL:
     `https://github.com/zhengwenxin79-ctrl/AutoResearch/pull/new/codex/bench-module-experiment`
   - local worktree status after push: clean and tracking the remote branch
+- Implemented Bench MOC + Codex Review MVP:
+  - added structured MOC schemas:
+    `BenchProblemSpace`, `BenchRelation`, `BenchmarkLevelWeakness`, `BenchMOC`,
+    `BenchMOCReviewPacket`, and `BenchMOCReviewResult`
+  - added rule-based Bench MOC generation from the seed BenchCard catalog
+  - current generated problem spaces:
+    `real_world_workflow`, `gui_agent_task_completion`, `failure_recovery_robustness`,
+    `finance_agent_workflow`, `reproducible_scoring`, and `medical_multimodal_evaluation`
+  - added Bench relation types:
+    `same_capability`, `complementary`, `domain_specialization`, `metric_mismatch`,
+    `reproducibility_risk`, and `incomparable`
+  - added benchmark-level weakness generation for:
+    cross-benchmark score incomparability, reproducibility risk, GUI failure-diagnosis gaps,
+    domain-generalization risk, and medical VLM temporal-evaluation coverage gaps
+  - added Codex Review packet export so Codex can audit problem spaces, Bench membership, relations,
+    and weakness claims instead of generating judgments from scratch
+  - added Codex Review apply path to write reviewed MOC artifacts while preserving the distinction
+    between `rule-generated` and `codex-reviewed`
+  - added CLI commands:
+    - `autoresearch bench moc`
+    - `autoresearch bench moc-packet`
+    - `autoresearch bench moc-apply <review-result.json>`
+- Bench MOC demo output:
+  - command: `autoresearch bench moc --output-root outputs`
+  - output: `outputs/bench-moc/bench_moc.json`
+  - output: `outputs/bench-moc/bench_moc.md`
+  - current rule-generated MOC contains `6` problem spaces, `35` Bench relations, and `5`
+    benchmark-level weaknesses
+  - command: `autoresearch bench moc-packet --output-root outputs`
+  - output: `outputs/bench-moc/bench_moc_review_packet.md`
+  - output: `outputs/bench-moc/bench_moc_review_packet.json`
+  - output: `outputs/bench-moc/bench_moc_review_result.template.json`
+- Bench MOC implementation note:
+  - MOC grouping now uses positive BenchCard fields such as domain, keywords, capabilities, task
+    format, metrics, scoring protocol, judge type, sources, strengths, and suitable-for fields
+  - benchmark weaknesses and not-suitable fields are used for risk/weakness generation, not for
+    positive problem-space membership
+  - this prevents a benchmark from being grouped into a space merely because its weakness says it
+    does not cover that space
+- Bench MOC validation:
+  - `tests/test_bench_module.py`: `16` passed
+  - full test suite: `51` passed
+  - `ruff check .`: all checks passed
+  - warning note: PyMuPDF/SWIG deprecation warnings remain environment-level warnings
 
 ## Next
 
@@ -415,4 +459,8 @@
 - Add HF datasets case inspection for Bench Understanding.
 - Add benchmark-paper PDF wrapping for task design, metrics, baseline, and limitation extraction.
 - Add leaderboard/model-result extraction for tracking which base models have evaluated each benchmark.
-- Add Bench MOC to compare related benchmarks and identify benchmark-level weaknesses.
+- Refine Bench MOC relation scoring and problem-space membership after Codex Review.
+- Use Codex Review on the generated Bench MOC packet to prune noisy adjacent memberships and refine
+  benchmark-level weakness wording.
+- Add source-level evidence references inside Bench MOC relations after HF/PDF/leaderboard extraction
+  is available.
