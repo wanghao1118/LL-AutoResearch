@@ -7,6 +7,8 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from .dashboard import write_dashboard
+from .evidence_coverage import build_evidence_coverage
+from .moc_gap import moc_candidates_to_gaps
 from .report import write_report
 from .schema import (
     ComparisonMatrix,
@@ -14,6 +16,7 @@ from .schema import (
     EvidenceSnippet,
     GapEvidence,
     GapEvidenceStep,
+    MOCGapCandidate,
     MOCGroup,
     ResearchOpportunity,
     SearchArtifacts,
@@ -70,6 +73,29 @@ class CodexOpportunityResult(BaseModel):
     evidence_refs: list[str] = Field(default_factory=list)
 
 
+class CodexPaperMoveResult(BaseModel):
+    paper_title: str = ""
+    from_group: str = ""
+    to_group: str = ""
+    reason: str = ""
+
+
+class CodexMOCGapCandidateResult(BaseModel):
+    candidate_id: str = ""
+    original_weakness: str = ""
+    verdict: str = ""
+    refined_weakness: str = ""
+    support_evidence_level: str = ""
+    counter_evidence_level: str = ""
+    support_papers: list[str] = Field(default_factory=list)
+    counter_papers: list[str] = Field(default_factory=list)
+    unclear_papers: list[str] = Field(default_factory=list)
+    evidence_refs: list[str] = Field(default_factory=list)
+    confidence: float = 0.0
+    rationale: str = ""
+    next_full_text_targets: list[str] = Field(default_factory=list)
+
+
 class CodexReviewResult(BaseModel):
     mode: str = "codex_manual_llm_pass"
     status: str = "draft"
@@ -79,6 +105,9 @@ class CodexReviewResult(BaseModel):
     evidence_quality: str = ""
     moc_takeaways: list[str] = Field(default_factory=list)
     moc_groups: list[CodexMOCGroupResult] = Field(default_factory=list)
+    paper_moves: list[CodexPaperMoveResult] = Field(default_factory=list)
+    group_split_suggestions: list[str] = Field(default_factory=list)
+    moc_gap_candidates: list[CodexMOCGapCandidateResult] = Field(default_factory=list)
     gaps: list[CodexGapResult] = Field(default_factory=list)
     opportunities: list[CodexOpportunityResult] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
@@ -163,9 +192,16 @@ def _packet_payload(artifacts: SearchArtifacts) -> dict[str, Any]:
             for card in artifacts.paper_cards
         ],
         "current_moc": artifacts.topic_moc.model_dump(mode="json") if artifacts.topic_moc else None,
+        "current_moc_gap_candidates": [
+            candidate.model_dump(mode="json") for candidate in artifacts.moc_gap_candidates
+        ],
         "current_gaps": [
             {
                 "gap": gap.gap,
+                "source": gap.source,
+                "moc_candidate_id": gap.moc_candidate_id,
+                "moc_group": gap.moc_group,
+                "moc_problem_space": gap.moc_problem_space,
                 "confidence": gap.confidence,
                 "support_count": gap.support_count,
                 "counter_count": gap.counter_count,
@@ -180,6 +216,9 @@ def _packet_payload(artifacts: SearchArtifacts) -> dict[str, Any]:
         ],
         "current_opportunities": [
             opportunity.model_dump(mode="json") for opportunity in artifacts.research_opportunities
+        ],
+        "targeted_full_text_targets": [
+            target.model_dump(mode="json") for target in artifacts.targeted_full_text_targets
         ],
     }
 
@@ -204,6 +243,32 @@ def _result_template() -> CodexReviewResult:
                 missing_capabilities=[],
                 open_questions=[],
                 possible_experiments=[],
+            )
+        ],
+        paper_moves=[
+            CodexPaperMoveResult(
+                paper_title="",
+                from_group="",
+                to_group="",
+                reason="",
+            )
+        ],
+        group_split_suggestions=[],
+        moc_gap_candidates=[
+            CodexMOCGapCandidateResult(
+                candidate_id="",
+                original_weakness="",
+                verdict="valid_narrowly | overclaimed | already_covered | insufficient_evidence",
+                refined_weakness="",
+                support_evidence_level="core | adjacent | weak",
+                counter_evidence_level="none | partial | strong",
+                support_papers=[],
+                counter_papers=[],
+                unclear_papers=[],
+                evidence_refs=[],
+                confidence=0.0,
+                rationale="",
+                next_full_text_targets=[],
             )
         ],
         gaps=[
@@ -273,6 +338,8 @@ def write_codex_review_packet(artifacts: SearchArtifacts, output_dir: Path) -> t
                 "## Codex 需要完成的判断",
                 "",
                 "- 重拆或修正 MOC 问题空间。",
+                "- 审查 `current_moc_gap_candidates`：它们是否真的从对应 MOC 问题空间推出。",
+                "- 检查候选 Weakness 的 support / counter / unclear 论文归因是否正确。",
                 "- 判断原始 Gap 是否成立、是否需要改写、反证是什么。",
                 "- 把真正稳定的 Gap 转成 research opportunity。",
                 "- 明确哪些论文是 core evidence、adjacent evidence 或 noise。",
@@ -290,6 +357,8 @@ def write_codex_review_packet(artifacts: SearchArtifacts, output_dir: Path) -> t
                 "### 2. MOC 问题空间",
                 "",
                 "- 当前 MOC 分组是否太粗，是否需要重拆？",
+                "- 哪些论文应该移动到另一个 MOC group？请写入 `paper_moves`。",
+                "- 哪些 group 应该拆分？请写入 `group_split_suggestions`。",
                 "- 每个 MOC group 是否有清楚的问题空间、方法路线和 benchmark/metric 信号？",
                 "- 是否存在所有论文都被塞进一个 group 的情况？",
                 "- 哪些 shared assumptions 是跨论文共同成立或共同脆弱的？",
@@ -297,6 +366,8 @@ def write_codex_review_packet(artifacts: SearchArtifacts, output_dir: Path) -> t
                 "### 3. Gap / Weakness 审查",
                 "",
                 "- 原始 Gap 是否太宽、太空或已经被某些论文直接解决？",
+                "- 每个 MOCGapCandidate 的 `verdict` 应是 valid_narrowly、overclaimed、already_covered 或 insufficient_evidence。",
+                "- 如果候选 Weakness 成立但太宽，请写 `refined_weakness`，不要只复述原句。",
                 "- 哪些论文构成 support evidence？哪些论文构成 counter evidence？",
                 "- 如果有强反证，Gap 应该被删除、降级，还是改写成更精确的 Gap？",
                 "- 这个 Gap 的成立依赖摘要证据还是全文实验/限制证据？",
@@ -317,7 +388,9 @@ def write_codex_review_packet(artifacts: SearchArtifacts, output_dir: Path) -> t
                 "## 输出约束",
                 "",
                 "- 不要编造 packet 之外的论文。",
+                "- 不要凭直觉保留 Gap；必须能指向 MOC group、support papers 和 counter papers。",
                 "- 每个 Gap 必须给 `support_papers`、`counter_papers` 或 `unclear_papers`。",
+                "- 每个 MOCGapCandidate Review 必须给 `verdict`；证据不足就标 `insufficient_evidence`。",
                 "- 如果证据不足，必须在 `limitations` 和 `next_steps` 里写清楚。",
                 "- 最终 JSON 保存为 `codex_review_result.json`。",
                 "",
@@ -326,6 +399,7 @@ def write_codex_review_packet(artifacts: SearchArtifacts, output_dir: Path) -> t
                 f"- Topic: `{artifacts.topic}`",
                 f"- Papers: `{len(artifacts.paper_cards)}`",
                 f"- Current gaps: `{len(artifacts.gaps)}`",
+                f"- MOC Gap candidates: `{len(artifacts.moc_gap_candidates)}`",
                 f"- Current opportunities: `{len(artifacts.research_opportunities)}`",
                 f"- Packet JSON: `{packet_json.name}`",
                 f"- Result template: `{template_path.name}`",
@@ -455,6 +529,8 @@ def _gap_from_result(artifacts: SearchArtifacts, gap: CodexGapResult) -> GapEvid
     unclear_count = len(unclear_papers) if unclear_papers else max(total - support_count - counter_count, 0)
     return GapEvidence(
         gap=gap.gap,
+        source="codex_review_gap",
+        review_status="codex_reviewed",
         evidence=evidence,
         counter_evidence=counter_evidence,
         evidence_chain=evidence_chain,
@@ -468,6 +544,83 @@ def _gap_from_result(artifacts: SearchArtifacts, gap: CodexGapResult) -> GapEvid
         score_reasons=gap.score_reasons,
         why_it_matters=gap.why_it_matters,
         research_opportunity=gap.research_opportunity,
+    )
+
+
+def _moc_candidate_lookup(artifacts: SearchArtifacts) -> dict[str, MOCGapCandidate]:
+    return {candidate.candidate_id: candidate for candidate in artifacts.moc_gap_candidates}
+
+
+def _candidate_from_result(
+    artifacts: SearchArtifacts,
+    result: CodexMOCGapCandidateResult,
+) -> MOCGapCandidate:
+    existing = _moc_candidate_lookup(artifacts).get(result.candidate_id)
+    support_papers = result.support_papers
+    if not support_papers and existing and not result.verdict:
+        support_papers = existing.support_papers
+    counter_papers = result.counter_papers or (existing.counter_papers if existing else [])
+    unclear_papers = result.unclear_papers or (existing.unclear_papers if existing else [])
+    support_snippets = [
+        _evidence_for_title(
+            artifacts,
+            title,
+            result.rationale or result.refined_weakness or result.original_weakness or "support evidence",
+        )
+        for title in support_papers
+    ]
+    counter_snippets = [
+        _evidence_for_title(
+            artifacts,
+            title,
+            result.counter_evidence_level or "counter evidence",
+        )
+        for title in counter_papers
+    ]
+    weakness = result.refined_weakness or result.original_weakness
+    if not weakness and existing:
+        weakness = existing.weakness_statement
+    evidence_chain = [
+        GapEvidenceStep(
+            paper_title=title,
+            source_url=snippet.source_url,
+            role="support",
+            claim=result.rationale or weakness or "support evidence",
+            missing_dimensions=existing.missing_capabilities if existing else [],
+            evidence=snippet,
+        )
+        for title, snippet in zip(support_papers, support_snippets, strict=False)
+    ]
+    evidence_chain.extend(
+        GapEvidenceStep(
+            paper_title=title,
+            source_url=snippet.source_url,
+            role="counter",
+            claim=result.counter_evidence_level or "counter evidence",
+            evidence=snippet,
+        )
+        for title, snippet in zip(counter_papers, counter_snippets, strict=False)
+    )
+    return MOCGapCandidate(
+        candidate_id=result.candidate_id or (existing.candidate_id if existing else ""),
+        moc_group=existing.moc_group if existing else "",
+        problem_space=existing.problem_space if existing else "",
+        weakness_statement=weakness,
+        rationale=result.rationale or (existing.rationale if existing else ""),
+        missing_capabilities=existing.missing_capabilities if existing else [],
+        shared_assumptions=existing.shared_assumptions if existing else [],
+        covered_capabilities=existing.covered_capabilities if existing else [],
+        support_papers=support_papers,
+        counter_papers=counter_papers,
+        unclear_papers=unclear_papers,
+        support_snippets=support_snippets,
+        counter_snippets=counter_snippets,
+        evidence_chain=evidence_chain,
+        confidence=result.confidence or (existing.confidence if existing else 0.0),
+        evidence_status=result.verdict or (existing.evidence_status if existing else ""),
+        review_status="codex_reviewed",
+        codex_verdict=result.verdict,
+        next_full_text_targets=result.next_full_text_targets,
     )
 
 
@@ -527,8 +680,19 @@ def apply_codex_review(artifacts: SearchArtifacts, result: CodexReviewResult) ->
                 f"codex_manual_llm_pass_moc_groups={len(result.moc_groups)}",
                 "manual review may override rule-based MOC grouping",
             ]
+    if result.moc_gap_candidates:
+        artifacts.moc_gap_candidates = [
+            _candidate_from_result(artifacts, candidate)
+            for candidate in result.moc_gap_candidates
+            if candidate.candidate_id or candidate.refined_weakness or candidate.original_weakness
+        ]
     if result.gaps:
         artifacts.gaps = [_gap_from_result(artifacts, gap) for gap in result.gaps if gap.gap]
+    elif result.moc_gap_candidates:
+        artifacts.gaps = moc_candidates_to_gaps(
+            artifacts.moc_gap_candidates,
+            total_papers=len(artifacts.paper_cards),
+        )
     if result.opportunities:
         artifacts.research_opportunities = [
             _opportunity_from_result(opportunity)
@@ -537,6 +701,10 @@ def apply_codex_review(artifacts: SearchArtifacts, result: CodexReviewResult) ->
         ]
     artifacts.weakness_cards = []
     ensure_weakness_cards(artifacts)
+    artifacts.evidence_coverage = build_evidence_coverage(
+        artifacts.weakness_cards,
+        artifacts.full_texts,
+    )
     return artifacts
 
 

@@ -163,6 +163,19 @@ class FullTextRecord(BaseModel):
     error: str = ""
 
 
+class FullTextResolutionRecord(BaseModel):
+    title: str
+    status: str = "not_attempted"
+    resolved_by: list[str] = Field(default_factory=list)
+    candidate_count: int = 0
+    candidate_urls: list[str] = Field(default_factory=list)
+    pmcid: str = ""
+    doi: str = ""
+    pmid: str = ""
+    notes: list[str] = Field(default_factory=list)
+    error: str = ""
+
+
 class PaperInfluence(BaseModel):
     source: str = ""
     paper_id: str = ""
@@ -189,6 +202,13 @@ class OpenAccessRecord(BaseModel):
     pdf_url: str = ""
     evidence: str = ""
     error: str = ""
+
+
+class ProviderHealthCheck(BaseModel):
+    provider: str
+    status: str = "not_evaluated"
+    summary: str = ""
+    details: list[str] = Field(default_factory=list)
 
 
 class SourceReadiness(BaseModel):
@@ -333,8 +353,37 @@ class GapEvidenceStep(BaseModel):
     evidence: EvidenceSnippet | None = None
 
 
+class MOCGapCandidate(BaseModel):
+    candidate_id: str
+    moc_group: str
+    problem_space: str = ""
+    weakness_statement: str = ""
+    rationale: str = ""
+    missing_capabilities: list[str] = Field(default_factory=list)
+    shared_assumptions: list[str] = Field(default_factory=list)
+    covered_capabilities: list[str] = Field(default_factory=list)
+    support_papers: list[str] = Field(default_factory=list)
+    counter_papers: list[str] = Field(default_factory=list)
+    unclear_papers: list[str] = Field(default_factory=list)
+    support_snippets: list[EvidenceSnippet] = Field(default_factory=list)
+    counter_snippets: list[EvidenceSnippet] = Field(default_factory=list)
+    evidence_chain: list[GapEvidenceStep] = Field(default_factory=list)
+    confidence: float = 0.0
+    evidence_status: str = "moc_candidate_needs_review"
+    review_status: str = "rule_generated"
+    codex_verdict: str = ""
+    next_full_text_targets: list[str] = Field(default_factory=list)
+
+
 class GapEvidence(BaseModel):
     gap: str
+    source: str = "rule_generated"
+    moc_candidate_id: str = ""
+    moc_group: str = ""
+    moc_problem_space: str = ""
+    moc_missing_capabilities: list[str] = Field(default_factory=list)
+    moc_shared_assumptions: list[str] = Field(default_factory=list)
+    review_status: str = "rule_generated"
     evidence: list[EvidenceSnippet] = Field(default_factory=list)
     counter_evidence: list[EvidenceSnippet] = Field(default_factory=list)
     evidence_chain: list[GapEvidenceStep] = Field(default_factory=list)
@@ -354,6 +403,12 @@ class GapEvidence(BaseModel):
 
 class WeaknessCard(BaseModel):
     weakness_statement: str
+    moc_candidate_id: str = ""
+    moc_group: str = ""
+    moc_problem_space: str = ""
+    moc_missing_capabilities: list[str] = Field(default_factory=list)
+    moc_shared_assumptions: list[str] = Field(default_factory=list)
+    review_status: str = "rule_generated"
     broad_problem: str = ""
     remaining_weakness: str = ""
     verdict: str = "insufficient_evidence"
@@ -374,6 +429,35 @@ class WeaknessCard(BaseModel):
     moc_origin: list[str] = Field(default_factory=list)
     verification_queries: list[str] = Field(default_factory=list)
     conclusion: str = ""
+
+
+class EvidenceCoverageRecord(BaseModel):
+    weakness_statement: str
+    status: str = "not_evaluated"
+    checked_papers: int = 0
+    support_papers: list[str] = Field(default_factory=list)
+    support_full_text_papers: list[str] = Field(default_factory=list)
+    missing_support_full_text_papers: list[str] = Field(default_factory=list)
+    full_text_successes: int = 0
+    method_sections: int = 0
+    experiment_sections: int = 0
+    dataset_metric_sections: int = 0
+    reasons: list[str] = Field(default_factory=list)
+
+
+class TargetedFullTextTarget(BaseModel):
+    weakness_statement: str
+    paper_title: str
+    source_url: str = ""
+    rank: int = 0
+    priority: float = 0.0
+    status: str = "queued"
+    reason: str = ""
+    evidence_coverage_status: str = ""
+    support_paper_count: int = 0
+    already_has_full_text: bool = False
+    shared_weakness_count: int = 1
+    expected_gain: list[str] = Field(default_factory=list)
 
 
 class ResearchOpportunity(BaseModel):
@@ -424,8 +508,10 @@ class SearchArtifacts(BaseModel):
     seed_selection: SeedLibrarySelection | None = None
     ranked_papers: list[RankedPaper]
     full_texts: list[FullTextRecord] = Field(default_factory=list)
+    full_text_resolutions: list[FullTextResolutionRecord] = Field(default_factory=list)
     influences: list[PaperInfluence] = Field(default_factory=list)
     open_access_records: list[OpenAccessRecord] = Field(default_factory=list)
+    provider_health: list[ProviderHealthCheck] = Field(default_factory=list)
     llm_extractions: list[LLMExtractionRecord] = Field(default_factory=list)
     source_readiness: SourceReadiness | None = None
     paper_cards: list[PaperCard]
@@ -433,8 +519,11 @@ class SearchArtifacts(BaseModel):
     field_map: FieldMap
     topic_moc: TopicMOC | None = None
     comparison_matrix: ComparisonMatrix | None = None
+    moc_gap_candidates: list[MOCGapCandidate] = Field(default_factory=list)
     gaps: list[GapEvidence]
     weakness_cards: list[WeaknessCard] = Field(default_factory=list)
+    evidence_coverage: list[EvidenceCoverageRecord] = Field(default_factory=list)
+    targeted_full_text_targets: list[TargetedFullTextTarget] = Field(default_factory=list)
     research_opportunities: list[ResearchOpportunity] = Field(default_factory=list)
     synthesis: SynthesisReport | None = None
     warnings: list[str] = Field(default_factory=list)
@@ -459,6 +548,12 @@ class SearchArtifacts(BaseModel):
         (output_dir / "paper_cards.json").write_text(
             self.model_dump_json(include={"paper_cards"}, indent=2), encoding="utf-8"
         )
+        (output_dir / "full_text_resolutions.json").write_text(
+            "["
+            + ",\n".join(row.model_dump_json(indent=2) for row in self.full_text_resolutions)
+            + "]\n",
+            encoding="utf-8",
+        )
         (output_dir / "paper_insights.json").write_text(
             "[" + ",\n".join(row.model_dump_json(indent=2) for row in self.paper_insights) + "]\n",
             encoding="utf-8",
@@ -469,6 +564,20 @@ class SearchArtifacts(BaseModel):
         )
         (output_dir / "open_access.json").write_text(
             "[" + ",\n".join(row.model_dump_json(indent=2) for row in self.open_access_records) + "]\n",
+            encoding="utf-8",
+        )
+        (output_dir / "provider_health.json").write_text(
+            "[" + ",\n".join(row.model_dump_json(indent=2) for row in self.provider_health) + "]\n",
+            encoding="utf-8",
+        )
+        (output_dir / "evidence_coverage.json").write_text(
+            "[" + ",\n".join(row.model_dump_json(indent=2) for row in self.evidence_coverage) + "]\n",
+            encoding="utf-8",
+        )
+        (output_dir / "targeted_full_text_targets.json").write_text(
+            "["
+            + ",\n".join(row.model_dump_json(indent=2) for row in self.targeted_full_text_targets)
+            + "]\n",
             encoding="utf-8",
         )
         (output_dir / "llm_extractions.json").write_text(
@@ -486,6 +595,12 @@ class SearchArtifacts(BaseModel):
             (output_dir / "comparison_matrix.json").write_text(
                 self.comparison_matrix.model_dump_json(indent=2), encoding="utf-8"
             )
+        (output_dir / "moc_gap_candidates.json").write_text(
+            "["
+            + ",\n".join(row.model_dump_json(indent=2) for row in self.moc_gap_candidates)
+            + "]\n",
+            encoding="utf-8",
+        )
         (output_dir / "gaps.json").write_text(
             "[" + ",\n".join(gap.model_dump_json(indent=2) for gap in self.gaps) + "]\n",
             encoding="utf-8",

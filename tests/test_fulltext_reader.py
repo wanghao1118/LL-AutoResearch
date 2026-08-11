@@ -1,4 +1,18 @@
-from autoresearch.fulltext import _candidate_urls, _extract_jats_xml_text, split_sections
+import pytest
+
+from autoresearch.fulltext import (
+    CachedFullTextFailure,
+    FetchedContent,
+    FullTextCandidate,
+    _candidate_urls,
+    _download_candidate_content,
+    _extract_arxiv_source_text,
+    _extract_jats_xml_text,
+    _read_success_cache,
+    _write_failure_cache,
+    _write_success_cache,
+    split_sections,
+)
 from autoresearch.gap_finder import find_gaps
 from autoresearch.reader import build_paper_cards
 from autoresearch.schema import (
@@ -26,7 +40,7 @@ This is single-timepoint.
     assert [section.heading for section in sections] == ["Abstract", "Methods", "Limitations"]
 
 
-def test_fulltext_candidates_prioritize_pmc_xml_before_pdf():
+def test_fulltext_candidates_prioritize_europepmc_xml_before_pdf():
     paper = PaperRecord(
         title="PMC Paper",
         pmcid="PMC123",
@@ -36,7 +50,10 @@ def test_fulltext_candidates_prioritize_pmc_xml_before_pdf():
 
     candidates = _candidate_urls(paper)
 
-    assert candidates[0] == "https://pmc.ncbi.nlm.nih.gov/articles/PMC123/?report=xml"
+    assert candidates[0] == "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC123/fullTextXML"
+    assert "https://pmc.ncbi.nlm.nih.gov/articles/PMC123/" in candidates
+    assert "https://export.arxiv.org/e-print/2601.00001" in candidates
+    assert "https://arxiv.org/src/2601.00001" in candidates
     assert "https://arxiv.org/pdf/2601.00001" in candidates
 
 
@@ -55,6 +72,65 @@ def test_jats_xml_extractor_keeps_section_headings():
 
     assert "lesion change" in text
     assert [section.heading for section in sections[:3]] == ["Abstract", "Methods", "Results"]
+
+
+def test_arxiv_source_extractor_handles_latex_sections():
+    text, sections = _extract_arxiv_source_text(
+        br"""
+        \begin{abstract}
+        We study medical VLM temporal lesion change.
+        \end{abstract}
+        \section{Methods}
+        We evaluate paired radiology studies on MIMIC-CXR.
+        \section{Results}
+        We report accuracy and F1.
+        """
+    )
+
+    assert "medical VLM temporal lesion change" in text
+    assert any(section.heading == "Methods" for section in sections)
+    assert "accuracy" in text
+
+
+def test_fulltext_success_cache_round_trips_arxiv_content(tmp_path, monkeypatch):
+    monkeypatch.setenv("AUTORESEARCH_CACHE_DIR", str(tmp_path))
+    candidate = FullTextCandidate(
+        provider="arxiv_source",
+        url="https://arxiv.org/e-print/2601.00001",
+        kind="source",
+    )
+
+    _write_success_cache(
+        candidate,
+        FetchedContent(
+            content=b"cached source",
+            content_type="application/x-eprint-tar",
+            url="https://arxiv.org/src/2601.00001",
+        ),
+    )
+
+    cached = _read_success_cache(candidate)
+    assert cached is not None
+    assert cached.cache_status == "hit"
+    assert cached.content == b"cached source"
+    assert cached.url == "https://arxiv.org/src/2601.00001"
+
+
+def test_fulltext_failure_cache_skips_arxiv_network(tmp_path, monkeypatch):
+    monkeypatch.setenv("AUTORESEARCH_CACHE_DIR", str(tmp_path))
+    candidate = FullTextCandidate(
+        provider="arxiv_source",
+        url="https://arxiv.org/e-print/2601.00001",
+        kind="source",
+    )
+    _write_failure_cache(candidate, "request timed out")
+
+    class ExplodingClient:
+        def get(self, *_args, **_kwargs):  # pragma: no cover - should never run
+            raise AssertionError("network should be skipped after cached failure")
+
+    with pytest.raises(CachedFullTextFailure):
+        _download_candidate_content(ExplodingClient(), candidate, request_timeout=1.0)
 
 
 def test_reader_uses_full_text_for_dataset_and_metric():

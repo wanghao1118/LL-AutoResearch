@@ -11,6 +11,7 @@ from autoresearch.schema import (
     EvidenceSnippet,
     FieldMap,
     GapEvidence,
+    MOCGapCandidate,
     PaperCard,
     QueryPlan,
     RankedPaper,
@@ -63,6 +64,17 @@ def _artifact() -> SearchArtifacts:
             )
         ],
         field_map=FieldMap(),
+        moc_gap_candidates=[
+            MOCGapCandidate(
+                candidate_id="recovery-benchmark-missing-failure-taxonomy",
+                moc_group="Recovery benchmark",
+                problem_space="failure-conditioned recovery evaluation",
+                weakness_statement="Recovery benchmark still lacks failure taxonomy.",
+                support_papers=["GUI Recovery Benchmark"],
+                support_snippets=[snippet],
+                confidence=0.62,
+            )
+        ],
         gaps=[GapEvidence(gap="Old rule gap", total_papers=1)],
     )
 
@@ -90,6 +102,18 @@ def _review() -> CodexReviewResult:
                 open_questions=["Which failure types are recovered?"],
                 possible_experiments=["Inject controlled GUI failures."],
             )
+        ],
+        moc_gap_candidates=[
+            {
+                "candidate_id": "recovery-benchmark-missing-failure-taxonomy",
+                "original_weakness": "Recovery benchmark still lacks failure taxonomy.",
+                "verdict": "valid_narrowly",
+                "refined_weakness": "Recovery benchmark lacks typed failure taxonomy evidence.",
+                "support_papers": ["GUI Recovery Benchmark"],
+                "confidence": 0.72,
+                "rationale": "The packet shows recovery evidence but no typed failure taxonomy.",
+                "next_full_text_targets": ["GUI Recovery Benchmark"],
+            }
         ],
         gaps=[
             CodexGapResult(
@@ -133,6 +157,7 @@ def test_write_codex_review_packet(tmp_path):
     assert "审查问题清单" in packet_text
     assert "core evidence" in packet_text
     assert "GUI Recovery Benchmark" in packet_json.read_text(encoding="utf-8")
+    assert "current_moc_gap_candidates" in packet_json.read_text(encoding="utf-8")
     assert '"evidence_tier": "core"' in packet_json.read_text(encoding="utf-8")
     assert "codex_manual_llm_pass" in template_path.read_text(encoding="utf-8")
 
@@ -144,6 +169,8 @@ def test_apply_codex_review_updates_research_artifacts():
     assert artifacts.synthesis.mode == "codex_manual_llm_pass"
     assert artifacts.topic_moc
     assert list(artifacts.topic_moc.paper_groups) == ["Recovery benchmark"]
+    assert artifacts.moc_gap_candidates[0].review_status == "codex_reviewed"
+    assert artifacts.moc_gap_candidates[0].codex_verdict == "valid_narrowly"
     assert artifacts.gaps[0].gap.startswith("Refined gap")
     assert artifacts.gaps[0].support_count == 1
     assert artifacts.research_opportunities[0].research_question.startswith("Can GUI agents")

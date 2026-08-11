@@ -692,11 +692,291 @@ code execution, and reproducibility benchmarks.
   - Paper Seed Library improves the starting point and makes the project accumulative
   - Full-text Provider v2 improves evidence depth and failure transparency
   - Weakness Finder remains the main target; Design / Benchmark / Writing are still downstream
+- Validation result after the medical VLM rerun:
+  - seed starting point is effective:
+    - the run matched the `医学 VLM 时序病灶变化分析` seed topic
+    - it injected 4 seed papers and 4 seed-expanded queries
+    - seed papers entered ranking, paper cards, MOC, and WeaknessCard generation
+  - full-text capability has not truly improved yet:
+    - `MIMIC-CXR` was skipped because the seed record had no direct full-text candidate URL
+    - `MedCLIP` and `LLaVA-Med` used the `arxiv_pdf` provider but hit hard timeouts
+    - the new provider/status fields made the failures inspectable, but did not yet increase
+      successful full-text reads
+  - conclusion:
+    - the next highest-priority work should be full-text link completion and source-provider
+      expansion, not more UI polish
+    - for arXiv papers, add AlphaXiv / arXiv source provider support instead of relying only on
+      PDF download
+    - for DOI / PubMed / medical papers, add Unpaywall and PMC / Europe PMC full-text link
+      completion before full-text fetching
+- Implemented FullTextLinkResolver v1 and arXiv source provider:
+  - added a resolver stage before full-text fetching
+  - resolver now adds arXiv e-print/source candidates for arXiv papers
+  - resolver now uses Europe PMC DOI/PMID lookup to recover PMCID and full-text URLs
+  - resolver optionally uses Unpaywall when `UNPAYWALL_EMAIL` is configured
+  - `fulltext.py` now consumes resolver-provided candidates before fallback candidates
+  - `fulltext.py` can parse arXiv source/e-print archives and keep LaTeX section headings
+  - added `full_text_resolutions.json` and dashboard/report sections for full-text link
+    resolution status
+- Validation result after FullTextLinkResolver v1:
+  - command:
+    `autoresearch search "medical VLM temporal lesion change analysis" --profile medical-vlm --limit 8 --per-query-limit 1 --full-text-limit 5 --enrichment-limit 0 --open-access-limit 0`
+  - full-text link resolution improved:
+    - `MIMIC-CXR` changed from no candidate URL to 5 candidates via Europe PMC / PMCID
+    - `MedCLIP`, `LLaVA-Med`, and `MedP-CLIP` received `arxiv_source` candidates
+    - an additional PMC paper received a direct `pmc_xml` candidate
+  - full-text reading partially succeeded:
+    - `MIMIC-CXR` succeeded through `pmc_xml`
+    - `Optimizing imaging in orbital vascular anomalies...` succeeded through `pmc_xml`
+    - arXiv source reads for `MedCLIP`, `LLaVA-Med`, and `MedP-CLIP` still timed out
+  - impact:
+    - `checked_full_texts` increased to 2
+    - WeaknessCard evidence quality moved from `weak` to `medium`
+  - remaining blocker:
+    - arXiv source/e-print is still slow or unstable in the current environment
+    - stable arXiv paper reading may need AlphaXiv API/MCP or a more robust arXiv mirror/source
+      download strategy
+    - Unpaywall still needs `UNPAYWALL_EMAIL` to unlock DOI-based OA link resolution
+- GitHub full-text harvesting survey:
+  - `neuroquery/pubget`
+    - key lesson: for biomedical papers, full-text retrieval should prioritize PMC Open Access
+      articles identified by PMCID, then extract structured text and metadata
+  - `titipata/pubmed_parser`
+    - key lesson: PMC OA XML / JATS parsing is a first-class path, not just a PDF fallback
+  - `openags/paper-search-mcp`
+    - key lesson: use a free-first, source-transparent fallback chain; make every source tradeoff
+      explicit
+  - `JosephIsaacTurner/pypaperretriever`
+    - key lesson: DOI / PMID resolution should combine Unpaywall, NIH Entrez / PMC, and Crossref
+      style lookup while prioritizing lawful OA sources
+  - `jannisborn/paperscraper`
+    - key lesson: paper retrieval should separate metadata search, preprint/source-server search,
+      and full-text/PDF retrieval; local/source dumps can help high-volume retrieval later
+  - `braun-steven/arxiv-downloader`
+    - key lesson: arXiv downloading should support source archives, not only PDFs
+  - `kermitt2/article_dataset_builder`
+    - key lesson: large OA harvesting needs resumable, fault-tolerant ingestion; this is a later
+      scaling concern, not the immediate MVP
+  - `grobidOrg/grobid` / `grobid-client-python`
+    - key lesson: PDF parsing quality can be improved later with GROBID TEI, but this requires a
+      service dependency and should not block the current lightweight pipeline
+  - excluded direction:
+    - repositories that rely on Sci-Hub or paywall bypass are not suitable as default AutoResearch
+      sources
+- Implementation update after the GitHub survey:
+  - Europe PMC `fullTextXML` is now preferred over the older PMC `?report=xml` page because the
+    latter can return HTML and lead to poor section extraction
+  - PMC pages returned as HTML are now parsed as HTML rather than misclassified as XML
+  - full-text fetching now continues to later candidates when one provider times out or fails,
+    instead of stopping the whole paper at the first failure
+  - provider labels were updated in the dashboard so the user can distinguish `Europe PMC XML`,
+    `PMC HTML`, `arXiv Source`, and `arXiv PDF`
+- Validation result after the GitHub-survey provider update:
+  - command:
+    `autoresearch search "medical VLM temporal lesion change analysis" --profile medical-vlm --limit 8 --per-query-limit 1 --full-text-limit 5 --enrichment-limit 0 --open-access-limit 0`
+  - full-text link resolution:
+    - 5/5 attempted papers received at least one lawful OA/full-text candidate
+    - `MIMIC-CXR` resolved to 6 candidates, including Europe PMC XML and PMC HTML
+    - `MedCLIP`, `LLaVA-Med`, and `MedP-CLIP` resolved to arXiv source candidates
+    - `Optimizing imaging in orbital vascular anomalies...` resolved to Europe PMC XML and PMC HTML
+  - full-text reading:
+    - 3/5 attempted papers were successfully parsed
+    - `MIMIC-CXR` parsed through `europepmc_xml` with 28 sections
+    - `MedCLIP` parsed through `arxiv_source` with 7 sections
+    - `Optimizing imaging in orbital vascular anomalies...` parsed through `europepmc_xml` with
+      19 sections
+    - `LLaVA-Med` and `MedP-CLIP` still timed out on arXiv source/PDF download
+  - impact:
+    - `checked_full_texts` increased from 2 to 3 in the WeaknessCard evidence audit
+    - WeaknessCard evidence quality remains `medium`, but the reason changed: the blocker is now
+      not missing PMC/full-text links, but partial arXiv download instability and limited top-N
+      full-text coverage
+  - source reliability observation:
+    - OpenAlex returned HTTP 429 during this run and was skipped after 3 consecutive failures
+    - the system handled this gracefully, but search coverage still needs cache/rate-limit control
+- Implemented FullText Provider v3 / Evidence Coverage Gate:
+  - added local `.env` loading for CLI runs; `.env` is git-ignored and `.env.example` contains only
+    placeholders
+  - configured `UNPAYWALL_EMAIL` locally so Unpaywall can be used as a lawful DOI OA fallback
+  - added error sanitization so provider/API errors do not leak the configured email into outputs
+  - added `provider_health` records to expose Unpaywall, Europe PMC XML, arXiv source, OpenAlex,
+    and full-text fetch health
+  - added `evidence_coverage` records for each Weakness:
+    - support-paper full-text coverage
+    - Method / Experiment / Dataset-Metric section coverage
+    - gate status: `ready_to_state_narrowly`, `needs_targeted_full_text`, or
+      `insufficient_coverage`
+  - dashboard and reports now show Provider health and Weakness evidence coverage gate
+- Validation result after enabling Unpaywall:
+  - command:
+    `autoresearch search "medical VLM temporal lesion change analysis" --profile medical-vlm --limit 8 --per-query-limit 1 --full-text-limit 5 --enrichment-limit 0 --open-access-limit 5`
+  - Unpaywall / OA:
+    - Unpaywall is configured
+    - OA enrichment succeeded for 2/5 attempted top papers
+    - `MIMIC-CXR` gained `unpaywall_landing` and `unpaywall_pdf`
+    - `Optimizing imaging in orbital vascular anomalies...` gained `unpaywall_landing`
+    - arXiv-only papers without DOI still skip Unpaywall, which is expected
+  - Provider health:
+    - `europepmc_xml`: ok, 2 candidates and 2 successful parses
+    - `arxiv_source`: failed in this run, 3 candidates and 3 timeouts
+    - `openalex`: limited, 3 HTTP 429 failures followed by source skipping
+    - `full_text_fetch`: partial, 2/5 successful parses
+  - Evidence coverage gate:
+    - `clinical consistency metrics` is `ready_to_state_narrowly`
+      because 2 support papers were read as full text and include Method / Experiment /
+      Dataset-Metric sections
+    - `lesion-level temporal change reasoning`, `evaluation datasets and benchmark protocols`,
+      and `metric coverage` are `needs_targeted_full_text`
+      because their support papers still lack enough successful full-text coverage
+  - conclusion:
+    - Unpaywall solved the DOI/OA fallback problem
+    - the remaining full-text blocker is now clearly arXiv download stability, not missing email
+      configuration or PMC XML
+- Implemented arXiv FullText stability pass:
+  - expanded arXiv source candidates from a single URL to three lawful source routes:
+    - `https://arxiv.org/e-print/{id}`
+    - `https://export.arxiv.org/e-print/{id}`
+    - `https://arxiv.org/src/{id}`
+  - kept arXiv PDF fallback routes:
+    - `https://arxiv.org/pdf/{id}`
+    - `https://export.arxiv.org/pdf/{id}`
+  - added local full-text response cache under `.cache/autoresearch/fulltext`
+    - successful downloads are cached by provider and URL
+    - recent arXiv failures are cached for a short TTL so repeated runs do not wait on the same
+      slow URL
+  - added retry behavior for transient arXiv full-text failures and explicit timeout
+    classification
+  - resolver now exposes three arXiv source candidates in `full_text_resolutions`, so the UI shows
+    the actual fallback surface rather than a single abstract candidate
+- Validation result after arXiv stability pass:
+  - command:
+    `autoresearch search "medical VLM temporal lesion change analysis" --profile medical-vlm --limit 8 --per-query-limit 1 --full-text-limit 5 --enrichment-limit 0 --open-access-limit 5`
+  - source execution:
+    - 73/73 source/query executions succeeded in this run
+    - OpenAlex had no 429 failures in this run
+  - full-text link resolution:
+    - `MedCLIP`, `LLaVA-Med`, and `MedP-CLIP` each expose 3 arXiv source candidates
+    - Unpaywall still contributes DOI/OA fallbacks for the DOI papers
+  - full-text reading:
+    - 5/5 attempted papers parsed successfully
+    - Europe PMC XML parsed 2 papers
+    - arXiv source parsed 3 papers:
+      - `MedCLIP`: 7 sections
+      - `LLaVA-Med`: 6 sections
+      - `MedP-CLIP`: 8 sections
+  - Provider health:
+    - `arxiv_source`: ok, 3/3 arXiv source/PDF papers succeeded
+    - `europepmc_xml`: ok, 2/2 succeeded
+    - `full_text_fetch`: ok, 5/5 succeeded
+  - Evidence coverage gate:
+    - `clinical consistency metrics` is now strongly inspectable at the evidence-coverage layer:
+      5/5 support papers have full text and Method / Experiment / Dataset-Metric sections
+    - other Weaknesses remain `needs_targeted_full_text` because their supporting papers are
+      different from the top-5 successfully read papers, not because arXiv itself failed
+- Recorded the next core refinement target: MOC -> Weakness -> Codex Review.
+  - Current implementation:
+    - PaperCards are grouped into rule-generated MOC problem spaces using capability tags such as
+      temporal/change, lesion/localization, benchmark/evaluation, dataset, and metric signals.
+    - GapEvidence is still generated mainly from rule predicates over PaperCards and domain profile
+      capabilities.
+    - WeaknessCards reconnect each Gap to its MOC origin by showing which problem-space groups
+      contain support or counter papers.
+  - Current limitation:
+    - the MOC is still more of an explanation/context layer than the first-class source of
+      Weakness discovery
+    - strong Weaknesses should emerge from MOC-level cross-paper comparison: what a problem space
+      covers, what assumptions it shares, what capabilities remain missing, which papers support
+      the missing capability claim, and which papers already partially solve it
+  - Direction:
+    - add an explicit MOCGapCandidate layer between TopicMOC and GapEvidence
+    - make each candidate Weakness traceable to a specific problem space, support papers, counter
+      papers, missing capabilities, shared assumptions, and evidence snippets
+    - use Codex Review as the manual reasoning pass that audits MOC groups, moves/splits papers,
+      narrows over-broad Weakness statements, checks support/counter attribution, and writes the
+      corrected MOC/Gaps back into the dashboard
+  - Intended user-facing flow:
+    `PaperCard -> TopicMOC -> MOCGapCandidate -> Codex Review -> reviewed WeaknessCards`.
+- Implemented MOC -> Weakness -> Codex Review bridge v1:
+  - added `MOCGapCandidate` as the explicit intermediate artifact between `TopicMOC` and
+    `GapEvidence`
+  - added `src/autoresearch/moc_gap.py`:
+    - infers required capability signals from each MOC problem space's missing capabilities,
+      assumptions, open questions, and possible experiments
+    - creates support / counter / unclear paper attribution for each MOC-derived candidate
+    - converts MOC candidates into `GapEvidence` so existing WeaknessCard, evidence coverage, and
+      research opportunity logic can reuse them
+  - updated pipeline:
+    - generate rule gaps first
+    - build TopicMOC from PaperCards and rule gaps
+    - generate MOCGapCandidates from TopicMOC
+    - merge MOC-derived gaps before rule-generated gaps so the homepage prioritizes MOC-origin
+      Weaknesses
+    - rebuild candidates again if targeted full-text succeeds and PaperCards are refreshed
+  - updated outputs:
+    - `search_result.json` now contains `moc_gap_candidates`
+    - `moc_gap_candidates.json` is written as a standalone artifact
+    - WeaknessCards now expose MOC candidate ID, MOC group, MOC problem space, MOC missing
+      capabilities, shared assumptions, and review status
+    - `topic_moc.md` and `weakness_completion.md` now show MOC-derived candidate context
+  - updated dashboard:
+    - homepage Weakness cards now show MOC source and review status
+    - MOC page now lists the candidate Weaknesses generated by each problem space with support,
+      counter, unclear papers, missing capabilities, and next full-text targets
+  - updated Codex Review:
+    - `codex_review_packet.json` now includes `current_moc_gap_candidates`
+    - review template now supports `paper_moves`, `group_split_suggestions`, and
+      `moc_gap_candidates`
+    - `codex-apply` can write reviewed MOC candidates back and regenerate reviewed gaps/dashboard
+  - Validation:
+    - `ruff check .` passed
+    - `pytest -q` passed: 53 tests
+    - medical VLM temporal lesion run completed with:
+      - 8 ranked papers
+      - 3 MOCGapCandidates
+      - 6 WeaknessCards
+      - 6 evidence coverage records
+      - Codex Review packet generated successfully
+  - Current demo MOC candidates:
+    - `Lesion-level temporal reasoning candidates` -> clinical consistency metrics weakness
+    - `Longitudinal medical imaging` -> lesion-level temporal change reasoning weakness
+    - `General medical VLM / foundation work` -> lesion-level temporal change reasoning weakness
+- Executed Codex Review write-back for the medical VLM demo:
+  - generated `outputs/medical-vlm-temporal-lesion-change-analysis/codex_review_result.json`
+  - applied it with `autoresearch codex-apply`
+  - dashboard now shows `Codex-reviewed` judgment source
+  - reviewed MOC was corrected into:
+    - `Lesion-level temporal reasoning candidates`
+    - `Adjacent clinical imaging evidence`
+    - `Reliability and domain-shift adjacent work`
+  - reviewed paper moves:
+    - orbital vascular anomalies review and temporal lobe lesion case evidence moved out of core
+      VLM evidence into adjacent clinical imaging evidence
+    - domain-shift and safety/reliability papers moved into adjacent reliability/domain-shift work
+  - reviewed Weakness results:
+    - strongest retained Weakness:
+      `core medical VLM / dataset papers do not yet sufficiently demonstrate clinical consistency
+      metrics for lesion-level temporal change reasoning`
+    - this retained Weakness is `partially_valid`, evidence quality `medium`, and evidence coverage
+      gate `ready_to_state_narrowly` because 4/4 support papers have full text
+    - the longitudinal and general-foundation candidates were downgraded to
+      `insufficient_evidence`
+  - implementation fix:
+    - `codex-apply` now recomputes evidence coverage after reviewed WeaknessCards are rebuilt
+    - MOC candidate review no longer treats `evidence_refs` as support papers when Codex explicitly
+      leaves `support_papers` empty
+  - Validation:
+    - `ruff check .` passed
+    - `pytest -q` passed: 53 tests
 
 ## Next
 
-- Run a small medical VLM search with `full_text_limit > 0` and inspect whether PMC XML
-  increases evidence quality.
+- Add targeted full-text expansion for Weakness support papers, not only top-ranked papers.
+- Add MOCGapCandidate as the bridge from MOC problem spaces to Weakness/GAP evidence.
+- Upgrade Codex Review packets so Codex reviews MOC groups and MOC-derived Weakness candidates
+  before the final dashboard claim is accepted.
+- Decide whether AlphaXiv is still needed after checking the new cache/retry layer on more arXiv
+  papers.
+- Add a query limit / fast mode so seed-expanded searches remain controllable during debugging.
 - Add manual seed editing commands so the user can add / review / retire seed papers without
   hand-editing JSONL.
 - Add source-quality reporting: source -> core / adjacent / noise contribution counts.

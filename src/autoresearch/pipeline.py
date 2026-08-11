@@ -17,11 +17,14 @@ from .dashboard import write_dashboard
 from .dedupe import dedupe_papers
 from .domain_profile import load_domain_profile
 from .enrichment import enrich_ranked_papers
+from .evidence_coverage import build_evidence_coverage, build_provider_health
 from .field_mapper import build_field_map
 from .fulltext import fetch_full_texts
+from .fulltext_resolver import resolve_full_text_links
 from .gap_finder import build_research_opportunities, find_gaps
 from .llm_extractor import enhance_paper_cards_with_llm
 from .moc import build_research_space
+from .moc_gap import build_moc_gap_candidates, moc_candidates_to_gaps
 from .open_access import enrich_open_access
 from .query_planner import plan_queries
 from .ranker import rank_papers
@@ -31,6 +34,12 @@ from .schema import PaperRecord, SearchArtifacts, SourceStatus
 from .seed_loader import extend_query_plan_with_seed, load_seed_selection, seed_records_to_papers
 from .source_health import evaluate_source_readiness
 from .synthesizer import build_synthesis, write_analysis_report
+from .targeted_fulltext import (
+    build_targeted_full_text_targets,
+    mark_targeted_full_text_statuses,
+    merge_targeted_full_text_targets,
+    ranked_papers_for_targets,
+)
 from .utils import slugify
 from .weakness import build_weakness_cards
 
@@ -47,6 +56,20 @@ COLLECTORS: dict[str, Collector] = {
 }
 
 
+def _merge_moc_and_rule_gaps(moc_gaps, rule_gaps, limit: int = 6):
+    merged = []
+    seen: set[str] = set()
+    for gap in [*moc_gaps, *rule_gaps]:
+        key = gap.gap.lower().replace(" ", "")
+        if key in seen:
+            continue
+        merged.append(gap)
+        seen.add(key)
+        if len(merged) >= limit:
+            break
+    return merged
+
+
 def run_search(
     topic: str,
     *,
@@ -56,6 +79,8 @@ def run_search(
     full_text_limit: int = 8,
     enrichment_limit: int = 20,
     open_access_limit: int = 20,
+    targeted_full_text_limit: int = 0,
+    per_weakness_full_text_limit: int = 2,
     source_failure_skip_threshold: int = 3,
     llm_card_limit: int = 0,
     llm_model: str = "",
@@ -142,6 +167,18 @@ def run_search(
             )
         else:
             console.print(f"[yellow]oa[/yellow] {title[:80]} -> {record.status}: {record.error[:120]}")
+    full_text_resolutions = resolve_full_text_links(ranked, limit=full_text_limit)
+    for title, record in full_text_resolutions.items():
+        if record.status == "ok":
+            console.print(
+                f"[green]resolve[/green] {title[:80]} -> "
+                f"{record.candidate_count} candidates via {','.join(record.resolved_by) or 'metadata'}"
+            )
+        else:
+            console.print(
+                f"[yellow]resolve[/yellow] {title[:80]} -> "
+                f"{record.status}: {(record.error or '; '.join(record.notes))[:120]}"
+            )
     full_texts = fetch_full_texts(ranked, raw_dir=output_dir / "raw", limit=full_text_limit)
     for record in full_texts.values():
         if record.status == "ok":
@@ -169,12 +206,21 @@ def run_search(
         else:
             console.print(f"[yellow]llm[/yellow] {record.title[:80]} -> {record.status}: {record.error[:120]}")
     field_map = build_field_map(cards)
-    gaps = find_gaps(cards, field_map, profile=domain_profile)
+    rule_gaps = find_gaps(cards, field_map, profile=domain_profile)
     paper_insights, topic_moc, comparison_matrix = build_research_space(
         topic,
         cards,
-        gaps,
+        rule_gaps,
         profile=domain_profile,
+    )
+    moc_gap_candidates = build_moc_gap_candidates(
+        topic_moc=topic_moc,
+        cards=cards,
+        profile=domain_profile,
+    )
+    gaps = _merge_moc_and_rule_gaps(
+        moc_candidates_to_gaps(moc_gap_candidates, total_papers=len(cards)),
+        rule_gaps,
     )
     source_readiness = evaluate_source_readiness(statuses, ranked, topic_moc)
     weakness_cards = build_weakness_cards(
@@ -186,6 +232,121 @@ def run_search(
         source_statuses=statuses,
         profile=domain_profile,
     )
+    evidence_coverage = build_evidence_coverage(
+        weakness_cards,
+        list(full_texts.values()),
+    )
+    targeted_full_text_targets = build_targeted_full_text_targets(
+        weakness_cards=weakness_cards,
+        evidence_coverage=evidence_coverage,
+        ranked=ranked,
+        full_texts=list(full_texts.values()),
+        limit=targeted_full_text_limit,
+        per_weakness_limit=per_weakness_full_text_limit,
+    )
+    targeted_fetches = {}
+    if targeted_full_text_targets:
+        target_ranked = ranked_papers_for_targets(targeted_full_text_targets, ranked)
+        if target_ranked:
+            target_resolutions = resolve_full_text_links(target_ranked, limit=len(target_ranked))
+            full_text_resolutions.update(target_resolutions)
+            for title, record in target_resolutions.items():
+                if record.status == "ok":
+                    console.print(
+                        f"[green]target-resolve[/green] {title[:80]} -> "
+                        f"{record.candidate_count} candidates via {','.join(record.resolved_by) or 'metadata'}"
+                    )
+                else:
+                    console.print(
+                        f"[yellow]target-resolve[/yellow] {title[:80]} -> "
+                        f"{record.status}: {(record.error or '; '.join(record.notes))[:120]}"
+                    )
+            targeted_fetches = fetch_full_texts(
+                target_ranked,
+                raw_dir=output_dir / "raw",
+                limit=len(target_ranked),
+            )
+            full_texts.update(targeted_fetches)
+            for record in targeted_fetches.values():
+                if record.status == "ok":
+                    console.print(
+                        f"[green]target-fulltext[/green] {record.title[:80]} -> "
+                        f"{len(record.sections)} sections"
+                    )
+                else:
+                    console.print(
+                        f"[yellow]target-fulltext[/yellow] {record.title[:80]} -> "
+                        f"{record.status}: {record.error[:120]}"
+                    )
+            targeted_full_text_targets = mark_targeted_full_text_statuses(
+                targeted_full_text_targets,
+                targeted_fetches,
+                list(full_texts.values()),
+            )
+            attempted_targets = targeted_full_text_targets
+            if any(record.status == "ok" for record in targeted_fetches.values()):
+                cards = build_paper_cards(
+                    ranked,
+                    full_texts=full_texts,
+                    influences=influences,
+                    profile=domain_profile,
+                )
+                llm_extractions = enhance_paper_cards_with_llm(
+                    cards,
+                    limit=llm_card_limit,
+                    model=llm_model,
+                    timeout=llm_timeout,
+                )
+                field_map = build_field_map(cards)
+                rule_gaps = find_gaps(cards, field_map, profile=domain_profile)
+                paper_insights, topic_moc, comparison_matrix = build_research_space(
+                    topic,
+                    cards,
+                    rule_gaps,
+                    profile=domain_profile,
+                )
+                moc_gap_candidates = build_moc_gap_candidates(
+                    topic_moc=topic_moc,
+                    cards=cards,
+                    profile=domain_profile,
+                )
+                gaps = _merge_moc_and_rule_gaps(
+                    moc_candidates_to_gaps(moc_gap_candidates, total_papers=len(cards)),
+                    rule_gaps,
+                )
+                source_readiness = evaluate_source_readiness(statuses, ranked, topic_moc)
+                weakness_cards = build_weakness_cards(
+                    topic=topic,
+                    gaps=gaps,
+                    topic_moc=topic_moc,
+                    comparison=comparison_matrix,
+                    full_texts=list(full_texts.values()),
+                    source_statuses=statuses,
+                    profile=domain_profile,
+                )
+                evidence_coverage = build_evidence_coverage(
+                    weakness_cards,
+                    list(full_texts.values()),
+                )
+                remaining_targets = build_targeted_full_text_targets(
+                    weakness_cards=weakness_cards,
+                    evidence_coverage=evidence_coverage,
+                    ranked=ranked,
+                    full_texts=list(full_texts.values()),
+                    limit=targeted_full_text_limit,
+                    per_weakness_limit=per_weakness_full_text_limit,
+                )
+                targeted_full_text_targets = merge_targeted_full_text_targets(
+                    attempted_targets,
+                    remaining_targets,
+                    limit=targeted_full_text_limit,
+                )
+    provider_health = build_provider_health(
+        source_statuses=statuses,
+        full_text_resolutions=list(full_text_resolutions.values()),
+        full_texts=list(full_texts.values()),
+        open_access_records=list(open_access_records.values()),
+    )
     research_opportunities = build_research_opportunities(gaps, profile=domain_profile)
 
     artifacts = SearchArtifacts(
@@ -196,8 +357,10 @@ def run_search(
         seed_selection=seed_selection,
         ranked_papers=ranked,
         full_texts=list(full_texts.values()),
+        full_text_resolutions=list(full_text_resolutions.values()),
         influences=list(influences.values()),
         open_access_records=list(open_access_records.values()),
+        provider_health=provider_health,
         llm_extractions=llm_extractions,
         source_readiness=source_readiness,
         paper_cards=cards,
@@ -205,8 +368,11 @@ def run_search(
         field_map=field_map,
         topic_moc=topic_moc,
         comparison_matrix=comparison_matrix,
+        moc_gap_candidates=moc_gap_candidates,
         gaps=gaps,
         weakness_cards=weakness_cards,
+        evidence_coverage=evidence_coverage,
+        targeted_full_text_targets=targeted_full_text_targets,
         research_opportunities=research_opportunities,
         warnings=warnings,
     )

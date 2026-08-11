@@ -4,6 +4,7 @@ from pathlib import Path
 
 from .schema import (
     ComparisonMatrix,
+    EvidenceCoverageRecord,
     GapEvidence,
     ResearchOpportunity,
     SearchArtifacts,
@@ -42,6 +43,11 @@ def _write_topic_moc(artifacts: SearchArtifacts, output_dir: Path) -> Path | Non
 
     lines.extend(["## Problem Spaces", ""])
     for group in moc.problem_spaces:
+        candidates = [
+            candidate
+            for candidate in artifacts.moc_gap_candidates
+            if candidate.moc_group == group.name
+        ]
         lines.extend(
             [
                 f"### {group.name}",
@@ -62,6 +68,19 @@ def _write_topic_moc(artifacts: SearchArtifacts, output_dir: Path) -> Path | Non
         lines.extend(["", "Possible Experiments:"])
         for experiment in group.possible_experiments:
             lines.append(f"- {experiment}")
+        if candidates:
+            lines.extend(["", "MOC Gap Candidates:"])
+            for candidate in candidates:
+                lines.extend(
+                    [
+                        f"- **{candidate.weakness_statement}**",
+                        f"  - status: `{candidate.evidence_status}`",
+                        f"  - confidence: {candidate.confidence}",
+                        f"  - support papers: {_join(candidate.support_papers, fallback='none')}",
+                        f"  - counter papers: {_join(candidate.counter_papers, fallback='none')}",
+                        f"  - next full-text targets: {_join(candidate.next_full_text_targets, fallback='none')}",
+                    ]
+                )
         lines.append("")
 
     lines.extend(["## Common Method Patterns", ""])
@@ -117,6 +136,9 @@ def _write_source_coverage(artifacts: SearchArtifacts, output_dir: Path) -> Path
         full_text_statuses[record.status] = full_text_statuses.get(record.status, 0) + 1
         if record.provider:
             full_text_providers[record.provider] = full_text_providers.get(record.provider, 0) + 1
+    resolution_statuses: dict[str, int] = {}
+    for record in artifacts.full_text_resolutions:
+        resolution_statuses[record.status] = resolution_statuses.get(record.status, 0) + 1
 
     lines = [
         f"# Source Coverage: {artifacts.topic}",
@@ -135,10 +157,18 @@ def _write_source_coverage(artifacts: SearchArtifacts, output_dir: Path) -> Path
         )
 
     lines.extend(["", "## Full-Text / OA Coverage", ""])
+    lines.append(f"- Full-text resolution statuses: {resolution_statuses or 'not attempted'}")
     lines.append(f"- Full-text statuses: {full_text_statuses or 'not attempted'}")
     lines.append(f"- Full-text providers: {full_text_providers or 'not attempted'}")
     lines.append(f"- Unpaywall statuses: {oa_statuses or 'not attempted'}")
     lines.append("")
+    if artifacts.provider_health:
+        lines.extend(["## Provider Health Checks", ""])
+        for item in artifacts.provider_health:
+            lines.append(f"- **{item.provider}**: `{item.status}` - {item.summary}")
+            for detail in item.details:
+                lines.append(f"  - {detail}")
+        lines.append("")
 
     lines.extend(["## Paper Seed Library", ""])
     if artifacts.seed_selection:
@@ -164,6 +194,22 @@ def _write_source_coverage(artifacts: SearchArtifacts, output_dir: Path) -> Path
             lines.append(f"- {reason}")
     else:
         lines.append("- Source readiness was not evaluated.")
+    lines.append("")
+
+    lines.extend(["## Evidence Coverage Gate", ""])
+    if artifacts.evidence_coverage:
+        for item in artifacts.evidence_coverage:
+            lines.append(f"- **{item.weakness_statement}**: `{item.status}`")
+            lines.append(
+                f"  - support full texts: {len(item.support_full_text_papers)}/{len(item.support_papers)}"
+            )
+            lines.append(
+                "  - sections: "
+                f"method={item.method_sections}, experiment={item.experiment_sections}, "
+                f"dataset/metric={item.dataset_metric_sections}"
+            )
+    else:
+        lines.append("- Evidence coverage gate was not evaluated.")
     lines.append("")
 
     lines.extend(["## MOC Coverage", ""])
@@ -383,20 +429,29 @@ def _write_weakness_completion(artifacts: SearchArtifacts, output_dir: Path) -> 
     ]
     if not artifacts.weakness_cards:
         lines.append("- No WeaknessCard results were generated.")
+    coverage_by_weakness = {row.weakness_statement: row for row in artifacts.evidence_coverage}
     for idx, card in enumerate(artifacts.weakness_cards, start=1):
-        lines.extend(_weakness_card_lines(idx, card))
+        lines.extend(_weakness_card_lines(idx, card, coverage_by_weakness.get(card.weakness_statement)))
     lines.append("")
     path = output_dir / "weakness_completion.md"
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
 
 
-def _weakness_card_lines(idx: int, card: WeaknessCard) -> list[str]:
+def _weakness_card_lines(
+    idx: int,
+    card: WeaknessCard,
+    coverage: EvidenceCoverageRecord | None = None,
+) -> list[str]:
     lines = [
         f"## Weakness {idx}: {card.weakness_statement}",
         "",
         f"- Verdict: `{card.verdict}`",
         f"- Evidence quality: `{card.evidence_quality}`",
+        f"- Review status: `{card.review_status}`",
+        f"- MOC candidate ID: `{card.moc_candidate_id or 'none'}`",
+        f"- MOC group: {card.moc_group or 'none'}",
+        f"- MOC problem space: {card.moc_problem_space or 'none'}",
         f"- Checked papers: {card.checked_papers}",
         f"- Checked full texts: {card.checked_full_texts}",
         f"- Checked sources: {card.checked_sources}",
@@ -421,6 +476,37 @@ def _weakness_card_lines(idx: int, card: WeaknessCard) -> list[str]:
             lines.append(f"- {part}")
     else:
         lines.append("- Missing parts were not explicit enough to isolate.")
+    if card.moc_missing_capabilities or card.moc_shared_assumptions:
+        lines.extend(["", "### MOC Origin Details", ""])
+        lines.append(
+            f"- MOC missing capabilities: {_join(card.moc_missing_capabilities, fallback='none')}"
+        )
+        lines.append(
+            f"- MOC shared assumptions: {_join(card.moc_shared_assumptions, fallback='none')}"
+        )
+    lines.extend(["", "### Evidence Coverage Gate", ""])
+    if coverage:
+        lines.extend(
+            [
+                f"- Status: `{coverage.status}`",
+                (
+                    f"- Support full texts: {len(coverage.support_full_text_papers)}/"
+                    f"{len(coverage.support_papers)}"
+                ),
+                (
+                    "- Section coverage: "
+                    f"method={coverage.method_sections}, experiment={coverage.experiment_sections}, "
+                    f"dataset/metric={coverage.dataset_metric_sections}"
+                ),
+                f"- Read support papers: {_join(coverage.support_full_text_papers, fallback='none')}",
+                (
+                    "- Missing support-paper full texts: "
+                    f"{_join(coverage.missing_support_full_text_papers, fallback='none')}"
+                ),
+            ]
+        )
+    else:
+        lines.append("- Evidence coverage was not evaluated for this Weakness.")
     lines.extend(["", "### Support Papers", ""])
     if card.support_papers:
         for title in card.support_papers:
@@ -649,6 +735,29 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
             lines.append(f"   - reasons: {'; '.join(ranked.score_reasons[:3])}")
 
     lines.extend(["", "## 4. Full-Text Reading", ""])
+    if artifacts.provider_health:
+        lines.append("### Provider Health Checks")
+        for item in artifacts.provider_health:
+            lines.append(f"- **{item.provider}**: {item.status} - {item.summary}")
+            for detail in item.details:
+                lines.append(f"  - {detail}")
+        lines.append("")
+    if artifacts.full_text_resolutions:
+        lines.append("### Full-Text Link Resolution")
+        for record in artifacts.full_text_resolutions:
+            lines.append(
+                f"- **{record.title}**: {record.status}, candidates={record.candidate_count}, "
+                f"resolved_by={_join(record.resolved_by, 'n/a')}"
+            )
+            if record.notes:
+                lines.append(f"  - notes: {_join(record.notes)}")
+            if record.error:
+                lines.append(f"  - error: {record.error}")
+        lines.append("")
+    else:
+        lines.append("- Full-text link resolution was not attempted.")
+        lines.append("")
+    lines.append("### Full-Text Fetch / Parse")
     if artifacts.full_texts:
         for record in artifacts.full_texts:
             section_count = len(record.sections)
@@ -661,6 +770,35 @@ def write_report(artifacts: SearchArtifacts, output_dir: Path) -> Path:
                 lines.append(f"  - error: {record.error}")
     else:
         lines.append("- Full-text reading was not attempted.")
+
+    lines.extend(["", "### Evidence Coverage Gate", ""])
+    if artifacts.evidence_coverage:
+        for item in artifacts.evidence_coverage:
+            lines.append(f"- **{item.weakness_statement}**: {item.status}")
+            lines.append(
+                f"  - support full texts: {len(item.support_full_text_papers)}/{len(item.support_papers)}"
+            )
+            lines.append(
+                "  - section coverage: "
+                f"method={item.method_sections}, experiment={item.experiment_sections}, "
+                f"dataset/metric={item.dataset_metric_sections}"
+            )
+    else:
+        lines.append("- Evidence coverage gate was not evaluated.")
+
+    lines.extend(["", "### Targeted Full-Text Queue", ""])
+    if artifacts.targeted_full_text_targets:
+        for item in artifacts.targeted_full_text_targets:
+            lines.append(
+                f"- **{item.paper_title}** -> {item.status}, priority={item.priority}, "
+                f"weakness={item.weakness_statement}"
+            )
+            if item.expected_gain:
+                lines.append(f"  - expected_gain: {_join(item.expected_gain)}")
+            if item.reason:
+                lines.append(f"  - reason: {item.reason}")
+    else:
+        lines.append("- Targeted full-text reading was not enabled or no missing support papers were found.")
 
     lines.extend(["", "## 5. Semantic Scholar Enrichment", ""])
     if artifacts.influences:

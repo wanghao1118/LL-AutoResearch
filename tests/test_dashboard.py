@@ -96,7 +96,11 @@ def test_write_dashboard_creates_static_html(tmp_path):
     assert "判断来源" in html
     assert "Seed 起点" in html
     assert "Paper Seed 库" in html
+    assert "全文入口补全状态" in html
     assert "全文读取 Provider 状态" in html
+    assert "Provider 健康检查" in html
+    assert "Weakness 证据覆盖门槛" in html
+    assert "证据门槛" in html
     assert "证据层级分布" in html
     assert "核心证据" in html
     assert "相邻证据" in html

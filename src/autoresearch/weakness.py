@@ -226,6 +226,12 @@ def build_weakness_cards(
         cards.append(
             WeaknessCard(
                 weakness_statement=gap.gap,
+                moc_candidate_id=gap.moc_candidate_id,
+                moc_group=gap.moc_group,
+                moc_problem_space=gap.moc_problem_space,
+                moc_missing_capabilities=gap.moc_missing_capabilities,
+                moc_shared_assumptions=gap.moc_shared_assumptions,
+                review_status=gap.review_status,
                 broad_problem=gap.gap,
                 remaining_weakness=remaining,
                 verdict=verdict,

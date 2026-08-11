@@ -6,6 +6,7 @@ import typer
 from rich.console import Console
 
 from .codex_review import apply_codex_review_to_output, write_codex_review_packet
+from .config import load_local_env
 from .dashboard import load_artifacts, write_dashboard
 from .domain_profile import generate_domain_profile, save_domain_profile
 from .pipeline import run_search
@@ -21,6 +22,7 @@ DEFAULT_OUTPUT_ROOT = Path("outputs")
 @app.callback()
 def main() -> None:
     """Evidence-grounded research workflow tools."""
+    load_local_env()
 
 
 @app.command()
@@ -40,6 +42,14 @@ def search(
     open_access_limit: int = typer.Option(
         20,
         help="Number of top-ranked DOI papers to enrich with Unpaywall open-access links.",
+    ),
+    targeted_full_text_limit: int = typer.Option(
+        0,
+        help="Second-pass full texts to fetch from weakness support papers. 0 disables it.",
+    ),
+    per_weakness_full_text_limit: int = typer.Option(
+        2,
+        help="Maximum missing support-paper full texts to queue per weakness.",
     ),
     source_failure_skip_threshold: int = typer.Option(
         3,
@@ -71,6 +81,8 @@ def search(
         full_text_limit=full_text_limit,
         enrichment_limit=enrichment_limit,
         open_access_limit=open_access_limit,
+        targeted_full_text_limit=targeted_full_text_limit,
+        per_weakness_full_text_limit=per_weakness_full_text_limit,
         source_failure_skip_threshold=source_failure_skip_threshold,
         llm_card_limit=llm_card_limit,
         llm_model=llm_model,

@@ -634,6 +634,13 @@ HTML_TEMPLATE = """<!doctype html>
       ["short-horizon vs long-horizon tasks", "短任务与长时程任务对比"],
       ["clean trajectory vs injected-failure trajectory", "干净轨迹与注入失败轨迹对比"],
       ["GUI agent benchmark real-world workflow", "GUI Agent 真实工作流评测基准与 Gap 分析"],
+      ["generated_from_moc_problem_space", "由 MOC 问题空间生成"],
+      ["moc_candidate_needs_review", "MOC 候选，需 Codex Review"],
+      ["moc_supported_needs_codex_review", "MOC 支撑较明确，需 Codex Review"],
+      ["moc_partially_supported_needs_codex_review", "MOC 部分支撑，存在反证，需 Codex Review"],
+      ["moc_weak_candidate_needs_codex_review", "MOC 候选证据偏弱，需 Codex Review"],
+      ["rule_generated", "规则生成"],
+      ["codex_reviewed", "Codex 已审查"],
     ]);
 
     const zh = (value) => {
@@ -659,6 +666,14 @@ HTML_TEMPLATE = """<!doctype html>
       text = text.replace(/moc_groups=([0-9]+) meets minimum ([0-9]+)/g, "MOC 分组数=$1，达到最低要求 $2");
       text = text.replace(/moc_groups=([0-9]+) below minimum ([0-9]+)/g, "MOC 分组数=$1，低于最低要求 $2");
       text = text.replace(/failed_or_empty_sources=/g, "失败或空结果来源=");
+      text = text.replace(/support_full_texts=([0-9]+)\\/([0-9]+)/g, "支撑论文全文=$1/$2");
+      text = text.replace(/method_sections=([0-9]+)/g, "Method 章节=$1");
+      text = text.replace(/experiment_sections=([0-9]+)/g, "Experiment 章节=$1");
+      text = text.replace(/dataset_metric_sections=([0-9]+)/g, "Dataset/Metric 章节=$1");
+      text = text.replace(/overall_full_text_successes=([0-9]+)/g, "全文解析成功=$1");
+      text = text.replace(/open_access_records=([0-9]+)/g, "Unpaywall 记录数=$1");
+      text = text.replace(/open_access_ok=([0-9]+)/g, "Unpaywall 成功=$1");
+      text = text.replace(/resolver_unpaywall_skipped_notes=([0-9]+)/g, "Resolver 跳过 Unpaywall 次数=$1");
       text = text.replace(/([0-9]+)[/]([0-9]+) papers support or expose this weakness/g, "$1/$2 篇论文支持或暴露该弱点");
       text = text.replace(/([0-9]+)[/]([0-9]+) papers provide counter-evidence/g, "$1/$2 篇论文提供反证");
       text = text.replace("evidence is mostly abstract/metadata-level", "证据主要来自摘要/元数据层面");
@@ -696,6 +711,27 @@ HTML_TEMPLATE = """<!doctype html>
         skipped: "已跳过",
         no_update: "无更新",
         not_attempted: "未执行",
+        no_full_text_candidate: "未找到全文入口",
+        configured: "已配置",
+        not_configured: "未配置",
+        candidate_only: "仅找到入口",
+        degraded: "部分可用",
+        limited: "被限流",
+        partial: "部分成功",
+        ready_to_state_narrowly: "可窄口径判断",
+        needs_targeted_full_text: "需定向补全文",
+        insufficient_coverage: "证据覆盖不足",
+        queued: "已加入补全文队列",
+        fetched_ok: "定向全文成功",
+        fetch_failed: "定向全文失败",
+        already_has_full_text: "已有全文",
+        not_in_ranked_set: "未在入选论文中",
+        moc_candidate_needs_review: "MOC 候选，待审查",
+        moc_supported_needs_codex_review: "MOC 支撑较明确，待 Codex 审查",
+        moc_partially_supported_needs_codex_review: "MOC 部分支撑，待 Codex 审查",
+        moc_weak_candidate_needs_codex_review: "MOC 证据偏弱，待 Codex 审查",
+        rule_generated: "规则生成",
+        codex_reviewed: "Codex 已审查",
       };
       return map[text] || text || "未评估";
     };
@@ -957,6 +993,9 @@ HTML_TEMPLATE = """<!doctype html>
     };
 
     const weaknessCards = () => (data.weakness_cards || []).slice(0, 3);
+    const mocGapCandidates = () => data.moc_gap_candidates || [];
+    const candidatesForGroup = (group) => mocGapCandidates()
+      .filter(candidate => candidate.moc_group === group.name);
 
     const verdictMeta = (value) => {
       const map = {
@@ -979,11 +1018,16 @@ HTML_TEMPLATE = """<!doctype html>
 
     const fullTextProviderLabel = (value) => {
       const map = {
+        europepmc_xml: "Europe PMC XML",
         pmc_xml: "PMC XML",
         pmc_html: "PMC HTML",
         arxiv_pdf: "arXiv PDF",
+        arxiv_source: "arXiv Source",
         direct_pdf: "直接 PDF",
         direct_html: "直接 HTML",
+        unpaywall: "Unpaywall DOI 开放入口",
+        openalex: "OpenAlex 元数据",
+        full_text_fetch: "全文读取",
       };
       return map[String(value || "")] || (value || "未记录");
     };
@@ -1012,6 +1056,10 @@ HTML_TEMPLATE = """<!doctype html>
     const weaknessTitle = (card, index) => {
       const statement = zh(card.weakness_statement || card.broad_problem || "");
       return `Weakness ${index + 1}：${cleanTitle(statement, 72)}`;
+    };
+
+    const coverageFor = (card) => {
+      return (data.evidence_coverage || []).find(row => row.weakness_statement === card.weakness_statement) || {};
     };
 
     const completionClaim = () => {
@@ -1045,6 +1093,7 @@ HTML_TEMPLATE = """<!doctype html>
       const weaknessHtml = cards.map((card, idx) => {
         const verdict = verdictMeta(card.verdict);
         const quality = qualityMeta(card.evidence_quality);
+        const coverage = coverageFor(card);
         return `
           <details class="card gap-focus-card">
             <summary>
@@ -1059,17 +1108,22 @@ HTML_TEMPLATE = """<!doctype html>
                 </div>
               </div>
               <dl class="kv">
-                <dt>已检查论文</dt><dd>${esc(card.checked_papers || 0)} 篇</dd>
-                <dt>已读全文</dt><dd>${esc(card.checked_full_texts || 0)} 篇</dd>
-                <dt>已覆盖信息源</dt><dd>${esc(card.checked_sources || 0)} 类</dd>
-                <dt>最终判断</dt><dd>${esc(verdict.label)}</dd>
-              </dl>
+	                <dt>已检查论文</dt><dd>${esc(card.checked_papers || 0)} 篇</dd>
+	                <dt>已读全文</dt><dd>${esc(card.checked_full_texts || 0)} 篇</dd>
+	                <dt>支撑全文</dt><dd>${esc((coverage.support_full_text_papers || []).length)}/${esc((coverage.support_papers || []).length)} 篇</dd>
+		                <dt>已覆盖信息源</dt><dd>${esc(card.checked_sources || 0)} 类</dd>
+		                <dt>证据门槛</dt><dd>${esc(statusLabel(coverage.status))}</dd>
+		                <dt>MOC 来源</dt><dd>${esc(card.moc_group ? zh(card.moc_group) : "旧规则 Gap")}</dd>
+		                <dt>审查状态</dt><dd>${esc(statusLabel(card.review_status))}</dd>
+		                <dt>最终判断</dt><dd>${esc(verdict.label)}</dd>
+		              </dl>
             </summary>
             <div class="gap-detail-grid">
-              <section class="gap-detail-box">
-                <h4>收窄后的 Weakness</h4>
-                <p>${esc(zh(card.remaining_weakness || card.weakness_statement))}</p>
-              </section>
+	              <section class="gap-detail-box">
+	                <h4>收窄后的 Weakness</h4>
+	                <p>${esc(zh(card.remaining_weakness || card.weakness_statement))}</p>
+	                ${card.moc_problem_space ? `<dl class="kv"><dt>问题空间</dt><dd>${esc(zh(card.moc_problem_space))}</dd><dt>MOC 缺失能力</dt><dd>${join(card.moc_missing_capabilities || [], "未绑定 MOC 缺失能力")}</dd><dt>共同假设</dt><dd>${join(card.moc_shared_assumptions || [], "未绑定共同假设")}</dd></dl>` : ""}
+	              </section>
               <section class="gap-detail-box">
                 <h4>支持论文依据</h4>
                 ${paperTitleItems(card.support_papers, "暂无明确支持论文。")}
@@ -1081,10 +1135,13 @@ HTML_TEMPLATE = """<!doctype html>
               </section>
               <section class="gap-detail-box">
                 <h4>已完成的证据补全范围</h4>
-                <dl class="kv">
-                  <dt>章节</dt><dd>${join(card.checked_sections || [], "本轮未读到全文 section")}</dd>
-                  <dt>缺失点</dt><dd>${join(card.missing_parts || [], "未抽取到明确缺失点")}</dd>
-                </dl>
+	                <dl class="kv">
+	                  <dt>章节</dt><dd>${join(card.checked_sections || [], "本轮未读到全文 section")}</dd>
+	                  <dt>支撑论文全文</dt><dd>${join(coverage.support_full_text_papers || [], "支撑论文尚未读到全文")}</dd>
+	                  <dt>缺全文支撑论文</dt><dd>${join(coverage.missing_support_full_text_papers || [], "无")}</dd>
+	                  <dt>Method/Experiment/Dataset</dt><dd>${esc(coverage.method_sections || 0)} / ${esc(coverage.experiment_sections || 0)} / ${esc(coverage.dataset_metric_sections || 0)}</dd>
+	                  <dt>缺失点</dt><dd>${join(card.missing_parts || [], "未抽取到明确缺失点")}</dd>
+	                </dl>
                 <h4 style="margin-top:12px;">系统生成的反证检索式</h4>
                 ${listItems(card.verification_queries || [], "暂无反证检索式。")}
               </section>
@@ -1172,8 +1229,8 @@ HTML_TEMPLATE = """<!doctype html>
 
     const badgeClass = (value) => {
       const text = String(value || "").toLowerCase();
-      if (text.includes("ready") || text === "ok" || text === "yes") return "teal";
-      if (text.includes("fail") || text.includes("no")) return "red";
+      if (text.includes("ready") || text === "ok" || text === "yes" || text === "configured" || text === "fetched_ok" || text === "already_has_full_text") return "teal";
+      if (text.includes("fail") || text.includes("no") || text.includes("insufficient")) return "red";
       return "amber";
     };
 
@@ -1192,13 +1249,17 @@ HTML_TEMPLATE = """<!doctype html>
       const tiers = evidenceTierStats();
       const seed = seedSelection();
       const fullTextOk = (data.full_texts || []).filter(row => row.status === "ok").length;
+      const resolvedOk = (data.full_text_resolutions || []).filter(row => row.status === "ok").length;
+      const coverageReady = (data.evidence_coverage || []).filter(row => row.status === "ready_to_state_narrowly").length;
       document.getElementById("topic").textContent = topicLabel() || "研究主题";
       document.getElementById("generatedAt").textContent = `生成时间：${data.generated_at || "未知"}`;
       document.getElementById("summaryGrid").innerHTML = [
         metric("就绪状态", statusLabel(readiness.status), `${readiness.ranked_papers || 0} 篇入选论文`),
         metric("论文", data.paper_cards?.length || 0, "结构化论文卡片"),
         metric("Seed", seed.added_papers || 0, seed.topic_seed?.display_name || statusLabel(seed.status)),
+        metric("全文入口", `${resolvedOk}/${(data.full_text_resolutions || []).length}`, "resolver 补全成功数"),
         metric("全文", `${fullTextOk}/${(data.full_texts || []).length}`, "provider 读取成功数"),
+        metric("证据门槛", `${coverageReady}/${(data.evidence_coverage || []).length}`, "可窄口径判断"),
         metric("核心证据", tiers.core || 0, `相邻 ${tiers.adjacent || 0}；噪声 ${tiers.noise || 0}`),
         metric("MOC 空间", mocCount, "问题空间分组"),
         metric("Gap", data.gaps?.length || 0, "带证据的判断"),
@@ -1278,6 +1339,34 @@ HTML_TEMPLATE = """<!doctype html>
           <td>${row.ranked}</td>
         </tr>
       `).join("");
+      const providerRows = (data.provider_health || []).map(row => `
+        <tr>
+          <td>${esc(fullTextProviderLabel(row.provider))}</td>
+          <td><span class="badge ${badgeClass(row.status)}">${esc(statusLabel(row.status))}</span></td>
+          <td>${esc(zh(row.summary || "未记录"))}</td>
+          <td>${join(row.details || [], "无")}</td>
+        </tr>
+      `).join("");
+      const coverageRows = (data.evidence_coverage || []).map(row => `
+        <tr>
+          <td>${esc(cleanTitle(zh(row.weakness_statement), 80))}</td>
+          <td><span class="badge ${badgeClass(row.status)}">${esc(statusLabel(row.status))}</span></td>
+          <td>${esc((row.support_full_text_papers || []).length)}/${esc((row.support_papers || []).length)}</td>
+          <td>${esc(row.method_sections || 0)} / ${esc(row.experiment_sections || 0)} / ${esc(row.dataset_metric_sections || 0)}</td>
+          <td>${join(row.reasons || [], "无")}</td>
+        </tr>
+      `).join("");
+      const targetedRows = (data.targeted_full_text_targets || []).map(row => `
+        <tr>
+          <td>${esc(cleanTitle(zh(row.weakness_statement), 72))}</td>
+          <td>${esc(cleanTitle(row.paper_title, 72))}</td>
+          <td>${esc(row.rank || "n/a")}</td>
+          <td>${esc(row.priority ?? "n/a")}</td>
+          <td><span class="badge ${badgeClass(row.status)}">${esc(statusLabel(row.status))}</span></td>
+          <td>${join(row.expected_gain || [], "未标记")}</td>
+          <td>${esc(zh(row.reason || "该论文是某个 Weakness 的支撑论文，但尚未读到全文。"))}</td>
+        </tr>
+      `).join("");
       const llmRows = (data.llm_extractions || []).map(row => `
         <tr>
           <td>${esc(row.title)}</td>
@@ -1294,6 +1383,15 @@ HTML_TEMPLATE = """<!doctype html>
           <td>${join(row.roles || [], "未记录")}</td>
           <td>${join(row.datasets || [], "未记录")}</td>
           <td>${esc(row.why_seed || "未记录")}</td>
+        </tr>
+      `).join("");
+      const resolutionRows = (data.full_text_resolutions || []).map(row => `
+        <tr>
+          <td>${esc(paperAlias(row.title))}${originalTitleLine(row.title)}</td>
+          <td><span class="badge ${badgeClass(row.status)}">${esc(statusLabel(row.status))}</span></td>
+          <td>${join(row.resolved_by || [], "无")}</td>
+          <td>${esc(row.candidate_count || 0)}</td>
+          <td>${join(row.notes || [], row.error || "无")}</td>
         </tr>
       `).join("");
       const fullTextRows = (data.full_texts || []).map(row => `
@@ -1316,11 +1414,13 @@ HTML_TEMPLATE = """<!doctype html>
                   <th>来源</th><th>查询数</th><th>成功</th><th>失败</th>
                   <th>跳过</th><th>原始结果</th><th>入选贡献</th>
                 </tr>
-              </thead>
-              <tbody>${sourceRows}</tbody>
-            </table>
-          </section>
-          <section>
+	              </thead>
+	              <tbody>${sourceRows}</tbody>
+	            </table>
+	            <h2 style="margin-top:16px;">Provider 健康检查</h2>
+	            ${providerRows ? `<table><thead><tr><th>Provider</th><th>状态</th><th>摘要</th><th>细节</th></tr></thead><tbody>${providerRows}</tbody></table>` : `<div class="empty">本次未生成 Provider 健康检查。</div>`}
+	          </section>
+	          <section>
             <h2>证据就绪判断</h2>
             <article class="card">
               <div class="card-header">
@@ -1338,10 +1438,14 @@ HTML_TEMPLATE = """<!doctype html>
             <table>
               <thead>
                 <tr><th>层级</th><th>论文数</th><th>含义</th></tr>
-              </thead>
-              <tbody>${tierRows}</tbody>
-            </table>
-            <h2 style="margin-top:16px;">领域配置</h2>
+	              </thead>
+	              <tbody>${tierRows}</tbody>
+	            </table>
+		            <h2 style="margin-top:16px;">Weakness 证据覆盖门槛</h2>
+		            ${coverageRows ? `<table><thead><tr><th>Weakness</th><th>状态</th><th>支撑全文</th><th>Method / Experiment / Dataset</th><th>判断依据</th></tr></thead><tbody>${coverageRows}</tbody></table>` : `<div class="empty">本次未生成证据覆盖门槛。</div>`}
+		            <h2 style="margin-top:16px;">定向全文补全队列</h2>
+		            ${targetedRows ? `<table><thead><tr><th>目标 Weakness</th><th>待补全文论文</th><th>排名</th><th>优先级</th><th>状态</th><th>预计补强</th><th>原因</th></tr></thead><tbody>${targetedRows}</tbody></table>` : `<div class="empty">未启用定向全文补全；运行时可加 --targeted-full-text-limit。</div>`}
+		            <h2 style="margin-top:16px;">领域配置</h2>
             <article class="card">
               <dl class="kv">
                 <dt>领域</dt><dd>${esc(data.domain_profile?.domain_name || "未配置")}</dd>
@@ -1363,6 +1467,8 @@ HTML_TEMPLATE = """<!doctype html>
               </dl>
             </article>
             ${seedRows ? `<table style="margin-top:12px;"><thead><tr><th>Seed 论文</th><th>角色</th><th>数据集</th><th>为什么放入 Seed</th></tr></thead><tbody>${seedRows}</tbody></table>` : `<div class="empty">本轮没有匹配到 seed paper。</div>`}
+            <h2 style="margin-top:16px;">全文入口补全状态</h2>
+            ${resolutionRows ? `<table><thead><tr><th>论文</th><th>状态</th><th>补全来源</th><th>候选入口</th><th>说明</th></tr></thead><tbody>${resolutionRows}</tbody></table>` : `<div class="empty">本次未尝试全文入口补全。</div>`}
             <h2 style="margin-top:16px;">全文读取 Provider 状态</h2>
             ${fullTextRows ? `<table><thead><tr><th>论文</th><th>状态</th><th>Provider</th><th>章节</th><th>失败阶段</th><th>错误/提示</th></tr></thead><tbody>${fullTextRows}</tbody></table>` : `<div class="empty">本次未尝试全文读取。</div>`}
             <h2 style="margin-top:16px;">LLM 抽取状态</h2>
@@ -1462,30 +1568,56 @@ HTML_TEMPLATE = """<!doctype html>
           </div>
         </div>
         <div class="grid-2">
-          ${groups.map(group => `
-            <details class="card fold-card">
-              <summary class="fold-summary">
-                <div>
+          ${groups.map(group => {
+            const candidates = candidatesForGroup(group);
+            return `
+              <details class="card fold-card">
+                <summary class="fold-summary">
+                  <div>
+                    <h3>${esc(zh(group.name))}</h3>
+                    <p class="subtle">${esc(zh(group.problem_space))}</p>
+                  </div>
+                </summary>
+                <div class="fold-content">
+                <div class="card-header">
                   <h3>${esc(zh(group.name))}</h3>
-                  <p class="subtle">${esc(zh(group.problem_space))}</p>
+                  <span class="badge teal">${esc(zh(group.problem_space))}</span>
                 </div>
-              </summary>
-              <div class="fold-content">
-              <div class="card-header">
-                <h3>${esc(zh(group.name))}</h3>
-                <span class="badge teal">${esc(zh(group.problem_space))}</span>
-              </div>
-              <dl class="kv">
-                <dt>代表论文</dt><dd>${join(group.representative_papers)}</dd>
-                <dt>共同假设</dt><dd>${join(group.shared_assumptions)}</dd>
-                <dt>方法族</dt><dd>${join(group.method_families)}</dd>
-                <dt>缺失能力</dt><dd>${join(group.missing_capabilities)}</dd>
-                <dt>开放问题</dt><dd>${join(group.open_questions)}</dd>
-                <dt>可做实验</dt><dd>${join(group.possible_experiments)}</dd>
-              </dl>
-              </div>
-            </details>
-          `).join("") || `<div class="empty">本次未生成 MOC 问题空间。</div>`}
+                <dl class="kv">
+                  <dt>代表论文</dt><dd>${join(group.representative_papers)}</dd>
+                  <dt>共同假设</dt><dd>${join(group.shared_assumptions)}</dd>
+                  <dt>方法族</dt><dd>${join(group.method_families)}</dd>
+                  <dt>缺失能力</dt><dd>${join(group.missing_capabilities)}</dd>
+                  <dt>开放问题</dt><dd>${join(group.open_questions)}</dd>
+                  <dt>可做实验</dt><dd>${join(group.possible_experiments)}</dd>
+                </dl>
+                <section class="gap-detail-box" style="margin-top:14px;">
+                  <h4>MOC 候选 Weakness</h4>
+                  ${candidates.map(candidate => `
+                    <details class="fold-card" style="margin-top:10px;">
+                      <summary class="fold-summary">
+                        <div>
+                          <strong>${esc(zh(candidate.weakness_statement))}</strong>
+                          <p class="subtle">置信度 ${esc(candidate.confidence ?? "n/a")}；${esc(statusLabel(candidate.evidence_status))}</p>
+                        </div>
+                      </summary>
+                      <div class="fold-content">
+                        <dl class="kv">
+                          <dt>支撑论文</dt><dd>${join(candidate.support_papers, "暂无支撑论文")}</dd>
+                          <dt>反证论文</dt><dd>${join(candidate.counter_papers, "暂无反证论文")}</dd>
+                          <dt>待定论文</dt><dd>${join(candidate.unclear_papers, "暂无待定论文")}</dd>
+                          <dt>缺失能力</dt><dd>${join(candidate.missing_capabilities, "未明确")}</dd>
+                          <dt>补全文目标</dt><dd>${join(candidate.next_full_text_targets, "暂无")}</dd>
+                          <dt>审查状态</dt><dd>${esc(statusLabel(candidate.review_status))}</dd>
+                        </dl>
+                      </div>
+                    </details>
+                  `).join("") || `<p class="subtle">这一组暂未推出候选 Weakness。</p>`}
+                </section>
+                </div>
+              </details>
+            `;
+          }).join("") || `<div class="empty">本次未生成 MOC 问题空间。</div>`}
         </div>
       `;
     };

@@ -4,6 +4,7 @@ import os
 import time
 from urllib.parse import quote
 
+from .config import sanitize_error
 from .http import get_client
 from .schema import OpenAccessRecord, RankedPaper
 from .utils import clean_text
@@ -84,7 +85,7 @@ def enrich_open_access(ranked: list[RankedPaper], limit: int = 20) -> dict[str, 
                 title=paper.title,
                 doi=paper.doi,
                 status="failed",
-                error=str(exc),
+                error=sanitize_error(str(exc)),
             )
         time.sleep(0.2)
     return records
