@@ -2,43 +2,46 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILLS_HOME="${CODEX_HOME:-$HOME/.codex}/skills"
-VALIDATOR="$SKILLS_HOME/.system/skill-creator/scripts/quick_validate.py"
-SKILLS=(
-  run-autodesign
-  autodesign-method-router
-  autodesign-evidence-designer
-  autodesign-implementer
-  autodesign-executor
-  autodesign-result-scientist
-  autodesign-integrity-auditor
-)
+TARGET="${1:-${AGENT_SKILLS_DIR:-}}"
 
-mkdir -p "$SKILLS_HOME"
-if [[ ! -f "$VALIDATOR" ]]; then
-  printf 'ERROR: Codex Skill validator not found: %s\n' "$VALIDATOR" >&2
-  exit 1
+if [[ -z "$TARGET" || $# -gt 1 ]]; then
+  cat >&2 <<'EOF'
+Usage: install_autodesign_skills.sh AGENT_SKILLS_DIR
+   or: AGENT_SKILLS_DIR=/path/to/skills install_autodesign_skills.sh
+
+The calling agent should supply its own user-level Skills directory.
+EOF
+  exit 2
 fi
 
-for skill in "${SKILLS[@]}"; do
-  source_dir="$ROOT/skills/$skill"
-  target_dir="$SKILLS_HOME/$skill"
-  if [[ ! -f "$source_dir/SKILL.md" || ! -f "$source_dir/agents/openai.yaml" ]]; then
-    printf 'ERROR: incomplete source Skill: %s\n' "$source_dir" >&2
-    exit 1
-  fi
-  python3 "$VALIDATOR" "$source_dir"
-  python3 - "$source_dir" "$target_dir" <<'PY'
+python3 - "$ROOT/skills" "$TARGET" <<'PY'
 from pathlib import Path
 import shutil
 import sys
-source = Path(sys.argv[1])
-target = Path(sys.argv[2])
-if target.exists():
-    shutil.rmtree(target)
-shutil.copytree(source, target)
+
+source_root = Path(sys.argv[1])
+target_root = Path(sys.argv[2]).expanduser().resolve()
+names = (
+    "run-autodesign",
+    "autodesign-method-router",
+    "autodesign-evidence-designer",
+    "autodesign-implementer",
+    "autodesign-executor",
+    "autodesign-result-scientist",
+    "autodesign-integrity-auditor",
+)
+skills = [source_root / name for name in names]
+missing = [str(path / "SKILL.md") for path in skills if not (path / "SKILL.md").is_file()]
+if missing:
+    raise SystemExit("ERROR: missing Skill files: " + ", ".join(missing))
+
+target_root.mkdir(parents=True, exist_ok=True)
+for source in skills:
+    target = target_root / source.name
+    if target.exists():
+        shutil.rmtree(target)
+    shutil.copytree(source, target)
+    print(f"SKILL_INSTALL_PASS name={source.name} path={target}")
+
+print(f"AUTODESIGN_SKILL_SUITE_INSTALL_PASS count={len(skills)} path={target_root}")
 PY
-  python3 "$VALIDATOR" "$target_dir"
-  printf 'SKILL_INSTALL_PASS name=%s path=%s\n' "$skill" "$target_dir"
-done
-printf 'AUTODESIGN_SKILL_SUITE_INSTALL_PASS count=%s\n' "${#SKILLS[@]}"

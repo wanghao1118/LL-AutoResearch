@@ -9,7 +9,7 @@ Execute the accepted project and record facts. Do not change the scientific meth
 
 ## Inputs
 
-Read `implementation_notes.md`, `evidence_plan.md`, `AUTODESIGN_STATE.md`, the generated environment and commands, and `references/execution-contract.md`.
+Read `implementation_notes.md`, `evidence_plan.md`, `AUTODESIGN_STATE.md`, the generated environment and commands, `references/execution-contract.md`, and the effective `AGENTS.md` or `CLAUDE.md` instructions for the current workspace. For GPU work, resolve the `AutoDesign GPU 执行上下文` section before issuing any remote or accelerator command.
 
 ## Resume decision
 
@@ -29,7 +29,9 @@ Use this fixed scientific sequence:
 preflight → smoke → experiment → aggregate → collect
 ```
 
-For generic local commands, use `scripts/run_stage.py` to record command, literal stdout, literal stderr, exit status, and timestamps. `command_plan.json` and the selected working directory must exist before invocation; missing inputs return a JSON `FAIL` without writing an execution record. When a stage has multiple commands, invoke the script once per command in the exact plan order; the runner keeps the complete same-stage prefix. For this repository's remote controller, use the existing `python3 -m autodesign remote-*` commands only after validation confirms the generated project, five-stage command plan, experiment schedule, and result contract.
+For generic local commands, use `scripts/run_stage.py` to record command, literal stdout, literal stderr, exit status, and timestamps. `command_plan.json` and the selected working directory must exist before invocation; missing inputs return a JSON `FAIL` without writing an execution record. When a stage has multiple commands, invoke the script once per command in the exact plan order; the runner keeps the complete same-stage prefix.
+
+For remote GPU execution, use the SSH, transfer, Conda, GPU, timeout, and directory facts from the effective `AGENTS.md` or `CLAUDE.md`; use `command_plan.json` and `result_contract.json` as the authority for commands and result paths. Run SSH, transfer, environment, and stage commands with the agent's normal tools. 不需要 Python GPU 控制器，也不要创建或读取 Python/JSON GPU 配置。
 
 For a provenance replay, execute all five stages locally, record `execution_mode: provenance_replay`, and keep source execution evidence separate from replay execution evidence. A successful replay proves the migrated project can validate, reproduce, aggregate, and collect the frozen observations; it does not prove a new model run occurred.
 
@@ -37,12 +39,12 @@ On GPU servers:
 
 - preserve existing GPU processes;
 - use Linux Bash;
-- honor configured GPU IDs and concurrency cap;
+- honor the instruction-file GPU IDs and concurrency cap;
 - materialize the generated project and its environment before sync;
 - stop at the first failed stage;
 - preserve logs and checkpoints;
 - preserve a failed stage in `execution_record.json` even if a later stage is invoked manually;
-- collect the authoritative primary result and every additional configured result path.
+- collect the authoritative primary result and every additional result path declared by `result_contract.json`.
 
 Do not infer success from file presence alone. Preflight, smoke, experiment, aggregate, and collect must all exit zero under the current commands.
 

@@ -11,6 +11,7 @@ Each stage records:
 - stdout and stderr;
 - exit status;
 - executor and GPU IDs when applicable;
+- machine-context source (`AGENTS.md` or `CLAUDE.md`) when applicable;
 - produced paths;
 - next action on failure.
 
@@ -26,7 +27,7 @@ For a provenance replay, the record states that mode explicitly and names the co
 
 ## Remote sequence
 
-Validate → plan → preflight → sync → bootstrap → smoke → experiment → aggregate → collect. Validation requires a materialized `generated_project/`, a complete five-stage `command_plan.json`, a non-empty `experiment_schedule.json`, and a valid `result_contract.json` before deployment. Generated project commands and the primary result contract override demo configuration while preserving additional configured result paths. Git mode requires a clean synchronized revision; rsync mode records a release description.
+Read instruction context → validate → preflight → sync → bootstrap → smoke → experiment → aggregate → collect. The effective `AGENTS.md` or `CLAUDE.md` supplies SSH, allowed directories, GPU IDs, concurrency, environment location, timeouts, and process-preservation rules. Deployment still requires a materialized `generated_project/`, a complete five-stage `command_plan.json`, a non-empty `experiment_schedule.json`, and a valid `result_contract.json`. The command plan and result contract—not the machine-context file—define experiment commands and result paths. The Skill does not create or read a Python/JSON GPU configuration; it uses the current agent's native shell, SSH, and file-transfer tools directly.
 
 ## Resource failures
 

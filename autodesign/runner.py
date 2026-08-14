@@ -1,4 +1,4 @@
-"""Local command executor. GPU scheduling is intentionally an adapter boundary."""
+"""Local command-plan execution and execution-record validation."""
 
 from __future__ import annotations
 
@@ -68,7 +68,6 @@ def execution_completion_errors(
             "experiment, aggregate, collect; "
             f"observed {observed_order}"
         )
-    executor = execution.get("executor")
     for stage, group in groups:
         if stage not in STAGE_ORDER:
             continue
@@ -76,9 +75,7 @@ def execution_completion_errors(
         if not isinstance(planned, list):
             errors.append(f"command_plan.{stage} must be a list")
             continue
-        expected_commands = (
-            [" && ".join(planned)] if executor == "remote_gpu" else planned
-        )
+        expected_commands = planned
         actual_commands = [record.get("command") for record in group]
         if actual_commands != expected_commands:
             errors.append(

@@ -60,7 +60,7 @@ Use `skill-advance` for state transitions and `skill-repair-state` to canonicali
 ```json
 {
   "schema_version": "1.0",
-  "executor": "local_or_remote_gpu",
+  "executor": "local_or_remote",
   "status": "PASS_OR_FAIL",
   "commands": [
     {

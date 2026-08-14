@@ -9,7 +9,7 @@ Run the research workflow rather than returning only a plan. Keep research decis
 
 ## Locate the run
 
-Use the current repository when it contains `skills/run-autodesign`. Put inputs in `assets/input`, logs in `assets/logs`, outputs in `assets/output/<run>`, and project documentation in `docs`.
+Use the user's current workspace or an explicitly selected run workspace. The installed Skills and `autodesign` Python package are the runtime dependencies; the AutoDesign source repository is not required after installation. Put inputs in `assets/input`, logs in `assets/logs`, outputs in `assets/output/<run>`, and project documentation in `docs`.
 
 For an existing run, read these first when present:
 
@@ -29,6 +29,12 @@ For an existing run, read these first when present:
 
 Resume from the first unfinished or invalidated stage. Do not rerun an expensive completed stage unless its input artifact changed.
 
+## Read machine context
+
+Before planning implementation or execution, read the effective `AGENTS.md` or `CLAUDE.md` instructions for the current workspace according to the current agent's normal precedence. When a run needs local or remote GPUs, treat an `AutoDesign GPU 执行上下文` section there as the only source of machine facts for SSH, allowed directories, GPU IDs, concurrency, environment location, timeouts, and process-preservation rules. Do not create or read a Python/JSON GPU configuration. If no such section applies, do not assume a remote host or GPU assignment.
+
+Record the instruction file used and the resolved execution facts in `implementation_notes.md` and `execution_record.json`; keep research commands in the generated project's contracts rather than in the machine-context section.
+
 ## Use the artifact contract
 
 Read `references/artifact-contract.md` before a new run or whenever handoff state is ambiguous. Start new runs from `assets/AUTODESIGN_STATE.template.md`. Markdown is the primary research interface; JSON is reserved for machine-observed execution and result records.
@@ -37,7 +43,7 @@ Only user-declared fields are locks. Defaults are recommendations. Preserve orig
 
 ## Dispatch the pipeline
 
-Resolve the skills directory as `${CODEX_HOME:-$HOME/.codex}/skills`. Load the named sibling Skill for each stage; do not copy its full instructions into this orchestrator.
+Load each named sibling Skill through the current agent's native Skill mechanism. When a filesystem path is required, resolve it from the parent directory of this installed `run-autodesign` Skill; an explicit custom installation may instead provide `AUTODESIGN_SKILLS_DIR`. Do not copy a worker's full instructions into this orchestrator.
 
 1. **Input brief**: normalize the user's natural-language motivation, numbered contributions, benchmark tasks, metrics, splits, and explicit constraints into `input_brief.md`.
 2. **Method route**: follow `$autodesign-method-router`; produce `method_route.md`. A goal-only route requires an independently executed R0.
