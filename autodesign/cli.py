@@ -14,6 +14,7 @@ from .skillflow import (
     advance_skill_run,
     initialize_skill_run,
     inspect_skill_run,
+    repair_skill_state,
     verify_skill_run,
 )
 from .skillresults import ingest_skill_results
@@ -175,6 +176,7 @@ def build_parser() -> argparse.ArgumentParser:
     for name, help_text in (
         ("skill-status", "Inspect the current stage and artifacts"),
         ("skill-verify", "Verify current artifacts and execution facts"),
+        ("skill-repair-state", "Canonicalize and refresh AUTODESIGN_STATE.md"),
     ):
         command = subparsers.add_parser(name, help=help_text)
         command.add_argument("run_dir", type=Path)
@@ -238,6 +240,8 @@ def main(argv: list[str] | None = None) -> None:
             result = inspect_skill_run(args.run_dir)
         elif args.command == "skill-verify":
             result = verify_skill_run(args.run_dir)
+        elif args.command == "skill-repair-state":
+            result = repair_skill_state(args.run_dir)
         elif args.command == "skill-ingest":
             result = ingest_skill_results(args.run_dir, args.results)
         elif args.command == "skill-advance":

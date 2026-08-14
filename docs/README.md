@@ -26,7 +26,7 @@
 | `autodesign/remote_gpu.py` | 可选 SSH、Conda、GPU、收集与恢复 |
 | `autodesign/__init__.py`、`__main__.py` | Python package 与 CLI 入口 |
 
-共 `8` 个 Python 文件、`2,175` 行。
+共 `8` 个 Python 文件、`2,414` 行。
 
 ### 2.2 Skills
 
@@ -240,6 +240,28 @@ Python 从 `18` 文件、`7,249` 行缩为 `8` 文件、`2,170` 行。三类运�
 **推导出的下一步洞察**
 
 继续保持研究判断在 Skill、执行事实在薄代码。后续不恢复大 schema；在正式交付前应把当前工作树形成独立 Git 提交，否则 `fix/AutoDesign` 与 `codex/autodesign` 的 branch ref 仍无法表达功能差异。
+
+### Round 28：执行记录、远端预检与状态机缺陷修复
+
+**设计动机**
+
+多命令 stage、全流程续跑、失败证据保存、旧远端 run、审计状态推进和 Markdown 状态解析存在八个可复现缺陷。单命令 demo 全绿没有覆盖这些真实工作流。
+
+**具体方案与关键参数**
+
+portable runner 按 `command_plan.json` 追加同一 stage 的命令记录，并在失败重试时只替换失败命令及其后缀；本地 `run-local --stage all` 直接比较当前计划并复用未变化的成功 stage 前缀。被拒绝的乱序请求不再写回 `execution_record.json`。远端 validate 在 deploy 前要求 `generated_project/`、五阶段 command plan、非空 experiment schedule 和有效 result contract。本机 remote run 已从旧 `exp34_step_r0` 切换到完整的 Skill-first run。状态机新增宽松 Markdown 表格解析、`skill-repair-state`、审计 PASS 门和进行中状态的 last-completed 映射。
+
+**结果数据**
+
+修改前复现器得到 `BUG_BASELINE status=FAIL observed=8/8`。修改后逐项验证得到 `BUGFIX_VERIFICATION status=PASS fixed=8/8`；完整回归增加到 `31` 项。端到端 demo 仍为五阶段 exit `0`、`4/4` cells、最终 `COMPLETE`。真实本机 remote 配置验证为 `PASS`，`remote-all --dry-run` 包含五个项目 stage；把配置临时指回旧 run 时在 `validate` 阶段立即 `FAIL`，不会进入 deploy。
+
+**核心发现/失败原因**
+
+问题集中在“单 stage 单命令”的隐含假设和“文件存在即可推进”的弱门控。旧测试只验证顺序主路径，没有验证同 stage 追加、失败后乱序请求、计划中途变化和审计 FAIL。
+
+**推导出的下一步洞察**
+
+执行层需要验证最小事实合同，但不重新引入研究设计 schema。之后新增 runner 行为时，必须同时覆盖成功前缀、失败证据、计划变化、拒绝尝试和资源消耗前预检。
 
 ## 6. 验证命令
 

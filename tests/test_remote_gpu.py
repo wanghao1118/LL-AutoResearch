@@ -93,6 +93,23 @@ class RemoteGPUTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        (root / "run/experiment_schedule.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": "1.0",
+                    "cells": [
+                        {
+                            "experiment_id": "exp",
+                            "variant_id": "method",
+                            "benchmark_task_id": "task",
+                            "seed": 1,
+                            "metrics": ["score"],
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
         config_path = root / "configs/remote.json"
         config_path.write_text(json.dumps(config), encoding="utf-8")
         return config_path, config
@@ -239,6 +256,35 @@ class RemoteGPUTests(unittest.TestCase):
             self.assertTrue(
                 any("autodesign-implementer Skill" in error for error in report["validation"]["errors"])
             )
+
+    def test_old_run_contract_fails_before_remote_deploy(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config_path, _ = self._fixture(root)
+            (root / "run/command_plan.json").write_text(
+                json.dumps(
+                    {
+                        "smoke": ["python3 smoke.py"],
+                        "experiment": ["python3 train.py"],
+                        "aggregate": ["python3 aggregate.py"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "run/experiment_schedule.json").unlink()
+            (root / "run/result_contract.json").unlink()
+            controller = RemoteGPUController(config_path, repo_root=root)
+
+            validation = controller.validate()
+            report = _run_remote_all(controller, dry_run=False)
+
+            self.assertEqual(validation["status"], "FAIL")
+            self.assertTrue(any("command_plan.json" in error for error in validation["errors"]))
+            self.assertTrue(any("experiment_schedule.json" in error for error in validation["errors"]))
+            self.assertTrue(any("result_contract.json" in error for error in validation["errors"]))
+            self.assertEqual(report["status"], "FAIL")
+            self.assertEqual(report["failed_step"], "validate")
+            self.assertNotIn("deploy", report)
 
 
 if __name__ == "__main__":

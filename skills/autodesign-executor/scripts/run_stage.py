@@ -19,15 +19,52 @@ def read_record(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def successful_prefix(record: dict, target: str) -> list[dict]:
+def read_plan(run_dir: Path) -> dict | None:
+    path = run_dir / "command_plan.json"
+    if not path.is_file():
+        return None
+    value = json.loads(path.read_text(encoding="utf-8"))
+    return value if isinstance(value, dict) else None
+
+
+def successful_prefix(record: dict, target: str, plan: dict | None) -> list[dict]:
     commands = [item for item in record.get("commands", []) if isinstance(item, dict)]
     kept: list[dict] = []
     for stage in STAGES[: STAGES.index(target)]:
         group = [item for item in commands if item.get("stage") == stage]
         if not group or any(item.get("exit_status") != 0 for item in group):
             raise RuntimeError(f"prerequisite stage is missing or failed: {stage}")
+        if plan is not None and [item.get("command") for item in group] != plan.get(stage):
+            raise RuntimeError(f"prerequisite stage is stale under command_plan.json: {stage}")
         kept.extend(group)
+    target_group = [item for item in commands if item.get("stage") == target]
+    target_successes: list[dict] = []
+    for item in target_group:
+        if item.get("exit_status") != 0:
+            break
+        target_successes.append(item)
+    if plan is not None:
+        planned = plan.get(target)
+        actual = [item.get("command") for item in target_successes]
+        if not isinstance(planned, list) or actual != planned[: len(actual)]:
+            target_successes = []
+    kept.extend(target_successes)
     return kept
+
+
+def execution_progress(records: list[dict], plan: dict | None) -> tuple[list[str], bool, str | None]:
+    completed: list[str] = []
+    for stage in STAGES:
+        group = [item for item in records if item.get("stage") == stage]
+        if not group or any(item.get("exit_status") != 0 for item in group):
+            break
+        if plan is not None:
+            planned = plan.get(stage)
+            if not isinstance(planned, list) or [item.get("command") for item in group] != planned:
+                break
+        completed.append(stage)
+    workflow_complete = tuple(completed) == STAGES
+    return completed, workflow_complete, None if workflow_complete else STAGES[len(completed)]
 
 
 def main() -> int:
@@ -53,8 +90,9 @@ def main() -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     record_path = run_dir / "execution_record.json"
     prior = read_record(record_path)
+    plan = read_plan(run_dir)
     try:
-        records = successful_prefix(prior, args.stage) if args.stage != STAGES[0] else []
+        records = successful_prefix(prior, args.stage, plan)
     except RuntimeError as error:
         print(json.dumps({"status": "FAIL", "error": str(error)}, ensure_ascii=False))
         return 3
@@ -62,6 +100,35 @@ def main() -> int:
     cwd = (args.cwd or (run_dir / "generated_project")).resolve()
     started_at = datetime.now(timezone.utc).isoformat()
     command_text = command[0] if len(command) == 1 else shlex.join(command)
+    target_prefix = [item for item in records if item.get("stage") == args.stage]
+    if plan is not None:
+        planned = plan.get(args.stage)
+        if not isinstance(planned, list) or not planned:
+            print(
+                json.dumps(
+                    {"status": "FAIL", "error": f"command_plan.{args.stage} is missing or invalid"},
+                    ensure_ascii=False,
+                )
+            )
+            return 3
+        command_index = len(target_prefix)
+        if command_index == len(planned) and command_text == planned[0]:
+            records = [item for item in records if item.get("stage") != args.stage]
+            target_prefix = []
+            command_index = 0
+        if command_index >= len(planned) or planned[command_index] != command_text:
+            print(
+                json.dumps(
+                    {
+                        "status": "FAIL",
+                        "error": (
+                            f"command does not match command_plan.{args.stage}[{command_index}]"
+                        ),
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            return 3
     completed = subprocess.run(
         ["/bin/bash", "-lc", command_text],
         cwd=cwd,
@@ -72,6 +139,7 @@ def main() -> int:
     records.append(
         {
             "stage": args.stage,
+            "command_index": len(target_prefix) + 1,
             "command": command_text,
             "cwd": str(cwd),
             "started_at": started_at,
@@ -81,13 +149,7 @@ def main() -> int:
             "exit_status": completed.returncode,
         }
     )
-    completed_stages = []
-    for stage in STAGES:
-        group = [item for item in records if item.get("stage") == stage]
-        if not group or any(item.get("exit_status") != 0 for item in group):
-            break
-        completed_stages.append(stage)
-    workflow_complete = tuple(completed_stages) == STAGES
+    completed_stages, workflow_complete, next_stage = execution_progress(records, plan)
     record = {
         "schema_version": "1.0",
         "executor": "local",
@@ -96,7 +158,7 @@ def main() -> int:
         "status": "PASS" if completed.returncode == 0 else "FAIL",
         "completed_stages": completed_stages,
         "workflow_complete": workflow_complete,
-        "next_stage": None if workflow_complete else STAGES[len(completed_stages)],
+        "next_stage": next_stage,
         "commands": records,
     }
     record_path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

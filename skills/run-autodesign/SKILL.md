@@ -71,7 +71,7 @@ Resolve the skills directory as `${CODEX_HOME:-$HOME/.codex}/skills`. Load the n
 
 ## Maintain state
 
-After each stage, update `AUTODESIGN_STATE.md` with:
+After each stage, use `python3 -m autodesign skill-advance` to update `AUTODESIGN_STATE.md` with:
 
 - current stage;
 - last completed stage;
@@ -82,6 +82,8 @@ After each stage, update `AUTODESIGN_STATE.md` with:
 - literal decision and reason.
 
 Append one history row instead of rewriting the scientific history. Keep failed routes and negative evidence visible.
+
+If table whitespace or alignment was edited manually, run `python3 -m autodesign skill-repair-state <run_dir>` before resuming. `INTEGRITY_AUDIT_PASS` and `COMPLETE` require a literal `Verdict: PASS`; an in-progress state keeps the previous completed milestone in `Last completed stage`.
 
 ## Finish
 

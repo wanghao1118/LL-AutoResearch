@@ -54,6 +54,94 @@ def _is_inside(child: str, parent: str) -> bool:
     return child_path == parent_path or parent_path in child_path.parents
 
 
+def _read_required_json(path: Path, label: str, errors: list[str]) -> Any:
+    if not path.is_file():
+        errors.append(f"local run is missing {label}: {path}")
+        return None
+    try:
+        return read_json(path)
+    except (OSError, json.JSONDecodeError) as error:
+        errors.append(f"local run has invalid {label}: {path}: {error}")
+        return None
+
+
+def _validate_materialized_run_contracts(run_dir: Path, errors: list[str]) -> None:
+    """Reject old or partial runs before any remote deployment consumes resources."""
+
+    command_plan_path = run_dir / "command_plan.json"
+    command_plan = _read_required_json(command_plan_path, "command_plan.json", errors)
+    if command_plan is not None:
+        if not isinstance(command_plan, dict):
+            errors.append("local command_plan.json must contain an object")
+        else:
+            for stage in STAGE_ORDER:
+                commands = command_plan.get(stage)
+                if not isinstance(commands, list) or not commands or not all(
+                    isinstance(command, str) and command.strip() for command in commands
+                ):
+                    errors.append(
+                        f"local command_plan.json requires non-empty command list: {stage}"
+                    )
+
+    schedule_path = run_dir / "experiment_schedule.json"
+    schedule = _read_required_json(schedule_path, "experiment_schedule.json", errors)
+    if schedule is not None:
+        if not isinstance(schedule, dict) or schedule.get("schema_version") != "1.0":
+            errors.append("local experiment_schedule.json must use schema_version 1.0")
+        else:
+            cells = schedule.get("cells")
+            if not isinstance(cells, list) or not cells:
+                errors.append("local experiment_schedule.json cells must be non-empty")
+            else:
+                for index, cell in enumerate(cells):
+                    if not isinstance(cell, dict):
+                        errors.append(
+                            f"local experiment_schedule.json cells[{index}] must be an object"
+                        )
+                        continue
+                    identifiers = (
+                        cell.get("experiment_id"),
+                        cell.get("variant_id"),
+                        cell.get("benchmark_task_id"),
+                    )
+                    if not all(isinstance(value, str) and value.strip() for value in identifiers):
+                        errors.append(
+                            f"local experiment_schedule.json cells[{index}] has invalid IDs"
+                        )
+                    seed = cell.get("seed")
+                    if not isinstance(seed, int) or isinstance(seed, bool):
+                        errors.append(
+                            f"local experiment_schedule.json cells[{index}] has invalid seed"
+                        )
+                    metrics = cell.get("metrics")
+                    if not isinstance(metrics, list) or not metrics or not all(
+                        isinstance(metric, str) and metric.strip() for metric in metrics
+                    ):
+                        errors.append(
+                            f"local experiment_schedule.json cells[{index}] has invalid metrics"
+                        )
+
+    result_contract_path = run_dir / "result_contract.json"
+    result_contract = _read_required_json(
+        result_contract_path, "result_contract.json", errors
+    )
+    if result_contract is not None:
+        if not isinstance(result_contract, dict):
+            errors.append("local result_contract.json must contain an object")
+        else:
+            if result_contract.get("schema_version") != "1.0":
+                errors.append("local result_contract.json must use schema_version 1.0")
+            if result_contract.get("format") != "autodesign-results-v1":
+                errors.append(
+                    "local result_contract.json format must be autodesign-results-v1"
+                )
+            result_path = PurePosixPath(str(result_contract.get("path") or ""))
+            if not str(result_path) or result_path.is_absolute() or ".." in result_path.parts:
+                errors.append(
+                    "local result_contract.json path must stay inside generated_project"
+                )
+
+
 def validate_remote_config(config: dict[str, Any], repo_root: Path) -> dict[str, Any]:
     repo_root = repo_root.resolve()
     errors: list[str] = []
@@ -248,6 +336,7 @@ def validate_remote_config(config: dict[str, Any], repo_root: Path) -> dict[str,
         if not run_dir.is_dir():
             errors.append(f"local.run_dir does not exist: {run_dir}")
         else:
+            _validate_materialized_run_contracts(run_dir, errors)
             generated_project = run_dir / "generated_project"
             if not generated_project.is_dir():
                 errors.append(
@@ -324,7 +413,11 @@ class RemoteGPUController:
         run_path = (self.repo_root / run_dir_value).resolve()
         command_plan_path = run_path / "command_plan.json"
         if command_plan_path.is_file():
-            command_plan = read_json(command_plan_path)
+            self.command_source = str(command_plan_path)
+            try:
+                command_plan = read_json(command_plan_path)
+            except (OSError, json.JSONDecodeError):
+                command_plan = None
             if isinstance(command_plan, dict):
                 resolved_commands: dict[str, str] = {}
                 for stage in STAGE_ORDER:
@@ -337,12 +430,15 @@ class RemoteGPUController:
                     resolved_commands[stage] = " && ".join(commands)
                 if len(resolved_commands) == len(STAGE_ORDER):
                     self.config.setdefault("run", {})["commands"] = resolved_commands
-                    self.command_source = str(command_plan_path)
 
         result_contract_path = run_path / "result_contract.json"
         if not result_contract_path.is_file():
             return
-        result_contract = read_json(result_contract_path)
+        self.result_contract_source = str(result_contract_path)
+        try:
+            result_contract = read_json(result_contract_path)
+        except (OSError, json.JSONDecodeError):
+            return
         if (
             not isinstance(result_contract, dict)
             or result_contract.get("schema_version") != "1.0"
@@ -362,7 +458,6 @@ class RemoteGPUController:
         run = self.config.setdefault("run", {})
         run["primary_result_path"] = primary_result_path
         run["result_paths"] = [primary_result_path]
-        self.result_contract_source = str(result_contract_path)
 
     def validate(self) -> dict[str, Any]:
         report = validate_remote_config(self.config, self.repo_root)

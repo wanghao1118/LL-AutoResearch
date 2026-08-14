@@ -51,6 +51,8 @@ Use one of:
 
 A failed or rejected candidate does not erase the last accepted state.
 
+Use `skill-advance` for state transitions and `skill-repair-state` to canonicalize repairable Markdown table whitespace. `Last completed stage` names a completed milestone, never `EXECUTION_IN_PROGRESS`. `INTEGRITY_AUDIT_PASS` requires an observed `Verdict: PASS`, and `COMPLETE` requires the current state already be `INTEGRITY_AUDIT_PASS`.
+
 ## Machine records
 
 `execution_record.json` records only observed facts:

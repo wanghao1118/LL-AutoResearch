@@ -10,7 +10,13 @@ from typing import Any
 from .io import read_json, write_json, write_text
 from .runner import execution_completion_errors
 
-STATE_PATTERN = re.compile(r"^\| Current stage \| ([A-Z0-9_]+) \|$", re.MULTILINE)
+STATE_PATTERN = re.compile(
+    r"^\s*\|\s*Current stage\s*\|\s*([A-Z0-9_]+)\s*\|\s*$",
+    re.MULTILINE,
+)
+AUDIT_VERDICT_PATTERN = re.compile(
+    r"^\s*Verdict\s*:\s*(PASS|FAIL)\s*$", re.IGNORECASE | re.MULTILINE
+)
 STAGE_ORDER = (
     "INPUT_READY",
     "METHOD_ROUTE_READY",
@@ -87,9 +93,39 @@ STATE_ARTIFACTS = (
     ("integrity_audit.md", "final claim-evidence audit"),
 )
 
+LAST_COMPLETED_STAGE = {
+    "WAITING_FOR_R0_IMPLEMENTATION": "METHOD_ROUTE_READY",
+    "R0_FAILED_RETURN_TO_METHOD_ROUTE": "METHOD_ROUTE_READY",
+    "EXECUTION_IN_PROGRESS": "IMPLEMENTATION_READY",
+}
+
 
 def _json_block(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, indent=2)
+
+
+def _state_field_pattern(field: str) -> re.Pattern[str]:
+    return re.compile(
+        rf"^\s*\|\s*{re.escape(field)}\s*\|\s*([^|]*?)\s*\|\s*$",
+        re.MULTILINE,
+    )
+
+
+def _replace_state_field(text: str, field: str, value: str) -> str:
+    pattern = _state_field_pattern(field)
+    if not pattern.search(text):
+        raise ValueError(
+            f"AUTODESIGN_STATE.md is missing the {field!r} row; restore it or run skill-init"
+        )
+    return pattern.sub(f"| {field} | {value} |", text, count=1)
+
+
+def _audit_verdict(run_path: Path) -> str | None:
+    audit_path = run_path / "integrity_audit.md"
+    if not audit_path.is_file():
+        return None
+    match = AUDIT_VERDICT_PATTERN.search(audit_path.read_text(encoding="utf-8"))
+    return match.group(1).upper() if match else None
 
 
 def _render_input_brief(input_path: Path) -> str:
@@ -190,12 +226,7 @@ def _refresh_state_snapshot(text: str, run_path: Path, stage: str) -> str:
         "Primary result": primary_result,
     }
     for field, value in replacements.items():
-        text = re.sub(
-            rf"^\| {re.escape(field)} \| [^|]+ \|$",
-            f"| {field} | {value} |",
-            text,
-            flags=re.MULTILINE,
-        )
+        text = _replace_state_field(text, field, value)
     rows = [
         f"| `{relative}` | {'ready' if (run_path / relative).exists() else 'pending'} | {purpose} |"
         for relative, purpose in STATE_ARTIFACTS
@@ -243,6 +274,23 @@ def read_current_stage(run_dir: str | Path) -> str:
     return stage
 
 
+def repair_skill_state(run_dir: str | Path) -> dict[str, Any]:
+    """Canonicalize repairable state-table whitespace and refresh derived rows."""
+
+    run_path = Path(run_dir)
+    state_path = run_path / "AUTODESIGN_STATE.md"
+    stage = read_current_stage(run_path)
+    text = state_path.read_text(encoding="utf-8")
+    text = _replace_state_field(text, "Current stage", stage)
+    text = _replace_state_field(
+        text, "Last completed stage", LAST_COMPLETED_STAGE.get(stage, stage)
+    )
+    text = _replace_state_field(text, "Next Skill", NEXT_SKILL[stage])
+    text = _refresh_state_snapshot(text, run_path, stage)
+    state_path.write_text(text, encoding="utf-8")
+    return inspect_skill_run(run_path)
+
+
 def inspect_skill_run(run_dir: str | Path) -> dict[str, Any]:
     run_path = Path(run_dir)
     stage = read_current_stage(run_path)
@@ -286,29 +334,22 @@ def advance_skill_run(
         raise ValueError(f"Unknown Skill-first stage: {stage}")
     run_path = Path(run_dir)
     current = read_current_stage(run_path)
+    if stage == "COMPLETE" and current != "INTEGRITY_AUDIT_PASS":
+        raise ValueError("COMPLETE requires current stage INTEGRITY_AUDIT_PASS")
+    if stage in {"INTEGRITY_AUDIT_PASS", "COMPLETE"} and _audit_verdict(run_path) != "PASS":
+        raise ValueError(
+            f"{stage} requires integrity_audit.md with literal Verdict: PASS"
+        )
     state_path = run_path / "AUTODESIGN_STATE.md"
     text = state_path.read_text(encoding="utf-8")
     original_text = text
-    text = re.sub(
-        r"^\| Current stage \| [A-Z0-9_]+ \|$",
-        f"| Current stage | {stage} |",
-        text,
-        flags=re.MULTILINE,
+    text = _replace_state_field(text, "Current stage", stage)
+    text = _replace_state_field(
+        text, "Last completed stage", LAST_COMPLETED_STAGE.get(stage, stage)
     )
-    text = re.sub(
-        r"^\| Last completed stage \| [A-Z0-9_]+ \|$",
-        f"| Last completed stage | {stage} |",
-        text,
-        flags=re.MULTILINE,
-    )
-    text = re.sub(
-        r"^\| Next Skill \| [^|]+ \|$",
-        f"| Next Skill | {NEXT_SKILL[stage]} |",
-        text,
-        flags=re.MULTILINE,
-    )
+    text = _replace_state_field(text, "Next Skill", NEXT_SKILL[stage])
     text = _refresh_state_snapshot(text, run_path, stage)
-    history_rows = re.findall(r"^\| (\d+) \|", text, flags=re.MULTILINE)
+    history_rows = re.findall(r"^\s*\|\s*(\d+)\s*\|", text, flags=re.MULTILINE)
     round_index = max((int(value) for value in history_rows), default=0) + 1
     next_action = "pipeline complete" if stage == "COMPLETE" else f"run {NEXT_SKILL[stage]}"
     text = text.rstrip() + (
@@ -341,12 +382,8 @@ def verify_skill_run(run_dir: str | Path) -> dict[str, Any]:
                     read_json(execution_path), read_json(command_plan_path)
                 )
             )
-    if report["current_stage"] == "COMPLETE":
-        audit_path = run_path / "integrity_audit.md"
-        if not audit_path.is_file() or "Verdict: PASS" not in audit_path.read_text(
-            encoding="utf-8"
-        ):
-            errors.append("COMPLETE requires integrity_audit.md with Verdict: PASS")
+    if report["current_stage"] == "COMPLETE" and _audit_verdict(run_path) != "PASS":
+        errors.append("COMPLETE requires integrity_audit.md with Verdict: PASS")
     verification = {
         **report,
         "status": "PASS" if not errors else "FAIL",
