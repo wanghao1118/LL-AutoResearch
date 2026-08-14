@@ -1,31 +1,26 @@
 # AutoDesign
 
-AutoDesign 是一个 **Skill-first 研究工作流**。Codex 通过七个 Skill 完成方法路线、证据设计、实验实现、执行、结果解释与独立审计；仓库中的 Python 只负责状态、命令、结果 cell 完整性和可选远端 GPU 运行。
+AutoDesign 是一个 **Skill-first 研究工作流**。Codex 通过七个 Skill 完成方法路线、证据设计、实验实现、执行、结果解释与独立审计；仓库中的 Python 薄运行包只负责状态推进、命令执行、结果 cell 完整性校验和可选的远端 GPU 运行。
 
-## 保留内容
+## 发布内容
 
 ```text
 .
-├── autodesign/                    薄运行包
-│   ├── cli.py                     CLI 路由
-│   ├── io.py                      JSON 与文本读写
-│   ├── runner.py                  本地五阶段命令执行
-│   ├── skillflow.py               状态初始化、推进与验证
-│   ├── skillresults.py            结果 cell 校验与聚合
-│   └── remote_gpu.py              可选 SSH/GPU 执行器
+├── autodesign/                    状态、结果、本地/远端执行薄运行包
 ├── skills/                        七个 Prompt-first Skills
+├── configs/
+│   ├── remote_gpu.example.json    远端 GPU 配置模板
+│   └── remote_agent_policy.template.md
+├── environments/
+│   └── autodesign-gpu.yml         远端控制环境
 ├── scripts/
-│   ├── install_autodesign_skills.sh
-│   ├── uninstall_autodesign_skills.sh
-│   └── run_skill_first_demo.sh
-├── tests/                         四组核心回归测试
-├── assets/input/demo_input.json   最小自然语言输入 fixture
-├── configs/                       远端配置示例与本地配置
-├── environments/                  远端控制环境
-└── docs/                          当前对接记录与可视化
+│   └── install_autodesign_skills.sh
+├── pyproject.toml
+├── README.md
+└── LICENSE
 ```
 
-旧 AutoSearch/AutoBench 应用、旧 JSON 研究 pipeline、旧结果 tuning Prompt、一次性盲测/迁移脚本和三类验证 fixture 均不属于当前生产路径，已经从本分支删除。历史运行结果和日志位于 gitignored 的 `assets/output/` 与 `assets/logs/`，不会进入分支。
+`assets/` 是运行时本地目录，不进入 Git。输入、日志、生成项目和实验结果可分别放在 `assets/input/`、`assets/logs/` 和 `assets/output/`；也可以把运行目录放在任意可写的绝对路径。用户自己的 `configs/remote_gpu.local.json` 和 `configs/remote_agent_policy.local.md` 同样不会进入 Git。
 
 ## 七个 Skill
 
@@ -39,28 +34,28 @@ AutoDesign 是一个 **Skill-first 研究工作流**。Codex 通过七个 Skill 
 | `$autodesign-result-scientist` | 结果完整性与科学诊断 | `result_summary.json`、`result_diagnosis.md` |
 | `$autodesign-integrity-auditor` | 独立 claim-evidence-execution 审计 | `integrity_audit.md` |
 
-安装：
+## 安装 Skill
+
+在仓库内或其他目录中都可以执行：
 
 ```bash
-bash scripts/install_autodesign_skills.sh
+bash /absolute/path/to/exp31_autoresearch/scripts/install_autodesign_skills.sh
 ```
 
-卸载：
-
-```bash
-bash scripts/uninstall_autodesign_skills.sh
-```
+脚本会从自身位置解析仓库根目录，逐个校验并安装七个 Skill 到 `${CODEX_HOME:-$HOME/.codex}/skills/`。再次执行会用仓库版本覆盖已安装的同名 Skill。
 
 ## 自然语言入口
 
+在 Codex 对话中直接说明输入和运行目录，例如：
+
 ```text
-使用 $run-autodesign 处理 assets/input/demo_input.json，运行目录使用 assets/output/my_run；完成方法路线、证据设计、项目实现、五阶段执行、结果诊断和完整性审计。
+使用 $run-autodesign。固定输入为：motivation=<研究动机>；contributions=<贡献列表>；benchmark=<数据集与指标>。运行目录使用 /absolute/path/to/my_run。依次完成方法路线、证据设计、项目实现、五阶段执行、结果诊断和完整性审计。
 ```
 
-一个 canonical run 包含：
+一个 canonical run 在指定运行目录中生成：
 
 ```text
-assets/output/<run>/
+<run_dir>/
 ├── AUTODESIGN_STATE.md
 ├── input_brief.md
 ├── method_route.md
@@ -85,27 +80,24 @@ R0 文件只在路线需要低成本门时出现。Markdown 保存研究推理�
 
 不依赖项目 Python 的研究步骤：
 
-- 方法路线选择；
-- R0 假设与 falsifier；
-- evidence plan；
-- 项目实现决策；
-- 结果解释；
-- 完整性审计。
+- 方法路线选择与 R0 falsifier；
+- evidence plan 与项目实现决策；
+- 结果解释与完整性审计。
 
 依赖薄运行包的确定性步骤：
 
 - `skillflow.py`：状态初始化、推进和完成验证；
 - `skillresults.py`：schedule 与 observed cells 对齐、确定性聚合；
-- `runner.py`：本地命令计划；
-- `remote_gpu.py`：可选远端 GPU 部署和收集。
+- `runner.py`：本地命令计划执行；
+- `remote_gpu.py`：可选远端 GPU 部署、五阶段执行和结果收集。
 
-通用单阶段记录器已随 executor Skill 自带：
+通用单阶段记录器随 executor Skill 安装到：
 
 ```text
 ${CODEX_HOME:-$HOME/.codex}/skills/autodesign-executor/scripts/run_stage.py
 ```
 
-因此剩余代码不会替 Codex 选择方法、模型、baseline、训练范式或论文结论。
+薄运行包不会替 Codex 选择方法、模型、baseline、训练范式或论文结论。
 
 ## 五阶段执行
 
@@ -124,13 +116,28 @@ preflight → smoke → experiment → aggregate → collect
 ## 本地验证
 
 ```bash
-python3 -m unittest discover -s tests -v
-.venv/bin/ruff check .
-python3 -m compileall -q autodesign skills scripts tests
-bash scripts/run_skill_first_demo.sh assets/output/skill_first_demo
+python3 -m autodesign --help
+python3 -m compileall -q autodesign skills
+bash -n scripts/install_autodesign_skills.sh
+bash scripts/install_autodesign_skills.sh
 ```
 
-## 远端 GPU
+## 远端 GPU 配置
+
+先从模板创建只属于本机的配置：
+
+```bash
+cp configs/remote_gpu.example.json configs/remote_gpu.local.json
+cp configs/remote_agent_policy.template.md configs/remote_agent_policy.local.md
+```
+
+在 `remote_gpu.local.json` 中填写 SSH、远端根目录、Conda、`git.branch`、运行命令和结果路径；`git.branch` 必须是远端机器将要拉取的已推送分支。GPU 由以下字段绑定：
+
+- `gpu.visible_devices`：允许本次运行看到的 GPU 编号；
+- `gpu.required_count`：本次运行要求的 GPU 数量；
+- `limits.max_parallel_jobs`：并行任务上限。
+
+远端执行器会依据 `gpu.visible_devices` 导出 `CUDA_VISIBLE_DEVICES` 和 `NVIDIA_VISIBLE_DEVICES`。配置完成后先验证并查看完整 dry-run：
 
 ```bash
 python3 -m autodesign remote-validate configs/remote_gpu.local.json

@@ -8,11 +8,8 @@ dist/
 build/
 .env
 
-# AutoDesign runtime artifacts stay local; only the empty directories are versioned.
-assets/output/*
-assets/logs/*
-!assets/output/.gitkeep
-!assets/logs/.gitkeep
+# AutoDesign inputs, outputs, and logs are runtime-local artifacts.
+assets/
 
 # User-specific remote GPU host, paths, card ids, and agent policy.
 configs/remote_gpu.local.json
