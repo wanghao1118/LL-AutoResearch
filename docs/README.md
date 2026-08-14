@@ -263,6 +263,28 @@ portable runner 按 `command_plan.json` 追加同一 stage 的命令记录，并
 
 执行层需要验证最小事实合同，但不重新引入研究设计 schema。之后新增 runner 行为时，必须同时覆盖成功前缀、失败证据、计划变化、拒绝尝试和资源消耗前预检。
 
+### Round 29：补齐 remote、状态文本与摄取入口的事实门控
+
+**设计动机**
+
+上一轮只修复了本地失败证据，remote 手动跳过失败 stage 仍会改写为 PASS；同时状态 History 可被竖线拆列、portable runner 可无计划运行、诊断入口只看文件存在、结果合同覆盖会丢辅助产物，两个缺失输入仍抛底层异常。
+
+**具体方案与关键参数**
+
+remote record 在运行后续 stage 时保留所有更早证据，只有显式重试失败 stage 才替换它；materialized primary result 只替换原 primary，并保留额外 `result_paths`。`skill-advance` 将 History 单元格中的分隔符和换行转成单元格内表示，并要求 summary 状态为 `READY_FOR_GPT_DIAGNOSIS`。portable runner 强制读取 `command_plan.json`，且在执行前检查 cwd；`skill-ingest` 对 schedule、plan、record 和 results 分别给出归属 Skill。
+
+**结果数据**
+
+七项修改前得到 `BUG_BASELINE status=FAIL observed=7/7`，修改后得到 `BUGFIX_VERIFICATION status=PASS fixed=7/7`。完整回归增至 `37` 项并全部通过；七个 Skill 重新安装后与源码一致，端到端 demo 为 `PASS`，remote validate 为 `PASS`，五阶段 remote-all 为 `DRY_RUN`。
+
+**核心发现/失败原因**
+
+这些缺陷来自三个“可选事实”假设：把执行计划当可选、把文件存在当完成、把单次成功当整条 remote 记录成功。它们都会把真实错误推迟到后续阶段。
+
+**推导出的下一步洞察**
+
+薄代码应只强制执行和交接所必需的事实，不扩展研究 schema；任何状态推进都必须消费上一步机器状态，而不只检查路径存在。
+
 ## 6. 验证命令
 
 ```bash

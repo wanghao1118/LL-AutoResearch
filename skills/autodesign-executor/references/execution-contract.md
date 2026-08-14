@@ -20,11 +20,13 @@ Result diagnosis requires successful current records for `preflight`, `smoke`, `
 
 An out-of-order or stale-stage request returns a rejected-attempt result without rewriting the authoritative execution record. `run-local --stage all` reuses the unchanged successful prefix and starts at the first missing, failed, or stale stage.
 
+The portable stage runner requires a readable `command_plan.json` and an existing working directory before execution. It returns a structured JSON `FAIL` for either missing input. Remote records retain all earlier stage evidence, including failures, when a later stage is invoked; the aggregate record remains `FAIL` until that failed stage is explicitly retried and replaced.
+
 For a provenance replay, the record states that mode explicitly and names the copied source observation file. Replay success is an execution-layer result, not fresh scientific evidence.
 
 ## Remote sequence
 
-Validate → plan → preflight → sync → bootstrap → smoke → experiment → aggregate → collect. Validation requires a materialized `generated_project/`, a complete five-stage `command_plan.json`, a non-empty `experiment_schedule.json`, and a valid `result_contract.json` before deployment. Generated project commands and result contract override demo configuration. Git mode requires a clean synchronized revision; rsync mode records a release description.
+Validate → plan → preflight → sync → bootstrap → smoke → experiment → aggregate → collect. Validation requires a materialized `generated_project/`, a complete five-stage `command_plan.json`, a non-empty `experiment_schedule.json`, and a valid `result_contract.json` before deployment. Generated project commands and the primary result contract override demo configuration while preserving additional configured result paths. Git mode requires a clean synchronized revision; rsync mode records a release description.
 
 ## Resource failures
 

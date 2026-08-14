@@ -134,7 +134,10 @@ class RemoteGPUTests(unittest.TestCase):
     def test_materialized_five_stage_and_result_contract_override_config(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            config_path, _ = self._fixture(root)
+            config_path, config = self._fixture(root)
+            auxiliary_result = "experiment/assets/output/metrics.json"
+            config["run"]["result_paths"].append(auxiliary_result)
+            config_path.write_text(json.dumps(config), encoding="utf-8")
             plan = json.loads((root / "run/command_plan.json").read_text())
             plan["experiment"] = ["python3 train.py shard-a", "python3 train.py shard-b"]
             (root / "run/command_plan.json").write_text(json.dumps(plan), encoding="utf-8")
@@ -150,6 +153,10 @@ class RemoteGPUTests(unittest.TestCase):
             self.assertEqual(
                 controller.config["run"]["primary_result_path"],
                 "experiment/assets/output/results.json",
+            )
+            self.assertEqual(
+                controller.config["run"]["result_paths"],
+                ["experiment/assets/output/results.json", auxiliary_result],
             )
             self.assertTrue(report["run_command_source"].endswith("command_plan.json"))
             self.assertTrue(report["result_contract_source"].endswith("result_contract.json"))
@@ -198,6 +205,39 @@ class RemoteGPUTests(unittest.TestCase):
             self.assertEqual([item["stage"] for item in record["commands"]], list(STAGE_ORDER))
             self.assertEqual(record["completed_stages"], list(STAGE_ORDER))
             self.assertTrue(record["workflow_complete"])
+
+    def test_remote_record_preserves_failed_stage_when_later_stage_runs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config_path, _ = self._fixture(root)
+            controller = RemoteGPUController(config_path, repo_root=root)
+            for index, (stage, exit_status) in enumerate(
+                (("preflight", 0), ("smoke", 0), ("experiment", 7), ("aggregate", 0))
+            ):
+                controller._write_pipeline_execution_record(
+                    {
+                        "command_key": stage,
+                        "stdout": "",
+                        "stderr": "failed" if exit_status else "",
+                        "exit_status": exit_status,
+                        "record_path": f"/records/{stage}.json",
+                        "started_at": f"2026-01-01T00:00:0{index}+00:00",
+                        "finished_at": f"2026-01-01T00:00:1{index}+00:00",
+                    }
+                )
+
+            record = json.loads((root / "run/execution_record.json").read_text())
+            self.assertEqual(
+                [item["stage"] for item in record["commands"]],
+                ["preflight", "smoke", "experiment", "aggregate"],
+            )
+            failure = next(
+                item for item in record["commands"] if item["stage"] == "experiment"
+            )
+            self.assertEqual(failure["exit_status"], 7)
+            self.assertEqual(record["status"], "FAIL")
+            self.assertEqual(record["completed_stages"], ["preflight", "smoke"])
+            self.assertEqual(record["next_stage"], "experiment")
 
     def test_remote_all_dry_run_contains_all_five_project_stages(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

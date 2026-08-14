@@ -94,6 +94,18 @@ class SkillResultTests(unittest.TestCase):
                 summary["errors"],
             )
 
+    def test_ingest_missing_schedule_names_owning_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            run_dir = Path(temporary)
+            results_path = run_dir / "results.json"
+            results_path.write_text(json.dumps(self.results), encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "experiment_schedule.json.*autodesign-implementer Skill",
+            ):
+                ingest_skill_results(run_dir, results_path)
+
 
 if __name__ == "__main__":
     unittest.main()

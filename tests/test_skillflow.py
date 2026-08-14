@@ -191,7 +191,10 @@ class SkillFlowTests(unittest.TestCase):
             (run_dir / "experiment_schedule.json").write_text("{}", encoding="utf-8")
             (run_dir / "result_contract.json").write_text("{}", encoding="utf-8")
             (run_dir / "execution_record.json").write_text("{}", encoding="utf-8")
-            (run_dir / "result_summary.json").write_text("{}", encoding="utf-8")
+            (run_dir / "result_summary.json").write_text(
+                json.dumps({"status": "READY_FOR_GPT_DIAGNOSIS"}),
+                encoding="utf-8",
+            )
             (run_dir / "result_diagnosis.md").write_text(
                 "# Result diagnosis\n", encoding="utf-8"
             )
@@ -216,13 +219,43 @@ class SkillFlowTests(unittest.TestCase):
             )
             self.assertEqual(routed["next_skill"], "run-autodesign")
 
+    def test_result_diagnosis_rejects_incomplete_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            input_path = root / "input.md"
+            input_path.write_text("Diagnose this run", encoding="utf-8")
+            run_dir = root / "run"
+            initialize_skill_run(input_path, run_dir)
+            (run_dir / "result_summary.json").write_text(
+                json.dumps({"status": "INCOMPLETE"}), encoding="utf-8"
+            )
+
+            before = (run_dir / "AUTODESIGN_STATE.md").read_bytes()
+            with self.assertRaisesRegex(
+                ValueError, "requires result_summary.json status READY_FOR_GPT_DIAGNOSIS"
+            ):
+                advance_skill_run(
+                    run_dir,
+                    "RESULT_DIAGNOSIS_READY",
+                    changed_input="result_summary.json",
+                    literal_result="diagnosed",
+                )
+            self.assertEqual((run_dir / "AUTODESIGN_STATE.md").read_bytes(), before)
+
     def test_portable_stage_runner_preserves_ordered_prefix(self) -> None:
         script = ROOT / "skills/autodesign-executor/scripts/run_stage.py"
         with tempfile.TemporaryDirectory() as temporary:
             run_dir = Path(temporary) / "run"
             project = run_dir / "generated_project"
             project.mkdir(parents=True)
-            for stage in ("preflight", "smoke", "experiment", "aggregate", "collect"):
+            plan = {
+                stage: [f"printf {stage}"]
+                for stage in ("preflight", "smoke", "experiment", "aggregate", "collect")
+            }
+            (run_dir / "command_plan.json").write_text(
+                json.dumps(plan), encoding="utf-8"
+            )
+            for stage, commands in plan.items():
                 completed = subprocess.run(
                     [
                         sys.executable,
@@ -234,9 +267,7 @@ class SkillFlowTests(unittest.TestCase):
                         "--cwd",
                         str(project),
                         "--",
-                        sys.executable,
-                        "-c",
-                        f"print('{stage.upper()}_PASS')",
+                        commands[0],
                     ],
                     text=True,
                     capture_output=True,
@@ -253,6 +284,73 @@ class SkillFlowTests(unittest.TestCase):
                 [item["stage"] for item in record["commands"]],
                 ["preflight", "smoke", "experiment", "aggregate", "collect"],
             )
+
+    def test_portable_stage_requires_command_plan(self) -> None:
+        script = ROOT / "skills/autodesign-executor/scripts/run_stage.py"
+        with tempfile.TemporaryDirectory() as temporary:
+            run_dir = Path(temporary) / "run"
+            project = run_dir / "generated_project"
+            project.mkdir(parents=True)
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    "--run-dir",
+                    str(run_dir),
+                    "--stage",
+                    "preflight",
+                    "--cwd",
+                    str(project),
+                    "--",
+                    "printf preflight",
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 3)
+            report = json.loads(completed.stdout)
+            self.assertEqual(report["status"], "FAIL")
+            self.assertIn("command_plan.json is required", report["error"])
+            self.assertNotIn("Traceback", completed.stderr)
+            self.assertFalse((run_dir / "execution_record.json").exists())
+
+    def test_portable_stage_missing_cwd_returns_json_fail(self) -> None:
+        script = ROOT / "skills/autodesign-executor/scripts/run_stage.py"
+        with tempfile.TemporaryDirectory() as temporary:
+            run_dir = Path(temporary) / "run"
+            run_dir.mkdir(parents=True)
+            (run_dir / "command_plan.json").write_text(
+                json.dumps({"preflight": ["printf preflight"]}), encoding="utf-8"
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(script),
+                    "--run-dir",
+                    str(run_dir),
+                    "--stage",
+                    "preflight",
+                    "--cwd",
+                    str(run_dir / "missing-project"),
+                    "--",
+                    "printf preflight",
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 3)
+            report = json.loads(completed.stdout)
+            self.assertEqual(report["status"], "FAIL")
+            self.assertIn("execution cwd is missing", report["error"])
+            self.assertIn("autodesign-implementer Skill", report["error"])
+            self.assertNotIn("Traceback", completed.stderr)
+            self.assertFalse((run_dir / "execution_record.json").exists())
 
     def test_portable_stage_runner_appends_multiple_commands_in_one_stage(self) -> None:
         script = ROOT / "skills/autodesign-executor/scripts/run_stage.py"
@@ -304,6 +402,18 @@ class SkillFlowTests(unittest.TestCase):
             run_dir = Path(temporary) / "run"
             project = run_dir / "generated_project"
             project.mkdir(parents=True)
+            (run_dir / "command_plan.json").write_text(
+                json.dumps(
+                    {
+                        "preflight": ["printf preflight"],
+                        "smoke": ["printf smoke"],
+                        "experiment": ["exit 3"],
+                        "aggregate": ["printf aggregate"],
+                        "collect": ["printf collect"],
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             def invoke(stage: str, command: str) -> subprocess.CompletedProcess[str]:
                 return subprocess.run(
@@ -534,6 +644,33 @@ class SkillFlowTests(unittest.TestCase):
                 "| Current stage | INPUT_READY |",
                 state_path.read_text(encoding="utf-8"),
             )
+
+    def test_state_history_escapes_pipe_characters(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "input.md"
+            source.write_text("idea", encoding="utf-8")
+            run_dir = root / "run"
+            initialize_skill_run(source, run_dir)
+            (run_dir / "method_route.md").write_text("route", encoding="utf-8")
+
+            advance_skill_run(
+                run_dir,
+                "METHOD_ROUTE_READY",
+                changed_input="metric | config",
+                literal_result="acc=0.9 | loss=0.3",
+            )
+
+            history = next(
+                line
+                for line in (run_dir / "AUTODESIGN_STATE.md")
+                .read_text(encoding="utf-8")
+                .splitlines()
+                if line.startswith("| 1 |")
+            )
+            self.assertEqual(history.count("|"), 7)
+            self.assertIn("metric &#124; config", history)
+            self.assertIn("acc=0.9 &#124; loss=0.3", history)
 
     def test_in_progress_state_preserves_last_completed_milestone(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

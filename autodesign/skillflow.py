@@ -104,6 +104,12 @@ def _json_block(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, indent=2)
 
 
+def _markdown_table_cell(value: str) -> str:
+    """Keep agent-provided text inside one Markdown table cell."""
+
+    return str(value).replace("\r\n", "\n").replace("\r", "\n").replace("|", "&#124;").replace("\n", "<br>")
+
+
 def _state_field_pattern(field: str) -> re.Pattern[str]:
     return re.compile(
         rf"^\s*\|\s*{re.escape(field)}\s*\|\s*([^|]*?)\s*\|\s*$",
@@ -334,6 +340,19 @@ def advance_skill_run(
         raise ValueError(f"Unknown Skill-first stage: {stage}")
     run_path = Path(run_dir)
     current = read_current_stage(run_path)
+    if stage == "RESULT_DIAGNOSIS_READY":
+        summary_path = run_path / "result_summary.json"
+        if not summary_path.is_file():
+            raise ValueError(
+                "RESULT_DIAGNOSIS_READY requires result_summary.json from skill-ingest"
+            )
+        summary = read_json(summary_path)
+        summary_status = summary.get("status") if isinstance(summary, dict) else None
+        if summary_status != "READY_FOR_GPT_DIAGNOSIS":
+            raise ValueError(
+                "RESULT_DIAGNOSIS_READY requires result_summary.json status "
+                f"READY_FOR_GPT_DIAGNOSIS; got {summary_status!r}"
+            )
     if stage == "COMPLETE" and current != "INTEGRITY_AUDIT_PASS":
         raise ValueError("COMPLETE requires current stage INTEGRITY_AUDIT_PASS")
     if stage in {"INTEGRITY_AUDIT_PASS", "COMPLETE"} and _audit_verdict(run_path) != "PASS":
@@ -353,8 +372,9 @@ def advance_skill_run(
     round_index = max((int(value) for value in history_rows), default=0) + 1
     next_action = "pipeline complete" if stage == "COMPLETE" else f"run {NEXT_SKILL[stage]}"
     text = text.rstrip() + (
-        f"\n| {round_index} | {current} | {stage} | {changed_input} | "
-        f"{literal_result} | {next_action} |\n"
+        f"\n| {round_index} | {current} | {stage} | "
+        f"{_markdown_table_cell(changed_input)} | "
+        f"{_markdown_table_cell(literal_result)} | {next_action} |\n"
     )
     state_path.write_text(text, encoding="utf-8")
     report = inspect_skill_run(run_path)

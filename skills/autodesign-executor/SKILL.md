@@ -29,7 +29,7 @@ Use this fixed scientific sequence:
 preflight → smoke → experiment → aggregate → collect
 ```
 
-For generic local commands, use `scripts/run_stage.py` to record command, literal stdout, literal stderr, exit status, and timestamps. When a stage has multiple commands, invoke the script once per command in the exact `command_plan.json` order; the runner keeps the complete same-stage prefix. For this repository's remote controller, use the existing `python3 -m autodesign remote-*` commands only after validation confirms the generated project, five-stage command plan, experiment schedule, and result contract.
+For generic local commands, use `scripts/run_stage.py` to record command, literal stdout, literal stderr, exit status, and timestamps. `command_plan.json` and the selected working directory must exist before invocation; missing inputs return a JSON `FAIL` without writing an execution record. When a stage has multiple commands, invoke the script once per command in the exact plan order; the runner keeps the complete same-stage prefix. For this repository's remote controller, use the existing `python3 -m autodesign remote-*` commands only after validation confirms the generated project, five-stage command plan, experiment schedule, and result contract.
 
 For a provenance replay, execute all five stages locally, record `execution_mode: provenance_replay`, and keep source execution evidence separate from replay execution evidence. A successful replay proves the migrated project can validate, reproduce, aggregate, and collect the frozen observations; it does not prove a new model run occurred.
 
@@ -41,7 +41,8 @@ On GPU servers:
 - materialize the generated project and its environment before sync;
 - stop at the first failed stage;
 - preserve logs and checkpoints;
-- collect the authoritative primary result and declared artifacts.
+- preserve a failed stage in `execution_record.json` even if a later stage is invoked manually;
+- collect the authoritative primary result and every additional configured result path.
 
 Do not infer success from file presence alone. Preflight, smoke, experiment, aggregate, and collect must all exit zero under the current commands.
 

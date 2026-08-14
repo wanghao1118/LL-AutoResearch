@@ -51,7 +51,7 @@ Use one of:
 
 A failed or rejected candidate does not erase the last accepted state.
 
-Use `skill-advance` for state transitions and `skill-repair-state` to canonicalize repairable Markdown table whitespace. `Last completed stage` names a completed milestone, never `EXECUTION_IN_PROGRESS`. `INTEGRITY_AUDIT_PASS` requires an observed `Verdict: PASS`, and `COMPLETE` requires the current state already be `INTEGRITY_AUDIT_PASS`.
+Use `skill-advance` for state transitions and `skill-repair-state` to canonicalize repairable Markdown table whitespace. History cell values escape Markdown delimiters before writing. `Last completed stage` names a completed milestone, never `EXECUTION_IN_PROGRESS`. `RESULT_DIAGNOSIS_READY` requires `result_summary.json.status: READY_FOR_GPT_DIAGNOSIS`; `INTEGRITY_AUDIT_PASS` requires an observed `Verdict: PASS`, and `COMPLETE` requires the current state already be `INTEGRITY_AUDIT_PASS`.
 
 ## Machine records
 

@@ -65,7 +65,7 @@ Resolve the skills directory as `${CODEX_HOME:-$HOME/.codex}/skills`. Load the n
 - **Evidence gate**: main, ablation, case, and interesting roles are necessary but insufficient; every original claim and derived test axis needs a real falsifier.
 - **Implementation gate**: every accepted experiment has a runnable entrypoint, complete environment, preflight, result path, and observed chart path.
 - **Execution gate**: `preflight → smoke → experiment → aggregate → collect` must all exit zero under the current commands before result diagnosis.
-- **Result gate**: observed cells equal scheduled experiment × variant × task × seed cells and planned metrics.
+- **Result gate**: observed cells equal scheduled experiment × variant × task × seed cells and planned metrics; `result_summary.json.status` must be `READY_FOR_GPT_DIAGNOSIS` before entering `RESULT_DIAGNOSIS_READY`.
 - **Route-closure gate**: `result_route.md` exists, every required tuning/iteration action is either executed and rediagnosed or explicitly closed by its threshold, and expected deltas are not reported as observations.
 - **Integrity gate**: claims, runs, aggregates, tables, figures, and conclusions agree without hiding negative or mixed results.
 
@@ -82,6 +82,8 @@ After each stage, use `python3 -m autodesign skill-advance` to update `AUTODESIG
 - literal decision and reason.
 
 Append one history row instead of rewriting the scientific history. Keep failed routes and negative evidence visible.
+
+Pass literal values directly to `skill-advance`; the state writer escapes table delimiters and line breaks so agent text cannot change the History column structure.
 
 If table whitespace or alignment was edited manually, run `python3 -m autodesign skill-repair-state <run_dir>` before resuming. `INTEGRITY_AUDIT_PASS` and `COMPLETE` require a literal `Verdict: PASS`; an in-progress state keeps the previous completed milestone in `Last completed stage`.
 

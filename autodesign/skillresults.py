@@ -145,6 +145,18 @@ def summarize_skill_results(
 
 def ingest_skill_results(run_dir: str | Path, results_path: str | Path) -> dict[str, Any]:
     run_path = Path(run_dir)
+    required = (
+        (
+            run_path / "experiment_schedule.json",
+            "autodesign-implementer Skill",
+        ),
+        (run_path / "command_plan.json", "autodesign-implementer Skill"),
+        (run_path / "execution_record.json", "autodesign-executor Skill"),
+        (Path(results_path), "autodesign-executor Skill or remote collect"),
+    )
+    for path, owner in required:
+        if not path.is_file():
+            raise ValueError(f"required artifact is missing: {path}; produce it with {owner}")
     schedule = read_json(run_path / "experiment_schedule.json")
     results = read_json(results_path)
     execution = read_json(run_path / "execution_record.json")

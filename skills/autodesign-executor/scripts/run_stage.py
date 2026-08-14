@@ -19,22 +19,30 @@ def read_record(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def read_plan(run_dir: Path) -> dict | None:
+def read_plan(run_dir: Path) -> dict:
     path = run_dir / "command_plan.json"
     if not path.is_file():
-        return None
-    value = json.loads(path.read_text(encoding="utf-8"))
-    return value if isinstance(value, dict) else None
+        raise RuntimeError(
+            "command_plan.json is required before execution; "
+            "run the autodesign-implementer Skill"
+        )
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"command_plan.json is unreadable: {error}") from error
+    if not isinstance(value, dict):
+        raise TypeError("command_plan.json must contain an object")
+    return value
 
 
-def successful_prefix(record: dict, target: str, plan: dict | None) -> list[dict]:
+def successful_prefix(record: dict, target: str, plan: dict) -> list[dict]:
     commands = [item for item in record.get("commands", []) if isinstance(item, dict)]
     kept: list[dict] = []
     for stage in STAGES[: STAGES.index(target)]:
         group = [item for item in commands if item.get("stage") == stage]
         if not group or any(item.get("exit_status") != 0 for item in group):
             raise RuntimeError(f"prerequisite stage is missing or failed: {stage}")
-        if plan is not None and [item.get("command") for item in group] != plan.get(stage):
+        if [item.get("command") for item in group] != plan.get(stage):
             raise RuntimeError(f"prerequisite stage is stale under command_plan.json: {stage}")
         kept.extend(group)
     target_group = [item for item in commands if item.get("stage") == target]
@@ -43,25 +51,23 @@ def successful_prefix(record: dict, target: str, plan: dict | None) -> list[dict
         if item.get("exit_status") != 0:
             break
         target_successes.append(item)
-    if plan is not None:
-        planned = plan.get(target)
-        actual = [item.get("command") for item in target_successes]
-        if not isinstance(planned, list) or actual != planned[: len(actual)]:
-            target_successes = []
+    planned = plan.get(target)
+    actual = [item.get("command") for item in target_successes]
+    if not isinstance(planned, list) or actual != planned[: len(actual)]:
+        target_successes = []
     kept.extend(target_successes)
     return kept
 
 
-def execution_progress(records: list[dict], plan: dict | None) -> tuple[list[str], bool, str | None]:
+def execution_progress(records: list[dict], plan: dict) -> tuple[list[str], bool, str | None]:
     completed: list[str] = []
     for stage in STAGES:
         group = [item for item in records if item.get("stage") == stage]
         if not group or any(item.get("exit_status") != 0 for item in group):
             break
-        if plan is not None:
-            planned = plan.get(stage)
-            if not isinstance(planned, list) or [item.get("command") for item in group] != planned:
-                break
+        planned = plan.get(stage)
+        if not isinstance(planned, list) or [item.get("command") for item in group] != planned:
+            break
         completed.append(stage)
     workflow_complete = tuple(completed) == STAGES
     return completed, workflow_complete, None if workflow_complete else STAGES[len(completed)]
@@ -90,10 +96,10 @@ def main() -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     record_path = run_dir / "execution_record.json"
     prior = read_record(record_path)
-    plan = read_plan(run_dir)
     try:
+        plan = read_plan(run_dir)
         records = successful_prefix(prior, args.stage, plan)
-    except RuntimeError as error:
+    except (RuntimeError, TypeError) as error:
         print(json.dumps({"status": "FAIL", "error": str(error)}, ensure_ascii=False))
         return 3
 
@@ -101,34 +107,47 @@ def main() -> int:
     started_at = datetime.now(timezone.utc).isoformat()
     command_text = command[0] if len(command) == 1 else shlex.join(command)
     target_prefix = [item for item in records if item.get("stage") == args.stage]
-    if plan is not None:
-        planned = plan.get(args.stage)
-        if not isinstance(planned, list) or not planned:
-            print(
-                json.dumps(
-                    {"status": "FAIL", "error": f"command_plan.{args.stage} is missing or invalid"},
-                    ensure_ascii=False,
-                )
+    planned = plan.get(args.stage)
+    if not isinstance(planned, list) or not planned:
+        print(
+            json.dumps(
+                {"status": "FAIL", "error": f"command_plan.{args.stage} is missing or invalid"},
+                ensure_ascii=False,
             )
-            return 3
-        command_index = len(target_prefix)
-        if command_index == len(planned) and command_text == planned[0]:
-            records = [item for item in records if item.get("stage") != args.stage]
-            target_prefix = []
-            command_index = 0
-        if command_index >= len(planned) or planned[command_index] != command_text:
-            print(
-                json.dumps(
-                    {
-                        "status": "FAIL",
-                        "error": (
-                            f"command does not match command_plan.{args.stage}[{command_index}]"
-                        ),
-                    },
-                    ensure_ascii=False,
-                )
+        )
+        return 3
+    command_index = len(target_prefix)
+    if command_index == len(planned) and command_text == planned[0]:
+        records = [item for item in records if item.get("stage") != args.stage]
+        target_prefix = []
+        command_index = 0
+    if command_index >= len(planned) or planned[command_index] != command_text:
+        print(
+            json.dumps(
+                {
+                    "status": "FAIL",
+                    "error": (
+                        f"command does not match command_plan.{args.stage}[{command_index}]"
+                    ),
+                },
+                ensure_ascii=False,
             )
-            return 3
+        )
+        return 3
+    if not cwd.is_dir():
+        print(
+            json.dumps(
+                {
+                    "status": "FAIL",
+                    "error": (
+                        f"execution cwd is missing or not a directory: {cwd}; "
+                        "run the autodesign-implementer Skill"
+                    ),
+                },
+                ensure_ascii=False,
+            )
+        )
+        return 3
     completed = subprocess.run(
         ["/bin/bash", "-lc", command_text],
         cwd=cwd,

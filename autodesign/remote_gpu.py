@@ -456,8 +456,17 @@ class RemoteGPUController:
             return
         primary_result_path = str(work_relative / result_path)
         run = self.config.setdefault("run", {})
+        previous_primary = str(run.get("primary_result_path") or "")
+        configured_result_paths = run.get("result_paths") or []
+        preserved_result_paths = [
+            path
+            for path in configured_result_paths
+            if isinstance(path, str)
+            and path
+            and path not in {previous_primary, primary_result_path}
+        ]
         run["primary_result_path"] = primary_result_path
-        run["result_paths"] = [primary_result_path]
+        run["result_paths"] = [primary_result_path, *preserved_result_paths]
 
     def validate(self) -> dict[str, Any]:
         report = validate_remote_config(self.config, self.repo_root)
@@ -853,21 +862,12 @@ exit "$run_exit"
         commands: list[dict[str, Any]] = []
         if existing and command_key in STAGE_ORDER:
             target_index = STAGE_ORDER.index(command_key)
-            existing_commands = existing.get("commands") or []
-            for prior_stage in STAGE_ORDER[:target_index]:
-                group = [
-                    item
-                    for item in existing_commands
-                    if isinstance(item, dict) and item.get("stage") == prior_stage
-                ]
-                expected_command = self.config["run"]["commands"].get(prior_stage)
-                if (
-                    len(group) != 1
-                    or group[0].get("command") != expected_command
-                    or group[0].get("exit_status") != 0
-                ):
-                    break
-                commands.extend(group)
+            for item in existing.get("commands") or []:
+                if not isinstance(item, dict):
+                    continue
+                stage = item.get("stage")
+                if stage in STAGE_ORDER and STAGE_ORDER.index(stage) < target_index:
+                    commands.append(item)
         commands.append(
             {
                 "stage": command_key,
