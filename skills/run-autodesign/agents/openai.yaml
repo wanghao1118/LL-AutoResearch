@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run AutoDesign"
+  short_description: "Orchestrate a complete Skill-first AutoDesign research workflow"
+  default_prompt: "Use $run-autodesign to start or resume the full Skill-first AutoDesign workflow."

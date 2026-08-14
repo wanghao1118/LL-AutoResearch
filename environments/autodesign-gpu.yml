@@ -1,0 +1,9 @@
+name: autodesign-gpu
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - git
+  - pip:
+      - -e /root/autodl-tmp/yzb/autoresearch

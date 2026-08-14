@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "ssh": {
+    "host": "HOST_TBD",
+    "user": "ACCOUNT_TBD",
+    "port": 22,
+    "identity_file": "",
+    "connect_timeout_seconds": 15,
+    "strict_host_key_checking": true
+  },
+  "remote": {
+    "allowed_root": "/REMOTE/ALLOWED_ROOT_TBD",
+    "repo_dir": "/REMOTE/ALLOWED_ROOT_TBD/exp31_autoresearch",
+    "work_dir": "/REMOTE/ALLOWED_ROOT_TBD/exp31_autoresearch",
+    "policy_file": "configs/remote_agent_policy.local.md"
+  },
+  "git": {
+    "repo_url": "git@github.com:zhengwenxin79-ctrl/AutoResearch.git",
+    "remote_name": "origin",
+    "branch": "codex/autodesign",
+    "pull_mode": "ff-only"
+  },
+  "transfer": {
+    "mode": "git",
+    "rsync_executable": "rsync",
+    "source_dir": ".",
+    "delete_remote_extraneous": false,
+    "excludes": [
+      ".git/",
+      ".venv/",
+      "__pycache__/",
+      "assets/output/",
+      "assets/logs/",
+      "configs/remote_gpu.local.json",
+      "configs/remote_agent_policy.local.md"
+    ]
+  },
+  "conda": {
+    "executable": "/REMOTE/CONDA_BIN_TBD",
+    "env_name": "autodesign-gpu",
+    "environment_file": "environments/autodesign-gpu.yml"
+  },
+  "gpu": {
+    "visible_devices": [
+      "GPU_INDEX_TBD"
+    ],
+    "required_count": 1
+  },
+  "limits": {
+    "max_parallel_jobs": 1,
+    "command_timeout_seconds": 86400
+  },
+  "run": {
+    "commands": {
+      "preflight": "REMOTE_PROJECT_PREFLIGHT_COMMAND_TBD",
+      "smoke": "REMOTE_SMOKE_COMMAND_TBD",
+      "experiment": "REMOTE_EXPERIMENT_COMMAND_TBD",
+      "aggregate": "REMOTE_AGGREGATE_COMMAND_TBD",
+      "collect": "REMOTE_PROJECT_COLLECT_COMMAND_TBD"
+    },
+    "result_paths": [
+      "REMOTE_RESULT_PATH_TBD"
+    ],
+    "primary_result_path": "REMOTE_RESULT_PATH_TBD"
+  },
+  "local": {
+    "run_dir": "assets/output/RUN_ID_TBD",
+    "artifact_dir": "assets/output/remote_gpu",
+    "log_dir": "assets/logs/remote_gpu",
+    "result_dir": "assets/output/remote_gpu/results"
+  }
+}

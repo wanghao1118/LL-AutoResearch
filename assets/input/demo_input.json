@@ -1,0 +1,63 @@
+{
+  "motivation": "Autonomous research agents can implement experiment code, but their experiment portfolios often leave paper contributions weakly connected to evidence.",
+  "contribution": [
+    {
+      "id": "C1",
+      "statement": "A contribution-coverage planner that maps each paper contribution to sufficient main, ablation, case-study, and boundary evidence.",
+      "claims": [
+        "The planner reaches complete contribution-to-evidence coverage.",
+        "The planner avoids redundant experiments while preserving required evidence roles."
+      ],
+      "mechanisms": [
+        "explicit claim-evidence obligations",
+        "deterministic coverage gate"
+      ],
+      "scope": "Experiment planning for empirical AI papers"
+    }
+  ],
+  "benchmark": {
+    "suite_name": "AutoDesign-Contract-Fixture",
+    "tasks": [
+      {
+        "id": "coverage-audit",
+        "name": "Contribution coverage audit",
+        "dataset": "Curated paper-plan fixtures",
+        "split": "evaluation",
+        "metrics": [
+          {"name": "requirement_coverage", "direction": "maximize"},
+          {"name": "redundant_experiment_count", "direction": "minimize"}
+        ],
+        "facets": ["single contribution", "multiple contributions", "shared evidence"]
+      },
+      {
+        "id": "contract-rejection",
+        "name": "Incomplete design rejection",
+        "dataset": "Mutated design fixtures",
+        "split": "evaluation",
+        "metrics": [
+          {"name": "invalid_design_recall", "direction": "maximize"}
+        ],
+        "facets": ["missing main", "missing ablation", "unknown task"]
+      }
+    ],
+    "baselines": [
+      {
+        "id": "manual-template",
+        "name": "Manual four-section template",
+        "category": "simple baseline",
+        "source": "Local fixture implementation",
+        "revision": "v1",
+        "full_configuration": "One main, one ablation, one case study, and one extra analysis section without a coverage validator",
+        "status": "confirmed"
+      }
+    ],
+    "constraints": {
+      "seeds": [1, 2, 3],
+      "compute_budget": "CPU fixture; GPU plan pending",
+      "target_venue": "AI/ML"
+    },
+    "metadata": {
+      "purpose": "Engineering contract fixture, not paper evidence"
+    }
+  }
+}

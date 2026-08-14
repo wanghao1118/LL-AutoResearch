@@ -2,10 +2,18 @@
 __pycache__/
 .pytest_cache/
 .ruff_cache/
-.cache/
 *.pyc
-outputs/
-.env
+*.egg-info/
 dist/
 build/
-*.egg-info/
+.env
+
+# AutoDesign runtime artifacts stay local; only the empty directories are versioned.
+assets/output/*
+assets/logs/*
+!assets/output/.gitkeep
+!assets/logs/.gitkeep
+
+# User-specific remote GPU host, paths, card ids, and agent policy.
+configs/remote_gpu.local.json
+configs/remote_agent_policy.local.md

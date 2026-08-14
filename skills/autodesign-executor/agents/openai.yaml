@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoDesign Executor"
+  short_description: "Run or resume local and remote GPU research experiments reliably"
+  default_prompt: "Use $autodesign-executor to run or resume the current AutoDesign experiment."

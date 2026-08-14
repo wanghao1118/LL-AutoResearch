@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoDesign Integrity Auditor"
+  short_description: "Audit claims experiments metrics figures and conclusions"
+  default_prompt: "Use $autodesign-integrity-auditor to independently audit the current AutoDesign run."

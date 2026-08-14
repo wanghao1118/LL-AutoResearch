@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoDesign Method Router"
+  short_description: "为研究 Idea 选择可证伪的方法路线与低成本 R0"
+  default_prompt: "使用 $autodesign-method-router 为当前 Idea 比较方法路线并产出 method_route.md。"

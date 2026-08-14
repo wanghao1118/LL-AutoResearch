@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoDesign Result Scientist"
+  short_description: "Diagnose observed evidence and select the next research round"
+  default_prompt: "Use $autodesign-result-scientist to diagnose observed results, route the next round, and load the bundled tuning prompt only when tuning is selected."
