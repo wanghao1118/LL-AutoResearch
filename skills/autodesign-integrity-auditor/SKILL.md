@@ -13,18 +13,20 @@ Read original input, method route, R0 record when required, evidence plan, imple
 
 ## Audit
 
-1. Confirm every final claim is an unchanged or explicitly narrowed original claim.
-2. Trace each claim to experiments, variants, tasks, metrics, seeds, falsifier, table, and figure.
-3. Confirm selected baselines actually ran in main experiments under their fairness plan.
-4. Confirm implementation matches the accepted method and protocol decisions.
-5. Confirm current smoke, experiment, and aggregate commands exited zero in order.
-6. Recompute result counts and aggregate values from raw records.
-7. Confirm every displayed table cell and figure point comes from observed aggregates.
-8. Confirm negative, mixed, failed-slice, and exploratory findings remain visible and correctly scoped.
-9. Confirm the diagnosis route and next action follow literal thresholds.
-10. Confirm every iteration or execution-required tuning action was implemented, executed, ingested, and rediagnosed, or was explicitly closed by its recorded stop threshold.
-11. Confirm tuning kept original contributions and claims unchanged, preserved all observed failed slices and ablations, and did not present an expected delta as an observation.
-12. List only concrete reachable defects. If none remain, state PASS.
+1. Confirm every final claim preserves the original contribution; result wording may describe observed regional behavior but may not rewrite the claim.
+2. Trace each claim to eligible claim-bearing experiments, variants, tasks, benchmark provenance, metrics, seeds, falsifier, table, and figure.
+3. Confirm pilots and smokes are visibly separated and never substitute for missing claim-bearing evidence.
+4. Confirm selected baselines actually ran in main experiments under their source-backed fairness plan.
+5. Confirm implementation matches the accepted Idea semantics, scientific locks, method, evidence classes, and protocol decisions.
+6. Confirm current preflight, smoke, experiment, aggregate, and collect commands exited zero in order and their accepted inputs remain current.
+7. Recompute result counts and aggregate values from raw records; reject missing or unexpected cells and schedule drift.
+8. Confirm every displayed table cell and figure point comes from observed aggregates and every declared case or report category was actually produced.
+9. Confirm negative, mixed, failed-slice, ablation, and exploratory findings remain visible and correctly scoped.
+10. Confirm the diagnosis route and next action follow literal thresholds and upstream defects were not interpreted as method behavior.
+11. Confirm every iteration or execution-required tuning action was implemented, executed, ingested, and rediagnosed, or was explicitly closed by its recorded stop threshold.
+12. Confirm tuning kept original contributions and claims unchanged, used comparable budgets and seed sets, preserved all observed failed slices and ablations, and did not present an expected delta as an observation.
+13. Treat a changed scientific lock, claim-bearing surrogate, unconsumed required data transformation, planned-composition failure, unexpected result cell, stale diagnosis or audit, contradictory baseline status, or missing declared report category as a literal FAIL.
+14. List only concrete reachable defects. If none remain, state PASS.
 
 ## Output
 

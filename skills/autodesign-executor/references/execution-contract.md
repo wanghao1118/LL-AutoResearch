@@ -15,15 +15,17 @@ Each stage records:
 - produced paths;
 - next action on failure.
 
+The preflight stage also records the accepted and observed scientific locks, variant identities, data composition, benchmark provenance, protocol values, and production input paths required by the evidence plan. A mismatch is an execution blocker even when a lower-level command can run.
+
 ## Ordered completion
 
 Result diagnosis requires successful current records for `preflight`, `smoke`, `experiment`, `aggregate`, and `collect` in that order. Multiple commands within a stage stay contiguous. A later success does not erase an earlier failure unless the failed stage is explicitly retried and replaced.
 
 An out-of-order or stale-stage request returns a rejected-attempt result without rewriting the authoritative execution record. `run-local --stage all` reuses the unchanged successful prefix and starts at the first missing, failed, or stale stage.
 
-The portable stage runner requires a readable `command_plan.json` and an existing working directory before execution. It returns a structured JSON `FAIL` for either missing input. Remote records retain all earlier stage evidence, including failures, when a later stage is invoked; the aggregate record remains `FAIL` until that failed stage is explicitly retried and replaced.
+The accepted `experiment_schedule.json` is immutable during an execution round. Missing cells, unexpected cells, changed evidence classes, or changed benchmark provenance prevent `collect` from qualifying the run for diagnosis. A deliberate new round first revises the owning evidence or implementation artifact and invalidates downstream records.
 
-For a provenance replay, the record states that mode explicitly and names the copied source observation file. Replay success is an execution-layer result, not fresh scientific evidence.
+The portable stage runner requires a readable `command_plan.json` and an existing working directory before execution. It returns a structured JSON `FAIL` for either missing input. Remote records retain all earlier stage evidence, including failures, when a later stage is invoked; the aggregate record remains `FAIL` until that failed stage is explicitly retried and replaced.
 
 ## Remote sequence
 

@@ -14,20 +14,21 @@ Read `method_route.md`, `evidence_plan.md`, required R0 evidence, `AUTODESIGN_ST
 ## Implement
 
 1. Materialize the project under the run's `generated_project/` directory.
-2. Preserve the accepted intervention, component identities, baseline configurations, protocol locks, downgrades, experiments, variants, tasks, metrics, and seeds.
+2. Preserve the accepted intervention, scientific locks, component identities, baseline configurations, experiment evidence classes, protocol decisions, experiments, variants, tasks, metrics, and seeds. Do not turn a blocked claim-bearing experiment into a pilot without returning to evidence design.
 3. Map every accepted experiment ID to a runnable entrypoint.
 4. Include a complete environment definition with every real runtime dependency and compatible version. Do not assume model frameworks or benchmark SDKs are preinstalled.
-5. Implement four decision-relevant preflight categories: data contract, benchmark interface, metric contract, and method sanity.
+5. Implement four decision-relevant preflight categories: data contract, benchmark interface and provenance, metric and protocol contract, and method sanity. Every check names the concrete failure it detects and the changed next action.
 6. Make smoke run all preflights and a tiny representative path.
 7. Generate non-empty smoke, experiment, and aggregate commands. Commands must operate from `generated_project/` under Linux Bash.
 8. Make launchers honor `AUTODESIGN_MAX_PARALLEL_JOBS` and use only `CUDA_VISIBLE_DEVICES`; leave existing GPU processes unchanged.
 9. Preserve training objectives, datasets, learning curves, checkpoints, and reload behavior for training routes. Preserve prompts, decoding, tools, retrieval state, and inference budgets for train-free routes.
-10. Generate declared tables and figures from observed results, never predicted values.
-11. Run local preflight and smoke when their resource contract permits it. Repair literal failures before handoff.
-12. When validating a migration against an existing observed run, copy the authoritative raw records into the new run, label the project as `provenance_replay`, preserve every value, and schedule exactly the replayed cells. A replay validates implementation and worker handoffs; it does not count as a new experiment or fill evidence absent from the source run.
+10. Before expensive execution, materialize and inspect each variant's scientific identity. For data-based routes record the model revision, data manifest, sample count, sampling policy, planned-versus-observed composition and quality axes, training input path, maximum length, epochs, learning rate, and trainable parameter ratio when applicable. For train-free routes record the corresponding prompt, tool, retriever, state, decoding, and budget identities.
+11. When filtering, decontamination, selection, or transformation is required, materialize the derived data artifact and make the launch command consume that exact artifact. A unit test of the transformation does not prove the production data path uses it.
+12. Generate declared tables and figures from observed results, never predicted values.
+13. Run local preflight and smoke when their resource contract permits it. Repair literal failures before handoff; a scientific-lock or planned-composition mismatch returns to the owning Skill instead of being waived.
 
 ## Output
 
-Write `implementation_notes.md`, the project environment, runnable entrypoints, `commands.sh`, an explicit `experiment_schedule.json`, and a result contract described in the reference. Record exact deviations as blockers instead of silently simplifying the study.
+Write `implementation_notes.md`, the project environment, runnable entrypoints, `commands.sh`, an explicit `experiment_schedule.json`, preflight reports, and a result contract described in the reference. Record exact deviations as blockers instead of silently simplifying the study.
 
 Update `AUTODESIGN_STATE.md` to `IMPLEMENTATION_READY` and set the next Skill to `autodesign-executor`.

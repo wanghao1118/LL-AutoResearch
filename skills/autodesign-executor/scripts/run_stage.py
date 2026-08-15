@@ -78,12 +78,6 @@ def main() -> int:
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--stage", choices=STAGES, required=True)
     parser.add_argument("--cwd", type=Path)
-    parser.add_argument(
-        "--execution-mode",
-        choices=("fresh_experiment", "provenance_replay"),
-        default="fresh_experiment",
-    )
-    parser.add_argument("--source-results")
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = list(args.command)
@@ -172,8 +166,7 @@ def main() -> int:
     record = {
         "schema_version": "1.0",
         "executor": "local",
-        "execution_mode": args.execution_mode,
-        "source_results": args.source_results,
+        "execution_mode": "fresh_experiment",
         "status": "PASS" if completed.returncode == 0 else "FAIL",
         "completed_stages": completed_stages,
         "workflow_complete": workflow_complete,

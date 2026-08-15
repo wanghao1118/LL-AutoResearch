@@ -76,11 +76,15 @@ Use `skill-advance` for state transitions and `skill-repair-state` to canonicali
 
 `result_summary.json` contains scheduled and observed cell counts, missing and unexpected cells, aggregates, errors, and no automatic scientific claim verdict.
 
+`input_brief.md` is the authoritative scientific-intent artifact. It preserves the literal Motivation, Contributions, Benchmark, and initial plan, then records scientific locks, autonomous design choices, resource constraints, operational definitions of ambiguous terms, and unresolved blockers. Later Skills may resolve an autonomous choice but may not rewrite a scientific lock.
+
 `result_route.md` contains the scientific route decision, owner Skill, required action, execution requirement, invalidation scope, thresholds, and closure condition. At `RESULT_DIAGNOSIS_READY`, the next Skill is `run-autodesign`, which dispatches that route rather than sending every diagnosis directly to audit.
 
 `result_tuning.json` follows the bundled result-tuning Prompt schema. It is a proposed or completed action record, not observed evidence by itself. `next_round.md` records every action that still requires implementation, execution, or confirmation.
 
-`experiment_schedule.json` lists explicit cells with experiment ID, variant ID, benchmark task ID, integer seed, and planned metric names. It exists only to test result completeness; it does not decide which experiments are scientifically appropriate.
+`experiment_schedule.json` lists explicit cells with experiment ID, variant ID, benchmark task ID, benchmark provenance, evidence class, integer seed, and planned metric names. Evidence class is exactly `CLAIM_BEARING`, `MECHANISM_PILOT`, or `ENGINEERING_SMOKE`. It exists to test result completeness and preserve the accepted evidence identity; scientific appropriateness still comes from the evidence plan.
+
+Unexpected cells remain explicit and make the current result summary ineligible for diagnosis until the evidence plan and schedule are deliberately revised and downstream artifacts are invalidated. A later round never extends an accepted schedule silently.
 
 ## Invalidation
 

@@ -6,8 +6,13 @@
 
 - classification;
 - exact original claims;
-- explicit user locks;
+- scientific locks from the supplied Idea and plan;
+- autonomous design choices;
 - resource constraints.
+
+## Idea semantics
+
+For every central term record its operational meaning, what it constrains, what it does not constrain, observable implication, disallowed reinterpretation, and unresolved uncertainty. Use only the supplied scientific intent plus ordinary technical usage. Do not import unstated configurations or outcomes.
 
 ## Intervention targets
 
@@ -26,11 +31,11 @@ Record selected route ID, rationale, complete method configuration, conditional 
 
 ## Protocol decisions
 
-Record exact user locks, honored values, explicit downgrades, reasons, and resulting claim-scope changes.
+Record every scientific lock, its honored implementation, autonomous decisions, and resource adaptations. A scientific-lock change cannot be accepted by disclosure alone. Either restore the lock or classify the reduced route as `MECHANISM_PILOT` or `ENGINEERING_SMOKE` while keeping the affected contribution `INCOMPLETE`.
 
 ## R0 gate
 
-Record `required: yes_or_no`, probe IDs, literal pass threshold, literal kill threshold, cost, execution target, and next action for each outcome.
+Record `required: yes_or_no`, probe IDs, evidence class, literal pass threshold, literal kill threshold, cost, execution target, and next action for each outcome. R0 is never sufficient claim support by itself.
 
 ## Decision log
 

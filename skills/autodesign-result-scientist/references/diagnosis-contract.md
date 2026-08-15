@@ -4,7 +4,9 @@
 
 Record execution status, expected and observed cells, missing and unexpected cells, planned and observed metrics, and any infrastructure failures. Missing execution evidence blocks scientific interpretation.
 
-Record whether observations came from a fresh experiment or a provenance replay. A replay can validate recomputation and artifact flow but cannot expand the source run's scientific coverage.
+Record that observations came from the current run's fresh experiment commands and identify their execution record.
+
+Record evidence eligibility before behavior interpretation: scientific locks, evidence class, benchmark provenance, data manifest and composition, implementation identity, expected and unexpected cells, and production input paths. If a required claim-bearing comparison fails this check, the affected contribution is `INCOMPLETE`.
 
 ## Contribution diagnosis
 
@@ -12,6 +14,8 @@ For every contribution record:
 
 - exact original claim;
 - status;
+- eligible claim-bearing experiments;
+- separately reported pilot or smoke observations;
 - supporting observations;
 - contradicting observations;
 - uncertainty and scope;
@@ -23,10 +27,10 @@ For every contribution record:
 
 - `iteration`: specify missing evidence, exact next experiment, owner Skill, cost, and completion threshold.
 - `tuning`: read `result_tuning_prompt.md`, specify one justified primary variable per experimental action, diagnostic rationale, owner Skill, guardrails, required execution, and stop threshold.
-- `stop`: cite the crossed kill criterion or exhausted decision path.
+- `stop`: cite the crossed kill criterion or exhausted decision path and show that the underlying evidence was claim-bearing and eligible.
 - `report`: give main-table, appendix, case, and limitation placement.
 
-Reporting scope can choose where results appear, but cannot rewrite the original contribution or omit observed failures.
+Reporting scope can choose where results appear, but cannot rewrite the original contribution or omit claim-critical negative, mixed, failed-slice, or ablation results.
 
 ## `result_route.md`
 
@@ -52,6 +56,7 @@ Use the JSON schema in `result_tuning_prompt.md`. Replace available placeholders
 - the action class and whether fresh execution is required;
 - complete decision-log input and output states;
 - no claim rewrite, hidden failed slice, omitted observed ablation, seed subset selection, or automatic upgrade from expected to observed evidence.
+- no outcome-dependent metric, aggregation, seed-count, baseline-budget, or table-row selection.
 
 ## `next_round.md`
 

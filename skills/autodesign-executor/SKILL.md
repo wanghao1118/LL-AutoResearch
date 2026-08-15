@@ -20,6 +20,7 @@ Read `implementation_notes.md`, `evidence_plan.md`, `AUTODESIGN_STATE.md`, the g
 5. A failed retry replaces that stage record and invalidates later stage records.
 6. Keep all successful commands within a multi-command stage in plan order. A later command in the same stage appends evidence; it does not replace the earlier command.
 7. Reject an out-of-order stage without rewriting `execution_record.json`, so the first failed command remains available for diagnosis.
+8. Treat a revised evidence plan, experiment schedule, scientific identity, benchmark provenance, or materialized data manifest as an input change that invalidates the affected execution prefix.
 
 ## Execute
 
@@ -33,7 +34,7 @@ For generic local commands, use `scripts/run_stage.py` to record command, litera
 
 For remote GPU execution, use the SSH, transfer, Conda, GPU, timeout, and directory facts from the effective `AGENTS.md` or `CLAUDE.md`; use `command_plan.json` and `result_contract.json` as the authority for commands and result paths. Run SSH, transfer, environment, and stage commands with the agent's normal tools. 不需要 Python GPU 控制器，也不要创建或读取 Python/JSON GPU 配置。
 
-For a provenance replay, execute all five stages locally, record `execution_mode: provenance_replay`, and keep source execution evidence separate from replay execution evidence. A successful replay proves the migrated project can validate, reproduce, aggregate, and collect the frozen observations; it does not prove a new model run occurred.
+Before starting smoke or any expensive command, read the preflight report rather than relying only on its exit code. Stop when a scientific lock, evidence class, planned data composition, benchmark provenance, or production dataflow check fails. Do not edit the accepted method, schedule, or preflight threshold inside the executor to make execution pass.
 
 On GPU servers:
 
@@ -46,7 +47,7 @@ On GPU servers:
 - preserve a failed stage in `execution_record.json` even if a later stage is invoked manually;
 - collect the authoritative primary result and every additional result path declared by `result_contract.json`.
 
-Do not infer success from file presence alone. Preflight, smoke, experiment, aggregate, and collect must all exit zero under the current commands.
+Do not infer success from file presence alone. Preflight, smoke, experiment, aggregate, and collect must all exit zero under the current commands. Missing or unexpected scheduled cells, changed evidence identities, or results appended outside the accepted schedule keep execution incomplete and require a deliberate plan revision before diagnosis.
 
 ## Output
 
