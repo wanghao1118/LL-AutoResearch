@@ -9,7 +9,7 @@ Translate accepted scientific decisions into executable code without inventing a
 
 ## Inputs
 
-Read `method_route.md`, `evidence_plan.md`, required R0 evidence, `AUTODESIGN_STATE.md`, and `references/implementation-contract.md`.
+Read `method_route.md`, `evidence_plan.md`, required R0 evidence, `AUTODESIGN_STATE.md`, and `references/implementation-contract.md`. Stop before implementation if any high-impact autonomous choice lacks an explicit user resolution or an executed R0 comparison of at least two candidate instantiations.
 
 ## Implement
 

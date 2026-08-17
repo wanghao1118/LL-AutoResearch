@@ -14,6 +14,13 @@
 
 For every central term record its operational meaning, what it constrains, what it does not constrain, observable implication, disallowed reinterpretation, and unresolved uncertainty. Use only the supplied scientific intent plus ordinary technical usage. Do not import unstated configurations or outcomes.
 
+## Autonomous-choice impact
+
+| Choice ID | Autonomous choice | Outcome impact | Effect on what the experiment can show | Candidate A | Candidate B | Fixed controls | Resolution source | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Classify outcome impact exactly as `high` or `low`. A high-impact freedom materially changes the experiment's possible evidence or interpretation, including who generates training data, teacher or judge roles, or the execution substrate. Its resolution source must be either an explicit user decision or an executed R0 comparison of at least two candidate instantiations. A documented default, plausibility argument, or source citation alone is not a resolution. Mark the route blocked while any high-impact freedom remains unresolved.
+
 ## Intervention targets
 
 For each contribution: target, proposed mechanism, observable prediction, falsifier.
@@ -35,8 +42,8 @@ Record every scientific lock, its honored implementation, autonomous decisions, 
 
 ## R0 gate
 
-Record `required: yes_or_no`, probe IDs, evidence class, literal pass threshold, literal kill threshold, cost, execution target, and next action for each outcome. R0 is never sufficient claim support by itself.
+Record `required: yes_or_no`, covered route uncertainty or high-impact choice IDs, at least two candidate instantiations for each unresolved high-impact choice, fixed controls, probe IDs, evidence class, literal selection threshold, literal kill threshold, cost, execution target, observed comparison, and next action for each outcome. R0 must cover every high-impact autonomous choice not resolved by the user. A single-candidate probe cannot pass this gate. R0 is never sufficient claim support by itself.
 
 ## Decision log
 
-Preserve route selection before component instantiation. Every decision states evidence, uncertainty, and what result would change it.
+Preserve route selection before component instantiation. Every decision states its outcome-impact class, evidence, uncertainty, and what result would change it.

@@ -9,7 +9,7 @@ Build a paper evidence package that can falsify every original contribution.
 
 ## Inputs
 
-Read `input_brief.md`, accepted `method_route.md`, any executed `r0_record.json`, and `AUTODESIGN_STATE.md`. Stop if a required R0 has not passed.
+Read `input_brief.md`, accepted `method_route.md`, any executed `r0_record.json`, and `AUTODESIGN_STATE.md`. Stop if a required R0 has not passed or any high-impact autonomous choice lacks an explicit user resolution or an executed comparison of at least two candidate instantiations.
 
 Read `references/evidence-contract.md` before finalizing.
 

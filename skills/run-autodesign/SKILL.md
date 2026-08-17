@@ -55,6 +55,8 @@ Treat the user-provided Motivation, Contributions, Benchmark, initial experiment
 - **autonomous design choices**: implementation details the user did not specify and the pipeline may choose independently;
 - **resource constraints**: limits that change execution planning but do not automatically relax a scientific lock.
 
+Classify every autonomous design choice by outcome impact. A **high-impact freedom** materially changes what the experiment can show, including who generates training data, teacher or judge roles, or the execution substrate. Resolve each high-impact freedom either through an explicit user decision or through an executed R0 comparison of at least two candidate instantiations. A single documented default without comparative evidence is not acceptable.
+
 Use literature only to select applicable baselines and components, verify benchmark protocols, and locate official implementations or model cards. Do not import unstated method configurations or outcomes, and do not redefine the Idea from external material.
 
 Preserve every original contribution and claim. A resource-driven reduction may remain claim-bearing only when it preserves the locked mechanism, comparison, and benchmark protocol. Otherwise label it as a non-claim-bearing pilot or smoke, keep the original contribution `INCOMPLETE`, and do not treat disclosure of the downgrade as scientific validity.
@@ -64,7 +66,7 @@ Preserve every original contribution and claim. A resource-driven reduction may 
 Load each named sibling Skill through the current agent's native Skill mechanism. When a filesystem path is required, resolve it from the parent directory of this installed `run-autodesign` Skill; an explicit custom installation may instead provide `AUTODESIGN_SKILLS_DIR`. Do not copy a worker's full instructions into this orchestrator.
 
 1. **Input brief**: normalize the user's natural-language motivation, numbered contributions, benchmark tasks, metrics, splits, initial plan, locks, autonomous choices, resource constraints, and unresolved terms into `input_brief.md`.
-2. **Method route**: follow `$autodesign-method-router`; produce `method_route.md`. A goal-only route requires an independently executed R0.
+2. **Method route**: follow `$autodesign-method-router`; produce `method_route.md`. A goal-only route requires an independently executed R0, and every high-impact autonomous choice not resolved by the user requires a two-candidate R0 comparison.
 3. **Evidence design**: follow `$autodesign-evidence-designer`; produce `evidence_plan.md` with claim-level falsifiers, baselines, experiments, tables, and figures.
 4. **Implementation**: follow `$autodesign-implementer`; materialize `generated_project`, `implementation_notes.md`, environment definitions, commands, and result contract.
 5. **Execution**: follow `$autodesign-executor`; run preflight, smoke, experiment, aggregate, and collect locally or remotely, preserving every literal command and exit status.
@@ -86,7 +88,7 @@ Load each named sibling Skill through the current agent's native Skill mechanism
 
 - **Idea-consistency gate**: the route preserves the user's scientific locks and operational meaning; unstated implementation choices remain explicit design decisions rather than retroactive additions to the Idea.
 - **Route gate**: method-specified input preserves its core intervention; goal-only input compares at least two routes.
-- **R0 gate**: a required R0 must have an executed record. A design-authored `passed` string is not evidence, and R0 success does not by itself support a contribution.
+- **R0 gate**: a required R0 must have an executed record, and R0 must cover every high-impact autonomous choice not resolved by the user with a comparison of at least two candidate instantiations. A design-authored `passed` string or single documented default is not evidence, and R0 success does not by itself support a contribution.
 - **Evidence gate**: main, ablation, case, and interesting roles are necessary but insufficient; every original claim and derived test axis needs a real falsifier in a `CLAIM_BEARING` experiment. `MECHANISM_PILOT` and `ENGINEERING_SMOKE` do not satisfy claim coverage.
 - **Implementation gate**: every accepted experiment has a runnable entrypoint, complete environment, decision-relevant preflight, result path, and observed chart path. Preflight must compare planned and materialized scientific identities, data composition, benchmark provenance, and protocol values before expensive execution.
 - **Execution gate**: `preflight → smoke → experiment → aggregate → collect` must all exit zero under the current commands before result diagnosis.

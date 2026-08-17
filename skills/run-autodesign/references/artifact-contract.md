@@ -74,9 +74,13 @@ Use `skill-advance` for state transitions and `skill-repair-state` to canonicali
 }
 ```
 
+`r0_record.json` records the observed resolution of each required R0: the covered route uncertainty or high-impact choice IDs, candidate instantiation IDs, fixed controls, commands, metrics, raw observations, literal selection or kill rule, selected outcome, and exit status. Every unresolved high-impact choice needs results from at least two candidate instantiations; prose acceptance or a one-candidate record cannot set `R0_PASSED`.
+
 `result_summary.json` contains scheduled and observed cell counts, missing and unexpected cells, aggregates, errors, and no automatic scientific claim verdict.
 
 `input_brief.md` is the authoritative scientific-intent artifact. It preserves the literal Motivation, Contributions, Benchmark, and initial plan, then records scientific locks, autonomous design choices, resource constraints, operational definitions of ambiguous terms, and unresolved blockers. Later Skills may resolve an autonomous choice but may not rewrite a scientific lock.
+
+`method_route.md` classifies every autonomous choice by outcome impact. Every high-impact freedom must be resolved by an explicit user decision or an executed R0 comparison of at least two candidate instantiations before evidence design and full implementation. A single documented default does not satisfy this handoff.
 
 `result_route.md` contains the scientific route decision, owner Skill, required action, execution requirement, invalidation scope, thresholds, and closure condition. At `RESULT_DIAGNOSIS_READY`, the next Skill is `run-autodesign`, which dispatches that route rather than sending every diagnosis directly to audit.
 
