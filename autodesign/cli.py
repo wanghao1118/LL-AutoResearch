@@ -12,9 +12,7 @@ from .runner import STAGE_ORDER, run_local_commands
 from .skillflow import (
     advance_skill_run,
     initialize_skill_run,
-    inspect_skill_run,
     repair_skill_state,
-    verify_skill_run,
 )
 from .skillresults import ingest_skill_results
 
@@ -32,8 +30,6 @@ def build_parser() -> argparse.ArgumentParser:
     skill_init.add_argument("--output", type=Path, required=True)
 
     for name, help_text in (
-        ("skill-status", "Inspect the current stage and artifacts"),
-        ("skill-verify", "Verify current artifacts and execution facts"),
         ("skill-repair-state", "Canonicalize and refresh AUTODESIGN_STATE.md"),
         ("skill-check-design", "Validate experiment design and simulated targets"),
         ("skill-compare-effects", "Compare observed results against simulated targets"),
@@ -69,10 +65,6 @@ def main(argv: list[str] | None = None) -> None:
     try:
         if args.command == "skill-init":
             result = initialize_skill_run(args.input, args.output)
-        elif args.command == "skill-status":
-            result = inspect_skill_run(args.run_dir)
-        elif args.command == "skill-verify":
-            result = verify_skill_run(args.run_dir)
         elif args.command == "skill-repair-state":
             result = repair_skill_state(args.run_dir)
         elif args.command == "skill-check-design":

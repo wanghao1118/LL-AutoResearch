@@ -204,8 +204,6 @@ python3 -m autodesign skill-check-design <run_dir>             # 设计契约 ga
 python3 -m autodesign run-local <run_dir> [--stage <stage>]    # 五阶段本地执行
 python3 -m autodesign skill-ingest <run_dir> <results.json>    # 结果 cell 完整性与聚合
 python3 -m autodesign skill-compare-effects <run_dir>          # 观测 vs 模拟目标
-python3 -m autodesign skill-status <run_dir>                   # 当前阶段与下一个 Skill
-python3 -m autodesign skill-verify <run_dir>                   # 校验当前产物
 python3 -m autodesign skill-repair-state <run_dir>             # 规范化 AUTODESIGN_STATE.md
 python3 -m autodesign skill-advance <run_dir> <stage> --changed-input <x> --literal-result <y>
 ```

@@ -7,8 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .io import read_json, write_json, write_text
-from .runner import execution_completion_errors
+from .io import read_json, write_text
 
 STATE_PATTERN = re.compile(
     r"^\s*\|\s*Current stage\s*\|\s*([A-Z0-9_]+)\s*\|\s*$",
@@ -418,29 +417,3 @@ def advance_skill_run(
             + ", ".join(report["missing_artifacts"])
         )
     return report
-
-
-def verify_skill_run(run_dir: str | Path) -> dict[str, Any]:
-    run_path = Path(run_dir)
-    report = inspect_skill_run(run_path)
-    errors = [f"Missing required artifact: {path}" for path in report["missing_artifacts"]]
-    execution_path = run_path / "execution_record.json"
-    command_plan_path = run_path / "command_plan.json"
-    if execution_path.is_file():
-        if not command_plan_path.is_file():
-            errors.append("command_plan.json is required with execution_record.json")
-        else:
-            errors.extend(
-                execution_completion_errors(
-                    read_json(execution_path), read_json(command_plan_path)
-                )
-            )
-    if report["current_stage"] == "COMPLETE" and _audit_verdict(run_path) != "PASS":
-        errors.append("COMPLETE requires integrity_audit.md with Verdict: PASS")
-    verification = {
-        **report,
-        "status": "PASS" if not errors else "FAIL",
-        "errors": errors,
-    }
-    write_json(run_path / "skillflow_verification.json", verification)
-    return verification
