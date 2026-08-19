@@ -1,4 +1,0 @@
-interface:
-  display_name: "AutoDesign Implementer"
-  short_description: "Generate runnable research code from an accepted evidence plan"
-  default_prompt: "Use $autodesign-implementer to implement the accepted evidence plan as a runnable project."

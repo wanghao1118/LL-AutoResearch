@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoDesign Experiment Design"
+  short_description: "把 AutoSearch 的 Contribution 与 Benchmark 转成主实验、消融、Case Study、分析实验，并预先写出目标效果"
+  default_prompt: "使用 $autodesign-experiment-design，基于 AutoSearch 导出的 Motivation、Contribution 和 Benchmark 设计完整实验方案，并为每个 cell 写出模拟目标值与判定阈值。"

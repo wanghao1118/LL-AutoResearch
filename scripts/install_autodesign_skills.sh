@@ -23,10 +23,8 @@ source_root = Path(sys.argv[1])
 target_root = Path(sys.argv[2]).expanduser().resolve()
 names = (
     "run-autodesign",
-    "autodesign-method-router",
-    "autodesign-evidence-designer",
-    "autodesign-implementer",
-    "autodesign-executor",
+    "autodesign-experiment-design",
+    "autodesign-experiment-run",
     "autodesign-result-scientist",
     "autodesign-integrity-auditor",
 )

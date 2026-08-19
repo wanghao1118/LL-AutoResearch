@@ -156,7 +156,7 @@ def run_local_commands(run_dir: str | Path, stage: str = "all") -> dict[str, Any
     if not project_dir.is_dir():
         raise ValueError(
             "generated_project is missing: "
-            f"{project_dir}; run the autodesign-implementer Skill before run-local"
+            f"{project_dir}; run the autodesign-experiment-run Skill before run-local"
         )
     command_plan = read_json(run_path / "command_plan.json")
     if not isinstance(command_plan, dict):

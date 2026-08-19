@@ -148,11 +148,11 @@ def ingest_skill_results(run_dir: str | Path, results_path: str | Path) -> dict[
     required = (
         (
             run_path / "experiment_schedule.json",
-            "autodesign-implementer Skill",
+            "autodesign-experiment-run Skill",
         ),
-        (run_path / "command_plan.json", "autodesign-implementer Skill"),
-        (run_path / "execution_record.json", "autodesign-executor Skill"),
-        (Path(results_path), "autodesign-executor Skill or remote collect"),
+        (run_path / "command_plan.json", "autodesign-experiment-run Skill"),
+        (run_path / "execution_record.json", "autodesign-experiment-run Skill"),
+        (Path(results_path), "autodesign-experiment-run Skill or remote collect"),
     )
     for path, owner in required:
         if not path.is_file():

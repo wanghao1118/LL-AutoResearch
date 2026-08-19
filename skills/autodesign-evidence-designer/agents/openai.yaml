@@ -1,4 +1,0 @@
-interface:
-  display_name: "AutoDesign Evidence Designer"
-  short_description: "把 contribution 转成完整且可证伪的实验组合"
-  default_prompt: "使用 $autodesign-evidence-designer 为每个 contribution 设计完整证据矩阵。"

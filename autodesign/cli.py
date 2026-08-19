@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .effects import check_design, compare_effects
 from .runner import STAGE_ORDER, run_local_commands
 from .skillflow import (
     advance_skill_run,
@@ -34,6 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
         ("skill-status", "Inspect the current stage and artifacts"),
         ("skill-verify", "Verify current artifacts and execution facts"),
         ("skill-repair-state", "Canonicalize and refresh AUTODESIGN_STATE.md"),
+        ("skill-check-design", "Validate experiment design and simulated targets"),
+        ("skill-compare-effects", "Compare observed results against simulated targets"),
     ):
         command = subparsers.add_parser(name, help=help_text)
         command.add_argument("run_dir", type=Path)
@@ -72,6 +75,10 @@ def main(argv: list[str] | None = None) -> None:
             result = verify_skill_run(args.run_dir)
         elif args.command == "skill-repair-state":
             result = repair_skill_state(args.run_dir)
+        elif args.command == "skill-check-design":
+            result = check_design(args.run_dir)
+        elif args.command == "skill-compare-effects":
+            result = compare_effects(args.run_dir)
         elif args.command == "skill-ingest":
             result = ingest_skill_results(args.run_dir, args.results)
         elif args.command == "skill-advance":

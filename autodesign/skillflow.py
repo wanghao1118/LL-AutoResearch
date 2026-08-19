@@ -19,8 +19,7 @@ AUDIT_VERDICT_PATTERN = re.compile(
 )
 STAGE_ORDER = (
     "INPUT_READY",
-    "METHOD_ROUTE_READY",
-    "EVIDENCE_PLAN_READY",
+    "EXPERIMENT_DESIGN_READY",
     "IMPLEMENTATION_READY",
     "EXECUTION_COMPLETE",
     "RESULT_DIAGNOSIS_READY",
@@ -29,11 +28,10 @@ STAGE_ORDER = (
 )
 KNOWN_STAGES = (
     "INPUT_READY",
-    "METHOD_ROUTE_READY",
-    "WAITING_FOR_R0_IMPLEMENTATION",
+    "EXPERIMENT_DESIGN_READY",
+    "WAITING_FOR_R0",
     "R0_PASSED",
-    "R0_FAILED_RETURN_TO_METHOD_ROUTE",
-    "EVIDENCE_PLAN_READY",
+    "R0_FAILED_RETURN_TO_DESIGN",
     "IMPLEMENTATION_READY",
     "EXECUTION_IN_PROGRESS",
     "EXECUTION_COMPLETE",
@@ -43,8 +41,7 @@ KNOWN_STAGES = (
 )
 STAGE_REQUIREMENTS = {
     "INPUT_READY": ("AUTODESIGN_STATE.md", "input_brief.md"),
-    "METHOD_ROUTE_READY": ("method_route.md",),
-    "EVIDENCE_PLAN_READY": ("evidence_plan.md",),
+    "EXPERIMENT_DESIGN_READY": ("experiment_design.md", "expected_effects.json"),
     "IMPLEMENTATION_READY": (
         "implementation_notes.md",
         "generated_project",
@@ -52,7 +49,7 @@ STAGE_REQUIREMENTS = {
         "experiment_schedule.json",
         "result_contract.json",
     ),
-    "EXECUTION_COMPLETE": ("execution_record.json",),
+    "EXECUTION_COMPLETE": ("execution_record.json", "effect_comparison.md"),
     "RESULT_DIAGNOSIS_READY": (
         "result_summary.json",
         "result_diagnosis.md",
@@ -62,25 +59,24 @@ STAGE_REQUIREMENTS = {
     "COMPLETE": (),
 }
 NEXT_SKILL = {
-    "INPUT_READY": "autodesign-method-router",
-    "METHOD_ROUTE_READY": "autodesign-evidence-designer",
-    "WAITING_FOR_R0_IMPLEMENTATION": "autodesign-implementer",
-    "R0_PASSED": "autodesign-evidence-designer",
-    "R0_FAILED_RETURN_TO_METHOD_ROUTE": "autodesign-method-router",
-    "EVIDENCE_PLAN_READY": "autodesign-implementer",
-    "IMPLEMENTATION_READY": "autodesign-executor",
-    "EXECUTION_IN_PROGRESS": "autodesign-executor",
+    "INPUT_READY": "autodesign-experiment-design",
+    "EXPERIMENT_DESIGN_READY": "autodesign-experiment-run",
+    "WAITING_FOR_R0": "autodesign-experiment-run",
+    "R0_PASSED": "autodesign-experiment-design",
+    "R0_FAILED_RETURN_TO_DESIGN": "autodesign-experiment-design",
+    "IMPLEMENTATION_READY": "autodesign-experiment-run",
+    "EXECUTION_IN_PROGRESS": "autodesign-experiment-run",
     "EXECUTION_COMPLETE": "autodesign-result-scientist",
     "RESULT_DIAGNOSIS_READY": "run-autodesign",
     "INTEGRITY_AUDIT_PASS": "run-autodesign",
     "COMPLETE": "none",
 }
 STATE_ARTIFACTS = (
-    ("input_brief.md", "method routing input"),
-    ("method_route.md", "accepted research route"),
+    ("input_brief.md", "normalized AutoSearch handoff"),
+    ("experiment_design.md", "accepted four-family experiment design"),
+    ("expected_effects.json", "design-time simulated targets and thresholds"),
     ("r0_plan.md", "optional low-cost gate plan"),
     ("r0_record.json", "optional observed R0 decision"),
-    ("evidence_plan.md", "claim-to-evidence plan"),
     ("implementation_notes.md", "implementation handoff"),
     ("generated_project", "runnable experiment project"),
     ("command_plan.json", "ordered execution commands"),
@@ -88,14 +84,15 @@ STATE_ARTIFACTS = (
     ("result_contract.json", "primary observed result path"),
     ("execution_record.json", "literal execution evidence"),
     ("result_summary.json", "validated result aggregates"),
+    ("effect_comparison.md", "observed versus simulated-target outcomes"),
     ("result_diagnosis.md", "scientific interpretation"),
     ("result_route.md", "iteration, tuning, stop, or report dispatch"),
     ("integrity_audit.md", "final claim-evidence audit"),
 )
 
 LAST_COMPLETED_STAGE = {
-    "WAITING_FOR_R0_IMPLEMENTATION": "METHOD_ROUTE_READY",
-    "R0_FAILED_RETURN_TO_METHOD_ROUTE": "METHOD_ROUTE_READY",
+    "WAITING_FOR_R0": "EXPERIMENT_DESIGN_READY",
+    "R0_FAILED_RETURN_TO_DESIGN": "EXPERIMENT_DESIGN_READY",
     "EXECUTION_IN_PROGRESS": "IMPLEMENTATION_READY",
 }
 
@@ -135,13 +132,30 @@ def _audit_verdict(run_path: Path) -> str | None:
 
 
 def _render_input_brief(input_path: Path) -> str:
+    """Render input_brief.md from an AutoSearch handoff file.
+
+    Accepts either a JSON handoff object or free-form natural-language text. JSON must
+    carry the three required handoff fields (motivation, contribution, benchmark); any
+    additional keys are preserved verbatim in an extra section so that upstream schema
+    drift never silently drops user-supplied input. Natural-language input is passed
+    through untouched for the design Skill to normalize.
+    """
+
     raw = input_path.read_text(encoding="utf-8").strip()
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError:
-        return f"# Input Brief\n\n## Original natural-language input\n\n{raw}\n"
+        return (
+            "# Input Brief\n\n"
+            "## Handoff source\n\n"
+            f"Channel: natural language file `{input_path.name}`\n\n"
+            "## Original natural-language input\n\n"
+            f"{raw}\n\n"
+            "Normalize this into literal Motivation, Contribution, and Benchmark sections "
+            "with the autodesign-experiment-design Skill before designing experiments.\n"
+        )
     if not isinstance(payload, dict):
-        raise TypeError("Skill-first JSON input must contain an object")
+        raise TypeError("AutoSearch handoff JSON must contain an object")
     motivation = payload.get("motivation")
     contribution = payload.get("contribution", payload.get("contributions"))
     benchmark = payload.get("benchmark")
@@ -155,19 +169,34 @@ def _render_input_brief(input_path: Path) -> str:
         if value in (None, "", [], {})
     ]
     if missing:
-        raise ValueError(f"Skill-first input is missing: {', '.join(missing)}")
+        raise ValueError(f"AutoSearch handoff is missing: {', '.join(missing)}")
     constraints = benchmark.get("constraints", {}) if isinstance(benchmark, dict) else {}
+    extra = {
+        key: value
+        for key, value in payload.items()
+        if key
+        not in {"schema_version", "motivation", "contribution", "contributions", "benchmark"}
+    }
+    extra_section = (
+        "## Additional user-supplied input\n\n"
+        f"```json\n{_json_block(extra)}\n```\n\n"
+        if extra
+        else ""
+    )
     return (
         "# Input Brief\n\n"
-        "## Motivation\n\n"
+        "## Handoff source\n\n"
+        f"Channel: AutoSearch handoff file `{input_path.name}`\n\n"
+        "## Motivation (literal)\n\n"
         f"{motivation}\n\n"
-        "## Original contributions\n\n"
+        "## Contribution (literal)\n\n"
         f"```json\n{_json_block(contribution)}\n```\n\n"
-        "## Benchmark\n\n"
+        "## Benchmark (literal)\n\n"
         f"```json\n{_json_block(benchmark)}\n```\n\n"
+        f"{extra_section}"
         "## Explicit user locks\n\n"
         f"```json\n{_json_block(constraints)}\n```\n\n"
-        "Defaults not present in the original input are recommendations, not locks.\n"
+        "Defaults not present in the original handoff are autonomous design choices, not locks.\n"
     )
 
 
@@ -176,12 +205,12 @@ def _render_state(run_name: str) -> str:
 
 | Field | Value |
 | --- | --- |
-| Pipeline | Skill-first AutoDesign v1 |
+| Pipeline | AutoDesign design-then-run v2 |
 | Run | {run_name} |
 | Current stage | INPUT_READY |
 | Last completed stage | INPUT_READY |
 | Blocking condition | none |
-| Next Skill | autodesign-method-router |
+| Next Skill | autodesign-experiment-design |
 | Accepted route | pending |
 | Execution target | pending |
 | Primary result | pending |
@@ -189,26 +218,30 @@ def _render_state(run_name: str) -> str:
 ## Accepted inputs
 
 - Input brief: `input_brief.md`
-- Explicit locks: copied from the original input only
+- Explicit locks: copied from the AutoSearch handoff only
 
 ## Current artifacts
 
 | Artifact | Status | Decision use |
 | --- | --- | --- |
-| `input_brief.md` | ready | method routing input |
+| `input_brief.md` | ready | experiment design input |
 
 ## History
 
 | Round | From | To | Changed input | Literal result | Next action |
 | ---: | --- | --- | --- | --- | --- |
-| 0 | new | INPUT_READY | `input_brief.md` | input accepted | run method router |
+| 0 | new | INPUT_READY | `input_brief.md` | handoff accepted | run experiment design |
 """
 
 
 def _refresh_state_snapshot(text: str, run_path: Path, stage: str) -> str:
     """Refresh derived state fields without turning Markdown research into a schema."""
 
-    route = "recorded in `method_route.md`" if (run_path / "method_route.md").is_file() else "pending"
+    route = (
+        "recorded in `experiment_design.md`"
+        if (run_path / "experiment_design.md").is_file()
+        else "pending"
+    )
     execution_target = (
         "`generated_project/` via `command_plan.json`"
         if (run_path / "generated_project").is_dir()
@@ -221,8 +254,8 @@ def _refresh_state_snapshot(text: str, run_path: Path, stage: str) -> str:
         else "pending"
     )
     blocking = {
-        "WAITING_FOR_R0_IMPLEMENTATION": "observed R0 result required",
-        "R0_FAILED_RETURN_TO_METHOD_ROUTE": "method route revision required",
+        "WAITING_FOR_R0": "observed R0 result required",
+        "R0_FAILED_RETURN_TO_DESIGN": "experiment design revision required",
         "EXECUTION_IN_PROGRESS": "remaining command stages required",
     }.get(stage, "none")
     replacements = {
@@ -302,18 +335,18 @@ def inspect_skill_run(run_dir: str | Path) -> dict[str, Any]:
     stage = read_current_stage(run_path)
     artifact_status: dict[str, bool] = {}
     milestone = {
-        "WAITING_FOR_R0_IMPLEMENTATION": "METHOD_ROUTE_READY",
-        "R0_PASSED": "METHOD_ROUTE_READY",
-        "R0_FAILED_RETURN_TO_METHOD_ROUTE": "METHOD_ROUTE_READY",
+        "WAITING_FOR_R0": "EXPERIMENT_DESIGN_READY",
+        "R0_PASSED": "EXPERIMENT_DESIGN_READY",
+        "R0_FAILED_RETURN_TO_DESIGN": "EXPERIMENT_DESIGN_READY",
         "EXECUTION_IN_PROGRESS": "IMPLEMENTATION_READY",
     }.get(stage, stage)
     for required_stage in STAGE_ORDER[: STAGE_ORDER.index(milestone) + 1]:
         for relative in STAGE_REQUIREMENTS[required_stage]:
             artifact_status[relative] = (run_path / relative).exists()
     for relative in {
-        "WAITING_FOR_R0_IMPLEMENTATION": ("r0_plan.md",),
+        "WAITING_FOR_R0": ("r0_plan.md",),
         "R0_PASSED": ("r0_record.json",),
-        "R0_FAILED_RETURN_TO_METHOD_ROUTE": ("r0_record.json",),
+        "R0_FAILED_RETURN_TO_DESIGN": ("r0_record.json",),
     }.get(stage, ()):
         artifact_status[relative] = (run_path / relative).exists()
     missing = sorted(path for path, exists in artifact_status.items() if not exists)

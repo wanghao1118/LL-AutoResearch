@@ -1,6 +1,6 @@
 ---
 name: autodesign-integrity-auditor
-description: "Independently audit an AutoDesign run for claim-support alignment, experiment coverage, baseline fairness, execution completeness, metric recomputation, table and figure provenance, negative-result preservation, conclusion scope, and final pipeline readiness. Use before declaring a run complete or after substantive result changes."
+description: "Independently audit an AutoDesign run for claim-support alignment, experiment coverage across main, ablation, case-study, and analysis families, baseline fairness, simulated-target integrity, execution completeness, metric recomputation, table and figure provenance, negative-result preservation, conclusion scope, and final pipeline readiness. Use before declaring a run complete or after substantive result changes."
 ---
 
 # AutoDesign Integrity Auditor
@@ -9,25 +9,28 @@ Audit raw artifacts independently. Say PASS when the run is correct; do not inve
 
 ## Inputs
 
-Read original input, method route, R0 record when required, evidence plan, implementation notes, execution record, raw results, result summary, diagnosis, `result_route.md`, any `result_tuning.json` and `next_round.md`, tables, figures, and `references/audit-contract.md`.
+Read the original handoff and `input_brief.md`, `experiment_design.md`, `expected_effects.json`, `r0_record.json` when required, `implementation_notes.md`, `execution_record.json`, raw results, `result_summary.json`, `effect_comparison.md`, `result_diagnosis.md`, `result_route.md`, any `result_tuning.json` and `next_round.md`, tables, figures, and `references/audit-contract.md`.
 
 ## Audit
 
-1. Confirm every final claim preserves the original contribution; result wording may describe observed regional behavior but may not rewrite the claim.
-2. Trace each claim to eligible claim-bearing experiments, variants, tasks, benchmark provenance, metrics, seeds, falsifier, table, and figure.
-3. Confirm pilots and smokes are visibly separated and never substitute for missing claim-bearing evidence.
-4. Confirm selected baselines actually ran in main experiments under their source-backed fairness plan.
-5. Confirm every autonomous choice has an outcome-impact classification and every high-impact freedom was resolved by an explicit user decision or an executed R0 comparison of at least two candidate instantiations before full implementation.
-6. Confirm implementation matches the accepted Idea semantics, scientific locks, method, evidence classes, and protocol decisions.
-7. Confirm current preflight, smoke, experiment, aggregate, and collect commands exited zero in order and their accepted inputs remain current.
-8. Recompute result counts and aggregate values from raw records; reject missing or unexpected cells and schedule drift.
-9. Confirm every displayed table cell and figure point comes from observed aggregates and every declared case or report category was actually produced.
-10. Confirm negative, mixed, failed-slice, ablation, and exploratory findings remain visible and correctly scoped.
-11. Confirm the diagnosis route and next action follow literal thresholds and upstream defects were not interpreted as method behavior.
-12. Confirm every iteration or execution-required tuning action was implemented, executed, ingested, and rediagnosed, or was explicitly closed by its recorded stop threshold.
-13. Confirm tuning kept original contributions and claims unchanged, used comparable budgets and seed sets, preserved all observed failed slices and ablations, and did not present an expected delta as an observation.
-14. Treat an unresolved high-impact freedom, single-candidate default for a high-impact freedom, changed scientific lock, claim-bearing surrogate, unconsumed required data transformation, planned-composition failure, unexpected result cell, stale diagnosis or audit, contradictory baseline status, or missing declared report category as a literal FAIL.
-15. List only concrete reachable defects. If none remain, state PASS.
+1. Confirm every final claim preserves the original contribution from the AutoSearch handoff; result wording may describe observed regional behavior but may not rewrite the claim.
+2. Trace each claim to eligible claim-bearing experiments, families, variants, tasks, benchmark provenance, metrics, seeds, falsifier, table, and figure.
+3. Confirm all four experiment families are present, or that an absent family is explicitly justified against the contributions in `experiment_design.md`. A contribution asserting a mechanism with no ablation attribution, or a behavioral claim with no case study, is a coverage defect.
+4. Confirm every case study followed its pre-result selection rule, produced the declared category counts including failure categories, and shows no evidence of outcome-dependent selection.
+5. Confirm pilots and smokes are visibly separated and never substitute for missing claim-bearing evidence.
+6. Confirm selected baselines actually ran in main experiments under their source-backed fairness plan.
+7. Confirm every autonomous choice has an outcome-impact classification and every high-impact freedom was resolved by an explicit user decision or an executed R0 comparison of at least two candidate instantiations before full implementation.
+8. Confirm implementation matches the accepted Idea semantics, scientific locks, route, families, evidence classes, and protocol decisions.
+9. Confirm current preflight, smoke, experiment, aggregate, and collect commands exited zero in order and their accepted inputs remain current.
+10. Recompute result counts and aggregate values from raw records; reject missing or unexpected cells and schedule drift.
+11. Audit simulated-target integrity. Every `expected_effects.json` entry keeps `value_status: SIMULATED_TARGET`; `effect_comparison.md` covers every entry and retains every `MISSED` and `NOT_EVALUABLE` row; no simulated target appears in `reports/`, a table cell, a figure point, or a claim verdict; and no `simulated_target` was edited after execution.
+12. Confirm every displayed table cell and figure point comes from observed aggregates and every declared case or report category was actually produced.
+13. Confirm negative, mixed, failed-slice, ablation, and exploratory findings remain visible and correctly scoped.
+14. Confirm the diagnosis route and next action follow literal thresholds, that upstream defects were not interpreted as method behavior, and that no verdict rests on proximity to a design-time target.
+15. Confirm every iteration or execution-required tuning action was implemented, executed, ingested, recompared, and rediagnosed, or was explicitly closed by its recorded stop threshold.
+16. Confirm tuning kept original contributions and claims unchanged, used comparable budgets and seed sets, preserved all observed failed slices and ablations, and did not present an expected delta as an observation.
+17. Treat as a literal FAIL: an unresolved high-impact freedom; a single-candidate default for a high-impact freedom; a changed scientific lock; a claim-bearing surrogate benchmark; an unconsumed required data transformation; a planned-composition failure; an unexpected result cell; a post-hoc edited simulated target; a target presented as an observation; a dropped `MISSED` comparison row; an outcome-dependent case selection; a stale diagnosis or audit; a contradictory baseline status; or a missing declared report category.
+18. List only concrete reachable defects. If none remain, state PASS.
 
 ## Output
 

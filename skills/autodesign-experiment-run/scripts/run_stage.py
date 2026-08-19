@@ -24,7 +24,7 @@ def read_plan(run_dir: Path) -> dict:
     if not path.is_file():
         raise RuntimeError(
             "command_plan.json is required before execution; "
-            "run the autodesign-implementer Skill"
+            "run the autodesign-experiment-run Skill"
         )
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -135,7 +135,7 @@ def main() -> int:
                     "status": "FAIL",
                     "error": (
                         f"execution cwd is missing or not a directory: {cwd}; "
-                        "run the autodesign-implementer Skill"
+                        "run the autodesign-experiment-run Skill"
                     ),
                 },
                 ensure_ascii=False,
