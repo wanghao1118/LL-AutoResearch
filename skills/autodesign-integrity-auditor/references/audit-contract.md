@@ -7,7 +7,7 @@
 | Handoff fidelity | AutoSearch handoff and input brief | Motivation, Contribution, and Benchmark preserved verbatim; extra user input classified, not discarded |
 | Idea consistency | input brief and original request | scientific intent, meanings, and locks preserved without importing unstated method details |
 | Route validity | experiment design and R0 record | selected route justified; every autonomous choice has an outcome-impact class; every high-impact freedom has an explicit user resolution or an executed comparison of at least two candidate instantiations |
-| Family coverage | experiment design | main, ablation, case-study, and analysis families populated or every absent family justified under `## Absent families`; re-judge whether each stated reason actually follows from the contributions |
+| Family coverage | experiment design | main, ablation, case-study, and analysis families populated or every absent family justified under `## Absent families`; the design gate only checks that a reason was written, so judge each reason yourself — a filler such as `n/a`, `TBD`, or `待定`, or a reason that does not follow from the contributions, is a FAIL |
 | Evidence eligibility | experiment design | every claim and test axis has an eligible claim-bearing falsifier; pilots and smokes are separate |
 | Case-study integrity | experiment design and produced cases | pre-result selection rule followed; declared category counts including failures produced; no outcome-dependent selection |
 | Target integrity | expected effects and effect comparison | every entry keeps `SIMULATED_TARGET`; no target edited post-hoc; no target in reports, tables, figures, or verdicts; every entry compared and every miss retained |

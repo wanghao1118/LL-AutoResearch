@@ -102,11 +102,12 @@ bullet per family, shaped `- <family>: <reason>`:
 ```
 
 `skill-check-design` fails when a family is absent from `expected_effects.json` and this
-section has no reason for it. It checks only that a reason exists and carries content — a bare
-`- ablation:`, a placeholder such as `n/a` or `待定`, or prose without the `<family>:` label
-does not count. Whether the reason is scientifically adequate is judged by this Skill and
-re-checked by `autodesign-integrity-auditor`, never by the machine gate. Do not invent a
-hollow experiment to fill a family; justify the absence instead.
+section has no reason for it. The gate checks one thing only: that a reason was written for
+that family — a bare `- ablation:`, or prose without the `<family>:` label, leaves it unwritten.
+It does not grade the reason. `- ablation: n/a` clears the gate and is still a failed design:
+whether a reason follows from the contributions is judged by this Skill when writing it, and
+re-judged by `autodesign-integrity-auditor`, which reads the reason text verbatim. Write the
+argument that actually holds, and do not invent a hollow experiment to fill a family.
 
 ## `expected_effects.json`
 

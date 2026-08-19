@@ -225,64 +225,20 @@ def _coverage_verdict(design_text: str) -> tuple[bool, str]:
     return True, "verdict PASS"
 
 
-PLACEHOLDER_REASONS = {
-    "n/a",
-    "na",
-    "none",
-    "nil",
-    "tbd",
-    "todo",
-    "pending",
-    "skip",
-    "skipped",
-    "omitted",
-    "not applicable",
-    "no",
-    "-",
-    "—",
-    "?",
-    "无",
-    "略",
-    "待定",
-    "不适用",
-    "暂无",
-}
-
-
-def _is_real_reason(reason: str) -> bool:
-    """Decide whether an absent-family reason carries content rather than a placeholder.
-
-    A justification has to say something, so this rejects an empty value, a known filler
-    (``n/a``, ``TBD``, ``无``, ``待定``), and a value too short to be an argument. Length is
-    counted in word-ish units rather than characters because a character threshold tuned for
-    English would wave through a two-character Chinese non-answer while rejecting a perfectly
-    adequate Chinese sentence: CJK text is counted per character and Latin text per word, so
-    both need comparable substance to pass. Whether the argument is actually *correct* is not
-    judged here — that belongs to the design Skill and the integrity auditor.
-    """
-
-    cleaned = reason.strip().strip(".。,，;；:：-—*`").strip()
-    if not cleaned or cleaned.lower() in PLACEHOLDER_REASONS:
-        return False
-    cjk = len(re.findall(r"[㐀-鿿぀-ヿ가-힯]", cleaned))
-    latin_words = len(re.findall(r"[A-Za-z][A-Za-z'-]*", cleaned))
-    return cjk >= 6 or latin_words >= 3
-
-
 def _absent_family_justifications(design_text: str) -> dict[str, str]:
-    """Extract each absent family's written justification from the design document.
+    """Extract each absent family's written reason from the design document.
 
-    The design contract allows a family to be absent only when its absence is justified
-    against the contributions, so a missing family is a blocker unless the design says why.
-    This reads the ``## Absent families`` section and returns ``{family: reason}`` for every
-    entry shaped ``- <family>: <reason>``.
+    The design contract allows a family to be absent only when its absence follows from the
+    contributions, so a missing family is a blocker unless the design says why. This reads the
+    ``## Absent families`` section and returns ``{family: reason}`` for every entry shaped
+    ``- <family>: <reason>``.
 
-    Two deliberate limits keep this honest. It will not accept a bare family name as its own
-    justification: the reason must survive ``_is_real_reason``, so ``- ablation:`` and
-    ``- ablation: n/a`` do not count, and an empty value cannot borrow the next bullet's text
-    because the reason is matched within a single line. And it never judges whether a reason is
-    scientifically sound — that stays with the design Skill and the integrity auditor, which is
-    why the reason text is returned verbatim for them to review rather than scored here.
+    The only thing checked here is that a reason was written at all: the value must be
+    non-empty, and an empty value cannot borrow the next bullet's text because the reason is
+    matched within a single line. Nothing about the reason's substance is judged — not its
+    length, not its wording, not whether it is a placeholder. Scoring an argument's adequacy
+    requires reading it against the contributions, which only the design Skill and the
+    integrity auditor can do, so the reason text is returned verbatim for them to review.
     """
 
     heading = re.search(
@@ -305,7 +261,7 @@ def _absent_family_justifications(design_text: str) -> dict[str, str]:
         if family not in FAMILIES:
             continue
         reason = match.group("reason").strip().strip("*`").strip()
-        if not _is_real_reason(reason):
+        if not reason:
             continue
         justifications[family] = reason
     return justifications
@@ -352,9 +308,9 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
     ]
     for family in unjustified_families:
         errors.append(
-            f"{family} family is absent and experiment_design.md has no justification "
-            f"for it; add `- {family}: <reason>` under an `## Absent families` heading "
-            "or design the family"
+            f"{family} family is absent and experiment_design.md states no reason for it; "
+            f"add `- {family}: <reason>` under an `## Absent families` heading, or design "
+            "the family"
         )
     absent_family_justifications = {
         family: justifications[family] for family in missing_families if family in justifications

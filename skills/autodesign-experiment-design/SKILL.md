@@ -92,4 +92,6 @@ python3 -m autodesign skill-check-design <run_dir>
 
 End the coverage audit with a literal `PASS` only when every contribution and derived axis has a `CLAIM_BEARING` falsifier, all four families are populated or every absent family has a reason under `## Absent families`, every locked benchmark has valid provenance, every selected baseline has a fairness plan, every case study has a pre-result selection rule, and every expected cell has a simulated target with a threshold. Otherwise list blockers and do not advance.
 
+The gate checks only that an absent family has *a* reason written, never whether the reason holds. That judgement is yours: an absence is justified when it follows from the contributions — a failure-mode finding owns no module to ablate, a distributional claim cannot ride on one trace. Filler that clears the gate (`n/a`, `TBD`, `待定`) is a design you have not finished, and `autodesign-integrity-auditor` reads these reasons verbatim and fails them.
+
 Update `AUTODESIGN_STATE.md` with `python3 -m autodesign skill-advance` to `EXPERIMENT_DESIGN_READY`, or to `WAITING_FOR_R0` when R0 must run first. The next Skill is `autodesign-experiment-run`.

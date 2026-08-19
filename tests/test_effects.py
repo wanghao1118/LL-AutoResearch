@@ -278,17 +278,16 @@ def test_justified_absent_families_pass(tmp_path: Path, label: str, absent_secti
 
 NON_JUSTIFICATIONS = [
     ("empty-values", "## Absent families\n\n- ablation:\n- case_study:\n- analysis:\n"),
-    ("chinese-placeholders", "## Absent families\n\n- ablation: 无\n- case_study: 待定\n- analysis: 不适用\n"),
-    ("english-placeholders", "## Absent families\n\n- ablation: n/a\n- case_study: TBD\n- analysis: none\n"),
-    ("too-short", "## Absent families\n\n- ablation: no need\n- case_study: 不做\n- analysis: skip it\n"),
     ("prose-without-labels", "## Absent families\n\n没有做 ablation case_study analysis 这几类。\n"),
     ("wrong-section", "## Notes\n\n- ablation: 无自有模块可供拆解，因此不做本类实验\n"),
 ]
 
 
 @pytest.mark.parametrize("label,absent_section", NON_JUSTIFICATIONS)
-def test_placeholder_absences_are_rejected(tmp_path: Path, label: str, absent_section: str) -> None:
-    """A family name alone, a filler value, or prose in the wrong section is not a reason."""
+def test_absences_without_a_written_reason_are_rejected(
+    tmp_path: Path, label: str, absent_section: str
+) -> None:
+    """A family name alone, or prose outside the section, leaves the reason unwritten."""
 
     _write_design(
         tmp_path,
@@ -298,6 +297,40 @@ def test_placeholder_absences_are_rejected(tmp_path: Path, label: str, absent_se
     result = check_design(tmp_path)
     assert result["status"] == "FAIL"
     assert sorted(result["unjustified_missing_families"]) == ["ablation", "analysis", "case_study"]
+
+
+THIN_REASONS = [
+    ("english-placeholders", "## Absent families\n\n- ablation: n/a\n- case_study: TBD\n- analysis: none\n"),
+    ("chinese-placeholders", "## Absent families\n\n- ablation: 无\n- case_study: 待定\n- analysis: 不适用\n"),
+    ("too-short", "## Absent families\n\n- ablation: no need\n- case_study: 不做\n- analysis: skip it\n"),
+]
+
+
+@pytest.mark.parametrize("label,absent_section", THIN_REASONS)
+def test_thin_reasons_pass_the_machine_gate_and_reach_the_auditor(
+    tmp_path: Path, label: str, absent_section: str
+) -> None:
+    """`n/a` clears the machine gate on purpose — scoring a reason is not a machine job.
+
+    Judging whether ``n/a`` is an adequate reason requires reading it against the
+    contributions, which the design Skill and ``autodesign-integrity-auditor`` do and the gate
+    cannot. An earlier version scored substance by CJK-character and Latin-word counts, which
+    put the machine in the business of grading scientific arguments by length. The gate now
+    checks only that a reason was written, and hands the text over verbatim so the auditor can
+    reject it.
+    """
+
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n" + absent_section,
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "PASS", result["errors"]
+    assert result["unjustified_missing_families"] == []
+    assert set(result["absent_family_justifications"]) == {"ablation", "case_study", "analysis"}
+    # The verbatim text has to survive, or the auditor has nothing to judge.
+    assert all(result["absent_family_justifications"].values())
 
 
 def test_an_empty_value_cannot_borrow_the_next_bullet(tmp_path: Path) -> None:
