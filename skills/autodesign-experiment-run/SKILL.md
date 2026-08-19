@@ -33,7 +33,7 @@ For GPU or remote work, resolve the `AutoDesign GPU 执行上下文` section in 
 10. Preserve training objectives, datasets, learning curves, checkpoints, and reload behavior for training routes. Preserve prompts, decoding, tools, retrieval state, and inference budgets for train-free routes.
 11. Before expensive execution, materialize and inspect each variant's scientific identity: model revision, data manifest, sample count, sampling policy, planned-versus-observed composition, training input path, maximum length, epochs, learning rate, and trainable parameter ratio where applicable; or the corresponding prompt, tool, retriever, state, decoding, and budget identities for train-free routes.
 12. When filtering, decontamination, selection, or transformation is required, materialize the derived artifact and make the launch command consume that exact artifact. A unit test of the transformation does not prove the production path uses it.
-13. Write `experiment_schedule.json` with one cell per expected cell in the design, and `result_contract.json` for result paths. Generate tables and figures from observed results only.
+13. Write `experiment_schedule.json` with one cell per planned experiment × variant × task × seed execution cell, including its metrics, and `result_contract.json` for result paths. Map those cells to the design's aggregate experiment × variant × task × metric effect rows. Generate tables and figures from observed results only.
 14. Run local preflight and smoke when the resource contract permits. Repair literal failures; a scientific-lock or planned-composition mismatch returns to `$autodesign-experiment-design`.
 
 ## Execute
@@ -71,18 +71,18 @@ python3 -m autodesign skill-compare-effects <run_dir>
 
 `skill-ingest` checks completeness only: observed cells must equal scheduled cells and planned metrics, with no missing or unexpected cell. It assigns no scientific verdict.
 
-`skill-compare-effects` fills `observed_value` and `observed_status` in `expected_effects.json` and writes `effect_comparison.md`. Then record, per entry: family, metric, simulated target, decision threshold, observed value, and threshold outcome `MET`, `MISSED`, or `NOT_EVALUABLE`.
+`skill-compare-effects` reads the design-time `expected_effects.json` without modifying it and writes `effect_comparison.md`. Record, per entry: family, metric, simulated target, decision threshold, observed value, and threshold outcome `MET`, `MISSED`, or `NOT_EVALUABLE`.
 
 Comparison rules:
 
 - A simulated target is never evidence. A `MET` outcome means the observation cleared its own threshold, not that the target was correct.
-- Never overwrite an observed value with a target, and never present a target as a result. Targets stay out of `reports/`.
+- Never overwrite an observed value with a target, and never present a target as a result. Targets stay out of `reports/`; only the explicitly marked downstream AutoWriting draft may carry simulated values.
 - A missed threshold routes by the entry's `on_miss` value and stays visible in the comparison table.
 - A design-time target that turns out to be badly calibrated is a design finding to report, not a reason to edit the target after seeing results. Editing `simulated_target` post-hoc is a literal integrity failure.
 - Case-study entries evaluate required category counts, including failure categories. Analysis entries evaluate the observed shape against `expected_shape`.
 
 ## Output
 
-Write `implementation_notes.md`, the project environment, runnable entrypoints, `command_plan.json`, `experiment_schedule.json`, `result_contract.json`, preflight reports, `execution_record.json`, logs, collected results, `result_summary.json`, and `effect_comparison.md`. Record exact deviations as blockers instead of silently simplifying the study.
+Write `implementation_notes.md`, the project environment, runnable entrypoints, `command_plan.json`, `experiment_schedule.json`, `result_contract.json`, preflight reports, `execution_record.json`, logs, collected results, `result_summary.json`, and `effect_comparison.md`. Keep `expected_effects.json` byte-for-byte unchanged. Record exact deviations as blockers instead of silently simplifying the study.
 
 Update `AUTODESIGN_STATE.md` with `python3 -m autodesign skill-advance`: `IMPLEMENTATION_READY` after materialization, `EXECUTION_IN_PROGRESS` while stages remain, then `EXECUTION_COMPLETE` once all five stages pass and the effect comparison exists. The next Skill is `autodesign-result-scientist`.

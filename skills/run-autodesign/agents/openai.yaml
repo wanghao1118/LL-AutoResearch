@@ -1,4 +1,4 @@
 interface:
   display_name: "Run AutoDesign"
-  short_description: "Orchestrate a complete Skill-first AutoDesign research workflow"
-  default_prompt: "Use $run-autodesign to start or resume the full Skill-first AutoDesign workflow."
+  short_description: "先设计并交接 AutoWriting，再继续执行实验与结果诊断"
+  default_prompt: "使用 $run-autodesign 启动或恢复设计优先的 AutoDesign 流程，在实验执行前发布 AutoWriting 草稿交接，并继续完成真实实验。"

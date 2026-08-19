@@ -2,10 +2,11 @@
 
 AutoDesign 是一个 **Skill-first 研究工作流**，接在上游 AutoSearch 之后：读取 AutoSearch 导出的 **Motivation、Contribution 和 Benchmark**，先完成实验设计，再执行实验。任何支持 Agent Skills 的智能体都可以通过五个 Skill 完成实验设计、实验执行、结果解释与独立审计；仓库中的 Python 薄运行包只负责状态推进、设计契约校验、本地命令执行、结果 cell 完整性校验和目标对比。GPU 与远端机器信息由智能体自己的 `AGENTS.md` 或 `CLAUDE.md` 提供，Python 包不读取 GPU 配置。
 
-模块流程是**先设计，后执行**：
+模块流程是**先设计，发布写作交接，再执行**。AutoWriting 不属于 AutoDesign 状态机，也不会阻塞实验：
 
 ```text
 INPUT_READY → EXPERIMENT_DESIGN_READY → IMPLEMENTATION_READY → EXECUTION_COMPLETE
+                    └──→ AutoWriting（并行草稿）
             → RESULT_DIAGNOSIS_READY → INTEGRITY_AUDIT_PASS → COMPLETE
 ```
 
@@ -29,8 +30,8 @@ INPUT_READY → EXPERIMENT_DESIGN_READY → IMPLEMENTATION_READY → EXECUTION_C
 
 | Skill | 职责 | 主要输出 |
 | --- | --- | --- |
-| `$run-autodesign` | 两阶段编排、恢复、失效传播和 11 道 gate | `AUTODESIGN_STATE.md` |
-| `$autodesign-experiment-design` | 归一化 handoff、选择方法路线、设计四类实验、预写模拟目标 | `experiment_design.md`、`expected_effects.json` |
+| `$run-autodesign` | 两阶段编排、恢复、AutoWriting 交接、失效传播和 11 道 gate | `AUTODESIGN_STATE.md` |
+| `$autodesign-experiment-design` | 归一化 handoff、选择方法路线、设计四类实验、预写聚合目标、发布写作交接 | `experiment_design.md`、`expected_effects.json` |
 | `$autodesign-experiment-run` | 按设计生成可运行项目并完成五阶段执行 | `generated_project/`、计划 JSON、`execution_record.json`、`effect_comparison.md` |
 | `$autodesign-result-scientist` | 结果完整性与科学诊断 | `result_summary.json`、`result_diagnosis.md`、`result_route.md` |
 | `$autodesign-integrity-auditor` | 独立 claim-evidence-execution 审计 | `integrity_audit.md` |
@@ -60,7 +61,7 @@ Case study 的选择规则和类别计数必须在**任何结果出现之前**�
 
 ## 预写效果与执行后对比
 
-设计阶段为每个 expected cell 预写一个模拟目标，写入 `expected_effects.json`，整个文件的 `value_status` 固定为 `SIMULATED_TARGET`：
+设计阶段为每个跨 seeds 聚合后的 experiment × variant × task × metric 结果行预写一个模拟目标，写入只读的 `expected_effects.json`，整个文件的 `value_status` 固定为 `SIMULATED_TARGET`。逐 seed 执行 cell 留在 `experiment_schedule.json`：
 
 ```json
 {
@@ -77,9 +78,7 @@ Case study 的选择规则和类别计数必须在**任何结果出现之前**�
   "target_basis": "handoff_reported",
   "threshold_reference_variant": "qwen2.5-coder-32b-instruct",
   "decision_threshold": ">= reference + 2.0",
-  "on_miss": "iteration",
-  "observed_value": null,
-  "observed_status": "NOT_EXECUTED"
+  "on_miss": "iteration"
 }
 ```
 
@@ -88,9 +87,21 @@ Case study 的选择规则和类别计数必须在**任何结果出现之前**�
 - `on_miss` 取 `iteration`、`tuning` 或 `stop`，预先决定未达标时的路由；
 - `case_study` 用 `required_categories` 计数代替单一目标值；`analysis` 可用 `expected_shape`（`monotonic_increasing`、`monotonic_decreasing`、`saturating`、`non_monotonic`、`flat`）表达曲线形状预期。
 
-执行并摄取结果后，`skill-compare-effects` 逐格对比观测值与目标值，把 `observed_value`、`observed_status`、`threshold_outcome` 写回 `expected_effects.json`，并生成 `effect_comparison.md`。阈值结果只有三种：`MET`、`MISSED`、`NOT_EVALUABLE`（相对阈值缺参考变体、case-study 类别需人工计数、形状预期需人工看曲线、该 cell 未执行）。
+执行并摄取结果后，`skill-compare-effects` 读取但不修改 `expected_effects.json`，逐行对比观测值与目标值并生成 `effect_comparison.md`。阈值结果只有三种：`MET`、`MISSED`、`NOT_EVALUABLE`（相对阈值缺参考变体、case-study 类别需人工计数、形状预期需人工看曲线、该结果行未执行）。
 
 完整性不变量：模拟目标不得进入 `reports/`，不得被当作观测值，不得在执行后被修改，`MISSED` 行不得被删除，`MET` 本身不等于 claim `SUPPORTED`。
+
+## AutoWriting 提前交接
+
+`experiment_design.md` 末尾包含 `## AutoWriting handoff`，不新增状态或交接 Schema：
+
+- `ACCEPTED`：设计已接受，AutoWriting 可在实验运行期间并行写作；
+- `PROVISIONAL_WAITING_FOR_R0`：只写稳定章节，路线相关内容保持条件式；
+- 每个聚合结果行使用 `{{RESULT:<entry_id>}}` 占位，真实结果从 `effect_comparison.md` 和 `result_summary.json` 替换；
+- 数字模拟值只能出现在明显标记 `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` 的草稿中，并在同一单元格或图注标记 `SIMULATED_TARGET`；
+- 模拟值不得进入提交版表格、图、observed 叙述或 claim verdict。
+
+AutoWriting 是否可用不影响 AutoDesign 继续执行实验。R0 或后续设计修改时，Design Skill 重新发布 handoff，并列出受影响的章节和 `entry_id`。
 
 ## 安装 Skill
 

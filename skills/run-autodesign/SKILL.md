@@ -1,6 +1,6 @@
 ---
 name: run-autodesign
-description: "Orchestrate or resume the AutoDesign pipeline: design experiments from an AutoSearch handoff of Motivation, Contribution, and Benchmark, then execute them. Covers experiment design across main, ablation, case-study, and analysis families with simulated target effects, followed by implementation, execution, result diagnosis, and integrity audit. Use for a new AutoDesign run, same-run continuation, or end-to-end experiment automation."
+description: "Orchestrate or resume the AutoDesign pipeline: design experiments from an AutoSearch handoff of Motivation, Contribution, and Benchmark, publish a draft-safe design handoff that lets a downstream AutoWriting module start before real results arrive, then execute and diagnose the experiments. Use for a new AutoDesign run, same-run continuation, design-first writing handoff, or end-to-end experiment automation."
 ---
 
 # Run AutoDesign
@@ -11,7 +11,7 @@ AutoDesign has two phases, in this order:
 DESIGN  →  RUN
 ```
 
-Design decides what experiments exist and what effect each one should achieve. Run implements and executes them, then compares observation against the design's targets. Never interleave the two: no code is written before the design's coverage audit says `PASS`, and no experiment is added or redefined during execution.
+Design decides what experiments exist and what effect each one should achieve. Run implements and executes them, then compares observation against the design's targets. Do not interleave scientific design and implementation: write no experiment code before the design's coverage audit says `PASS`, and add or redefine no experiment during execution. A downstream AutoWriting module may draft from the published design handoff while Run proceeds; writing never changes the accepted experiment design.
 
 Apply this precedence throughout:
 
@@ -60,9 +60,16 @@ Resume from the first unfinished or invalidated stage. Do not rerun an expensive
 
 Load each named sibling Skill through the current agent's native Skill mechanism. When a filesystem path is required, resolve it from the parent directory of this installed `run-autodesign` Skill, or from `AUTODESIGN_SKILLS_DIR` when explicitly provided. Do not copy a worker's instructions into this orchestrator.
 
-**Phase 1 — Design.** Follow `$autodesign-experiment-design`. It normalizes the handoff into `input_brief.md`, selects the method route, designs the `main`, `ablation`, `case_study`, and `analysis` experiments, and writes `experiment_design.md` plus `expected_effects.json` with a simulated target and decision threshold for every planned cell. It writes `r0_plan.md` when a low-cost gate is required.
+**Phase 1 — Design.** Follow `$autodesign-experiment-design`. It normalizes the handoff into `input_brief.md`, selects the method route, designs the `main`, `ablation`, `case_study`, and `analysis` experiments, and writes `experiment_design.md` plus `expected_effects.json` with a simulated target and decision threshold for every aggregate effect row. The design ends with `## AutoWriting handoff`. It writes `r0_plan.md` when a low-cost gate is required.
 
 **Phase 1b — R0, only when required.** Dispatch `$autodesign-experiment-run` to execute the R0 probe and return `r0_record.json`, then return to `$autodesign-experiment-design` to accept or revise the route. A failed R0 revises the design; it never silently switches the full experiment.
+
+**Design → AutoWriting handoff, without blocking Run.** Publish the handoff as soon as Design finishes:
+
+- Use `ACCEPTED` when no R0 remains and the coverage audit says `PASS`. Hand off `input_brief.md`, `experiment_design.md`, and the read-only `expected_effects.json` through the environment's normal downstream-module mechanism, then continue to Phase 2 without waiting for writing.
+- Use `PROVISIONAL_WAITING_FOR_R0` when R0 can still change the route. AutoWriting may draft motivation, contribution, stable method context, experiment setup, table shells, and figure plans, but it must keep route-dependent prose and values conditional. After R0, republish the revised accepted handoff and name the affected sections and entry IDs.
+- If no AutoWriting module is available in the current environment, report that the handoff is ready and continue Run. Do not add a new AutoDesign state or block execution on writing progress.
+- Prefer placeholders shaped `{{RESULT:<entry_id>}}`. A numeric simulated target may appear only in a document visibly marked `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS`, with `SIMULATED_TARGET` in the same cell or caption. It never appears as an observed fact, final claim, or submission-ready result.
 
 **Phase 2 — Run.** Follow `$autodesign-experiment-run`. It materializes `generated_project/`, writes `command_plan.json`, `experiment_schedule.json`, and `result_contract.json`, executes `preflight → smoke → experiment → aggregate → collect`, ingests results, and writes `effect_comparison.md` comparing observed values against the design's simulated targets.
 
@@ -85,7 +92,7 @@ Load each named sibling Skill through the current agent's native Skill mechanism
 
 - **Handoff gate**: Motivation, Contribution, and Benchmark are present and preserved verbatim; extra user-supplied input is absorbed and classified; nothing is invented to fill a gap.
 - **Design gate**: `experiment_design.md` ends in a literal coverage-audit `PASS`. Every contribution and derived axis has a `CLAIM_BEARING` falsifier; all four families are populated or every absent family has a reason under `## Absent families`; every case study has a pre-result selection rule with failure categories; every selected baseline has a fairness plan and appears in a main experiment.
-- **Target gate**: every expected cell has an `expected_effects.json` entry with `value_status: SIMULATED_TARGET`, a literal `decision_threshold`, a `target_basis`, and an `on_miss` route. A simulated target never appears in `reports/`, a table, a figure, or a claim verdict.
+- **Target gate**: every aggregate effect row has an `expected_effects.json` entry with `value_status: SIMULATED_TARGET`, a literal `decision_threshold`, a `target_basis`, and an `on_miss` route. A simulated target may appear only in an explicitly marked AutoWriting draft; it never appears in `reports/`, a submission-ready table or figure, an observed result, or a claim verdict.
 - **Idea-consistency gate**: the route preserves the user's scientific locks and operational meaning; unstated choices remain explicit design decisions rather than retroactive additions to the Idea.
 - **R0 gate**: a required R0 has an executed record covering every high-impact autonomous choice not resolved by the user, comparing at least two candidate instantiations. A design-authored `passed` string or a single documented default is not evidence, and R0 success alone never supports a contribution.
 - **Implementation gate**: every accepted experiment across all four families has a runnable entrypoint, complete environment, decision-relevant preflight, result path, and observed chart path. Preflight compares planned and materialized scientific identities, data composition, benchmark provenance, and protocol values before expensive execution.
@@ -111,9 +118,10 @@ Completion requires:
 - no pilot or smoke substitutes for missing claim-bearing evidence;
 - execution and result completeness pass;
 - `effect_comparison.md` covers every design entry;
-- tables and figures are backed by observed aggregates only;
+- the latest accepted AutoWriting handoff identifies every result placeholder by `entry_id` and contains no value presented as observed;
+- submission-ready tables and figures are backed by observed aggregates only;
 - the latest result route is closed and no execution-required entry remains in `next_round.md`;
 - `integrity_audit.md` says `PASS` with no unresolved blocker;
 - `AUTODESIGN_STATE.md` ends at `COMPLETE`.
 
-Return the run directory, selected route, experiment counts per family, execution target, exact result counts, target-versus-observed outcomes, contribution verdicts, tables, figures, and unresolved scientific limitations.
+Return the run directory, AutoWriting handoff status, selected route, experiment counts per family, execution target, exact result counts, target-versus-observed outcomes, contribution verdicts, tables, figures, and unresolved scientific limitations.

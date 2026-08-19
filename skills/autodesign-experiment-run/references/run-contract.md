@@ -40,7 +40,7 @@ An object keyed by stage, each value a non-empty list of literal Bash commands r
 
 ## `experiment_schedule.json`
 
-Explicit cells with experiment ID, variant ID, benchmark task ID, benchmark provenance, family, evidence class, integer seed, and planned metric names. Family is exactly `main`, `ablation`, `case_study`, or `analysis`. Evidence class is exactly `CLAIM_BEARING`, `MECHANISM_PILOT`, or `ENGINEERING_SMOKE`. The schedule exists to test result completeness and preserve the accepted design identity; scientific appropriateness comes from `experiment_design.md`.
+Explicit execution cells with experiment ID, variant ID, benchmark task ID, benchmark provenance, family, evidence class, integer seed, and planned metric names. Family is exactly `main`, `ablation`, `case_study`, or `analysis`. Evidence class is exactly `CLAIM_BEARING`, `MECHANISM_PILOT`, or `ENGINEERING_SMOKE`. Seeds are execution identity; `expected_effects.json` instead has one aggregate row per experiment × variant × task × metric after the planned seeds are combined. The schedule exists to test result completeness and preserve the accepted design identity; scientific appropriateness comes from `experiment_design.md`.
 
 The accepted schedule is immutable during an execution round. Missing cells, unexpected cells, changed evidence classes, or changed benchmark provenance prevent the run from qualifying for diagnosis. A deliberate new round first revises the design and invalidates downstream records.
 
@@ -70,7 +70,7 @@ Preserve exact resource errors and the first failed stage. Never turn a resource
 
 ## `effect_comparison.md`
 
-Written after ingestion, from `expected_effects.json` plus observed aggregates. One row per design entry:
+Written after ingestion, from the read-only `expected_effects.json` plus observed aggregates. One row per design entry; do not modify the target file:
 
 | Entry ID | Experiment | Family | Variant | Task | Metric | Simulated target | Decision threshold | Observed | Threshold outcome | On miss |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

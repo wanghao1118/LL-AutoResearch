@@ -43,8 +43,6 @@ def _entry(
         "target_basis": "handoff_reported",
         "decision_threshold": decision_threshold,
         "on_miss": "iteration",
-        "observed_value": None,
-        "observed_status": "NOT_EXECUTED",
     }
     if reference is not None:
         entry["threshold_reference_variant"] = reference
@@ -197,7 +195,7 @@ def test_claim_bearing_entry_is_required(tmp_path: Path) -> None:
     assert any("CLAIM_BEARING" in error for error in result["errors"])
 
 
-def test_scheduled_cell_without_an_entry_fails(tmp_path: Path) -> None:
+def test_scheduled_effect_row_without_an_entry_fails(tmp_path: Path) -> None:
     _write_design(tmp_path, _effects(_entry("a")))
     (tmp_path / "experiment_schedule.json").write_text(
         json.dumps(
@@ -218,7 +216,68 @@ def test_scheduled_cell_without_an_entry_fails(tmp_path: Path) -> None:
     )
     result = check_design(tmp_path)
     assert result["status"] == "FAIL"
-    assert result["uncovered_scheduled_cells"] == [["E2", "unplanned", "tb-1.0"]]
+    assert result["uncovered_scheduled_effect_rows"] == [
+        ["E2", "unplanned", "tb-1.0", "pass@1"]
+    ]
+
+
+def test_multiple_seed_cells_share_one_aggregate_effect_row(tmp_path: Path) -> None:
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n"
+        "## Absent families\n\n"
+        "- ablation: no self-owned component\n"
+        "- case_study: the claim is distributional\n"
+        "- analysis: the main experiment already sweeps the only axis\n",
+    )
+    (tmp_path / "experiment_schedule.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "cells": [
+                    {
+                        "experiment_id": "E1",
+                        "variant_id": "ours",
+                        "benchmark_task_id": "tb-1.0",
+                        "seed": seed,
+                        "metrics": ["pass@1"],
+                    }
+                    for seed in (1, 2, 3)
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "PASS", result["errors"]
+    assert result["uncovered_scheduled_effect_rows"] == []
+
+
+def test_schedule_metric_without_an_effect_row_fails(tmp_path: Path) -> None:
+    _write_design(tmp_path, _all_families())
+    (tmp_path / "experiment_schedule.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "cells": [
+                    {
+                        "experiment_id": "E1",
+                        "variant_id": "ours",
+                        "benchmark_task_id": "tb-1.0",
+                        "seed": 1,
+                        "metrics": ["pass@1", "cost"],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "FAIL"
+    assert result["uncovered_scheduled_effect_rows"] == [
+        ["E1", "ours", "tb-1.0", "cost"]
+    ]
 
 
 def test_families_are_reported_and_absence_needs_a_written_justification(tmp_path: Path) -> None:
@@ -478,8 +537,8 @@ def test_compare_effects_covers_every_threshold_outcome(tmp_path: Path) -> None:
     assert "Do not edit `simulated_target` values." in report
 
 
-def test_compare_effects_writes_observations_without_touching_targets(tmp_path: Path) -> None:
-    """Observed values are written back; simulated targets must survive byte-for-byte."""
+def test_compare_effects_keeps_the_design_target_file_byte_for_byte(tmp_path: Path) -> None:
+    """Observed values belong to effect_comparison.md, never the design target file."""
 
     effects = _effects(
         _entry("observed", variant_id="ours", simulated_target=29.1),
@@ -487,19 +546,22 @@ def test_compare_effects_writes_observations_without_touching_targets(tmp_path: 
     )
     _write_design(tmp_path, effects)
     _write_summary(tmp_path, [_aggregate("E1", "ours", 29.0)])
+    effects_path = tmp_path / "expected_effects.json"
+    before = effects_path.read_bytes()
 
     compare_effects(tmp_path)
     compare_effects(tmp_path)  # idempotent: a rerun must not drift the targets
 
-    stored = json.loads((tmp_path / "expected_effects.json").read_text(encoding="utf-8"))
-    assert stored["value_status"] == "SIMULATED_TARGET"
-    by_id = {entry["entry_id"]: entry for entry in stored["entries"]}
-    assert by_id["observed"]["simulated_target"] == 29.1
-    assert by_id["observed"]["observed_value"] == 29.0
-    assert by_id["observed"]["observed_status"] == "OBSERVED"
-    assert by_id["deferred"]["simulated_target"] == 30.0
-    assert by_id["deferred"]["observed_value"] is None
-    assert by_id["deferred"]["observed_status"] == "NOT_EXECUTED"
+    assert effects_path.read_bytes() == before
+    report = (tmp_path / "effect_comparison.md").read_text(encoding="utf-8")
+    assert (
+        "| observed | E1 | main | ours | tb-1.0 | pass@1 | 29.1 | "
+        ">= 20.0 | 29.0 | MET |"
+    ) in report
+    assert (
+        "| deferred | E1 | main | never-ran | tb-1.0 | pass@1 | 30.0 | "
+        ">= 20.0 | — | NOT_EVALUABLE |"
+    ) in report
 
 
 def test_compare_effects_requires_ingested_results(tmp_path: Path) -> None:

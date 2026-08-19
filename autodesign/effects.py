@@ -8,12 +8,12 @@ threshold, target basis, and miss route on every entry. It deliberately does not
 whether a target is scientifically sensible — that is the design Skill's job.
 
 `compare_effects` runs after result ingestion. It joins each design entry to the observed
-aggregate for its (experiment, variant, task, metric) cell, writes the observed value back
-into `expected_effects.json`, and renders `effect_comparison.md`. Thresholds are evaluated
+aggregate for its (experiment, variant, task, metric) row and renders
+`effect_comparison.md` without modifying the design-time target file. Thresholds are evaluated
 only in the forms the contract allows: an absolute comparison against a literal number, or
 a relative comparison against a named reference variant. Anything else is reported as
 `NOT_EVALUABLE` with the reason, rather than guessed at. Simulated targets are never
-written into observed fields and are never edited here.
+written into result fields and the target file is never edited here.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .io import read_json, write_json, write_text
+from .io import read_json, write_text
 
 VALUE_STATUS = "SIMULATED_TARGET"
 FAMILIES = ("main", "ablation", "case_study", "analysis")
@@ -151,21 +151,30 @@ def validate_expected_effects(effects: Any) -> list[str]:
     return errors
 
 
-def _schedule_cells(schedule: Any) -> set[tuple[str, str, str]]:
+def _schedule_effect_rows(schedule: Any) -> set[tuple[str, str, str, str]]:
+    """Collapse per-seed schedule cells into aggregate target-comparison rows."""
+
     if not isinstance(schedule, dict):
         return set()
     cells = schedule.get("cells")
     if not isinstance(cells, list):
         return set()
-    return {
-        (
+    rows: set[tuple[str, str, str, str]] = set()
+    for cell in cells:
+        if not isinstance(cell, dict):
+            continue
+        metrics = cell.get("metrics")
+        if not isinstance(metrics, list):
+            continue
+        prefix = (
             str(cell.get("experiment_id") or ""),
             str(cell.get("variant_id") or ""),
             str(cell.get("benchmark_task_id") or ""),
         )
-        for cell in cells
-        if isinstance(cell, dict)
-    }
+        for metric in metrics:
+            if isinstance(metric, str) and metric.strip():
+                rows.add((*prefix, metric))
+    return rows
 
 
 def _coverage_verdict(design_text: str) -> tuple[bool, str]:
@@ -322,22 +331,24 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
         errors.append("no CLAIM_BEARING entry exists in expected_effects.json")
 
     schedule_path = run_path / "experiment_schedule.json"
-    uncovered_cells: list[list[str]] = []
+    uncovered_rows: list[list[str]] = []
     if schedule_path.is_file():
-        scheduled = _schedule_cells(read_json(schedule_path))
+        scheduled = _schedule_effect_rows(read_json(schedule_path))
         covered = {
             (
                 str(entry.get("experiment_id") or ""),
                 str(entry.get("variant_id") or ""),
                 str(entry.get("benchmark_task_id") or ""),
+                str(entry.get("metric") or ""),
             )
             for entry in entries
             if isinstance(entry, dict)
         }
-        uncovered_cells = [list(cell) for cell in sorted(scheduled - covered)]
-        if uncovered_cells:
+        uncovered_rows = [list(row) for row in sorted(scheduled - covered)]
+        if uncovered_rows:
             errors.append(
-                f"scheduled cells without an expected_effects entry: {uncovered_cells}"
+                "scheduled aggregate effect rows without an expected_effects entry: "
+                f"{uncovered_rows}"
             )
 
     return {
@@ -348,7 +359,7 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
         "missing_families": missing_families,
         "unjustified_missing_families": unjustified_families,
         "absent_family_justifications": absent_family_justifications,
-        "uncovered_scheduled_cells": uncovered_cells,
+        "uncovered_scheduled_effect_rows": uncovered_rows,
         "coverage_audit_pass": coverage_pass,
         "coverage_audit_verdict": verdict_detail,
         "errors": errors,
@@ -441,7 +452,7 @@ def _comparison_table(rows: list[dict[str, Any]]) -> str:
 
 
 def compare_effects(run_dir: str | Path) -> dict[str, Any]:
-    """Join observed aggregates to design targets and write effect_comparison.md."""
+    """Join observed aggregates to read-only design targets and write the comparison."""
 
     run_path = Path(run_dir)
     effects_path = run_path / "expected_effects.json"
@@ -479,10 +490,6 @@ def compare_effects(run_dir: str | Path) -> dict[str, Any]:
             else None
         )
         outcome, detail = _evaluate_threshold(entry, observed, index)
-        entry["observed_value"] = observed
-        entry["observed_status"] = "OBSERVED" if observed is not None else "NOT_EXECUTED"
-        entry["threshold_outcome"] = outcome
-        entry["threshold_detail"] = detail
         rows.append(
             {
                 "entry_id": entry.get("entry_id"),
@@ -501,7 +508,6 @@ def compare_effects(run_dir: str | Path) -> dict[str, Any]:
             }
         )
 
-    write_json(effects_path, effects)
     missed = [row for row in rows if row["threshold_outcome"] == "MISSED"]
     not_evaluable = [row for row in rows if row["threshold_outcome"] == "NOT_EVALUABLE"]
     routing_lines = [

@@ -9,7 +9,7 @@ Audit raw artifacts independently. Say PASS when the run is correct; do not inve
 
 ## Inputs
 
-Read the original handoff and `input_brief.md`, `experiment_design.md`, `expected_effects.json`, `r0_record.json` when required, `implementation_notes.md`, `execution_record.json`, raw results, `result_summary.json`, `effect_comparison.md`, `result_diagnosis.md`, `result_route.md`, any `result_tuning.json` and `next_round.md`, tables, figures, and `references/audit-contract.md`.
+Read the original handoff and `input_brief.md`, `experiment_design.md`, `expected_effects.json`, `r0_record.json` when required, `implementation_notes.md`, `execution_record.json`, raw results, `result_summary.json`, `effect_comparison.md`, `result_diagnosis.md`, `result_route.md`, any `result_tuning.json`, `next_round.md`, and AutoWriting draft that is present, all tables and figures, and `references/audit-contract.md`.
 
 ## Audit
 
@@ -23,8 +23,8 @@ Read the original handoff and `input_brief.md`, `experiment_design.md`, `expecte
 8. Confirm implementation matches the accepted Idea semantics, scientific locks, route, families, evidence classes, and protocol decisions.
 9. Confirm current preflight, smoke, experiment, aggregate, and collect commands exited zero in order and their accepted inputs remain current.
 10. Recompute result counts and aggregate values from raw records; reject missing or unexpected cells and schedule drift.
-11. Audit simulated-target integrity. Every `expected_effects.json` entry keeps `value_status: SIMULATED_TARGET`; `effect_comparison.md` covers every entry and retains every `MISSED` and `NOT_EVALUABLE` row; no simulated target appears in `reports/`, a table cell, a figure point, or a claim verdict; and no `simulated_target` was edited after execution.
-12. Confirm every displayed table cell and figure point comes from observed aggregates and every declared case or report category was actually produced.
+11. Audit simulated-target integrity. `expected_effects.json` remains the unchanged design-time file and every entry keeps `value_status: SIMULATED_TARGET`; `effect_comparison.md` covers every entry and retains every `MISSED` and `NOT_EVALUABLE` row. A simulated target may appear only in a document visibly marked `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS`, with `SIMULATED_TARGET` in the same cell or caption. It never appears in `reports/`, an observed result, a claim verdict, or a submission-ready table or figure.
+12. Confirm every submission-ready table cell and figure point comes from observed aggregates, every result placeholder has been replaced, and every declared case or report category was actually produced.
 13. Confirm negative, mixed, failed-slice, ablation, and exploratory findings remain visible and correctly scoped.
 14. Confirm the diagnosis route and next action follow literal thresholds, that upstream defects were not interpreted as method behavior, and that no verdict rests on proximity to a design-time target.
 15. Confirm every iteration or execution-required tuning action was implemented, executed, ingested, recompared, and rediagnosed, or was explicitly closed by its recorded stop threshold.

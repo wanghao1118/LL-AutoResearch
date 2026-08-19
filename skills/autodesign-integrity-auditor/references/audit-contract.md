@@ -10,7 +10,7 @@
 | Family coverage | experiment design | main, ablation, case-study, and analysis families populated or every absent family justified under `## Absent families`; the design gate only checks that a reason was written, so judge each reason yourself — a filler such as `n/a`, `TBD`, or `待定`, or a reason that does not follow from the contributions, is a FAIL |
 | Evidence eligibility | experiment design | every claim and test axis has an eligible claim-bearing falsifier; pilots and smokes are separate |
 | Case-study integrity | experiment design and produced cases | pre-result selection rule followed; declared category counts including failures produced; no outcome-dependent selection |
-| Target integrity | expected effects and effect comparison | every entry keeps `SIMULATED_TARGET`; no target edited post-hoc; no target in reports, tables, figures, or verdicts; every entry compared and every miss retained |
+| Target integrity | expected effects and effect comparison | target file remains unchanged; every entry keeps `SIMULATED_TARGET`; draft-only simulations are explicitly labelled; no target in reports, observed results, submission-ready tables or figures, or verdicts; every entry compared and every miss retained |
 | Implementation fidelity | generated project, notes, and preflight | accepted locks, identities, compositions, families, experiments, and protocols implemented |
 | Execution completion | execution record and logs | current preflight, smoke, experiment, aggregate, and collect exit zero in order |
 | Result completeness | schedule, raw results, and summary | scheduled and observed cells, families, evidence classes, provenance, and metrics match with no unresolved unexpected cells |

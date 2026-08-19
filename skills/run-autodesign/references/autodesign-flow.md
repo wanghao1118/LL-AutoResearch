@@ -6,8 +6,8 @@
 DESIGN                                   RUN
 autodesign-experiment-design      →      autodesign-experiment-run
   input_brief.md                           generated_project/
-  experiment_design.md                     command_plan.json
-  expected_effects.json                    experiment_schedule.json
+  experiment_design.md ──→ AutoWriting     command_plan.json
+  expected_effects.json   (non-blocking)   experiment_schedule.json
   r0_plan.md (conditional)                 result_contract.json
                                            execution_record.json
                                            result_summary.json
@@ -18,6 +18,8 @@ autodesign-experiment-design      →      autodesign-experiment-run
 ```
 
 Files are the handoff boundary between Skills. Research reasoning stays readable in Markdown; machine facts stay in compact JSON.
+
+AutoWriting is a downstream consumer, not an AutoDesign state. After Design publishes the `## AutoWriting handoff` section, writing may proceed independently while Run continues. AutoWriting never owns or mutates AutoDesign's accepted scientific artifacts.
 
 ## Canonical run layout
 
@@ -70,9 +72,9 @@ A failed or rejected candidate does not erase the last accepted state. Use `skil
 
 `input_brief.md` is the authoritative scientific-intent artifact. It preserves the literal Motivation, Contribution, and Benchmark from the AutoSearch handoff, every additional item the user supplied, then records scientific locks, autonomous design choices with outcome-impact classifications, resource constraints, operational definitions, and blockers. Later Skills may resolve an autonomous choice but may never rewrite a scientific lock.
 
-`experiment_design.md` is the authoritative design artifact: claim ledger, Idea semantics, locks, autonomous-choice impact table, route selection, baseline decision, R0 gate, experiment cards for all four families, expected cells, preflight requirements, reporting plan, and a coverage audit ending in a literal `PASS` or a blocker list.
+`experiment_design.md` is the authoritative design artifact: claim ledger, Idea semantics, locks, autonomous-choice impact table, route selection, baseline decision, R0 gate, experiment cards for all four families, planned execution cells, aggregate effect rows, preflight requirements, reporting plan, AutoWriting handoff, and a coverage audit ending in a literal `PASS` or a blocker list.
 
-`expected_effects.json` holds the design-time simulated targets. Every value carries `value_status: SIMULATED_TARGET` with a literal `decision_threshold`, a `target_basis` of `handoff_reported` / `published_baseline` / `design_estimate`, and an `on_miss` route. `observed_value` and `observed_status` are filled only by the run phase from real aggregates. A simulated target is never evidence and never enters `reports/`. Editing a target after seeing results is an integrity failure.
+`expected_effects.json` holds read-only design-time simulated targets, one per aggregate experiment × variant × task × metric row after planned seeds are combined. Every value carries `value_status: SIMULATED_TARGET` with a literal `decision_threshold`, a `target_basis` of `handoff_reported` / `published_baseline` / `design_estimate`, and an `on_miss` route. Observed values and threshold outcomes live in `result_summary.json` and `effect_comparison.md`, never in this file. A simulated target is never evidence. It may appear only in an explicitly marked AutoWriting draft and never in `reports/` or submission-ready results. Editing a target after seeing results is an integrity failure.
 
 `r0_record.json` records the observed resolution of each required R0: covered uncertainty or high-impact choice IDs, candidate instantiation IDs, fixed controls, commands, metrics, raw observations, the literal selection or kill rule, the selected outcome, and exit status. Every unresolved high-impact choice needs results from at least two candidate instantiations; prose acceptance or a one-candidate record cannot set `R0_PASSED`.
 
@@ -100,6 +102,8 @@ A failed or rejected candidate does not erase the last accepted state. Use `skil
 `result_summary.json` contains scheduled and observed cell counts, missing and unexpected cells, aggregates, and errors, with `automatic_claim_verdict` fixed at `NOT_ASSIGNED`.
 
 `effect_comparison.md` pairs every design entry with its observation and a threshold outcome of `MET`, `MISSED`, or `NOT_EVALUABLE`, and routes every miss by its `on_miss` value. A `MET` outcome is a threshold fact, not a contribution verdict.
+
+The AutoWriting handoff has no separate state transition. `ACCEPTED` permits drafting every designed section with placeholders. `PROVISIONAL_WAITING_FOR_R0` permits only stable sections and keeps route-dependent text conditional. An R0 or design revision republishes the section and names affected entry IDs; writing progress never blocks experiment execution.
 
 `result_route.md` contains the route decision, owner Skill, required action, execution requirement, invalidation scope, thresholds, and closure condition. At `RESULT_DIAGNOSIS_READY` the next Skill is `run-autodesign`, which dispatches that route rather than sending every diagnosis directly to audit.
 
