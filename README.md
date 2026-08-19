@@ -56,6 +56,8 @@ INPUT_READY → EXPERIMENT_DESIGN_READY → IMPLEMENTATION_READY → EXECUTION_C
 
 Case study 的选择规则和类别计数必须在**任何结果出现之前**写定，否则属于按结果挑样本，审计判 FAIL。
 
+四类实验并非一律强制齐全，但**缺失必须有论证**：某类实验缺席时，设计文档需在 `## Absent families` 小节下写出 `- <family>: <理由>`，说明该类实验的缺席如何从 contribution 推出（例如贡献是失效规律发现，就没有自有模块可供消融）。`skill-check-design` 只验证「论证存在且有实质内容」——裸写 `- ablation:`、填 `n/a` 或 `待定`、或只在散文里提到类别名都不算；**论证在科学上是否成立**由设计 Skill 判断并由审计员复核，机器门不做这个判断。这样做是为了避免为了过门而伪造一个空壳实验。
+
 ## 预写效果与执行后对比
 
 设计阶段为每个 expected cell 预写一个模拟目标，写入 `expected_effects.json`，整个文件的 `value_status` 固定为 `SIMULATED_TARGET`：

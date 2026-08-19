@@ -78,7 +78,7 @@ Each table and figure declares experiment IDs, fields or axes, output path under
 End with literal `PASS` only when:
 
 - every contribution and derived axis has a `CLAIM_BEARING` falsifier;
-- all four families are populated, or an absent family is explicitly justified against the contributions;
+- all four families are populated, or every absent family is justified under `## Absent families`;
 - every locked benchmark has valid provenance;
 - every selected baseline has a fairness plan and appears in a main experiment;
 - every case study has a pre-result selection rule with failure categories;
@@ -86,6 +86,27 @@ End with literal `PASS` only when:
 - every expected cell has a matching entry in `expected_effects.json`.
 
 Otherwise list blockers and keep the state before `EXPERIMENT_DESIGN_READY`.
+
+## Absent families
+
+A family may be absent only when its absence follows from the contributions — a failure-mode
+finding has no self-owned module to ablate, and a distributional claim cannot be carried by a
+single trace. Record every absent family under a literal `## Absent families` heading, one
+bullet per family, shaped `- <family>: <reason>`:
+
+```markdown
+## Absent families
+
+- ablation: the contribution is a failure-mode finding with no self-owned module to remove
+- case_study: the claim is distributional, so no single trace can carry it
+```
+
+`skill-check-design` fails when a family is absent from `expected_effects.json` and this
+section has no reason for it. It checks only that a reason exists and carries content — a bare
+`- ablation:`, a placeholder such as `n/a` or `待定`, or prose without the `<family>:` label
+does not count. Whether the reason is scientifically adequate is judged by this Skill and
+re-checked by `autodesign-integrity-auditor`, never by the machine gate. Do not invent a
+hollow experiment to fill a family; justify the absence instead.
 
 ## `expected_effects.json`
 

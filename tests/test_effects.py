@@ -89,6 +89,29 @@ def _aggregate(experiment_id: str, variant_id: str, mean: float, metric: str = "
     }
 
 
+def _all_families() -> dict:
+    """Effects covering all four families, so a test can isolate one gate at a time."""
+
+    return _effects(
+        _entry("m", family="main"),
+        _entry("ab", family="ablation", variant_id="no-oracle"),
+        _entry(
+            "cs",
+            family="case_study",
+            variant_id="cases",
+            simulated_target=None,
+            required_categories={"recovered": 4, "unrecovered": 4},
+        ),
+        _entry(
+            "an",
+            family="analysis",
+            variant_id="budget",
+            simulated_target=None,
+            expected_shape="saturating",
+        ),
+    )
+
+
 AFFIRMATIVE_VERDICTS = [
     "## Coverage audit\n\nVerdict: PASS\n",
     "## Coverage audit\n\n**Verdict:** **PASS**\n",
@@ -116,7 +139,7 @@ NON_VERDICTS = [
 
 @pytest.mark.parametrize("design_text", AFFIRMATIVE_VERDICTS)
 def test_affirmative_coverage_verdict_passes(tmp_path: Path, design_text: str) -> None:
-    _write_design(tmp_path, _effects(_entry("a")), design_text)
+    _write_design(tmp_path, _all_families(), design_text)
     result = check_design(tmp_path)
     assert result["status"] == "PASS", result["errors"]
     assert result["coverage_audit_pass"] is True
@@ -198,15 +221,123 @@ def test_scheduled_cell_without_an_entry_fails(tmp_path: Path) -> None:
     assert result["uncovered_scheduled_cells"] == [["E2", "unplanned", "tb-1.0"]]
 
 
-def test_families_are_reported_but_absence_is_not_a_machine_failure(tmp_path: Path) -> None:
-    """Family completeness is an LLM judgement ("populated or justified"), so it is
-    reported for the auditor rather than enforced here."""
+def test_families_are_reported_and_absence_needs_a_written_justification(tmp_path: Path) -> None:
+    """An absent family is a blocker unless the design says why it is absent.
+
+    The contract allows "populated or justified", so the machine enforces the half it can
+    check — that a justification exists — and leaves whether the justification is sound to
+    the design Skill and the auditor.
+    """
 
     _write_design(tmp_path, _effects(_entry("a")))
     result = check_design(tmp_path)
-    assert result["status"] == "PASS"
+    assert result["status"] == "FAIL"
     assert result["families_present"] == ["main"]
     assert sorted(result["missing_families"]) == ["ablation", "analysis", "case_study"]
+    assert sorted(result["unjustified_missing_families"]) == ["ablation", "analysis", "case_study"]
+    assert any("ablation family is absent" in error for error in result["errors"])
+
+
+JUSTIFIED_ABSENCES = [
+    (
+        "chinese",
+        "## Absent families\n\n"
+        "- ablation: 本贡献是失效规律发现，无自有模块可供拆解\n"
+        "- case_study: 主张为总体分布性质，单例无法承载\n"
+        "- analysis: 唯一自变量已在主实验中扫描完毕\n",
+    ),
+    (
+        "english",
+        "## Absent families\n\n"
+        "- ablation: the contribution has no internal modules to remove\n"
+        "- case_study: the claim is distributional, no single trace can carry it\n"
+        "- analysis: the only free axis is already swept in the main experiment\n",
+    ),
+    (
+        "bold-titlecase",
+        "## Absent Families\n\n"
+        "- **Ablation**: 本贡献无自有模块可供拆解\n"
+        "- **Case Study**: 主张为总体分布性质，单例无法承载\n"
+        "- **Analysis**: 唯一自变量已在主实验中扫描完毕\n",
+    ),
+]
+
+
+@pytest.mark.parametrize("label,absent_section", JUSTIFIED_ABSENCES)
+def test_justified_absent_families_pass(tmp_path: Path, label: str, absent_section: str) -> None:
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n" + absent_section,
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "PASS", result["errors"]
+    assert result["unjustified_missing_families"] == []
+    assert set(result["absent_family_justifications"]) == {"ablation", "case_study", "analysis"}
+
+
+NON_JUSTIFICATIONS = [
+    ("empty-values", "## Absent families\n\n- ablation:\n- case_study:\n- analysis:\n"),
+    ("chinese-placeholders", "## Absent families\n\n- ablation: 无\n- case_study: 待定\n- analysis: 不适用\n"),
+    ("english-placeholders", "## Absent families\n\n- ablation: n/a\n- case_study: TBD\n- analysis: none\n"),
+    ("too-short", "## Absent families\n\n- ablation: no need\n- case_study: 不做\n- analysis: skip it\n"),
+    ("prose-without-labels", "## Absent families\n\n没有做 ablation case_study analysis 这几类。\n"),
+    ("wrong-section", "## Notes\n\n- ablation: 无自有模块可供拆解，因此不做本类实验\n"),
+]
+
+
+@pytest.mark.parametrize("label,absent_section", NON_JUSTIFICATIONS)
+def test_placeholder_absences_are_rejected(tmp_path: Path, label: str, absent_section: str) -> None:
+    """A family name alone, a filler value, or prose in the wrong section is not a reason."""
+
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n" + absent_section,
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "FAIL"
+    assert sorted(result["unjustified_missing_families"]) == ["ablation", "analysis", "case_study"]
+
+
+def test_an_empty_value_cannot_borrow_the_next_bullet(tmp_path: Path) -> None:
+    """`- ablation:` followed by `- case_study: ...` must not read the next line as its reason."""
+
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n"
+        "## Absent families\n\n"
+        "- ablation:\n"
+        "- case_study: 主张为总体分布性质，单例无法承载\n"
+        "- analysis: 唯一自变量已在主实验中扫描完毕\n",
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "FAIL"
+    assert result["unjustified_missing_families"] == ["ablation"]
+    assert "ablation" not in result["absent_family_justifications"]
+
+
+def test_partially_justified_absences_report_only_the_gaps(tmp_path: Path) -> None:
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n"
+        "## Absent families\n\n- ablation: 本贡献无自有模块可供拆解\n",
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "FAIL"
+    assert sorted(result["unjustified_missing_families"]) == ["analysis", "case_study"]
+    assert set(result["absent_family_justifications"]) == {"ablation"}
+
+
+def test_all_four_families_present_needs_no_justification(tmp_path: Path) -> None:
+    _write_design(tmp_path, _all_families())
+    result = check_design(tmp_path)
+    assert result["status"] == "PASS", result["errors"]
+    assert result["missing_families"] == []
+    assert result["unjustified_missing_families"] == []
+    assert result["absent_family_justifications"] == {}
 
 
 @pytest.mark.parametrize(

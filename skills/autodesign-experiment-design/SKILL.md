@@ -90,6 +90,6 @@ Validate the design before handing off:
 python3 -m autodesign skill-check-design <run_dir>
 ```
 
-End the coverage audit with a literal `PASS` only when every contribution and derived axis has a `CLAIM_BEARING` falsifier, all four families are populated or their absence is justified against the contributions, every locked benchmark has valid provenance, every selected baseline has a fairness plan, every case study has a pre-result selection rule, and every expected cell has a simulated target with a threshold. Otherwise list blockers and do not advance.
+End the coverage audit with a literal `PASS` only when every contribution and derived axis has a `CLAIM_BEARING` falsifier, all four families are populated or every absent family has a reason under `## Absent families`, every locked benchmark has valid provenance, every selected baseline has a fairness plan, every case study has a pre-result selection rule, and every expected cell has a simulated target with a threshold. Otherwise list blockers and do not advance.
 
 Update `AUTODESIGN_STATE.md` with `python3 -m autodesign skill-advance` to `EXPERIMENT_DESIGN_READY`, or to `WAITING_FOR_R0` when R0 must run first. The next Skill is `autodesign-experiment-run`.
