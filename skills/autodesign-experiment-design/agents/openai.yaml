@@ -1,4 +1,4 @@
 interface:
   display_name: "AutoDesign Experiment Design"
-  short_description: "设计完整实验并生成可供 AutoWriting 提前写作的安全交接"
-  default_prompt: "使用 $autodesign-experiment-design 设计完整实验、预写聚合目标效果，并生成可供 AutoWriting 在真实结果到达前使用的草稿交接。"
+  short_description: "设计完整实验、论文表格和 AutoWriting 安全交接"
+  default_prompt: "使用 $autodesign-experiment-design 设计完整实验和论文表格、预写科学判定效果，并生成可供 AutoWriting 在真实结果到达前使用的安全草稿交接。"

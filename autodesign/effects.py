@@ -4,8 +4,11 @@ Two deterministic checks sit on the design → run boundary:
 
 `check_design` validates that `expected_effects.json` is structurally usable before any
 expensive implementation starts: schema version, `SIMULATED_TARGET` status, and a literal
-threshold, target basis, and miss route on every entry. It deliberately does not judge
-whether a target is scientifically sensible — that is the design Skill's job.
+threshold, target basis, and miss route on every decision effect. Once an execution schedule
+exists, each effect's target aggregate and relative reference aggregate must be planned. The
+schedule may contain additional baseline and presentation rows without fake targets. The gate
+deliberately does not judge whether a target is scientifically sensible — that is the design
+Skill's job.
 
 `compare_effects` runs after result ingestion. It joins each design entry to the observed
 aggregate for its (experiment, variant, task, metric) row and renders
@@ -151,8 +154,8 @@ def validate_expected_effects(effects: Any) -> list[str]:
     return errors
 
 
-def _schedule_effect_rows(schedule: Any) -> set[tuple[str, str, str, str]]:
-    """Collapse per-seed schedule cells into aggregate target-comparison rows."""
+def _schedule_aggregate_rows(schedule: Any) -> set[tuple[str, str, str, str]]:
+    """Collapse per-seed schedule cells into planned absolute aggregate rows."""
 
     if not isinstance(schedule, dict):
         return set()
@@ -331,10 +334,11 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
         errors.append("no CLAIM_BEARING entry exists in expected_effects.json")
 
     schedule_path = run_path / "experiment_schedule.json"
-    uncovered_rows: list[list[str]] = []
+    unscheduled_effect_rows: list[list[str]] = []
+    unscheduled_reference_rows: list[list[str]] = []
     if schedule_path.is_file():
-        scheduled = _schedule_effect_rows(read_json(schedule_path))
-        covered = {
+        scheduled = _schedule_aggregate_rows(read_json(schedule_path))
+        effect_rows = {
             (
                 str(entry.get("experiment_id") or ""),
                 str(entry.get("variant_id") or ""),
@@ -344,11 +348,31 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
             for entry in entries
             if isinstance(entry, dict)
         }
-        uncovered_rows = [list(row) for row in sorted(scheduled - covered)]
-        if uncovered_rows:
+        unscheduled_effect_rows = [list(row) for row in sorted(effect_rows - scheduled)]
+        reference_rows = {
+            (
+                str(entry.get("experiment_id") or ""),
+                str(entry.get("threshold_reference_variant") or ""),
+                str(entry.get("benchmark_task_id") or ""),
+                str(entry.get("metric") or ""),
+            )
+            for entry in entries
+            if isinstance(entry, dict)
+            and isinstance(entry.get("decision_threshold"), str)
+            and RELATIVE_THRESHOLD.match(entry["decision_threshold"].strip())
+        }
+        unscheduled_reference_rows = [
+            list(row) for row in sorted(reference_rows - scheduled)
+        ]
+        if unscheduled_effect_rows:
             errors.append(
-                "scheduled aggregate effect rows without an expected_effects entry: "
-                f"{uncovered_rows}"
+                "expected decision effects whose target aggregate is absent from the schedule: "
+                f"{unscheduled_effect_rows}"
+            )
+        if unscheduled_reference_rows:
+            errors.append(
+                "relative decision effects whose reference aggregate is absent from the schedule: "
+                f"{unscheduled_reference_rows}"
             )
 
     return {
@@ -359,7 +383,8 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
         "missing_families": missing_families,
         "unjustified_missing_families": unjustified_families,
         "absent_family_justifications": absent_family_justifications,
-        "uncovered_scheduled_effect_rows": uncovered_rows,
+        "unscheduled_effect_rows": unscheduled_effect_rows,
+        "unscheduled_reference_rows": unscheduled_reference_rows,
         "coverage_audit_pass": coverage_pass,
         "coverage_audit_verdict": verdict_detail,
         "errors": errors,

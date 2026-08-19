@@ -61,37 +61,62 @@ Family-specific additions:
 - `case_study`: the pre-result selection rule, required category counts including failures, sampling seed, display fields, and the eligible pool definition.
 - `analysis`: the analysis axis, its levels, the expected shape or direction, and the boundary the analysis is meant to locate.
 
-## 8. Planned execution cells and aggregate effect rows
+## 8. Execution, result, presentation, and decision identities
 
-Define two related identities:
+Keep four related identities separate:
 
 - **execution cell**: experiment × variant × task × seed, with family, evidence class, benchmark provenance, and planned metrics;
-- **aggregate effect row**: experiment × variant × task × metric, evaluated after combining every planned seed for that row.
+- **aggregate result**: experiment × variant × task × metric, evaluated after combining every planned seed and containing the absolute observed value plus uncertainty;
+- **paper result cell**: a table or figure location that displays one aggregate result, or an explicitly named derived summary such as a commensurate macro average;
+- **decision effect**: a claim-relevant comparison, drop, direction, curve shape, or category requirement with a simulated target, literal threshold, and miss route.
 
-List both in the design. `experiment_schedule.json` expands the execution cells per seed. `expected_effects.json` contains one target per aggregate effect row and does not repeat targets per seed. Every execution cell contributes only to the aggregate rows for its declared metrics. Theoretical or missing cells are never observations. A later round requires an explicit design and schedule revision; it may not append cells or effect rows silently.
+List the execution cells, aggregate results, and decision effects separately. `experiment_schedule.json` expands execution cells per seed. `result_summary.json` contains every produced aggregate result. `expected_effects.json` contains one target per decision effect, not one target per display cell and not one target per seed.
 
-## 9. Preflight requirements
+A numeric decision effect is anchored to the aggregate result for its target variant. A relative threshold names the reference variant whose aggregate result supplies the comparison. Reference-only baselines and other presentation-only rows remain in the schedule and paper tables without receiving vacuous targets such as `>= 0`. Every expected effect and every relative reference must resolve to a planned aggregate result once `experiment_schedule.json` exists. A later round requires an explicit design, table-plan, and schedule revision; it may not append results or effects silently.
+
+## 9. Paper table plan
+
+Design tables as paper arguments, not as dumps of effect entries. For each table record:
+
+- table ID, family or analysis role, paper question, mapped claims, and experiment IDs;
+- row semantics and the exact ordered row groups;
+- column semantics, including benchmark, split, metric, budget, condition, or derived-impact columns;
+- the aggregate-result key behind every absolute result position;
+- any optional decision-effect entry used for a delta, drop, or impact column;
+- uncertainty display, average definition, missing-cell policy, caption claim, and output path under `reports/`.
+
+Choose the layout from the evidence:
+
+- **Primary results**: rows are comparable methods, models, scaffolds, or systems; columns are locked benchmarks, splits, and primary metric groups. Include every selected baseline and the proposed method. Show absolute performance, with uncertainty where applicable. Put the proposed method in a visibly named row or row group. A task-by-task delta-only layout is not a primary table.
+- **Ablation**: rows contain the full method and one-axis removals, substitutions, or leave-one-group-out variants; columns contain the relevant task metrics. Preserve absolute performance and optionally add an impact column such as `Δ Avg.`. Do not move ordinary internal ablations into the primary table merely to increase its method count.
+- **Focused analysis**: use a compact table when a discrete local question is best answered by exact values, for example `SFT` versus `+RL`, paired methods within each backbone, one data source removed at a time, an error group, or a protocol option. Keep only the benchmarks and metrics that answer that question. Use a figure instead for a continuous curve, distribution, or trajectory.
+
+Multi-level headers, benchmark panels, metric panels, model/scaffold columns, method groups, paired backbone rows, and compact two-row tables are valid. No fixed orientation is mandatory. Optimize for the comparison the reader must make.
+
+An average is valid only across commensurate cells and must be labelled macro, weighted, or otherwise defined. A genuinely unavailable result is marked unavailable and explained; it is never converted to zero. If primary and secondary metrics make one table unreadable, use panels or separate tables rather than dropping a locked metric.
+
+## 10. Preflight requirements
 
 For every scientific lock and controlled axis: the exact observable check, its failure condition, and the changed next action. For data-based routes require planned-versus-materialized sample counts and distributions before expensive execution. When filtering or decontamination is required, trace the production path from source data through the materialized artifact to the exact training input.
 
-## 10. Reporting plan
+## 11. Reporting plan
 
-Each table and figure declares experiment IDs, aggregate effect row IDs, fields or axes, output path under `reports/`, and the decision it supports.
+Each table and figure declares experiment IDs, aggregate-result keys, optional decision-effect IDs, fields or axes, output path under `reports/`, and the decision it supports. The reporting plan must agree with the paper table plan; it may refine presentation but may not change the comparison set.
 
-## 11. AutoWriting handoff
+## 12. AutoWriting handoff
 
 End the design with `## AutoWriting handoff`. This is a section of `experiment_design.md`, not a new state or a new schema. Record:
 
 - `handoff_status`: `ACCEPTED` or `PROVISIONAL_WAITING_FOR_R0`;
 - sections safe to draft now and sections that remain conditional;
 - stable method, benchmark, baseline, protocol, and experiment identities;
-- table shells and figure plans, with one `{{RESULT:<entry_id>}}` placeholder per aggregate effect row;
+- complete table shells and figure plans, with `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` for every absolute aggregate displayed and `{{EFFECT:<entry_id>}}` only where a derived effect is displayed;
 - replacement source: `effect_comparison.md` and observed aggregates in `result_summary.json`;
-- invalidation rule for an R0 or later design revision, naming affected section titles and entry IDs.
+- invalidation rule for an R0 or later design revision, naming affected section titles, table IDs, result keys, and decision-effect entry IDs.
 
 Prefer placeholders over numeric simulations. When a numeric simulated target is useful, require the containing document to display `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` and require `SIMULATED_TARGET` in the same cell or caption. Draft targets never enter `reports/`, an observed-result sentence, a contribution verdict, or a submission-ready table or figure. AutoWriting may improve presentation but may not change the accepted scientific design.
 
-## 12. Coverage audit
+## 13. Coverage audit
 
 End with literal `PASS` only when:
 
@@ -101,8 +126,10 @@ End with literal `PASS` only when:
 - every selected baseline has a fairness plan and appears in a main experiment;
 - every case study has a pre-result selection rule with failure categories;
 - every decision-relevant preflight has a failure action;
-- every aggregate effect row has a matching entry in `expected_effects.json`;
-- the AutoWriting handoff covers every aggregate effect row and labels its maturity.
+- the primary table shows absolute results for every selected baseline and the proposed method over the locked main-evaluation scope;
+- every paper result cell maps to a planned aggregate result or an explicitly defined derived summary;
+- every decision effect has exactly one matching entry in `expected_effects.json`, without fake targets for reference-only rows;
+- the AutoWriting handoff covers every paper result cell and labels its maturity.
 
 Otherwise list blockers and keep the state before `EXPERIMENT_DESIGN_READY`.
 
@@ -161,7 +188,9 @@ Written at design time; every value is a hypothesis, never an observation.
 Field rules:
 
 - `value_status` is always `SIMULATED_TARGET` at design time and stays on the file as a whole.
-- One entry represents one aggregate effect row keyed by experiment ID, variant ID, benchmark task ID, and metric. Seeds belong to the execution schedule and are aggregated before comparison.
+- One entry represents one decision effect anchored to the target variant's aggregate-result key: experiment ID, variant ID, benchmark task ID, and metric. Seeds belong to the execution schedule and are aggregated before comparison.
+- A relative effect names `threshold_reference_variant`; its reference aggregate uses the same experiment, task, and metric. Both target and reference aggregates must be planned. The reference row does not need its own expected-effect entry unless it independently carries a scientific decision.
+- Do not create entries merely because an absolute baseline, control, or method score is displayed in a paper table. In particular, do not invent `>= 0` thresholds for reference-only rows.
 - `target_basis` is exactly `handoff_reported`, `published_baseline`, or `design_estimate`. A `design_estimate` must be labelled as such in `experiment_design.md`.
 - `decision_threshold` is literal and evaluable against observed numbers. Relative thresholds name `threshold_reference_variant`.
 - `on_miss` is exactly `iteration`, `tuning`, or `stop`.
@@ -169,4 +198,4 @@ Field rules:
 - For a `case_study` entry, use `required_categories` with integer counts in place of a numeric `simulated_target`.
 - For an `analysis` entry whose prediction is a shape rather than a level, use `expected_shape` with one of `monotonic_increasing`, `monotonic_decreasing`, `saturating`, `non_monotonic`, or `flat`, and keep `decision_threshold` literal.
 
-`expected_effects.json` and the aggregate effect rows in `experiment_design.md` must agree row-for-row. A simulated target may appear only in the explicitly marked AutoWriting draft form above; it never enters `reports/`, an observed result, a contribution verdict, or a submission-ready table or figure.
+`expected_effects.json` and the decision-effect inventory in `experiment_design.md` must agree one-for-one. Aggregate results and paper result cells are a broader set and are not duplicated into the target file. A simulated target may appear only in the explicitly marked AutoWriting draft form above; it never enters `reports/`, an observed result, a contribution verdict, or a submission-ready table or figure.

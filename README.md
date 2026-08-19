@@ -31,7 +31,7 @@ INPUT_READY → EXPERIMENT_DESIGN_READY → IMPLEMENTATION_READY → EXECUTION_C
 | Skill | 职责 | 主要输出 |
 | --- | --- | --- |
 | `$run-autodesign` | 两阶段编排、恢复、AutoWriting 交接、失效传播和 11 道 gate | `AUTODESIGN_STATE.md` |
-| `$autodesign-experiment-design` | 归一化 handoff、选择方法路线、设计四类实验、预写聚合目标、发布写作交接 | `experiment_design.md`、`expected_effects.json` |
+| `$autodesign-experiment-design` | 归一化 handoff、选择方法路线、设计四类实验与论文表格、预写决策效果、发布写作交接 | `experiment_design.md`、`expected_effects.json` |
 | `$autodesign-experiment-run` | 按设计生成可运行项目并完成五阶段执行 | `generated_project/`、计划 JSON、`execution_record.json`、`effect_comparison.md` |
 | `$autodesign-result-scientist` | 结果完整性与科学诊断 | `result_summary.json`、`result_diagnosis.md`、`result_route.md` |
 | `$autodesign-integrity-auditor` | 独立 claim-evidence-execution 审计 | `integrity_audit.md` |
@@ -59,9 +59,11 @@ Case study 的选择规则和类别计数必须在**任何结果出现之前**�
 
 四类实验并非一律强制齐全，但**缺失必须有论证**：某类实验缺席时，设计文档需在 `## Absent families` 小节下写出 `- <family>: <理由>`，说明该类实验的缺席如何从 contribution 推出（例如贡献是失效规律发现，就没有自有模块可供消融）。`skill-check-design` 只验证一件事——该 family 名下**写了理由**；裸写 `- ablation:` 或只在散文里提到类别名都算没写。机器不评判理由的质量：`- ablation: n/a` 能过机器门，但仍是失败的设计，因为「理由是否从 contribution 推得出来」由设计 Skill 在落笔时判断、并由审计员逐条复核原文。这样切分是为了两头都不失守：既不允许缺席而不作声，也不让机器用字数去给科学论证打分。
 
-## 预写效果与执行后对比
+## 论文表格、预写效果与执行后对比
 
-设计阶段为每个跨 seeds 聚合后的 experiment × variant × task × metric 结果行预写一个模拟目标，写入只读的 `expected_effects.json`，整个文件的 `value_status` 固定为 `SIMULATED_TARGET`。逐 seed 执行 cell 留在 `experiment_schedule.json`：
+设计阶段先规划论文表格，再定义需要判定的科学效果。四类对象保持分离：逐 seed 的 execution cell、跨 seeds 的绝对 aggregate result、论文表格中的 paper result cell，以及带阈值和未达标路由的 decision effect。主结果表以方法/模型/系统为行、benchmark/split/metric 为列并展示绝对结果；消融表保留 full method 与单轴变体的绝对结果，可附 `Δ Avg.`；离散的专项问题可以使用两行或小型分析表，连续曲线则优先用图。
+
+只为 decision effect 预写模拟目标并写入只读的 `expected_effects.json`，整个文件的 `value_status` 固定为 `SIMULATED_TARGET`。baseline 和其他仅用于展示的绝对结果仍进入 schedule 与论文表格，但不生成 `>= 0` 之类的伪目标。逐 seed 执行 cell 留在 `experiment_schedule.json`：
 
 ```json
 {
@@ -97,7 +99,7 @@ Case study 的选择规则和类别计数必须在**任何结果出现之前**�
 
 - `ACCEPTED`：设计已接受，AutoWriting 可在实验运行期间并行写作；
 - `PROVISIONAL_WAITING_FOR_R0`：只写稳定章节，路线相关内容保持条件式；
-- 每个聚合结果行使用 `{{RESULT:<entry_id>}}` 占位，真实结果从 `effect_comparison.md` 和 `result_summary.json` 替换；
+- 每个绝对结果格使用 `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` 占位；可选的派生影响列使用 `{{EFFECT:<entry_id>}}`，真实结果分别从 `result_summary.json` 和 `effect_comparison.md` 替换；
 - 数字模拟值只能出现在明显标记 `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` 的草稿中，并在同一单元格或图注标记 `SIMULATED_TARGET`；
 - 模拟值不得进入提交版表格、图、observed 叙述或 claim verdict。
 
@@ -184,7 +186,7 @@ R0 文件只在路线需要低成本门时出现。Markdown 保存研究推理�
 依赖薄运行包的确定性步骤：
 
 - `skillflow.py`：状态初始化、推进和完成验证；
-- `effects.py`：设计契约校验（`skill-check-design`）与观测-目标逐格对比（`skill-compare-effects`）；
+- `effects.py`：设计契约校验（`skill-check-design`）与观测-目标逐 effect 对比（`skill-compare-effects`）；
 - `skillresults.py`：schedule 与 observed cells 对齐、确定性聚合；
 - `runner.py`：本地命令计划执行。
 
@@ -194,7 +196,7 @@ R0 文件只在路线需要低成本门时出现。Markdown 保存研究推理�
 <agent_skills_dir>/autodesign-experiment-run/scripts/run_stage.py
 ```
 
-薄运行包不会替智能体选择方法、模型、baseline、训练范式、目标值或论文结论。`skill-check-design` 只校验设计在结构上可用（schema、目标基准、字面阈值、未达标路由、scheduled cell 是否都有对应 entry），不判断某个目标值在科学上是否合理——那是设计 Skill 的职责。
+薄运行包不会替智能体选择方法、模型、baseline、训练范式、表格布局、目标值或论文结论。`skill-check-design` 只校验设计在结构上可用（schema、目标基准、字面阈值、未达标路由，以及 decision effect 的目标和相对参考是否都有 scheduled aggregate），不要求每个 baseline 展示格都有 target，也不判断某个表格或目标值在科学上是否合理——那是设计 Skill 的职责。
 
 ## 命令一览
 

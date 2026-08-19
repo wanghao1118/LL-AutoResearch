@@ -1,6 +1,6 @@
 ---
 name: autodesign-experiment-design
-description: "Design a complete paper-grade experiment portfolio from an AutoSearch handoff of Motivation, Contribution, and Benchmark. Produces the method route, main experiments, ablations, case studies, analysis experiments, simulated aggregate target effects, and a draft-safe handoff that lets AutoWriting start before real results arrive. Use before implementation or execution, for a design-first writing handoff, or to repair a design after a failed R0 or result route."
+description: "Design a complete paper-grade experiment portfolio from an AutoSearch handoff of Motivation, Contribution, and Benchmark. Produces the method route, main experiments, ablations, case studies, analysis experiments, paper-table plans, simulated decision effects, and a draft-safe handoff that lets AutoWriting start before real results arrive. Use before implementation or execution, for a design-first writing handoff, or to repair a design after a failed R0 or result route."
 ---
 
 # AutoDesign Experiment Design
@@ -67,24 +67,42 @@ Answer "what does the behavior look like". Predefine the selection rule, the sam
 
 Answer "why it works and when it breaks". Select the axes the contributions actually entail, such as data-budget or scaling curves, teacher-quality levels, seen versus unseen generalization, robustness or perturbation, sensitivity to a key hyperparameter, error taxonomy, and cost or latency. Use at least two teacher levels for a teacher-quality claim, at least three data levels for a budget claim, matched seen and unseen evaluation for a generalization claim, and error-present and error-absent strata for an error-conditioning claim.
 
-## Write the simulated target effects
+## Design paper tables before target effects
 
-Write the effect you intend to achieve for every aggregate effect row **before execution**, as a simulated target with a decision threshold. An aggregate effect row is identified by experiment, variant, benchmark task, and metric after combining the planned seeds. Execution cells remain per seed.
+Design the paper-facing result structure before writing simulated targets. Read the paper-table contract in `references/design-contract.md` and give every planned table a paper question, row semantics, column semantics, absolute-result sources, optional derived impact columns, and output path.
+
+1. Make the primary table a complete method comparison. Use methods, models, scaffolds, or comparable systems as rows; use locked benchmarks, splits, metrics, or metric groups as columns. Include every selected baseline and the proposed method, and show absolute observed performance with uncertainty where applicable. A table of task-wise deltas is not a primary results table.
+2. Keep internal component removals and substitutions in an ablation table unless they are independently meaningful baselines. Show the full method and each one-axis variant as rows, absolute performance on the relevant tasks, and optionally a drop or impact column.
+3. Use compact analysis tables for a discrete local question such as one optimization stage, backbone transfer, data-source removal, error group, or protocol choice. Use a figure instead when the evidence is primarily a curve, distribution, or trajectory.
+4. Adapt the layout to the study. Multi-level metric headers, method groups, model/scaffold columns, paired rows per backbone, domain leave-one-out rows, and compact two-row mechanism tables are all valid. Do not copy a fixed template when another orientation makes the comparison clearer.
+5. Define averages only across commensurate cells and state whether they are macro or weighted. Mark genuinely unavailable cells as unavailable; never turn them into zero.
+
+Separate three objects in the design:
+
+- an **aggregate result** is an absolute observed experiment × variant × task × metric value after combining seeds;
+- a **paper result cell** displays an aggregate result in a table or figure;
+- a **decision effect** is a claim-relevant comparison, drop, direction, shape, or category requirement that needs a target and an `on_miss` route.
+
+Baselines and other display rows need aggregate results and paper placeholders, but they do not need fake scientific thresholds merely because they appear in a table.
+
+## Write the simulated decision effects
+
+Write every decision effect you intend to test **before execution**, as a simulated target with a decision threshold. Anchor a numeric effect to the proposed or ablated variant's absolute aggregate result and name its reference variant when the threshold is relative. Execution cells remain per seed; ordinary baseline display cells stay out of `expected_effects.json`.
 
 1. Every value carries `value_status: "SIMULATED_TARGET"`. A simulated target is a design hypothesis. It is never an observation, never enters `reports/`, and never satisfies a claim. It may appear only in an explicitly marked AutoWriting draft under the handoff rules below.
-2. Give each entry a `simulated_target`, an `acceptable_range`, and a literal `decision_threshold` that can be evaluated against observed numbers, for example `>= baseline_best + 2.0` with an explicit `threshold_reference_variant`.
+2. Give each entry a `simulated_target`, an `acceptable_range`, and a literal `decision_threshold` that can be evaluated against observed numbers, for example `>= reference + 2.0` with an explicit `threshold_reference_variant`.
 3. Derive targets from the handoff's reported numbers where it supplies them, from published baseline numbers where those are locked, and from an explicitly labelled estimate otherwise. Record which of the three each target came from.
 4. State `on_miss` for every entry: the route to take when the observed value misses the threshold, one of `iteration`, `tuning`, or `stop`.
-5. Cover every family. A main cell states the target delta over its reference baseline; an ablation cell states the expected drop when its component is removed; a case study states the required category counts; an analysis cell states the expected shape or direction of the curve.
-6. Write `expected_effects.json` per `references/design-contract.md`. Keep it aligned row-for-row with the aggregate effect rows in `experiment_design.md`; do not repeat entries per seed.
+5. Cover every family that owns a claim-relevant decision. A main effect states the target advantage over its reference baseline; an ablation effect states the expected drop when its component is removed; a case study states the required category counts; an analysis effect states the expected difference, shape, or direction.
+6. Write `expected_effects.json` per `references/design-contract.md`. Keep it aligned one-for-one with the decision effects in `experiment_design.md`; do not add entries for reference-only or presentation-only result cells and do not repeat entries per seed.
 
 Order experiments by information gain per unit cost: cheap kill tests before expensive confirmation.
 
 ## Output
 
-Write `experiment_design.md` containing the claim ledger, Idea semantics, scientific locks, autonomous-choice impact table with resolution evidence, candidate and selected route, baseline decision, R0 gate, experiment cards for all four families, planned execution cells, aggregate effect rows, preflight requirements, reporting plan, AutoWriting handoff, and coverage audit. Write read-only `expected_effects.json` with the simulated targets. Write `r0_plan.md` only when R0 is required.
+Write `experiment_design.md` containing the claim ledger, Idea semantics, scientific locks, autonomous-choice impact table with resolution evidence, candidate and selected route, baseline decision, R0 gate, experiment cards for all four families, planned execution cells, aggregate results, paper table plan, decision effects, preflight requirements, reporting plan, AutoWriting handoff, and coverage audit. Write read-only `expected_effects.json` with the simulated decision targets. Write `r0_plan.md` only when R0 is required.
 
-In `## AutoWriting handoff`, record `ACCEPTED` or `PROVISIONAL_WAITING_FOR_R0`, the sections safe to draft now, conditional sections, table and figure shells, one placeholder `{{RESULT:<entry_id>}}` per effect row, and the replacement source after execution. Prefer placeholders. If a numeric simulated target is useful for drafting, require the document-level label `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` and a same-cell or same-caption `SIMULATED_TARGET` label. Never permit draft values to become observed prose, final claims, or submission-ready results. When R0 revises the design, reissue the handoff and name every invalidated section and entry ID.
+In `## AutoWriting handoff`, record `ACCEPTED` or `PROVISIONAL_WAITING_FOR_R0`, the sections safe to draft now, conditional sections, and complete table and figure shells. Use `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` for every absolute aggregate displayed in a paper shell and `{{EFFECT:<entry_id>}}` only for an optional derived comparison column. Name the replacement sources after execution. If a numeric simulated target is useful for drafting, require the document-level label `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` and a same-cell or same-caption `SIMULATED_TARGET` label. Never permit draft values to become observed prose, final claims, or submission-ready results. When R0 revises the design, reissue the handoff and name every invalidated table, result key, and effect entry ID.
 
 Validate the design before handing off:
 
@@ -92,7 +110,7 @@ Validate the design before handing off:
 python3 -m autodesign skill-check-design <run_dir>
 ```
 
-End the coverage audit with a literal `PASS` only when every contribution and derived axis has a `CLAIM_BEARING` falsifier, all four families are populated or every absent family has a reason under `## Absent families`, every locked benchmark has valid provenance, every selected baseline has a fairness plan, every case study has a pre-result selection rule, every aggregate effect row has a simulated target with a threshold, and the AutoWriting handoff labels its maturity and placeholders. Otherwise list blockers and do not advance.
+End the coverage audit with a literal `PASS` only when every contribution and derived axis has a `CLAIM_BEARING` falsifier, all four families are populated or every absent family has a reason under `## Absent families`, every locked benchmark has valid provenance, every selected baseline has a fairness plan, every case study has a pre-result selection rule, the primary paper table contains absolute results for selected baselines and the proposed method across the locked evaluation scope, every decision effect has a simulated target with a threshold, and the AutoWriting handoff labels its maturity and complete result placeholders. Otherwise list blockers and do not advance.
 
 The gate checks only that an absent family has *a* reason written, never whether the reason holds. That judgement is yours: an absence is justified when it follows from the contributions — a failure-mode finding owns no module to ablate, a distributional claim cannot ride on one trace. Filler that clears the gate (`n/a`, `TBD`, `待定`) is a design you have not finished, and `autodesign-integrity-auditor` reads these reasons verbatim and fails them.
 

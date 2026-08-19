@@ -195,7 +195,7 @@ def test_claim_bearing_entry_is_required(tmp_path: Path) -> None:
     assert any("CLAIM_BEARING" in error for error in result["errors"])
 
 
-def test_scheduled_effect_row_without_an_entry_fails(tmp_path: Path) -> None:
+def test_expected_effect_target_without_a_scheduled_aggregate_fails(tmp_path: Path) -> None:
     _write_design(tmp_path, _effects(_entry("a")))
     (tmp_path / "experiment_schedule.json").write_text(
         json.dumps(
@@ -216,12 +216,12 @@ def test_scheduled_effect_row_without_an_entry_fails(tmp_path: Path) -> None:
     )
     result = check_design(tmp_path)
     assert result["status"] == "FAIL"
-    assert result["uncovered_scheduled_effect_rows"] == [
-        ["E2", "unplanned", "tb-1.0", "pass@1"]
+    assert result["unscheduled_effect_rows"] == [
+        ["E1", "ours", "tb-1.0", "pass@1"]
     ]
 
 
-def test_multiple_seed_cells_share_one_aggregate_effect_row(tmp_path: Path) -> None:
+def test_multiple_seed_cells_share_one_decision_effect(tmp_path: Path) -> None:
     _write_design(
         tmp_path,
         _effects(_entry("a")),
@@ -251,11 +251,20 @@ def test_multiple_seed_cells_share_one_aggregate_effect_row(tmp_path: Path) -> N
     )
     result = check_design(tmp_path)
     assert result["status"] == "PASS", result["errors"]
-    assert result["uncovered_scheduled_effect_rows"] == []
+    assert result["unscheduled_effect_rows"] == []
+    assert result["unscheduled_reference_rows"] == []
 
 
-def test_schedule_metric_without_an_effect_row_fails(tmp_path: Path) -> None:
-    _write_design(tmp_path, _all_families())
+def test_reference_and_presentation_rows_need_no_effect_target(tmp_path: Path) -> None:
+    _write_design(
+        tmp_path,
+        _effects(_entry("a")),
+        "## Coverage audit\n\nVerdict: PASS\n\n"
+        "## Absent families\n\n"
+        "- ablation: no self-owned component\n"
+        "- case_study: the claim is distributional\n"
+        "- analysis: the main experiment already sweeps the only axis\n",
+    )
     (tmp_path / "experiment_schedule.json").write_text(
         json.dumps(
             {
@@ -267,6 +276,52 @@ def test_schedule_metric_without_an_effect_row_fails(tmp_path: Path) -> None:
                         "benchmark_task_id": "tb-1.0",
                         "seed": 1,
                         "metrics": ["pass@1", "cost"],
+                    },
+                    {
+                        "experiment_id": "E1",
+                        "variant_id": "baseline",
+                        "benchmark_task_id": "tb-1.0",
+                        "seed": 1,
+                        "metrics": ["pass@1", "cost"],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = check_design(tmp_path)
+    assert result["status"] == "PASS", result["errors"]
+    assert result["unscheduled_effect_rows"] == []
+    assert result["unscheduled_reference_rows"] == []
+
+
+def test_relative_effect_requires_its_reference_aggregate_in_the_schedule(tmp_path: Path) -> None:
+    _write_design(
+        tmp_path,
+        _effects(
+            _entry(
+                "a",
+                decision_threshold=">= reference + 2.0",
+                reference="baseline",
+            )
+        ),
+        "## Coverage audit\n\nVerdict: PASS\n\n"
+        "## Absent families\n\n"
+        "- ablation: no self-owned component\n"
+        "- case_study: the claim is distributional\n"
+        "- analysis: the main experiment already sweeps the only axis\n",
+    )
+    (tmp_path / "experiment_schedule.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "cells": [
+                    {
+                        "experiment_id": "E1",
+                        "variant_id": "ours",
+                        "benchmark_task_id": "tb-1.0",
+                        "seed": 1,
+                        "metrics": ["pass@1"],
                     }
                 ],
             }
@@ -275,8 +330,8 @@ def test_schedule_metric_without_an_effect_row_fails(tmp_path: Path) -> None:
     )
     result = check_design(tmp_path)
     assert result["status"] == "FAIL"
-    assert result["uncovered_scheduled_effect_rows"] == [
-        ["E1", "ours", "tb-1.0", "cost"]
+    assert result["unscheduled_reference_rows"] == [
+        ["E1", "baseline", "tb-1.0", "pass@1"]
     ]
 
 
