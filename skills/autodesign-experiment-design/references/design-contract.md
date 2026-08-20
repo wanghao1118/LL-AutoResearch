@@ -1,163 +1,85 @@
 # Experiment Design Contract
 
-`experiment_design.md` is the single design artifact and carries the AutoWriting handoff. `expected_effects.json` is its read-only machine-readable target companion. Both are written by `$autodesign-experiment-design` and read by `$autodesign-experiment-run`; execution never writes back into the target file.
+`experiment_design.md` is the design and AutoWriting-handoff artifact. `expected_effects.json` is its read-only design-target companion. `$autodesign-experiment-run` reads both and never writes observations into the target file.
 
-## 1. Claim ledger
+## Required design records
 
-| Claim ID | Contribution | Original claim (literal) | Mechanism | Required axes | Claim-bearing experiments | Falsifier | Status boundary |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+Use stable IDs and record these sections in `experiment_design.md`:
 
-Every contribution appears at least once. Every required axis maps to a real `CLAIM_BEARING` comparison. Pilots and smokes stay visible but never satisfy this mapping.
+1. **Claim ledger**: `claim_id`, literal contribution, mechanism, required axes, claim-bearing experiment IDs, falsifier, and status boundary. Every contribution and derived axis maps to real `CLAIM_BEARING` evidence; pilots/smokes remain visible but do not satisfy coverage.
+2. **Idea semantics**: central term, operational meaning, constraints, non-constraints, observable implication, disallowed reinterpretation, and unresolved uncertainty.
+3. **Locks and choices**: `choice_id`, choice, `high|low` outcome impact, effect on interpretation, candidates, fixed controls, resolution source, and status. Follow with a role inventory containing role, identity/protocol, purpose, outcome impact, and closure source.
+4. **Route inventory**: `route_id`, family, intervention, minimal probe, falsifier, contribution/benchmark fit, cost/data, source evidence, and status. Name the selected configuration and rejected alternatives.
+5. **Baseline inventory**: `baseline_id`, source/revision, selected/rejected, and separate role records for `causal_reference` and `contextual_baseline`. For each claimed role state the mapped claim/experiment, independence, matched or intentionally unmatched axes, defining scaffold/protocol, fairness plan, cost, and evidence gap. A dual-role baseline has two explicit role records.
+6. **R0 gate**: `required`, covered uncertainty/choice IDs, candidate IDs, changed axis, fixed outcome-impacting axes, fit/materialization/selection ID pools, literal selection and kill rules, next action, and total cost. Add an R0 execution-cell inventory with `cell_id`, arm/reference role, data IDs, budget, command intent, output, metric, and cost. Every cell cited by a rule must occur here.
 
-## 2. Idea semantics
+The selected route records each honored lock. A reduced route stays `MECHANISM_PILOT` or `ENGINEERING_SMOKE` and leaves the affected claim incomplete. A baseline selected for either role appears in a main experiment; when an external system cannot be run comparably, record the unresolved contextual evidence gap instead of silently replacing it with an internal variant.
 
-For every central term: operational meaning, what it constrains, what it does not constrain, observable implication, disallowed reinterpretation, unresolved uncertainty. Derive from the handoff plus ordinary technical usage only.
+## Experiment and result identities
 
-## 3. Scientific locks and autonomous choices
+Each experiment card records:
 
-| Choice ID | Autonomous choice | Outcome impact | Effect on what the experiment can show | Candidate A | Candidate B | Fixed controls | Resolution source | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+- `experiment_id`; family `main|ablation|case_study|analysis`; evidence class `CLAIM_BEARING|MECHANISM_PILOT|ENGINEERING_SMOKE`;
+- mapped claims and exact subset; hypothesis; variants/baselines; benchmark identity, provenance/revision, tasks, splits, metrics, and protocol locks;
+- seeds; changed axis; fixed axes; data manifest/composition; entrypoint intent; outputs; priority/cost;
+- for `CLAIM_BEARING`, one primary `research_question`, `intervention`, `matched_reference`, `primary_metric`, `literal_falsifier`, and `claim_collapse`;
+- for applicable failure/recovery work, `taxonomy_id`, frozen categories and sampling rule. The related case-study and quantitative-analysis cards use the same `taxonomy_id`; categories include recovered, unrecovered, and side effect.
 
-Outcome impact is exactly `high` or `low`. A high-impact resolution source is either an explicit user decision or a planned R0 comparing at least two candidate instantiations. A documented default, plausibility argument, or citation alone is not a resolution; the design stays blocked while any high-impact freedom is unresolved.
+Family additions: `main` names uncertainty reporting; `ablation` names the single removed/replaced component; `case_study` names eligible pool, pre-result sampler/seed, category counts, shortfall rule, and display fields; `analysis` names the tested axis, levels, expected direction/shape, and boundary.
 
-## 4. Route selection
+Keep these identities separate:
 
-| Route ID | Family | Intervention | Minimal probe | Falsifier | Contribution fit | Benchmark fit | Compute and data | Source evidence | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+- **execution cell**: experiment × variant × task × seed, with evidence class, provenance, budget, command/output, and metrics;
+- **aggregate result**: experiment × variant × task × metric after planned seeds, containing absolute observed value and uncertainty;
+- **paper result cell**: table/figure location displaying an aggregate or defined derived summary;
+- **decision effect**: claim-relevant comparison, drop, direction, shape, or category requirement with target, literal threshold, and miss route.
 
-At least two candidate routes for `mechanism_specified` or `goal_only` input. Record the selected route ID, full method configuration, conditional component roles, and why each rejected route is less diagnostic. Record every scientific lock and its honored implementation. A lock change cannot be accepted by disclosure: either restore it, or reclassify the reduced route as `MECHANISM_PILOT` / `ENGINEERING_SMOKE` and keep the affected contribution `INCOMPLETE`.
+`experiment_schedule.json` expands ordinary execution cells per seed; `result_summary.json` contains produced aggregates; `expected_effects.json` contains decision effects only. Relative effects require both target and reference aggregates in the plan. Baseline/presentation rows still need execution, aggregate, and paper cells, but no fake threshold.
 
-## 5. Baseline decision
+List planned execution cells, aggregate keys, paper cells, and decision effects separately in the design. A later round or changed R0 winner revises the design, table plan, schedule, affected result keys, and effect IDs explicitly; it never appends an incompatible cell under an old identity. Shared compute is allowed only when two paper roles point to the same immutable execution/result key.
 
-For each candidate: source, revision, role coverage, contribution fit, benchmark fit, scaffold and protocol requirements, fairness plan, cost, selected or rejected, rationale. Selected baselines must appear as variants in `main` `CLAIM_BEARING` experiments. Equal budgets never justify changing a baseline's defining scaffold.
+## Paper and reporting records
 
-## 6. R0 gate
+For each table or figure record `table_id`/`figure_id`, paper question, mapped claims/experiments, row and column semantics, aggregate-result key behind every absolute position, optional derived-effect ID, uncertainty, average definition, missing-cell policy, caption claim, and `reports/` output path.
 
-Record `required: yes_or_no`, covered uncertainty or high-impact choice IDs, at least two candidate instantiations per unresolved high-impact choice, fixed controls, probe IDs, evidence class, literal selection threshold, literal kill threshold, cost, and next action per outcome. A single-candidate probe cannot pass this gate. R0 is never claim support by itself.
+The primary table contains the proposed method plus both closed baseline roles over the locked main scope and shows absolute results. Ablations show the full method and one-axis variants. Focused analyses contain only cells needed for their question; continuous curves/distributions/trajectories use figures. Averages state macro/weighted semantics and combine only commensurate cells; unavailable is not zero.
 
-## 7. Experiment cards
+Preflight records each lock/controlled axis, observable check, failure condition, and changed next action. Reporting may refine presentation, never the comparison set.
 
-Each card records:
+The reporting plan lists source experiment/aggregate/effect IDs, fields or axes, output paths, and the decision supported. Table shells must be complete enough for AutoWriting to draft structure without inventing a row, metric, or comparison.
 
-- experiment ID;
-- **family**: `main`, `ablation`, `case_study`, or `analysis`;
-- **evidence class**: `CLAIM_BEARING`, `MECHANISM_PILOT`, or `ENGINEERING_SMOKE`;
-- mapped claim IDs and the exact claim subset tested;
-- hypothesis and falsifier;
-- variants and baselines;
-- benchmark identity, provenance, revision, tasks, splits, facets, metrics, protocol locks;
-- seeds;
-- controlled axes and the single changed axis;
-- data manifest, sampling policy, planned composition, and quality observables when applicable;
-- entrypoint intent (what code must exist, not the code itself);
-- result artifacts;
-- decision rule;
-- priority and cost.
+## AutoWriting handoff and placeholders
 
-Family-specific additions:
+End with `## AutoWriting handoff` and record:
 
-- `main`: reference baseline for the reported delta; uncertainty reporting method.
-- `ablation`: the removed or replaced component, the single changed axis, every fixed axis, and which claim collapses if no difference appears.
-- `case_study`: the pre-result selection rule, required category counts including failures, sampling seed, display fields, and the eligible pool definition.
-- `analysis`: the analysis axis, its levels, the expected shape or direction, and the boundary the analysis is meant to locate.
+- `handoff_status: ACCEPTED|PROVISIONAL_WAITING_FOR_R0`, safe/conditional sections, stable identities, and invalidation rules;
+- complete shells using `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` for absolute aggregates and `{{EFFECT:<entry_id>}}` only for displayed derived effects;
+- replacement sources: observed aggregates in `result_summary.json` and comparisons in `effect_comparison.md`.
 
-## 8. Execution, result, presentation, and decision identities
+Prefer placeholders. If numeric targets appear, label the document `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` and the same cell/caption `SIMULATED_TARGET`.
 
-Keep four related identities separate:
+## Coverage audit
 
-- **execution cell**: experiment × variant × task × seed, with family, evidence class, benchmark provenance, and planned metrics;
-- **aggregate result**: experiment × variant × task × metric, evaluated after combining every planned seed and containing the absolute observed value plus uncertainty;
-- **paper result cell**: a table or figure location that displays one aggregate result, or an explicitly named derived summary such as a commensurate macro average;
-- **decision effect**: a claim-relevant comparison, drop, direction, curve shape, or category requirement with a simulated target, literal threshold, and miss route.
+End with exactly one `Verdict: PASS|PROVISIONAL_WAITING_FOR_R0|FAIL`. The audit explicitly reports:
 
-List the execution cells, aggregate results, and decision effects separately. `experiment_schedule.json` expands execution cells per seed. `result_summary.json` contains every produced aggregate result. `expected_effects.json` contains one target per decision effect, not one target per display cell and not one target per seed.
+- lock and role closure; baseline role closure; unresolved high-impact choices;
+- R0 changed/fixed axes and whether every rule-referenced cell is registered and costed;
+- contribution/axis → `CLAIM_BEARING` mapping and every Claim Contract outcome;
+- family coverage or contribution-grounded reasons under literal `## Absent families` bullets shaped `- <family>: <reason>`;
+- benchmark provenance, taxonomy links when applicable, preflight failure actions, paper/result/effect mappings, and handoff maturity.
 
-A numeric decision effect is anchored to the aggregate result for its target variant. A relative threshold names the reference variant whose aggregate result supplies the comparison. Reference-only baselines and other presentation-only rows remain in the schedule and paper tables without receiving vacuous targets such as `>= 0`. Every expected effect and every relative reference must resolve to a planned aggregate result once `experiment_schedule.json` exists. A later round requires an explicit design, table-plan, and schedule revision; it may not append results or effects silently.
+`skill-check-design` validates deterministic structure only. `PASS` requires no unresolved choice/gap; `PROVISIONAL_WAITING_FOR_R0` permits only registered unresolved R0 choices, not baseline, confounding, Claim Contract, taxonomy, or reference-cell gaps. A failed audit stays before design readiness.
 
-## 9. Paper table plan
+Artifact set and ownership:
 
-Design tables as paper arguments, not as dumps of effect entries. For each table record:
-
-- table ID, family or analysis role, paper question, mapped claims, and experiment IDs;
-- row semantics and the exact ordered row groups;
-- column semantics, including benchmark, split, metric, budget, condition, or derived-impact columns;
-- the aggregate-result key behind every absolute result position;
-- any optional decision-effect entry used for a delta, drop, or impact column;
-- uncertainty display, average definition, missing-cell policy, caption claim, and output path under `reports/`.
-
-Choose the layout from the evidence:
-
-- **Primary results**: rows are comparable methods, models, scaffolds, or systems; columns are locked benchmarks, splits, and primary metric groups. Include every selected baseline and the proposed method. Show absolute performance, with uncertainty where applicable. Put the proposed method in a visibly named row or row group. A task-by-task delta-only layout is not a primary table.
-- **Ablation**: rows contain the full method and one-axis removals, substitutions, or leave-one-group-out variants; columns contain the relevant task metrics. Preserve absolute performance and optionally add an impact column such as `Δ Avg.`. Do not move ordinary internal ablations into the primary table merely to increase its method count.
-- **Focused analysis**: use a compact table when a discrete local question is best answered by exact values, for example `SFT` versus `+RL`, paired methods within each backbone, one data source removed at a time, an error group, or a protocol option. Keep only the benchmarks and metrics that answer that question. Use a figure instead for a continuous curve, distribution, or trajectory.
-
-Multi-level headers, benchmark panels, metric panels, model/scaffold columns, method groups, paired backbone rows, and compact two-row tables are valid. No fixed orientation is mandatory. Optimize for the comparison the reader must make.
-
-An average is valid only across commensurate cells and must be labelled macro, weighted, or otherwise defined. A genuinely unavailable result is marked unavailable and explained; it is never converted to zero. If primary and secondary metrics make one table unreadable, use panels or separate tables rather than dropping a locked metric.
-
-## 10. Preflight requirements
-
-For every scientific lock and controlled axis: the exact observable check, its failure condition, and the changed next action. For data-based routes require planned-versus-materialized sample counts and distributions before expensive execution. When filtering or decontamination is required, trace the production path from source data through the materialized artifact to the exact training input.
-
-## 11. Reporting plan
-
-Each table and figure declares experiment IDs, aggregate-result keys, optional decision-effect IDs, fields or axes, output path under `reports/`, and the decision it supports. The reporting plan must agree with the paper table plan; it may refine presentation but may not change the comparison set.
-
-## 12. AutoWriting handoff
-
-End the design with `## AutoWriting handoff`. This is a section of `experiment_design.md`, not a new state or a new schema. Record:
-
-- `handoff_status`: `ACCEPTED` or `PROVISIONAL_WAITING_FOR_R0`;
-- sections safe to draft now and sections that remain conditional;
-- stable method, benchmark, baseline, protocol, and experiment identities;
-- complete table shells and figure plans, with `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` for every absolute aggregate displayed and `{{EFFECT:<entry_id>}}` only where a derived effect is displayed;
-- replacement source: `effect_comparison.md` and observed aggregates in `result_summary.json`;
-- invalidation rule for an R0 or later design revision, naming affected section titles, table IDs, result keys, and decision-effect entry IDs.
-
-Prefer placeholders over numeric simulations. When a numeric simulated target is useful, require the containing document to display `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` and require `SIMULATED_TARGET` in the same cell or caption. Draft targets never enter `reports/`, an observed-result sentence, a contribution verdict, or a submission-ready table or figure. AutoWriting may improve presentation but may not change the accepted scientific design.
-
-## 13. Coverage audit
-
-End with literal `PASS` only when:
-
-- every contribution and derived axis has a `CLAIM_BEARING` falsifier;
-- all four families are populated, or every absent family is justified under `## Absent families`;
-- every locked benchmark has valid provenance;
-- every selected baseline has a fairness plan and appears in a main experiment;
-- every case study has a pre-result selection rule with failure categories;
-- every decision-relevant preflight has a failure action;
-- the primary table shows absolute results for every selected baseline and the proposed method over the locked main-evaluation scope;
-- every paper result cell maps to a planned aggregate result or an explicitly defined derived summary;
-- every decision effect has exactly one matching entry in `expected_effects.json`, without fake targets for reference-only rows;
-- the AutoWriting handoff covers every paper result cell and labels its maturity.
-
-Otherwise list blockers and keep the state before `EXPERIMENT_DESIGN_READY`.
-
-## Absent families
-
-A family may be absent only when its absence follows from the contributions — a failure-mode
-finding has no self-owned module to ablate, and a distributional claim cannot be carried by a
-single trace. Record every absent family under a literal `## Absent families` heading, one
-bullet per family, shaped `- <family>: <reason>`:
-
-```markdown
-## Absent families
-
-- ablation: the contribution is a failure-mode finding with no self-owned module to remove
-- case_study: the claim is distributional, so no single trace can carry it
-```
-
-`skill-check-design` fails when a family is absent from `expected_effects.json` and this
-section has no reason for it. The gate checks one thing only: that a reason was written for
-that family — a bare `- ablation:`, or prose without the `<family>:` label, leaves it unwritten.
-It does not grade the reason. `- ablation: n/a` clears the gate and is still a failed design:
-whether a reason follows from the contributions is judged by this Skill when writing it, and
-re-judged by `autodesign-integrity-auditor`, which reads the reason text verbatim. Write the
-argument that actually holds, and do not invent a hollow experiment to fill a family.
+- `input_brief.md` preserves the literal handoff and its lock/choice/resource classification;
+- `experiment_design.md` owns all scientific decisions, inventories, shells, and the handoff;
+- `expected_effects.json` owns design-time decision targets only and remains byte-stable during result ingestion;
+- `r0_plan.md`, when required, owns the gate cells/rules; the observed `r0_record.json` is produced by execution and triggers a reissued design.
 
 ## `expected_effects.json`
 
-Written at design time; every value is a hypothesis, never an observation.
+Every value is a design hypothesis:
 
 ```json
 {
@@ -166,18 +88,18 @@ Written at design time; every value is a hypothesis, never an observation.
   "generated_by": "autodesign-experiment-design",
   "entries": [
     {
-      "entry_id": "E1-ours-tb10-pass1",
+      "entry_id": "E1-ours-task-metric",
       "experiment_id": "E1",
       "family": "main",
       "evidence_class": "CLAIM_BEARING",
-      "claim_ids": ["C3"],
-      "variant_id": "ours-32b",
-      "benchmark_task_id": "terminal-bench-1.0",
-      "metric": "pass@1",
+      "claim_ids": ["C1"],
+      "variant_id": "ours",
+      "benchmark_task_id": "task-id",
+      "metric": "primary_metric",
       "simulated_target": 29.1,
       "acceptable_range": [26.0, 32.0],
-      "target_basis": "handoff_reported",
-      "threshold_reference_variant": "qwen2.5-coder-32b-instruct",
+      "target_basis": "design_estimate",
+      "threshold_reference_variant": "causal-reference",
       "decision_threshold": ">= reference + 2.0",
       "on_miss": "iteration"
     }
@@ -187,15 +109,8 @@ Written at design time; every value is a hypothesis, never an observation.
 
 Field rules:
 
-- `value_status` is always `SIMULATED_TARGET` at design time and stays on the file as a whole.
-- One entry represents one decision effect anchored to the target variant's aggregate-result key: experiment ID, variant ID, benchmark task ID, and metric. Seeds belong to the execution schedule and are aggregated before comparison.
-- A relative effect names `threshold_reference_variant`; its reference aggregate uses the same experiment, task, and metric. Both target and reference aggregates must be planned. The reference row does not need its own expected-effect entry unless it independently carries a scientific decision.
-- Do not create entries merely because an absolute baseline, control, or method score is displayed in a paper table. In particular, do not invent `>= 0` thresholds for reference-only rows.
-- `target_basis` is exactly `handoff_reported`, `published_baseline`, or `design_estimate`. A `design_estimate` must be labelled as such in `experiment_design.md`.
-- `decision_threshold` is literal and evaluable against observed numbers. Relative thresholds name `threshold_reference_variant`.
-- `on_miss` is exactly `iteration`, `tuning`, or `stop`.
-- The file contains design-time facts only. `$autodesign-experiment-run` reads it but never adds observed values or threshold outcomes to it.
-- For a `case_study` entry, use `required_categories` with integer counts in place of a numeric `simulated_target`.
-- For an `analysis` entry whose prediction is a shape rather than a level, use `expected_shape` with one of `monotonic_increasing`, `monotonic_decreasing`, `saturating`, `non_monotonic`, or `flat`, and keep `decision_threshold` literal.
-
-`expected_effects.json` and the decision-effect inventory in `experiment_design.md` must agree one-for-one. Aggregate results and paper result cells are a broader set and are not duplicated into the target file. A simulated target may appear only in the explicitly marked AutoWriting draft form above; it never enters `reports/`, an observed result, a contribution verdict, or a submission-ready table or figure.
+- `target_basis` is `handoff_reported|published_baseline|design_estimate`; `on_miss` is `iteration|tuning|stop`; relative thresholds name `threshold_reference_variant`.
+- `decision_threshold` is literal and evaluable. Numeric entries provide a numeric `simulated_target`; `acceptable_range`, when present, is an ordered numeric pair. A design estimate is labelled as such in the design prose.
+- One entry anchors one decision effect to experiment, target variant, task, and metric after seed aggregation. Do not create entries for seeds or display-only references.
+- A `case_study` entry uses positive-integer `required_categories` instead of `simulated_target`; an `analysis` shape uses `expected_shape: monotonic_increasing|monotonic_decreasing|saturating|non_monotonic|flat`.
+- Entries and the decision-effect inventory agree one-for-one. Observations, threshold outcomes, and submission-ready prose never enter this file.
