@@ -25,7 +25,31 @@ Each experiment card records:
 - for `CLAIM_BEARING`, one primary `research_question`, `intervention`, `matched_reference`, `primary_metric`, `literal_falsifier`, and `claim_collapse`;
 - for applicable failure/recovery work, `taxonomy_id`, frozen categories and sampling rule. The related case-study and quantitative-analysis cards use the same `taxonomy_id`; categories include recovered, unrecovered, and side effect.
 
-Family additions: `main` names uncertainty reporting; `ablation` names the single removed/replaced component; `case_study` names eligible pool, pre-result sampler/seed, category counts, shortfall rule, and display fields; `analysis` names the tested axis, levels, expected direction/shape, and boundary.
+Family additions: `main` names uncertainty reporting; `ablation` names the single removed/replaced component; `case_study` names eligible pool, pre-result sampler/seed, category counts, shortfall rule, display fields, a paper-facing `case_figure_plan`, and a concrete `case_figure_draft`; `analysis` names the tested axis, levels, expected direction/shape, and boundary.
+
+The `case_figure_plan` describes the figure before results exist: `figure_id`, paper question, taxonomy/category, panel cases and match key when comparison is claimed, ordered visual stages, visible evidence fields, annotation meanings, source artifact paths, compression rule, caption claim, size/content budget, and `reports/` output path. This record applies only to the Case Study figure, not the method-overview figure or a main-results plot.
+
+Use a fixed paper-placement budget unless the handoff names another venue format: a full-width `figure*` spanning both columns of a two-column arXiv-style paper, width `0.96–1.00\textwidth`, artwork height about `0.38–0.42\textheight`, and total figure height including caption no more than `0.48\textheight`. For two cases, use two side-by-side transcript panels of about `0.47–0.48\textwidth` each with a `0.02–0.04\textwidth` gutter. This two-panel layout may show two preregistered categories without implying a matched causal comparison; a baseline/method contrast still requires its registered match key. At final placement, keep body text at least 7.5 pt and panel labels about 8.5–9 pt.
+
+The same design must include `### Case-study figure draft — <figure_id>` with an actual transcript-style Markdown/ASCII typesetting draft, provisional labels, separator placement, callout locations, source-naming placeholders, and a caption draft. Do not return only prose such as “show the trajectory.” The visual unit is a readable trace excerpt, not an abstract stage or pipeline node. When two cases are planned, draft them as two columns:
+
+```text
+(a) {{CASE:CS1::case_a::short_label}}       (b) {{CASE:CS1::case_b::short_label}}
+Prompt: {{CASE:CS1::case_a::task_excerpt}}  Prompt: {{CASE:CS1::case_b::task_excerpt}}
+- - - - - - - - - - - - - - - - - - -    - - - - - - - - - - - - - - - - - - -
+Agent: {{CASE:CS1::case_a::action_1}}        Agent: {{CASE:CS1::case_b::action_1}}
+[Tool Call] {{CASE:CS1::case_a::call_1}}     [Tool Call] {{CASE:CS1::case_b::call_1}}
+- - - - - - - - - - - - - - - - - - -    - - - - - - - - - - - - - - - - - - -
+Tool: {{CASE:CS1::case_a::response_1}}       Tool: {{CASE:CS1::case_b::response_1}}
+Agent: {{CASE:CS1::case_a::action_2}}        Agent: {{CASE:CS1::case_b::action_2}}
+[Comment] {{CASE:CS1::case_a::decisive}}     [Comment] {{CASE:CS1::case_b::decisive}}
+- - - - - - - - - - - - - - - - - - -    - - - - - - - - - - - - - - - - - - -
+[Outcome] {{CASE:CS1::case_a::outcome}}      [Outcome] {{CASE:CS1::case_b::outcome}}
+
+Caption draft: <the two behavioral cases illustrated without population-level generalization>
+```
+
+Use the registered case and variant IDs instead of the example IDs. Budget each panel for a short task excerpt, three to five visible interaction turns, one decisive taxonomy-linked comment, and one final outcome. Keep each excerpt to the shortest evidence-complete span; compress only non-decision turns and mark them as `[N non-decision turns omitted]`. Omit tool turns when the environment has no tools. Use black or neutral body text for the trace, one restrained accent for tool calls and decisive failure/recovery, and link/source color only for retrieved evidence when present. Keep labels inline; avoid rounded containers, arrows between stages, dashboard furniture, decorative badges, oversized internal titles, and a legend that merely repeats the labels. Put full source paths, long provenance, design-status notices, and secondary taxonomy notes in the design record, caption, or supplement rather than the figure body. Show exact observed excerpts or faithful summaries of observable events; never reconstruct hidden reasoning, dialogue, tool output, or outcomes. Every highlighted moment maps to the registered taxonomy or another named analysis field so the figure explains the quantitative evidence instead of becoming a standalone anecdote. At design time, keep unresolved trace content as visibly typed source placeholders; do not render a polished placeholder infographic that could be mistaken for an observed case.
 
 Keep these identities separate:
 
@@ -44,6 +68,8 @@ For each table or figure record `table_id`/`figure_id`, paper question, mapped c
 
 The primary table contains the proposed method plus both closed baseline roles over the locked main scope and shows absolute results. Ablations show the full method and one-axis variants. Focused analyses contain only cells needed for their question; continuous curves/distributions/trajectories use figures. Averages state macro/weighted semantics and combine only commensurate cells; unavailable is not zero.
 
+At design time, every numeric paper position contains only its complete typed `{{RESULT:...}}` or `{{EFFECT:...}}` placeholder. Do not put `R ± CI`, `R+CI`, `C ± CI`, `Rate ± CI`, `Δ ± CI`, `mean ± std`, a bare `CI`, or another invented value/uncertainty shorthand into table cells. The reporting plan may require uncertainty, but its final display is chosen from observed aggregates after execution rather than simulated in the shell.
+
 Preflight records each lock/controlled axis, observable check, failure condition, and changed next action. Reporting may refine presentation, never the comparison set.
 
 The reporting plan lists source experiment/aggregate/effect IDs, fields or axes, output paths, and the decision supported. Table shells must be complete enough for AutoWriting to draft structure without inventing a row, metric, or comparison.
@@ -53,7 +79,7 @@ The reporting plan lists source experiment/aggregate/effect IDs, fields or axes,
 End with `## AutoWriting handoff` and record:
 
 - `handoff_status: ACCEPTED|PROVISIONAL_WAITING_FOR_R0`, safe/conditional sections, stable identities, and invalidation rules;
-- complete shells using `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` for absolute aggregates and `{{EFFECT:<entry_id>}}` only for displayed derived effects;
+- complete shells using `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` for absolute aggregates and `{{EFFECT:<entry_id>}}` only for displayed derived effects; these typed placeholders stand alone and are never decorated with `± CI`, `+CI`, `± std`, or other invented uncertainty text;
 - replacement sources: observed aggregates in `result_summary.json` and comparisons in `effect_comparison.md`.
 
 Prefer placeholders. If numeric targets appear, label the document `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` and the same cell/caption `SIMULATED_TARGET`.
