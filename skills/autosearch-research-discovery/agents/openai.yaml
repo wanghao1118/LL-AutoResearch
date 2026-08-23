@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoSearch Research Discovery"
+  short_description: "从研究领域发现并压实 Weakness，形成 Candidate Contribution 与 AutoDesign 交接包"
+  default_prompt: "使用 $autosearch-research-discovery 分析我提供的 FIELD，生成有证据的核心 Weakness、技术难点、Candidate Contribution 和 AutoDesign Handoff。"

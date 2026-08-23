@@ -1,0 +1,4 @@
+interface:
+  display_name: "AutoSearch Research Judge"
+  short_description: "独立审核 Weakness、技术难点、Candidate Contribution 与 AutoDesign 交接质量"
+  default_prompt: "使用 $autosearch-research-judge 独立审核给定的 AutoSearch Research Package，只依据材料判断真实性、重要性、清晰性和可落地性。"
