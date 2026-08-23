@@ -2,6 +2,18 @@
 
 Return concise Chinese prose with citations near supported claims. Real research discovery defaults to a portfolio of one to three independent Weaknesses.
 
+## Internal Stage Artifacts
+
+For `full` and `deepen` runs, preserve the stage boundary:
+
+```text
+internal/
+  p3_raw_candidates.md   # unchanged P3 candidate snapshot
+  innovation_review.md   # innovation potential reviewed separately from evidence readiness
+```
+
+Do not rewrite `p3_raw_candidates.md` after the innovation or deepening stages. These files are audit artifacts; the concise user-facing result remains `RESEARCH_PORTFOLIO.md` plus the retained Weakness packages.
+
 ## RESEARCH_PORTFOLIO.md
 
 ```text
@@ -10,7 +22,7 @@ Return concise Chinese prose with citations near supported claims. Real research
 ## Field
 ## Field-Level Insight
 ## Retained Weaknesses
-| ID | Plain-language Weakness | Scope | Type | Status | Why independent |
+| ID | Plain-language Weakness | Scope | Type | Status | Innovation Potential | Why independent |
 ## Why These Weaknesses Were Split Or Merged
 ## Ranked-Out Or Reclassified Candidates
 ## Recommended Next Actions
@@ -90,6 +102,10 @@ For `READY_FOR_METHOD_DESIGN`, `Candidate Contribution` contains the proposed re
 ## Merge-Split Decision
 ## Ranked-Out Or Reclassified Candidates
 ## Final Status
+## Stage Loading Audit
+## Candidate Changes Across Stages
 ```
+
+`Stage Loading Audit` records which reference was loaded at each stage. `Candidate Changes Across Stages` records every merge, split, downgrade, rejection, or retention decision without altering the raw snapshot.
 
 P3 search artifacts may remain in an internal `evidence/` directory. For an explicitly requested internal single-best evaluation, preserve the legacy three-file layout without exposing the evaluation switch as a normal user choice.

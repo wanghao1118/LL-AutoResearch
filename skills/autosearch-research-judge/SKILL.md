@@ -13,6 +13,8 @@ Default to `packet_only` review. Verify external sources only when the user requ
 
 Keep Method Weakness, Benchmark Weakness, and Validation Gap separate. Do not upgrade missing evidence into a method claim.
 
+Report `Evidence Readiness` and `Innovation Potential` separately. High innovation potential may justify a targeted validation step, but it cannot override an evidence hard gate.
+
 For a portfolio, first review whether candidates were correctly split or merged. Then judge every Weakness independently. Do not average scores across Weaknesses, transfer evidence between them, or let one strong package upgrade another. A shared field-level Insight does not establish a shared causal mechanism.
 
 Return the portfolio-structure verdict when applicable, then each Weakness verdict, scores, decisive reasons, and one highest-priority revision. Do not rewrite the full package unless explicitly requested.

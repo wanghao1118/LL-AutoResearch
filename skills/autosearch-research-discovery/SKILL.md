@@ -5,10 +5,10 @@ description: Discover and deepen evidence-backed AI research weaknesses, turn a 
 
 # AutoSearch Research Discovery
 
-Build one or more independent research packages through three gates:
+Build one or more independent research packages through four gates:
 
 ```text
-P3 discovery -> Weakness deepening -> Candidate Contribution and AutoDesign handoff
+P3 discovery -> Innovation review -> Weakness deepening -> Candidate Contribution and AutoDesign handoff
 ```
 
 The user may provide only `FIELD`. Default missing values to:
@@ -30,21 +30,31 @@ Use a single-best result only as an internal evaluation behavior when the user e
 
 ## Choose A Mode
 
-- `full`: Start from `FIELD`; read [references/p3-discovery-frozen.md](references/p3-discovery-frozen.md) and execute it unchanged before deepening.
-- `deepen`: Use a supplied P3 output and Evidence Pack. Do not repeat search unless a decisive evidence hole is identified.
+- `full`: Start from `FIELD`; run the frozen P3 prompt, review candidate innovation potential, and then deepen the retained candidates.
+- `deepen`: Use a supplied P3 output and Evidence Pack. Start with innovation review; do not repeat search unless a decisive evidence hole is identified.
 - `handoff`: Use a `READY_FOR_METHOD_DESIGN` Weakness and its technical bottlenecks to prepare Candidate Contribution and AutoDesign inputs.
 
 If the user does not specify a mode, choose the earliest stage required by the supplied material.
 
 ## Stage 1: P3 Discovery
 
-When running `full`, follow the frozen P3 prompt exactly. Treat its final Weaknesses and Idea Seeds as candidates, not approved conclusions. Preserve its candidate-type distinctions and evidence audit.
+When running `full`, read only [references/p3-discovery-frozen.md](references/p3-discovery-frozen.md) for candidate generation and follow it exactly. Do not read the innovation, deepening, or contribution references until the P3 output has been written. This isolation preserves P3 as a comparable baseline.
+
+Treat its final Weaknesses and Idea Seeds as candidates, not approved conclusions. Preserve its candidate-type distinctions and evidence audit. Save an unchanged snapshot as `internal/p3_raw_candidates.md` before any later stage rewrites, merges, ranks, or removes a candidate.
 
 Legacy P3 labels such as `APPROVED_METHOD_WEAKNESS` or `METHOD_WEAKNESS_CANDIDATE` are input annotations only. Rejudge them during deepening and emit the current user-facing states; do not carry an old approval forward automatically.
 
 Do not patch the frozen P3 prompt for a particular domain. Record any observed failure for later Skill revision.
 
-## Stage 2: Separate And Deepen Core Weaknesses
+## Stage 2: Review Innovation Potential
+
+After the raw P3 snapshot is frozen, read [references/innovation-lens.md](references/innovation-lens.md). Review every candidate for non-obvious mechanism insight, residual novelty after the strongest existing solution, an actionable intervention variable, and a decisive distinguishing experiment.
+
+For `deepen`, first copy the supplied P3 output unchanged into `internal/p3_raw_candidates.md`; do not reinterpret it before the snapshot exists.
+
+Write `internal/innovation_review.md`. Keep `Evidence Readiness` separate from `Innovation Potential`: a speculative but high-upside candidate may remain visible for targeted validation, but innovation potential cannot upgrade an unsupported claim into an established Method Weakness. Do not overwrite or silently delete the raw P3 candidates.
+
+## Stage 3: Separate And Deepen Core Weaknesses
 
 Read [references/weakness-deepener.md](references/weakness-deepener.md). First decide which candidates are genuinely the same research problem and which must remain separate. Then deepen each retained core Method Weakness independently: freeze its scope, audit the strongest existing solution in the same setting, identify the residual problem, and derive two or three related manifestations and technical bottlenecks.
 
@@ -52,7 +62,7 @@ Different settings may support a shared field-level Insight without supporting o
 
 Stop or downgrade when the evidence supports only a Validation Gap or Benchmark Weakness. Do not force a method paper from missing evaluation coverage.
 
-## Stage 3: Build The Research Package
+## Stage 4: Build The Research Package
 
 Only after an individual Weakness passes the deepening gate, read [references/contribution-handoff.md](references/contribution-handoff.md). Produce one overall Candidate Contribution plus only the necessary supporting contributions for that Weakness. Then hand AutoDesign the variables, required comparisons, metrics, evidence obligations, and falsifiers without choosing the full implementation.
 
