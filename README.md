@@ -10,6 +10,15 @@ research topic -> papers -> paper cards -> field map -> gap evidence report
 It is intentionally not a paper-writing machine. The goal is to produce a research map that can
 support group discussion and later method/benchmark design.
 
+## Auto Search: Weakness to Concept
+
+The `auto_search/` module adds a Codex CLI workflow that turns a concrete research weakness into a
+structured Idea, or starts from a broader direction and performs paper research, weakness
+extraction, contribution design, evaluation, and human verification through a local web workspace.
+
+See [`auto_search/README.md`](auto_search/README.md) for setup, CLI usage, the web interface, output
+constraints, and tests.
+
 ## Quick Start
 
 ```bash

@@ -1,0 +1,80 @@
+{
+  "search": {
+    "engine": "Google Scholar",
+    "query": "\"small lesion\" transformer medical image",
+    "query_url": "https://scholar.google.com/scholar?hl=en&q=%22small+lesion%22+transformer+medical+image",
+    "searched_at": "2026-08-24",
+    "selection_rule": "Select papers that expose distinct, technically actionable weaknesses in small-lesion representation, tokenization, multi-scale modeling, or training. Verify each weakness against a publisher page, accepted paper, or authoritative abstract."
+  },
+  "papers": [
+    {
+      "id": "let_net_2023",
+      "title": "LET-Net: locally enhanced transformer network for medical image segmentation",
+      "authors": "Na Ta, Haipeng Chen, Xianzhu Liu, and Nuo Jin",
+      "year": 2023,
+      "venue": "Multimedia Systems",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22LET-Net%3A+locally+enhanced+transformer+network+for+medical+image+segmentation%22",
+      "source_url": "https://link.springer.com/article/10.1007/s00530-023-01165-z",
+      "source_scope": "Open-access abstract and Introduction on the publisher page",
+      "reported_weakness": "Small lesions are easily lost during repeated downsampling and are difficult to recover. Transformer global-context modeling can destroy local features, while adjacent-level feature misalignment allows dominant semantics to overwhelm local context. Standard interpolation-based upsampling lacks the local spatial awareness needed to restore small-object positions, and severe foreground-background pixel imbalance biases training away from small lesions.",
+      "evidence": [
+        "The Introduction states that small targets are prone to being lost during repeated downsampling and are hard to recover.",
+        "It states that Transformer-based methods destroy part of the local features when modeling global contexts, causing imprecise predictions for small objects.",
+        "It attributes insufficient recovery to feature misalignment and to upsampling operations that lack local spatial awareness.",
+        "It also identifies severe foreground-background pixel imbalance for small targets."
+      ],
+      "evidence_status": "directly_reported"
+    },
+    {
+      "id": "h2former_2023",
+      "title": "H2Former: An Efficient Hierarchical Hybrid Transformer for Medical Image Segmentation",
+      "authors": "Along He, Kai Wang, Tao Li, Chengkun Du, Shuang Xia, and Huazhu Fu",
+      "year": 2023,
+      "venue": "IEEE Transactions on Medical Imaging",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22H2Former%3A+An+Efficient+Hierarchical+Hybrid+Transformer+for+Medical+Image+Segmentation%22",
+      "source_url": "https://pubmed.ncbi.nlm.nih.gov/37018111/",
+      "source_scope": "Author abstract indexed by PubMed with DOI 10.1109/TMI.2023.3264513",
+      "reported_weakness": "CNN-based segmenters are weak at modeling the long-range dependencies required for global context, whereas Transformer segmenters often neglect explicit multi-scale feature fusion and feature selection. Applying self-attention directly to high-resolution feature maps has quadratic computational cost, making it difficult to preserve fine spatial detail while obtaining global context under limited medical data and practical compute budgets.",
+      "evidence": [
+        "The abstract states that CNNs are weak at modeling long-range dependencies.",
+        "It states that multi-scale feature fusion and feature selection are crucial but ignored by Transformers.",
+        "It identifies quadratic self-attention cost on high-resolution feature maps as the barrier to direct CNN-Transformer integration."
+      ],
+      "evidence_status": "directly_reported_with_scoped_inference"
+    },
+    {
+      "id": "s3_mamba_2025",
+      "title": "S3-Mamba: Small-Size-Sensitive Mamba for Lesion Segmentation",
+      "authors": "Gui Wang, Yuexiang Li, Wenting Chen, Meidan Ding, Wooi Ping Cheah, Rong Qu, Jianfeng Ren, and Linlin Shen",
+      "year": 2025,
+      "venue": "AAAI Conference on Artificial Intelligence",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22S3-Mamba%3A+Small-Size-Sensitive+Mamba+for+Lesion+Segmentation%22",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/view/32824",
+      "source_scope": "AAAI open-access paper abstract and Introduction",
+      "reported_weakness": "Popular segmentation models perform poorly on small lesions because these lesions occupy only a minor image region and have subtle texture and morphology. Common downsampling operations eliminate crucial local features, so small lesions become underrepresented or disappear from the segmentation output. Existing architectures also lack coordinated sensitivity to small lesions across feature channels, spatial scales, and the training progression from easy or large lesions to hard small lesions.",
+      "evidence": [
+        "The paper states that small lesions occupy only a minor portion of an image and have subtle textures and morphology.",
+        "It identifies downsampling as eliminating crucial local features associated with small lesions.",
+        "Its proposed channel, spatial, and curriculum components imply that sensitivity is insufficient across these three dimensions; this last statement is a scoped interpretation of the method motivation."
+      ],
+      "evidence_status": "directly_reported_with_scoped_inference"
+    },
+    {
+      "id": "lc_vit_2025",
+      "title": "Lesion-Centered Vision Transformer for Stroke Outcome Prediction from Image and Clinical Data",
+      "authors": "Mingtian Liu, Nima Hatami, Laura Mechtouff, Tae-Hee Cho, Carole Lartizien, and Carole Frindel",
+      "year": 2025,
+      "venue": "MICCAI",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Lesion-Centered+Vision+Transformer+for+Stroke+Outcome+Prediction+from+Image+and+Clinical+Data%22",
+      "source_url": "https://papers.miccai.org/miccai-2025/0492-Paper2108.html",
+      "source_scope": "MICCAI accepted-paper page and open-access paper",
+      "reported_weakness": "Vision Transformers struggle with stroke MRI because training data are scarce and rigid tokenization can miss subtle abnormalities. A fixed grid and effectively uniform token allocation do not adapt representation capacity to lesion size or visibility, so small or faint lesions may receive too little representational detail while background regions consume the same token budget.",
+      "evidence": [
+        "The abstract explicitly identifies data scarcity and rigid tokenization as reasons Vision Transformers may miss subtle anomalies in stroke MRI.",
+        "The paper motivates lesion-focused preprocessing and adaptive token merging as responses to this limitation.",
+        "The token-budget interpretation is a scoped restatement of rigid tokenization rather than a separately measured finding."
+      ],
+      "evidence_status": "directly_reported_with_scoped_inference"
+    }
+  ]
+}

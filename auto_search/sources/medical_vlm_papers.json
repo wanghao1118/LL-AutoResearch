@@ -1,0 +1,147 @@
+{
+  "search": {
+    "engine": "Google Scholar discovery with primary-source verification",
+    "query": "medical vision-language model weakness localization hallucination artifacts",
+    "query_url": "https://scholar.google.com/scholar?hl=en&q=medical+vision-language+model+weakness+localization+hallucination+artifacts",
+    "searched_at": "2026-08-24",
+    "selection_rule": "Select Medical VLM papers that directly measure a technically actionable failure mechanism and expose enough source-method detail to prevent the generated idea from reproducing the paper's own remedy. Verify each record against the accepted paper or publisher article."
+  },
+  "papers": [
+    {
+      "id": "r1seg_3d_2025",
+      "title": "R1Seg-3D: Rethinking Reasoning Segmentation for Medical 3D CTs",
+      "authors": "Qin Hao, Long Yu, Shengwei Tian, Xujiong Ye, and Lei Zhang",
+      "year": 2025,
+      "venue": "MICCAI",
+      "domain": "3D medical vision-language reasoning and open-vocabulary CT segmentation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22R1Seg-3D%3A+Rethinking+Reasoning+Segmentation+for+Medical+3D+CTs%22",
+      "source_url": "https://papers.miccai.org/miccai-2025/0739-Paper1982.html",
+      "source_scope": "MICCAI accepted paper abstract and Introduction",
+      "reported_weakness": "Medical 3D CLIP-style reasoning segmentation compresses an entire CT volume into global image-text representations. This global embedding restricts learning from local regions that may be very small or absent, and the resulting visual representation lacks the fine spatial detail needed for small lesions and low-contrast pathology. Existing reasoning segmenters also duplicate visual processing through separate CLIP and dense-prediction encoders, increasing computation and training complexity without resolving the local-detail bottleneck.",
+      "evidence": [
+        "The abstract states that 3D medical CLIP underperforms its natural-scene counterpart and lacks local visual features required by dense prediction.",
+        "The Introduction states that embedding whole CT volumes globally restricts learning from local regions of interest that may be small or absent.",
+        "The paper explicitly links missing fine-grained spatial detail to failure on subtle pathology such as small lesions and low-contrast regions.",
+        "It reports that prior reasoning segmentation designs use redundant CLIP and dense-prediction visual encoders, reducing efficiency and complicating training."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source paper replaces the dual-encoder design with one visual encoder and aligns dense visual features, language reasoning features, and mask-decoding features in a shared latent space. The generated proposal must not reproduce unified-encoder three-way alignment or merely attach another high-resolution branch.",
+      "inference_constraints": "Use only the 3D CT volume, the clinical text instruction, and trained model parameters at inference time. Do not assume target masks, boxes, points, lesion centers, or organ-specific crops.",
+      "benchmark_candidates": [
+        {
+          "name": "M3D-Seg 25-dataset CT segmentation benchmark",
+          "public_url": "https://arxiv.org/abs/2404.00578",
+          "released_labels": "5,772 3D CT images with 149,196 released mask annotations across 25 public sub-datasets; use the original benchmark splits",
+          "supported_evaluation": "Dice or F1, precision, sensitivity, specificity, boundary metrics computed from released masks, and deterministic lesion-size strata",
+          "allowed_adaptation": "Compute component size, contrast, and boundary-distance strata from released images and masks; train on the original training splits and reserve held-out sub-datasets for cross-domain tests"
+        }
+      ],
+      "feasibility_status": "blocked",
+      "feasibility_blocker": "The verified source material confirms public CT masks but does not confirm an auditable category-text or instruction-to-mask-channel mapping. That mapping is required for the proposed text-conditioned routing target and cannot be created by assuming class names or by new clinical annotation."
+    },
+    {
+      "id": "cytomorphology_grounding_2026",
+      "title": "Illusion of competence: vision-language models provide confident but inaccurate explanations in cytological diagnostics",
+      "authors": "Ivan Kukuljan et al.",
+      "year": 2026,
+      "venue": "Scientific Reports",
+      "domain": "medical large vision-language models for cytomorphological diagnosis and explanation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Illusion+of+competence%3A+vision-language+models+provide+confident+but+inaccurate+explanations+in+cytological+diagnostics%22",
+      "source_url": "https://www.nature.com/articles/s41598-026-60372-6",
+      "source_scope": "Publisher abstract, Introduction, and explanation analysis",
+      "reported_weakness": "General and biomedical LVLMs can produce fluent cytology explanations that repeat textbook properties of the predicted class rather than describe the morphology actually visible in the cell image. When classification is wrong, explanations often miss or invert key nuclear and cytoplasmic features, and the models fail to reliably identify image regions relevant to their decisions. The result is confident diagnostic language without faithful visual evidence, together with poor transfer across cytology domains.",
+      "evidence": [
+        "The abstract reports that textual justifications often reflect textbook knowledge rather than morphological features present in the image.",
+        "Expert review rated 30 percent of explanations for misclassified cells as poor or misleading.",
+        "The models could segment cellular structures but failed to reliably identify regions relevant to their classification decisions.",
+        "The paper reports low diagnostic accuracy, poor cross-domain generalizability, and unreliable explainability as three major limitations."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source is an evaluation study: it tests zero-shot, few-shot, and fine-tuned LVLMs and compares them with cytomorphology-specific vision models. It does not provide a corrective architecture. The generated proposal must not reduce to ordinary domain fine-tuning, a generic attention heatmap, or adding a segmentation head.",
+      "inference_constraints": "Use only the cell image, diagnostic prompt, and trained parameters at inference time. Do not require expert morphological feature labels, region annotations, or a ground-truth cell class to construct the explanation.",
+      "benchmark_candidates": [
+        {
+          "name": "Acevedo peripheral blood cells and MLL23 external test set",
+          "public_url": "https://www.nature.com/articles/s41598-026-60372-6",
+          "released_labels": "Acevedo has 17,092 images with 11 released cell-type labels; MLL23 has more than 40,000 images with 18 released labels and is used as an external test set",
+          "supported_evaluation": "weighted F1, class confusion, in-domain sample efficiency, and cross-domain transfer on shared classes",
+          "allowed_adaptation": "Retain the source protocol and shared-class mapping; derive perturbation and crop consistency tests deterministically from images without creating clinical labels"
+        },
+        {
+          "name": "WBCAtt, BMC, and HiCervix cytomorphology benchmarks",
+          "public_url": "https://www.nature.com/articles/s41598-026-60372-6",
+          "released_labels": "WBCAtt releases 11 morphology attributes for 10,300 Acevedo images; BMC releases 21 cell types for 171,373 images; HiCervix releases 29 cervical-cell classes for 40,229 cells",
+          "supported_evaluation": "morphology-attribute agreement, cell-type classification, cervical lesion classification, and cross-task generalization",
+          "allowed_adaptation": "Use released morphology attributes as independent evidence targets and deterministic image occlusion or counterfactual transforms; do not commission explanation ratings"
+        }
+      ]
+    },
+    {
+      "id": "medical_artifact_robustness_2025",
+      "title": "Understanding the robustness of vision-language models to medical image artefacts",
+      "authors": "Zijie Cheng et al.",
+      "year": 2025,
+      "venue": "npj Digital Medicine",
+      "domain": "medical vision-language model robustness across MRI, OCT, radiography, and fundus imaging",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Understanding+the+robustness+of+vision-language+models+to+medical+image+artefacts%22",
+      "source_url": "https://www.nature.com/articles/s41746-025-02108-w",
+      "source_scope": "Publisher abstract, Introduction, and robustness results",
+      "reported_weakness": "Medical VLMs confuse acquisition artefacts with pathology or allow artefacts to obscure real abnormalities. Weak artefacts reduce disease-detection accuracy, while severely distorted and clinically ungradable images are often not flagged as poor quality. The failure is also prompt-dependent: output formatting and reasoning instructions can change whether the same model detects an artefact, showing that visual quality evidence is not represented as a stable constraint on diagnostic generation.",
+      "evidence": [
+        "The study reports accuracy declines under weak artefacts across MRI, OCT, and X-ray tasks.",
+        "Strong artefact detection rates are low, indicating that severely distorted images are often processed without an appropriate quality warning.",
+        "The Introduction explains that artefacts can generate pathology-like patterns or obscure true abnormalities, causing both false positives and false negatives.",
+        "The results show that changing prompt strategy substantially changes artefact detection, including cases where structured output suppresses quality warnings."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source builds an evaluation benchmark with controlled weak and strong artefacts and compares standard, structured, and chain-of-thought prompting. It recommends artefact-aware design but does not introduce a corrective model. The generated proposal must not be only artefact augmentation, a quality classifier, prompt ensembling, or generic consistency training.",
+      "inference_constraints": "Use only the acquired medical image, clinical query, and trained parameters at inference time. Do not assume a clean reference image, an artefact-type label, a severity label, or repeated prompts to choose the most convenient answer.",
+      "benchmark_candidates": [
+        {
+          "name": "VLM medical-image artefact robustness benchmark",
+          "public_url": "https://github.com/ziijiecheng/VLM_robustness",
+          "released_labels": "released disease labels for brain MRI, retinal OCT, and chest X-ray; paired clean, weak-artefact, and strong-artefact variants generated with published parameters",
+          "supported_evaluation": "accuracy, sensitivity, specificity, weak-artefact performance change, and strong-artefact detection rate",
+          "allowed_adaptation": "Reuse the published TorchIO noise, motion, bias-field, cropping, and rotation transforms; add deterministic compound-corruption combinations while retaining original disease labels"
+        },
+        {
+          "name": "DDR real-world fundus quality benchmark subset",
+          "public_url": "https://github.com/nkicsl/DDR-dataset",
+          "released_labels": "released diabetic-retinopathy severity and ungradable-image labels",
+          "supported_evaluation": "disease detection under real image-quality variation and ungradable-image detection",
+          "allowed_adaptation": "Reuse the published grouping of grades into normal, diseased, and ungradable; no relabeling or clinician quality review"
+        }
+      ]
+    },
+    {
+      "id": "relative_position_2025",
+      "title": "Your other Left! Vision-Language Models Fail to Identify Relative Positions in Medical Images",
+      "authors": "Daniel Wolf, Heiko Hillenhagen, Billurvan Taskin, Alex Bäuerle, Meinrad Beer, Michael Götz, and Timo Ropinski",
+      "year": 2025,
+      "venue": "MICCAI",
+      "domain": "medical vision-language spatial reasoning and relative anatomical positioning",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Your+other+Left%21+Vision-Language+Models+Fail+to+Identify+Relative+Positions+in+Medical+Images%22",
+      "source_url": "https://papers.miccai.org/miccai-2025/1027-Paper0530.html",
+      "source_scope": "MICCAI accepted paper abstract and benchmark description",
+      "reported_weakness": "State-of-the-art VLMs fail to determine relative positions of anatomical structures and abnormalities in medical images. Their answers are driven more by memorized anatomical priors than by the actual spatial relationship visible in the current image, so a plausible answer can remain unchanged when the image evidence contradicts the usual anatomy. Alphanumeric or colored visual markers provide only moderate gains and remain much less effective than in natural images.",
+      "evidence": [
+        "The paper evaluates GPT-4o, Llama 3.2, Pixtral, and JanusPro and reports that all fail the relative-position task.",
+        "Its analysis suggests that VLMs rely more on prior anatomical knowledge than actual image content when answering spatial questions.",
+        "Visual prompts such as alphanumeric or colored markers improve performance only moderately and remain significantly weaker on medical images than on natural images.",
+        "The paper introduces the MIRP benchmark to isolate relative-position reasoning as a fundamental prerequisite for clinical use."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source introduces the MIRP benchmark and tests alphanumeric and colored markers placed on anatomical structures. The generated proposal must not simply add visual markers, coordinate tokens, generic positional embeddings, or an anatomy segmentation preprocessor.",
+      "inference_constraints": "Use only the unmarked medical image, the relative-position question, and trained parameters at inference time. Do not assume anatomy masks, landmark coordinates, visual markers, or manually specified regions.",
+      "benchmark_candidates": [
+        {
+          "name": "MIRP Medical Imaging Relative Positioning benchmark",
+          "public_url": "https://wolfda95.github.io/your_other_left/",
+          "released_labels": "more than 4,000 CT slices with released relative-position question-answer pairs and controlled flip and rotation variants",
+          "supported_evaluation": "relative-position accuracy by transformation, consistency under flip or rotation, and prior-versus-image conflict analysis",
+          "allowed_adaptation": "Use the released unmarked RQ1 images and question-answer pairs; construct additional deterministic flip and rotation pairs while transforming the released answers by known geometry"
+        }
+      ]
+    }
+  ]
+}

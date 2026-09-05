@@ -1,0 +1,321 @@
+{
+  "search": {
+    "engine": "Primary-source discovery and benchmark verification",
+    "query": "medical vision-language model agent post-training grounding hallucination robustness benchmark",
+    "query_url": "https://scholar.google.com/scholar?q=medical+vision-language+model+agent+post-training+grounding+hallucination+robustness+benchmark",
+    "searched_at": "2026-08-25",
+    "selection_rule": "Select ten Medical VLM weaknesses spanning agents, post-training, grounding, report generation, hallucination, robustness, 3D reasoning, and longitudinal reasoning. Require a released benchmark or a deterministic adaptation of released labels, no new clinician annotation, and a mechanism-preserving prototype within the reference compute budget."
+  },
+  "papers": [
+    {
+      "id": "cytomorphology_grounding_2026",
+      "title": "Illusion of competence: vision-language models provide confident but inaccurate explanations in cytological diagnostics",
+      "authors": "Ivan Kukuljan et al.",
+      "year": 2026,
+      "venue": "Scientific Reports",
+      "domain": "Medical VLM post-training for cytomorphological diagnosis and evidence-constrained explanation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Illusion+of+competence%3A+vision-language+models+provide+confident+but+inaccurate+explanations+in+cytological+diagnostics%22",
+      "source_url": "https://www.nature.com/articles/s41598-026-60372-6",
+      "source_scope": "Publisher abstract, Methods, and explanation analysis",
+      "reported_weakness": "General and biomedical medical VLMs can produce fluent cytology explanations that repeat textbook properties of the predicted class rather than describe morphology visible in the image. Wrong classifications frequently yield explanations that miss or invert nuclear and cytoplasmic features, while the models fail to identify image regions relevant to their decisions and transfer poorly across cytology domains.",
+      "evidence": [
+        "The paper reports that explanations often reflect textbook knowledge rather than morphology visible in the image.",
+        "Thirty percent of explanations for misclassified cells were rated poor or misleading in the source study.",
+        "Models failed to reliably identify image regions relevant to classification decisions.",
+        "The evaluation reports low diagnostic accuracy, poor cross-domain generalization, and unreliable explainability."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source evaluates zero-shot, few-shot, and fine-tuned LVLMs and compares them with dedicated cytomorphology models. It does not introduce a corrective architecture. Do not reduce the proposal to ordinary fine-tuning, a generic attention map, an added segmentation head, or newly commissioned expert explanation ratings.",
+      "inference_constraints": "Use only the cell image, diagnostic prompt, and trained parameters. Do not require ground-truth class, morphology labels, region annotations, or clinician feedback at inference.",
+      "benchmark_candidates": [
+        {
+          "name": "Acevedo peripheral blood cells, WBCAtt attributes, and MLL23 external test",
+          "public_url": "https://www.nature.com/articles/s41598-026-60372-6",
+          "released_labels": "Acevedo releases 17,092 images with 11 cell classes; WBCAtt releases 11 morphology attributes for 10,300 matched images; MLL23 releases more than 40,000 images with 18 classes",
+          "supported_evaluation": "weighted F1, attribute macro F1, class-attribute consistency, sample efficiency, and shared-class cross-domain transfer",
+          "allowed_adaptation": "Use deterministic crop, occlusion, color, and geometric interventions while retaining released class and attribute labels; never commission explanation or region ratings"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "medical_artifact_robustness_2025",
+      "title": "Understanding the robustness of vision-language models to medical image artefacts",
+      "authors": "Zijie Cheng et al.",
+      "year": 2025,
+      "venue": "npj Digital Medicine",
+      "domain": "Medical VLM robustness and quality-aware inference across MRI, OCT, radiography, and fundus imaging",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Understanding+the+robustness+of+vision-language+models+to+medical+image+artefacts%22",
+      "source_url": "https://www.nature.com/articles/s41746-025-02108-w",
+      "source_scope": "Publisher abstract, benchmark Methods, and robustness results",
+      "reported_weakness": "Medical VLMs confuse acquisition artefacts with pathology or allow artefacts to obscure real abnormalities. Weak artefacts reduce disease-detection accuracy, severely distorted images are often not flagged as ungradable, and prompt formatting changes whether the same model emits a quality warning, showing that image quality is not a stable constraint on diagnostic generation.",
+      "evidence": [
+        "The benchmark reports accuracy declines under weak artefacts across MRI, OCT, and X-ray.",
+        "Strong artefact detection rates are low.",
+        "Artefacts create pathology-like patterns or obscure abnormalities, causing false positives and false negatives.",
+        "Changing prompt strategy substantially changes artefact detection and quality warnings."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source builds a controlled evaluation benchmark and compares prompting strategies. It does not introduce a corrective model. Do not propose only artefact augmentation, a standalone quality classifier, prompt ensembling, or generic consistency training.",
+      "inference_constraints": "Use only the acquired image, query, and trained parameters. Do not assume a clean reference, artefact label, severity label, or repeated prompts at inference.",
+      "benchmark_candidates": [
+        {
+          "name": "VLM medical-image artefact robustness benchmark and DDR real-world quality subset",
+          "public_url": "https://github.com/ziijiecheng/VLM_robustness",
+          "released_labels": "Released disease labels for brain MRI, retinal OCT, and chest X-ray with clean, weak, and strong artefact variants; DDR releases diabetic-retinopathy severity and ungradable labels",
+          "supported_evaluation": "accuracy, sensitivity, specificity, weak-artefact performance change, strong-artefact detection, and real-world ungradable detection",
+          "allowed_adaptation": "Reuse published TorchIO transforms and deterministic compound corruptions while retaining original labels and grouping all variants by source image"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "relative_position_2025",
+      "title": "Your other Left! Vision-Language Models Fail to Identify Relative Positions in Medical Images",
+      "authors": "Daniel Wolf et al.",
+      "year": 2025,
+      "venue": "MICCAI",
+      "domain": "Medical VLM spatial reasoning and relative anatomical positioning",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Your+other+Left%21+Vision-Language+Models+Fail+to+Identify+Relative+Positions+in+Medical+Images%22",
+      "source_url": "https://papers.miccai.org/miccai-2025/1027-Paper0530.html",
+      "source_scope": "MICCAI accepted paper and released benchmark description",
+      "reported_weakness": "State-of-the-art medical VLMs fail to determine relative positions of anatomical structures in CT images. Their answers are driven more by memorized anatomical priors than the spatial relationship visible in the current image, so plausible answers persist after flips and rotations contradict normal anatomy. Visual markers yield only moderate gains.",
+      "evidence": [
+        "The paper reports failure of GPT-4o, Llama 3.2, Pixtral, and JanusPro on relative positioning.",
+        "The analysis indicates stronger reliance on anatomical priors than current image content.",
+        "Visual markers improve performance only moderately.",
+        "The released MIRP benchmark isolates relative-position reasoning with controlled transformations."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source introduces MIRP and tests alphanumeric and colored markers. Do not simply add markers, coordinate tokens, generic positional embeddings, or an anatomy segmentation preprocessor.",
+      "inference_constraints": "Use only the unmarked medical image, relative-position question, deterministic image transforms if needed, and trained parameters. Do not assume masks, landmarks, markers, or manually specified regions.",
+      "benchmark_candidates": [
+        {
+          "name": "MIRP Medical Imaging Relative Positioning benchmark",
+          "public_url": "https://wolfda95.github.io/your_other_left/",
+          "released_labels": "More than 4,000 CT slices with released relative-position question-answer pairs and controlled flip and rotation variants",
+          "supported_evaluation": "relative-position accuracy by transformation, answer-change rate, inverse-transform consistency, and prior-versus-image conflict accuracy",
+          "allowed_adaptation": "Generate additional deterministic flips and right-angle rotations while transforming released answers by known geometry and keeping source slices in one split"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "medrax_agent_2025",
+      "title": "MedRAX: Medical Reasoning Agent for Chest X-ray",
+      "authors": "Adibvafa Fallahpour, Jun Ma, Alif Munim, Hongwei Lyu, and Bo Wang",
+      "year": 2025,
+      "venue": "ICML",
+      "domain": "Tool-using Medical VLM agents for multi-step chest X-ray interpretation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22MedRAX%3A+Medical+Reasoning+Agent+for+Chest+X-ray%22",
+      "source_url": "https://arxiv.org/abs/2502.02673",
+      "source_scope": "Paper abstract, benchmark description, and public repository",
+      "reported_weakness": "Specialized chest X-ray models operate in isolation, while complex queries require a medical VLM agent to select and combine detection, classification, localization, comparison, relationship, diagnosis, and characterization tools. A plain language model can choose a plausible tool sequence without knowing whether each returned result is reliable for the current case, allowing early tool errors or conflicting outputs to propagate into a confident final answer.",
+      "evidence": [
+        "The paper states that specialized CXR tools usually operate in isolation and have limited practical utility for complex queries.",
+        "ChestAgentBench contains 2,500 complex queries across seven categories from 675 released cases.",
+        "The benchmark requires multi-step integration of detection, classification, localization, comparison, relationship, diagnosis, and characterization capabilities.",
+        "The public repository releases benchmark data, agent code, and evaluation tooling."
+      ],
+      "evidence_status": "directly_reported_with_scoped_inference",
+      "source_method_summary": "MedRAX dynamically routes questions to a collection of CXR tools and a multimodal language model without additional training. Do not reproduce a generic ReAct loop, a fixed tool list, majority voting, or the same tool-router architecture.",
+      "inference_constraints": "Use the chest X-ray case, query, released tools, and trained agent state. Do not request clinician intervention, ground-truth findings, or oracle tool selection during inference.",
+      "benchmark_candidates": [
+        {
+          "name": "ChestAgentBench",
+          "public_url": "https://github.com/bowang-lab/MedRAX",
+          "released_labels": "2,500 released complex medical queries across seven reasoning categories from 675 expert-curated chest X-ray cases, with benchmark answers and public evaluation code",
+          "supported_evaluation": "overall and category accuracy, tool-call count, successful tool sequence rate, conflict handling, answer consistency, latency, and token or API cost",
+          "allowed_adaptation": "Deterministically mask, delay, corrupt, or contradict cached tool outputs to create reliability stress tests while retaining the original benchmark answer"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "cares_trust_posttraining_2024",
+      "title": "CARES: A Comprehensive Benchmark of Trustworthiness in Medical Vision Language Models",
+      "authors": "Peng Xia et al.",
+      "year": 2024,
+      "venue": "NeurIPS Datasets and Benchmarks",
+      "domain": "Medical VLM post-training for calibrated trustworthiness, abstention, safety, fairness, privacy, and robustness",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22CARES%3A+A+Comprehensive+Benchmark+of+Trustworthiness+in+Medical+Vision+Language+Models%22",
+      "source_url": "https://papers.nips.cc/paper_files/paper/2024/hash/fde7f40f8ced5735006810534dc66b33-Abstract-Datasets_and_Benchmarks_Track.html",
+      "source_scope": "NeurIPS paper, released data, and evaluation toolkit",
+      "reported_weakness": "Medical VLMs remain unreliable across factuality, fairness, safety, privacy, and robustness. They make factual errors, are overconfident under uncertainty, exhibit demographic performance gaps, respond unsafely to adversarial instructions, and fail under image corruption. Optimizing ordinary answer likelihood gives no stable mechanism for deciding when visual evidence is sufficient and when the model should abstain or restrict its response.",
+      "evidence": [
+        "CARES evaluates five trustworthiness dimensions on about 41,000 closed- and open-ended QA pairs.",
+        "The benchmark covers 16 image modalities and 27 anatomical regions.",
+        "The paper reports factual inaccuracies, fairness issues, vulnerability to attacks, and weak privacy awareness.",
+        "The released toolkit includes uncertainty accuracy, overconfidence, abstention, robustness, and task-accuracy metrics."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "CARES is an evaluation benchmark, not a corrective post-training method. Do not propose ordinary supervised fine-tuning on CARES, a single confidence head, generic refusal prompting, or independent heads for each trust dimension.",
+      "inference_constraints": "Use only the image, user query, system safety policy, and trained model. Do not use ground-truth labels, protected-attribute annotations, or clinician review at inference.",
+      "benchmark_candidates": [
+        {
+          "name": "CARES trustworthiness benchmark",
+          "public_url": "https://github.com/richard-peng-xia/CARES",
+          "released_labels": "About 41,000 released QA pairs from public or credentialed datasets, task answers, uncertainty and abstention targets, demographic metadata where provided, safety and privacy prompts, and corruption scripts",
+          "supported_evaluation": "factual accuracy, uncertainty accuracy, overconfident ratio, abstention rate, demographic gaps, jailbreak and toxicity behavior, privacy behavior, and corruption robustness",
+          "allowed_adaptation": "Use released question transformations and corruption code; create deterministic paired clean, uncertain, adversarial, and corrupted variants without changing medical labels"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "omnimedvqa_modality_2024",
+      "title": "OmniMedVQA: A New Large-Scale Comprehensive Evaluation Benchmark for Medical LVLM",
+      "authors": "Yutao Hu et al.",
+      "year": 2024,
+      "venue": "CVPR",
+      "domain": "Medical VLM cross-modality post-training and adaptive visual representation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22OmniMedVQA%3A+A+New+Large-Scale+Comprehensive+Evaluation+Benchmark+for+Medical+LVLM%22",
+      "source_url": "https://openaccess.thecvf.com/content/CVPR2024/html/Hu_OmniMedVQA_A_New_Large-Scale_Comprehensive_Evaluation_Benchmark_for_Medical_LVLM_CVPR_2024_paper.html",
+      "source_scope": "CVPR paper and released benchmark repository",
+      "reported_weakness": "Medical VLMs are evaluated and trained on narrow modality or anatomy distributions, causing poor transfer across real medical images. On OmniMedVQA, medical-specialized models can underperform general-domain models despite domain tuning, indicating that conventional medical instruction tuning may overwrite broad visual capabilities or force incompatible modalities through one undifferentiated representation path.",
+      "evidence": [
+        "OmniMedVQA contains 118,010 images and 127,995 QA items from 73 datasets.",
+        "It covers 12 modalities and more than 20 anatomical regions.",
+        "The paper reports that current LVLMs struggle on the benchmark.",
+        "Medical-specialized LVLMs sometimes underperform general-domain models."
+      ],
+      "evidence_status": "directly_reported_with_scoped_inference",
+      "source_method_summary": "The source converts public medical classification datasets into a comprehensive VQA benchmark and evaluates existing LVLMs. It does not prove that gradient conflict or catastrophic representation overwriting is the causal mechanism. A previous candidate using bounded residual adapters, PCGrad-like gradient surgery, cross-fitted stacking, and path selection was rejected as a conventional stack. Do not use those mechanisms, simple mixed-dataset fine-tuning, one adapter per modality, model or adapter soups, generic mixture-of-experts routing, calibration selectors, or only balancing the sampler. Derive the proposal from an independently observable cross-modality answer behavior and introduce a new supervision unit, interaction rule, or decision process.",
+      "inference_constraints": "Use only the image, question, and trained parameters. Modality metadata may be inferred from the image or included only when the official benchmark question provides it; do not assume private acquisition metadata.",
+      "benchmark_candidates": [
+        {
+          "name": "OmniMedVQA",
+          "public_url": "https://github.com/OpenGVLab/Multi-Modality-Arena",
+          "released_labels": "118,010 authentic medical images with 127,995 released VQA items from 73 datasets, 12 modalities, and more than 20 anatomical regions",
+          "supported_evaluation": "overall and per-modality accuracy, per-anatomy accuracy, worst-group accuracy, cross-modality forgetting, calibration, and balanced macro averages",
+          "allowed_adaptation": "Create patient- or source-safe modality holdouts and deterministic modality-stratified curricula from released metadata while preserving official test items"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "maira2_grounded_report_2024",
+      "title": "MAIRA-2: Grounded Radiology Report Generation",
+      "authors": "Shruthi Bannur et al.",
+      "year": 2024,
+      "venue": "arXiv and Microsoft Research",
+      "domain": "Medical VLM post-training for factual and grounded chest X-ray report generation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22MAIRA-2%3A+Grounded+Radiology+Report+Generation%22",
+      "source_url": "https://arxiv.org/abs/2406.04449",
+      "source_scope": "Paper Methods, report factuality results, and public model release",
+      "reported_weakness": "Even strong grounded chest X-ray report generators continue to emit unsupported or incomplete sentences. In MAIRA-2 evaluation, only 55.6 percent of generated sentences for the strongest variant were confirmed true relative to reference reports. Missing prior studies, comparison context, lateral views, or technique information sharply increases factual errors and hallucinatory temporal or view mentions, while autoregressive decoding does not expose which input supports each generated claim.",
+      "evidence": [
+        "RadFact confirms only 55.6 percent of sentences from the strongest reported MAIRA-2 variant as true relative to the reference.",
+        "Dropping prior study and comparison information reduces report metrics and increases hallucinated comparison language.",
+        "Dropping lateral and technique inputs causes hallucinated lateral-view mentions.",
+        "MIMIC-CXR supports linked prior images, reports, lateral views, and report sections."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "MAIRA-2 performs multitask autoregressive training for report and grounded-report generation with multiple images and context sections. Do not reproduce its box-token report format, simply add prior images, use RadFact as training truth, or add an independent grounding head.",
+      "inference_constraints": "Use only current images, any prior images or report sections actually available for that study, and trained parameters. Missing context must remain explicitly missing; do not retrieve oracle reports or ask for clinician verification.",
+      "benchmark_candidates": [
+        {
+          "name": "MIMIC-CXR with MS-CXR and Chest ImaGenome released grounding labels",
+          "public_url": "https://physionet.org/content/ms-cxr/1.1.0/",
+          "released_labels": "MIMIC-CXR provides linked reports and longitudinal studies; MS-CXR provides 1,162 image-sentence pairs with finding boxes and phrases; Chest ImaGenome provides anatomy-centered scene graphs, comparison relations, and a 500-patient gold subset",
+          "supported_evaluation": "report clinical-label F1, entity-relation consistency, omission and contradiction rates, phrase grounding IoU or pointing accuracy, temporal comparison accuracy, and unsupported view-mention rate",
+          "allowed_adaptation": "Deterministically drop available prior, lateral, technique, or comparison inputs and evaluate only claims whose released report, phrase box, or scene-graph labels provide independent truth"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "medvh_hallucination_2025",
+      "title": "MedVH: Towards Systematic Evaluation of Hallucination for Large Vision Language Models in the Medical Context",
+      "authors": "Zishan Gu, Jiayuan Chen, Fenglin Liu, Changchang Yin, and Ping Zhang",
+      "year": 2025,
+      "venue": "PhysioNet and JAMIA Open",
+      "domain": "Medical VLM hallucination-aware post-training and evidence-sensitive decoding",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22MedVH%3A+Towards+Systematic+Evaluation+of+Hallucination+for+Large+Vision+Language+Models+in+the+Medical+Context%22",
+      "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12363988/",
+      "source_scope": "Peer-reviewed article and released PhysioNet benchmark",
+      "reported_weakness": "Medical VLMs hallucinate when image evidence, clinical context, and answer options conflict or fail to support the requested conclusion. They may follow a false textual premise, accept mismatched visual context, choose an answer even when none is supported, or generate long descriptions containing unsupported findings. Standard answer training does not teach a model to represent the boundary between absent evidence and uncertain evidence.",
+      "evidence": [
+        "MedVH evaluates medical visual hallucination through textual-visual understanding and long-text generation.",
+        "The benchmark contains six domain-specific tasks, including four tasks designed for hallucination evaluation.",
+        "Released folders contain paired baseline and hallucination tests with questions, images, context, and answer choices.",
+        "The benchmark is publicly released through credentialed PhysioNet access with code on GitHub."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "The source is a hallucination evaluation benchmark. Do not propose only refusal prompting, ordinary preference tuning on correct answers, retrieval-augmented generation, or majority consistency across sampled responses.",
+      "inference_constraints": "Use only the provided image, context, options or generation request, and trained model. Do not use benchmark answers, clinician review, or external case-specific truth at inference.",
+      "benchmark_candidates": [
+        {
+          "name": "MedVH Medical Visual Hallucination Test",
+          "public_url": "https://physionet.org/content/medvh/",
+          "released_labels": "Released baseline and hallucination test pairs across six tasks, including images, clinical context, questions, answer choices, correct answers, and long-generation references derived from RAD-VQA, SLAKE, PMC-VQA, MIMIC-CXR, and Medical-Diff-VQA",
+          "supported_evaluation": "baseline task accuracy, hallucination-task accuracy, none-of-the-above behavior, false-premise resistance, context-image mismatch sensitivity, and unsupported-finding rate",
+          "allowed_adaptation": "Construct deterministic evidence-preserving and evidence-breaking pairs from released samples while keeping source cases in one split and retaining released answers"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "deeptumorvqa_2025",
+      "title": "Are Vision Language Models Ready for Clinical Diagnosis? A 3D Medical Benchmark for Tumor-centric Visual Question Answering",
+      "authors": "Yixiong Chen et al.",
+      "year": 2025,
+      "venue": "arXiv",
+      "domain": "3D Medical VLM and tool-augmented agent reasoning for abdominal tumor VQA",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22Are+Vision+Language+Models+Ready+for+Clinical+Diagnosis%3F+A+3D+Medical+Benchmark+for+Tumor-centric+Visual+Question+Answering%22",
+      "source_url": "https://arxiv.org/abs/2505.18915",
+      "source_scope": "Paper abstract, benchmark analysis, and public DeepTumorVQA repository",
+      "reported_weakness": "Medical VLMs that perform adequately on coarse measurement questions still struggle with 3D tumor recognition, visual reasoning, and medical reasoning. Small tumors can disappear during volume preprocessing, and a language model may produce plausible diagnostic reasoning without demonstrating that recognition and measurement were correct for the same lesion. End-to-end answer supervision therefore hides where the 3D diagnostic chain failed.",
+      "evidence": [
+        "DeepTumorVQA contains 9,262 CT volumes and hundreds of thousands of released questions from 17 public datasets.",
+        "Questions cover recognition, measurement, visual reasoning, and medical reasoning.",
+        "Evaluated VLMs perform better on measurement than lesion recognition and reasoning.",
+        "The public repository includes training QA, test QA, metadata, tool caches, and agent evaluation support."
+      ],
+      "evidence_status": "directly_reported_with_scoped_inference",
+      "source_method_summary": "The source introduces a benchmark and evaluates direct VLMs; its current public release also supports tool-augmented agents. Do not reproduce a generic segmentation-measurement-knowledge tool chain, ordinary 3D instruction tuning, or simple chain-of-thought supervision.",
+      "inference_constraints": "Use the CT volume or released image representation, question, trained model, and only tools available in the public agent environment. Do not use answer labels, oracle tumor masks, or clinician input unless a released tool explicitly provides a prediction rather than ground truth.",
+      "benchmark_candidates": [
+        {
+          "name": "DeepTumorVQA",
+          "public_url": "https://github.com/Schuture/DeepTumorVQA",
+          "released_labels": "Public training and test QA across recognition, measurement, visual reasoning, and medical reasoning, structured metadata, 42 clinical subtypes in the current release, and cached outputs for released agent tools",
+          "supported_evaluation": "overall and stage-wise accuracy, recognition-to-reasoning consistency, measurement error where numeric targets are released, tool-call efficiency, subtype performance, and failure propagation",
+          "allowed_adaptation": "Create deterministic stage-consistency subsets by linking released questions from the same case and perturb cached tool outputs without exposing ground-truth masks at inference"
+        }
+      ],
+      "feasibility_status": "ready"
+    },
+    {
+      "id": "lunguage_longitudinal_2026",
+      "title": "LUNGUAGE: A Benchmark for Structured and Sequential Chest X-ray Interpretation",
+      "authors": "LUNGUAGE dataset authors",
+      "year": 2026,
+      "venue": "PhysioNet",
+      "domain": "Longitudinal Medical VLM reasoning and structured chest X-ray report generation",
+      "scholar_url": "https://scholar.google.com/scholar?q=%22LUNGUAGE%3A+A+Benchmark+for+Structured+and+Sequential+Chest+X-ray+Interpretation%22",
+      "source_url": "https://physionet.org/content/lunguage/1.0.0/",
+      "source_scope": "PhysioNet benchmark abstract, Methods, schema, and released files",
+      "reported_weakness": "Most chest X-ray report benchmarks score each report independently and collapse clinical content into coarse categories. They cannot verify whether a medical VLM correctly states that a finding is new, improved, worsened, resolved, or unchanged relative to prior studies. A model can copy common temporal language or the prior report without aligning the change claim to the current image sequence.",
+      "evidence": [
+        "The benchmark states that existing evaluation is dominated by single-report settings and coarse metrics.",
+        "Temporal claims cannot be validated without prior studies.",
+        "LUNGUAGE releases 1,473 structured reports from 230 patients with more than 17,000 entities and 23,000 relation-attribute pairs.",
+        "Its sequential subset contains 80 reports from 10 patients with more than 41,000 pairwise temporal comparisons."
+      ],
+      "evidence_status": "directly_reported",
+      "source_method_summary": "LUNGUAGE is an evaluation resource with structured single-report and sequential schemas. Do not propose only concatenating prior reports, generic temporal attention, next-report language modeling, or a rule-based extraction pipeline.",
+      "inference_constraints": "Use only current and legitimately available prior chest X-rays, their timestamps, permitted prior reports, and trained parameters. Do not access the current reference report, future studies, or clinician feedback.",
+      "benchmark_candidates": [
+        {
+          "name": "LUNGUAGE with linked MIMIC-CXR studies",
+          "public_url": "https://physionet.org/content/lunguage/1.0.0/",
+          "released_labels": "1,473 structured reports from 230 patients with entity, attribute, relation, and temporal labels; 80 sequential reports from 10 patients with more than 41,000 pairwise comparisons; linked MIMIC-CXR study identifiers",
+          "supported_evaluation": "entity and relation F1, attribute accuracy, new-improved-worsened-resolved-unchanged temporal accuracy, sequence consistency, omission rate, and future-information leakage checks",
+          "allowed_adaptation": "Join released study IDs to credentialed MIMIC-CXR images, construct prefix-only sequences, and create deterministic missing-prior or shuffled-prior controls without new labels"
+        }
+      ],
+      "feasibility_status": "ready"
+    }
+  ]
+}

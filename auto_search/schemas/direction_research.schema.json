@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["papers", "scope_summary"],
+  "properties": {
+    "scope_summary": {"type": "string", "minLength": 1},
+    "papers": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "authors",
+          "year",
+          "venue",
+          "domain",
+          "source_url",
+          "source_scope",
+          "reported_weakness",
+          "evidence",
+          "evidence_status",
+          "source_method_summary",
+          "inference_constraints",
+          "benchmark_candidates",
+          "feasibility_status",
+          "feasibility_blocker"
+        ],
+        "properties": {
+          "title": {"type": "string", "minLength": 1},
+          "authors": {"type": "string", "minLength": 1},
+          "year": {"type": "integer", "minimum": 1900, "maximum": 2100},
+          "venue": {"type": "string", "minLength": 1},
+          "domain": {"type": "string", "minLength": 1},
+          "source_url": {"type": "string", "minLength": 1},
+          "source_scope": {"type": "string", "minLength": 1},
+          "reported_weakness": {"type": "string", "minLength": 1},
+          "evidence": {
+            "type": "array",
+            "minItems": 2,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "evidence_status": {
+            "type": "string",
+            "enum": ["directly_reported", "directly_reported_with_scoped_inference"]
+          },
+          "source_method_summary": {"type": "string", "minLength": 1},
+          "inference_constraints": {"type": "string", "minLength": 1},
+          "benchmark_candidates": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "public_url", "task_type", "usage_mode", "released_labels", "supported_evaluation", "allowed_adaptation"],
+              "properties": {
+                "name": {"type": "string", "minLength": 1},
+                "public_url": {"type": "string", "minLength": 1},
+                "task_type": {"type": "string", "minLength": 1},
+                "usage_mode": {"type": "string", "enum": ["direct", "adapted"]},
+                "released_labels": {"type": "string", "minLength": 1},
+                "supported_evaluation": {"type": "string", "minLength": 1},
+                "allowed_adaptation": {"type": "string", "minLength": 1}
+              }
+            }
+          },
+          "feasibility_status": {"type": "string", "enum": ["ready", "blocked"]},
+          "feasibility_blocker": {"type": "string"}
+        }
+      }
+    }
+  }
+}
