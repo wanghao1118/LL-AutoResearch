@@ -73,9 +73,9 @@ Continue boundary repair for as many materially different admissible attempts as
 
 Never treat R0 as another breakpoint retry. An R0 failure follows the registered R0 return path. If a later approved method revision creates an unresolved high-impact choice, the design Skill decides whether a new R0 is required.
 
-Before smoke or any expensive command, read the preflight report rather than trusting its exit code. Stop when a scientific lock, evidence class, planned data composition, benchmark provenance, or production dataflow check fails. Never edit the accepted design, schedule, or a preflight threshold inside this Skill to make execution pass.
+Before smoke or any expensive command, read the preflight report rather than trusting its exit code. When a scientific lock, evidence class, planned data composition, benchmark provenance, or production dataflow check fails, stop advancement to dependent stages and immediately enter the boundary-repair flow above. Continue admissible repairs within the authorized execution scope; if none remains or no new progress is possible, prepare the existing method-revision handoff. Never edit the accepted design, schedule, or a preflight threshold inside this Skill to make execution pass.
 
-On GPU servers: preserve existing processes, use Linux Bash, honor the instruction-file GPU IDs and concurrency cap, materialize the project and environment before sync, stop at the first failed stage, preserve logs and checkpoints and failed stage records, and collect every result path declared by `result_contract.json`.
+On GPU servers: preserve existing processes, use Linux Bash, honor the instruction-file GPU IDs and concurrency cap, and materialize the project and environment before sync. At the first failed stage, halt dependent stages, preserve logs, checkpoints, and failed stage records, and enter boundary repair rather than ending the task. Resume from the first affected stage after repair and collect every result path declared by `result_contract.json`; unavailable paths remain explicit gaps, not successful collection.
 
 Do not infer success from file presence. All five stages must exit zero under the current commands.
 

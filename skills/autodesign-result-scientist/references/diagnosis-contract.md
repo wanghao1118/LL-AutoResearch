@@ -2,13 +2,13 @@
 
 ## Readiness
 
-Record execution status, expected and observed cells, missing and unexpected cells, planned and observed metrics, and any infrastructure failures. Missing execution evidence blocks scientific interpretation.
+Record execution status, expected and observed cells, missing and unexpected cells, planned and observed metrics, and any infrastructure failures from available artifacts. Missing execution evidence blocks scientific interpretation, not engineering diagnosis, recovery planning, or a requested conservative report. Mark unknown counts and unavailable sources explicitly rather than inferring completeness.
 
-Record that observations came from the current run's fresh experiment commands and identify their execution record.
+Identify the current run's experiment commands and execution record for each observation. If that provenance cannot be established, record the gap and exclude the observation from claim-bearing evidence.
 
 Record evidence eligibility before behavior interpretation: scientific locks, family, evidence class, benchmark provenance, data manifest and composition, implementation identity, expected and unexpected cells, and production input paths. If a required claim-bearing comparison fails this check, the affected contribution is `INCOMPLETE`.
 
-Record that `effect_comparison.md` exists and covers every `expected_effects.json` entry. A missing or partial comparison blocks diagnosis.
+Check whether `effect_comparison.md` exists and covers every `expected_effects.json` entry. A missing or partial comparison blocks method-behavior interpretation and evidence-based contribution verdicts; still diagnose the gap, mark affected contributions `INCOMPLETE`, and describe the required correction.
 
 ## Target comparison
 
@@ -47,9 +47,13 @@ For every contribution record:
 
 Reporting scope can choose where results appear, but cannot rewrite the original contribution or omit claim-critical negative, mixed, failed-slice, or ablation results.
 
+Execution follows the user's authorized scope. Continue admissible recovery when execution is authorized; method revisions retain their explicit approval gate. For an explicit diagnosis-only, stop-execution, or conservative-report request, deliver the requested artifacts without starting new experiments. Keep the scientific route and missing-evidence actions recorded, including `iteration` and `execution_required: yes` when execution would be necessary to close the evidence gap, and state that dispatch is withheld by the user's scope restriction. This is a completed diagnostic/reporting delivery with an incomplete experiment, not a scientific `stop` verdict or full-run `COMPLETE`.
+
 ## Report closure
 
 For `stop`, `report`, and reporting-only routes, the accepted reporting plan is an output contract rather than an optional suggestion. Materialize every named table, figure, case-study panel, and analysis artifact under `reports/`. A negative or conservative conclusion changes the caption and claim boundary, not whether the artifact exists.
+
+An explicitly requested conservative report may also be delivered while the scientific route remains open. Apply the same reporting-plan and visible-gap requirements, retain the last accepted run state and unresolved actions, and do not advance to final audit or `COMPLETE` on the strength of report delivery.
 
 Write `reports/report_manifest.json` with one entry per planned output: output path, source experiment/effect IDs, evidence status (`READY`, `INCOMPLETE`, or `N/A`), and a literal reason when not ready. Write `reports/index.html` as the readable entry point. If evidence is missing or ineligible, the planned artifact itself must visibly say `INCOMPLETE` or `N/A` and identify the missing source; never omit it, substitute a simulated target, or encode unavailable as zero. Diagnostic-only partial values may be shown only with an explicit label and may not fill a claim-bearing paper cell.
 

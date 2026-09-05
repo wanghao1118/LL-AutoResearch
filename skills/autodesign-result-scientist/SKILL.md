@@ -1,6 +1,6 @@
 ---
 name: autodesign-result-scientist
-description: "Diagnose, interpret, or iterate on completed AutoDesign results. Use after execution to distinguish preregistration and analyzer issues, implementation behavior, API transport failures, evaluator failures, missing evidence, mixed or negative scientific results, target-versus-observed misses, tuning opportunities, stopping decisions, and paper-ready reporting scope."
+description: "Diagnose completed or interrupted AutoDesign runs, interpret eligible results, or plan iteration. Use after execution attempts to distinguish preregistration and analyzer issues, implementation behavior, API transport failures, evaluator failures, missing evidence, mixed or negative scientific results, target-versus-observed misses, tuning opportunities, stopping decisions, and paper-ready reporting scope."
 ---
 
 # AutoDesign Result Scientist
@@ -9,14 +9,14 @@ Interpret observed evidence without manufacturing support for a contribution.
 
 ## Entry gate
 
-Read `input_brief.md`, `experiment_design.md`, `expected_effects.json`, `implementation_notes.md`, preflight reports, `execution_record.json`, raw results, `result_summary.json`, `effect_comparison.md`, and `references/diagnosis-contract.md`.
+Read `references/diagnosis-contract.md` and the available `input_brief.md`, `experiment_design.md`, `expected_effects.json`, `implementation_notes.md`, preflight reports, `execution_record.json`, raw results, `result_summary.json`, and `effect_comparison.md`. Record missing artifacts rather than treating their absence as a reason to omit engineering diagnosis.
 
-Stop before scientific diagnosis unless current preflight, smoke, experiment, aggregate, and collect records pass, scheduled cells and metrics are complete, no unexpected cell is unresolved, evidence identities match the accepted design, and `effect_comparison.md` covers every design entry.
+Always diagnose execution failures, evidence gaps, and recovery needs from available records. Method-behavior interpretation and evidence-based contribution verdicts still require current preflight, smoke, experiment, aggregate, and collect records to pass, complete scheduled cells and metrics, no unresolved unexpected cell, evidence identities matching the accepted design, and `effect_comparison.md` covering every design entry. Until then, mark affected contributions `INCOMPLETE` and keep partial observations diagnostic-only; do not infer method effectiveness from ineligible evidence.
 
 ## Diagnose
 
 1. Diagnose in this order: scientific-lock or provenance defect; data-preparation defect; implementation defect; API or transport defect; evaluator defect; method behavior. Do not interpret downstream behavior before upstream evidence eligibility passes.
-2. Recompute aggregates from raw records. Preserve denominators, seeds, missing cells, and failed slices.
+2. Recompute aggregates when raw records are available. Preserve denominators, seeds, missing cells, and failed slices; if the required records are unavailable, state the gap rather than inventing an aggregate.
 3. Diagnose every original contribution independently as `SUPPORTED`, `MIXED`, `NOT_SUPPORTED`, or `INCOMPLETE`. A required scientific-lock, provenance, data-preparation, or implementation defect forces `INCOMPLETE` and `iteration`; it cannot produce `NOT_SUPPORTED` or `stop`.
 4. Cite exact experiments, families, variants, tasks, metrics, uncertainty, cases, and falsifiers.
 5. Use only `CLAIM_BEARING` experiments for contribution verdicts. Report pilot and smoke observations separately as engineering or mechanism diagnostics. Read across families deliberately: main experiments establish the effect, ablations attribute it, case studies illustrate it, and analysis experiments bound it. A main result without its supporting ablation attribution is incomplete attribution, not a supported mechanism.
@@ -39,6 +39,8 @@ Stop before scientific diagnosis unless current preflight, smoke, experiment, ag
 
 ## Route handoff
 
+The scientific route records what evidence still needs work; it does not authorize execution. Within an authorized execution task, continue admissible repairs and route method changes through the existing approval gate. If the user explicitly requests diagnosis only, stopping execution, or conservative reporting, finish the requested diagnostic artifacts and, when reporting is requested, materialize the accepted reporting plan with visible `INCOMPLETE`/`N/A` gaps. Record the user's scope restriction in `result_route.md` and retain unresolved evidence work in `next_round.md`; do not dispatch new execution or relabel an open `iteration` as `stop` or `report` merely to finish this delivery. Apply the handoffs below only within that authorized scope.
+
 - `iteration`: route the precise failure to the owner named in `result_route.md` — `autodesign-experiment-design` for a route, evidence, or experiment-set defect, `autodesign-experiment-run` for a code, data, configuration, or execution defect. After execution and ingestion, run this Skill again.
 - `tuning`: route `reporting_only` actions to the integrity auditor; route every action requiring code, data, configuration, or new observations through the named owner Skill, execution, ingestion, recomparison, and a fresh diagnosis.
 - `stop` or `report`: materialize the complete report bundle, then route to the integrity auditor with all negative and mixed evidence retained.
@@ -49,4 +51,4 @@ Do not send an open `iteration` or execution-required `tuning` route to the fina
 
 Write `result_diagnosis.md` and `result_route.md`; write `result_tuning.json` only for tuning and `next_round.md` whenever another action or run is required. Write paper-ready artifacts under `reports/` only from observed evidence. For every terminal reporting route, also write `reports/report_manifest.json` and `reports/index.html`; no accepted reporting-plan output may be silently absent.
 
-Update `AUTODESIGN_STATE.md` to `RESULT_DIAGNOSIS_READY` and set the next Skill to `run-autodesign`. The orchestrator must close or execute the recorded route before final audit.
+Advance `AUTODESIGN_STATE.md` to `RESULT_DIAGNOSIS_READY` only when `result_summary.json.status` is `READY_FOR_GPT_DIAGNOSIS` and the scientific entry gate above passes; set the next Skill to `run-autodesign`. Otherwise preserve the current state and last accepted milestone, and record the blocker and authorized next action. Diagnostic or conservative-report delivery does not imply full experiment completion or an integrity `PASS`; the orchestrator must close or execute the recorded route before final audit.

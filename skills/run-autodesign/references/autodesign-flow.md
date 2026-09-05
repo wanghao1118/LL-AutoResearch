@@ -75,6 +75,8 @@ R0 files exist only when `experiment_design.md` marks R0 required. `result_tunin
 
 A failed or rejected candidate does not erase the last accepted state. Use `skill-advance` for transitions and `skill-repair-state` to canonicalize repairable Markdown table whitespace. History cell values escape Markdown delimiters before writing. `Last completed stage` names an accepted milestone, never `EXECUTION_IN_PROGRESS`; while the design is `WAITING_FOR_R0`, that milestone remains `INPUT_READY`. `RESULT_DIAGNOSIS_READY` requires `result_summary.json.status: READY_FOR_GPT_DIAGNOSIS`. `INTEGRITY_AUDIT_PASS` requires an observed `Verdict: PASS`, and `COMPLETE` requires the current state already be `INTEGRITY_AUDIT_PASS`.
 
+Engineering diagnosis and an explicitly requested conservative report may be written before scientific readiness. Preserve the current state and last accepted milestone while recording blockers, unresolved evidence work, and the user's execution scope; producing these artifacts does not itself permit a state advance, an integrity `PASS`, or full-run `COMPLETE`.
+
 ## Authoritative artifacts
 
 `input_brief.md` is the authoritative scientific-intent artifact. It preserves the literal Motivation and Contribution from the AutoSearch handoff, any optional Benchmark and every additional item the user supplied, then records scientific locks, autonomous design choices with outcome-impact classifications, resource constraints, operational definitions, and blockers. When Benchmark is absent, `experiment_design.md` owns its contribution-driven selection or design. Later Skills may resolve an autonomous choice but may never rewrite a scientific lock.
@@ -122,7 +124,7 @@ The AutoWriting handoff has no separate state transition. `ACCEPTED` permits dra
 
 `reports/report_manifest.json` closes the accepted reporting plan. It lists every named table, figure, case-study panel, and analysis artifact with its path, source IDs, and `READY`, `INCOMPLETE`, or `N/A` evidence status. `reports/index.html` is the human-readable entry point. Terminal, conservative, mixed, and negative routes still materialize the full plan: unavailable evidence is shown at the planned output path with its exact reason and is never silently omitted or replaced by zero or a simulated target.
 
-Unexpected cells stay explicit and make the current result summary ineligible for diagnosis until the design and schedule are deliberately revised and downstream artifacts invalidated. A later round never extends an accepted schedule silently.
+Unexpected cells stay explicit and make the current result summary ineligible for method-behavior interpretation and evidence-based contribution verdicts until the design and schedule are deliberately revised and downstream artifacts invalidated. Engineering diagnosis, recovery planning, and a requested conservative report still proceed with visible gaps. A later round never extends an accepted schedule silently.
 
 ## Invalidation
 
