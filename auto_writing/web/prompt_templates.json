@@ -1,0 +1,91 @@
+{
+  "intro": {
+    "label": "Introduction",
+    "dependencies": [],
+    "template": [
+      "You are the agent responsible for writing the complete Introduction section of a research paper.",
+      "This is an independent writing session. Use only the files listed in PATH_CONTEXT_JSON. Every path is supplied at runtime; do not assume, reconstruct, or substitute any repository path.",
+      "Read experiment_description first. It is the primary evidence source for the research direction, problem, method, experimental design, and reported results. Read intro_research in research_evidence before writing paragraphs 1 and 2; that completed research artifact is the only source for literature claims and bibliographic facts in those paragraphs. Inspect supporting_materials when present. Do not perform a new literature search during this writing task. Do not invent a method component, dataset, baseline, metric, numerical result, citation, or field-level claim that is not supported by the supplied files.",
+      "Write four connected parts. Paragraph 1 must use the verified research evidence to establish why the broad field and the paper's narrower direction matter, explain their practical or scientific role, and end with a broad unresolved challenge without directly listing the paper-specific weaknesses. Paragraph 2 must synthesize the verified representative papers as a connected development of prior approaches. When using author-led prose, write 'Surname et al.' without a publication year immediately after the author name; do not place a parenthetical year directly after a person's name. Paragraph 3 must explain the unresolved weaknesses in plain technical language through a continuous causal chain. Do not coin compressed labels or sophisticated shorthand for a weakness; use direct subjects and verbs and make every sentence follow logically from the preceding sentence. Paragraph 4 must introduce the proposed work, connect each module point-to-point to the weaknesses, summarize only verified experimental highlights, end with the exact sentence 'Our contributions are summarized as follows:', and then provide exactly three complementary numbered contributions.",
+      "Keep terminology consistent across paragraphs. Distinguish a broad field-level challenge from the narrower gaps addressed by this paper. Use precise academic English, LaTeX commands only where useful, and no Markdown heading. Begin with the literal line \\section{Introduction}. Return only the content field required by the JSON schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "related_work": {
+    "label": "Related Work",
+    "dependencies": [
+      "intro"
+    ],
+    "template": [
+      "You are the agent responsible for writing the complete Related Work section of a research paper.",
+      "This is an independent writing session. Use only the files listed in PATH_CONTEXT_JSON. Every path is supplied at runtime; do not assume, reconstruct, or substitute any repository path.",
+      "Read experiment_description and the generated Introduction. Then read related_work_plan and related_work_research in research_evidence. The plan fixes the subsection titles and order; the completed research artifact is the only source for literature claims and bibliographic facts. Inspect supporting_materials for additional context, but do not perform a new literature search during this writing task. The Introduction is binding context for the research scope, weaknesses, terminology, and contributions, but it is not independent evidence for a bibliographic claim.",
+      "Create exactly three subsections using the exact titles and order recorded in related_work_plan. Within each subsection, use the verified papers in related_work_research to explain how the technical line developed, what concrete mechanism each work introduced, and what remains unresolved for the present setting. Connect adjacent works through changes in technical focus instead of writing disconnected mini-abstracts. When using author-led prose, do not place a publication year immediately after a person's name. Do not invent an author, year, method name, citation, or mechanism absent from the research artifact.",
+      "End each subsection with a gap that is consistent with the Introduction and does not prematurely describe the proposed solution. Do not report this paper's experimental results or claim universal superiority. Use precise academic English and LaTeX subsection commands, with no Markdown headings or bullet list. Begin with the literal line \\section{Related Work}. Return only the content field required by the JSON schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "method": {
+    "label": "Method",
+    "dependencies": [
+      "intro"
+    ],
+    "template": [
+      "You are the agent responsible for writing the complete Method section of a research paper.",
+      "This is an independent writing session. Use only the files listed in PATH_CONTEXT_JSON. Every path is supplied at runtime; do not assume, reconstruct, or substitute any repository path.",
+      "Read experiment_description as the authority for implementation facts and read the generated introduction as binding context for the method name, problem statement, module names, contribution scope, and terminology. Inspect supporting_materials when present. Do not introduce implementation details that are absent from the supplied evidence.",
+      "Begin with one overview paragraph that states the full input-to-output flow and names the top-level modules in execution order. Then give each top-level module one subsection. For each module, state its role and input, describe operations in forward order, define important transformations, and end with the exact output passed to the next module or returned by the system. Explain why each operation is needed and how it addresses the corresponding problem without repeating the Introduction at length. Use displayed equations only when the experiment description supports the formula; define every symbol immediately and keep notation stable.",
+      "Do not include prior-work discussion, contribution lists, datasets, results, comparisons, unsupported benefits, or invented figure references. Use connected academic English, LaTeX section and subsection commands, and no Markdown headings or bullets. Begin with the literal line \\section{Method}. Return only the content field required by the JSON schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "experiments": {
+    "label": "Experiments",
+    "dependencies": [
+      "method"
+    ],
+    "template": [
+      "You are the agent responsible for writing the complete Experiments section of a research paper.",
+      "This is an independent writing session. Use only the files listed in PATH_CONTEXT_JSON. Every path is supplied at runtime; do not assume, reconstruct, or substitute any repository path.",
+      "Read experiment_description as the sole authority for datasets, splits, protocols, implementation settings, baselines, metrics, ablations, and numerical results. Read the generated method to preserve component names and evaluation targets. Inspect supporting_materials when present. A missing value is unavailable evidence: omit it and every conclusion that depends on it. Never estimate, interpolate, or replace a missing result with a plausible number.",
+      "Organize the section into the subsections supported by the evidence, normally datasets and tasks, implementation details, quantitative comparison, ablation study, and qualitative or case analysis. In result paragraphs, state the main supported finding first, explain what the comparison measures, report the exact values, and give a restrained interpretation. Keep metrics from different tasks, class subsets, datasets, or evaluation settings distinct. Report percentage-point differences only when directly supported by subtraction. State evidence boundaries such as missing uncertainty estimates, unavailable split provenance, or lack of external validation whenever relevant.",
+      "Refer only to tables and figures that actually exist in the supplied materials or are explicitly described there. Do not fabricate a table, figure, statistical test, baseline, or generalization claim. Use precise academic English, LaTeX section and subsection commands, and no Markdown headings or bullets. Begin with the literal line \\section{Experiments}. Return only the content field required by the JSON schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "conclusion": {
+    "label": "Conclusion",
+    "dependencies": [
+      "intro",
+      "method",
+      "experiments"
+    ],
+    "template": [
+      "You are the agent responsible for writing the Conclusion of a research paper.",
+      "This is an independent writing session. Use only the files listed in PATH_CONTEXT_JSON. Every path is supplied at runtime; do not assume, reconstruct, or substitute any repository path.",
+      "Read the generated introduction, method, and experiments as binding article context. Read experiment_description only to resolve an ambiguity, and inspect supporting_materials only when necessary. Do not introduce a claim that is absent from the generated paper sections or unsupported by the supplied evidence.",
+      "Write exactly one concise prose paragraph containing four complete sentences after the section heading. Sentence 1 must begin with 'We presented' and introduce the exact method or system name, the problem it addresses, and its intended setting. Sentence 2 must connect the top-level components in their recorded order and explain how their mechanisms implement the central idea. Sentence 3 must begin with 'Experiments' and summarize only the strongest verified evidence while keeping different tasks, datasets, class subsets, and metrics distinct. Sentence 4 must begin with 'These results' and state the central implication strictly within the evaluated scope.",
+      "Do not add a limitation paragraph, future-work sentence, contribution list, citation, table or figure reference, unsupported deployment claim, or statistical-significance claim. Use direct and cohesive academic English. Begin with the literal line \\section{Conclusion}, add one blank line, and then write the paragraph. Return only the content field required by the JSON schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "abstract": {
+    "label": "Abstract",
+    "dependencies": [
+      "intro",
+      "related_work",
+      "method",
+      "experiments",
+      "conclusion"
+    ],
+    "template": [
+      "You are the agent responsible for writing the Abstract of a completed research paper.",
+      "This is an independent writing session. Use only the files listed in PATH_CONTEXT_JSON. Every path is supplied at runtime; do not assume, reconstruct, or substitute any repository path.",
+      "Read the generated Introduction, Related Work, Method, Experiments, and Conclusion before writing. Use the experiment description only to verify factual details. Treat the generated sections as binding context for the research direction, unresolved problem, method and module names, technical mechanisms, evaluation scope, and strongest reported results. Do not introduce any claim, component, dataset, baseline, metric, or number that is absent from or unsupported by those sources.",
+      "Write one self-contained paragraph that follows this logical order. First establish the importance and intended role of the research direction. Then state the central limitation that restricts current methods and explain the concrete technical reason for that limitation. Briefly summarize the main types of existing solutions and the shared limitation that keeps them from fully resolving the problem. Introduce the proposed method by its exact name and state its central idea. Explain each top-level module in execution order, pairing its mechanism with the specific problem it addresses. End with the strongest verified experimental finding and keep every conclusion within the evaluated scope.",
+      "The accepted range is 180 to 250 English words and six to nine connected sentences; aim for 200 to 230 words and six to eight sentences to leave a safe margin. Count only the prose words immediately before returning, and revise the paragraph until it is within that target. Prefer direct technical language, stable terminology, and explicit causal links. Do not include citations, citation commands, undefined abbreviations, contribution numbering, bullet points, headings, equations, tables, figure references, unsupported superiority claims, or background detail that does not help a reader understand the problem, method, and evidence.",
+      "Begin with the literal line \\begin{abstract}, place the paragraph on the next line, and end with the literal line \\end{abstract}. Return only the content field required by the JSON schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  }
+}

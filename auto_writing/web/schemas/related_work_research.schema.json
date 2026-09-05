@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subsections", "evidence_boundaries"],
+  "properties": {
+    "subsections": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "thesis",
+          "papers",
+          "synthesis",
+          "unresolved_gap"
+        ],
+        "properties": {
+          "title": { "type": "string", "minLength": 3 },
+          "thesis": { "type": "string", "minLength": 20 },
+          "papers": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "lead_author",
+                "authors",
+                "year",
+                "venue",
+                "method_name",
+                "mechanism",
+                "development_role",
+                "source_url",
+                "doi",
+                "citation_key",
+                "bibtex"
+              ],
+              "properties": {
+                "title": { "type": "string", "minLength": 5 },
+                "lead_author": { "type": "string", "minLength": 2 },
+                "authors": { "type": "string", "minLength": 2 },
+                "year": { "type": "integer", "minimum": 1900, "maximum": 2100 },
+                "venue": { "type": "string", "minLength": 2 },
+                "method_name": { "type": "string" },
+                "mechanism": { "type": "string", "minLength": 20 },
+                "development_role": { "type": "string", "minLength": 20 },
+                "source_url": { "type": "string", "minLength": 8 },
+                "doi": { "type": "string" },
+                "citation_key": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9:_-]{2,79}$" },
+                "bibtex": { "type": "string", "minLength": 40 }
+              }
+            }
+          },
+          "synthesis": { "type": "string", "minLength": 30 },
+          "unresolved_gap": { "type": "string", "minLength": 20 }
+        }
+      }
+    },
+    "evidence_boundaries": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 8 }
+    }
+  }
+}

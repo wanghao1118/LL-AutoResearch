@@ -1,14 +1,29 @@
 # AutoResearch
 
-AutoResearch is an evidence-grounded research workflow engine. The first MVP focuses only on
-Auto Search:
+AutoResearch is an evidence-grounded research workflow engine. It currently includes an Auto
+Search pipeline and an Auto Writing workspace. Auto Search maps a research field from primary
+sources:
 
 ```text
 research topic -> papers -> paper cards -> field map -> gap evidence report
 ```
 
-It is intentionally not a paper-writing machine. The goal is to produce a research map that can
-support group discussion and later method/benchmark design.
+The research map supports group discussion and later method or benchmark design. Auto Writing can
+then turn experiment documentation and supporting evidence into a structured manuscript through
+manually controlled Codex agents.
+
+## Auto Writing
+
+The `auto_writing` branch includes the complete local Auto Writing web application, including its
+HTML/CSS/JavaScript frontend, Python API server, prompt templates, output schemas, and tests.
+
+```powershell
+cd auto_writing
+.\run_web.ps1 -Detached
+```
+
+Open `http://127.0.0.1:8766/`. See [auto_writing/README.md](auto_writing/README.md) for the full
+workflow, requirements, runtime layout, and test instructions.
 
 ## Quick Start
 

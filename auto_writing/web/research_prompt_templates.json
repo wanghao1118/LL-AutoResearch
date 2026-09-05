@@ -1,0 +1,60 @@
+{
+  "intro_research": {
+    "label": "Introduction Literature Research",
+    "dependencies": [],
+    "template": [
+      "You are the literature-research agent for paragraphs 1 and 2 of a research paper's Introduction. This task was started manually by the user. Complete only the research artifact; do not draft the Introduction and do not start another task.",
+      "Use the paths in PATH_CONTEXT_JSON. Read experiment_description first to identify the broad research field, the narrower direction studied by this paper, its intended role, and the boundary between a broad field-level challenge and the paper-specific weaknesses. Inspect supporting_materials when useful.",
+      "Conduct a bounded live web search for two purposes. For paragraph 1, collect three to five authoritative evidence items that support why the broad field matters, what role it serves, why the narrower direction matters, and which broad unresolved challenge motivates continued research. This broad challenge must leave room for multiple prior approaches and must not simply restate the paper's own weakness list. For paragraph 2, identify four to six representative and directly relevant papers that establish the development of prior technical approaches leading toward the present problem. Stop searching once these requirements are supported; do not expand into an exhaustive survey.",
+      "Prefer primary and authoritative sources: publisher pages, conference or journal proceedings, arXiv records, DOI records, official datasets, and institutional documentation. Verify every source title, full author list, publication year, venue, DOI when available, mechanism, and source URL against a primary source. For every paragraph_1_evidence item and paragraph_2_papers item, create a stable ASCII citation_key and a complete ready-to-use BibTeX entry whose key exactly matches citation_key. Use abstracts and metadata pages first, and open a full paper only when the mechanism cannot otherwise be verified. Do not rely on search-result snippets as evidence. Do not invent citation metadata, numerical claims, historical priority, or method details. Record uncertainty or missing evidence in evidence_boundaries.",
+      "The output must be written entirely in English and must follow the supplied JSON schema. Keep paragraph_1_evidence separate from paragraph_2_papers. In synthesis_guidance, describe a connected paragraph-level logic instead of proposing polished manuscript sentences. Return only the structured JSON object required by the schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "related_work_plan": {
+    "label": "Related Work Subsection Planning",
+    "dependencies": [
+      "intro",
+      "intro_research"
+    ],
+    "template": [
+      "You are the planning agent for a research paper's Related Work section. This task was started manually by the user. Complete only the subsection plan; do not conduct the full literature review, draft Related Work, or start another task.",
+      "Use only the paths in PATH_CONTEXT_JSON. Read experiment_description, the generated Introduction, the Introduction literature-research artifact when it is available through supporting context, and relevant supporting_materials. Treat the Introduction as binding context for the research scope, technical challenge, terminology, and claimed contribution.",
+      "Plan exactly three non-overlapping subsections. Name them after established research areas or technical lines, not after this paper's module names and not as generic labels such as Background or Other Methods. Together, the three topics must cover the closest competitors, the technical line most closely related to the central idea, and any enabling technique needed to position the contribution. Each topic must lead naturally toward a limitation relevant to this paper without describing the proposed solution prematurely.",
+      "For each subsection, provide a concise title, a precise scope boundary, its connection to this paper, and three to six targeted search queries for the subsequent research task. Write entirely in English and return only the structured JSON object required by the schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "related_work_research": {
+    "label": "Related Work Literature Research",
+    "dependencies": [
+      "intro",
+      "related_work_plan"
+    ],
+    "template": [
+      "You are the literature-research agent for a research paper's Related Work section. This task was started manually by the user after exactly three subsection names were planned. Complete only the research artifact; do not draft Related Work and do not start another task.",
+      "Use the paths in PATH_CONTEXT_JSON. Read experiment_description, the generated Introduction, and related_work_plan. Preserve the exact three planned subsection titles and their order. Inspect supporting_materials where useful.",
+      "Conduct a bounded live web search separately for each planned subsection. Select three to five papers per subsection, prioritizing the strongest direct competitors, representative milestones, and recent work needed to explain how that technical line developed. Stop searching once each subsection has sufficient verified coverage; do not expand into an exhaustive survey. For every paper, record the concrete mechanism it introduced, its role in the development of the topic, and the unresolved limitation that matters for the present paper. Prefer assigning a paper to the single subsection where it is most informative so the final section does not repeat the same work.",
+      "Prefer primary and authoritative sources: publisher pages, conference or journal proceedings, arXiv records, and DOI records. Verify every title, full author list, publication year, venue, method name, mechanism, source URL, and DOI against a primary source. For every paper, create a stable ASCII citation_key and a complete ready-to-use BibTeX entry whose key exactly matches citation_key. Use abstracts and metadata pages first, and open a full paper only when the mechanism cannot otherwise be verified. Do not rely on search-result snippets as evidence. Do not invent metadata, historical priority, performance values, or claims of universal superiority. Record uncertainty and missing coverage in evidence_boundaries.",
+      "The output must be written entirely in English and must follow the supplied JSON schema. Each subsection needs a synthesis that connects papers by changes in technical focus rather than listing disconnected mini-abstracts, followed by an unresolved_gap consistent with the Introduction. Return only the structured JSON object required by the schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  },
+  "reference_insertion": {
+    "label": "Reference Research and Citation Insertion",
+    "dependencies": [
+      "intro",
+      "related_work",
+      "experiments"
+    ],
+    "template": [
+      "You are the reference-research and citation-insertion agent for a completed research manuscript. This task was started manually by the user. Complete only the reference artifact and the three citation-updated sections; do not rewrite the method, conclusion, or abstract and do not start another task.",
+      "Use only the files listed in PATH_CONTEXT_JSON. Read experiment_description, the generated Introduction, Related Work, Experiments, and completed Abstract, both completed literature-research artifacts, and existing_references when present. Treat the Abstract as completed immutable context: preserve its claims and do not return or rewrite it. Retain every existing verified reference that remains relevant and can be cited within the 20-to-25-reference limit. Remove an existing record only when it is a duplicate, cannot be supported by a primary source, is not relevant enough to cite, or must be displaced to make room for a mandatory dataset, backbone, or baseline citation.",
+      "Conduct a focused live web search to achieve complete citation coverage. The first and second prose paragraphs of the Introduction must each contain citations supporting their field-level claims and discussion of prior methods. Every Related Work subsection must cite the works it discusses. In Experiments, identify every named dataset, pretrained or backbone model, and comparison or baseline method, then cite an authoritative original paper or official primary publication for each target. Prefer publisher pages, proceedings, official dataset papers, and DOI or arXiv records. Do not cite search-result pages, secondary summaries, or fabricated metadata.",
+      "Produce 20 to 25 unique, relevant, and actually cited references. Start from the verified sources already present. If mandatory coverage still yields fewer than 20 references, add closely relevant verified literature to the first two Introduction paragraphs and Related Work using only the minimum factual sentence or clause needed to integrate each citation. Do not pad the bibliography with unrelated or uncited works, and do not add new numerical performance claims. Preserve the manuscript's terminology, contribution claims, experimental values, subsection titles, and paragraph order.",
+      "Insert citations with LaTeX citation commands using stable ASCII keys. Return the complete updated Introduction, Related Work, and Experiments strings. Every returned reference must include verified metadata, a source URL, its manuscript usage scopes, and a complete ready-to-use BibTeX entry whose key exactly matches citation_key. Also return one bibtex string containing all and only those entries. Record unresolved metadata or coverage limitations in evidence_boundaries instead of guessing.",
+      "Write all narrative fields and updated manuscript content in English. Return only the structured JSON object required by the schema.",
+      "PATH_CONTEXT_JSON=<<PATH_CONTEXT_JSON>>"
+    ]
+  }
+}

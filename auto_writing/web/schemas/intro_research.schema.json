@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "research_direction",
+    "paragraph_1_evidence",
+    "paragraph_2_papers",
+    "synthesis_guidance",
+    "evidence_boundaries"
+  ],
+  "properties": {
+    "research_direction": {
+      "type": "string",
+      "minLength": 20
+    },
+    "paragraph_1_evidence": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim",
+          "evidence",
+          "source_title",
+          "authors",
+          "year",
+          "venue",
+          "source_url",
+          "doi",
+          "citation_key",
+          "bibtex"
+        ],
+        "properties": {
+          "claim": { "type": "string", "minLength": 12 },
+          "evidence": { "type": "string", "minLength": 20 },
+          "source_title": { "type": "string", "minLength": 3 },
+          "authors": { "type": "string", "minLength": 2 },
+          "year": { "type": "integer", "minimum": 1900, "maximum": 2100 },
+          "venue": { "type": "string", "minLength": 2 },
+          "source_url": { "type": "string", "minLength": 8 },
+          "doi": { "type": "string" },
+          "citation_key": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9:_-]{2,79}$" },
+          "bibtex": { "type": "string", "minLength": 40 }
+        }
+      }
+    },
+    "paragraph_2_papers": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "lead_author",
+          "authors",
+          "year",
+          "venue",
+          "method_name",
+          "mechanism",
+          "development_role",
+          "source_url",
+          "doi",
+          "citation_key",
+          "bibtex"
+        ],
+        "properties": {
+          "title": { "type": "string", "minLength": 5 },
+          "lead_author": { "type": "string", "minLength": 2 },
+          "authors": { "type": "string", "minLength": 2 },
+          "year": { "type": "integer", "minimum": 1900, "maximum": 2100 },
+          "venue": { "type": "string", "minLength": 2 },
+          "method_name": { "type": "string" },
+          "mechanism": { "type": "string", "minLength": 20 },
+          "development_role": { "type": "string", "minLength": 20 },
+          "source_url": { "type": "string", "minLength": 8 },
+          "doi": { "type": "string" },
+          "citation_key": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9:_-]{2,79}$" },
+          "bibtex": { "type": "string", "minLength": 40 }
+        }
+      }
+    },
+    "synthesis_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paragraph_1_logic",
+        "paragraph_2_logic",
+        "transition_to_unresolved_challenge"
+      ],
+      "properties": {
+        "paragraph_1_logic": { "type": "string", "minLength": 30 },
+        "paragraph_2_logic": { "type": "string", "minLength": 30 },
+        "transition_to_unresolved_challenge": { "type": "string", "minLength": 20 }
+      }
+    },
+    "evidence_boundaries": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 8 }
+    }
+  }
+}

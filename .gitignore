@@ -9,3 +9,5 @@ outputs/
 dist/
 build/
 *.egg-info/
+auto_writing/writing_runs/
+auto_writing/tmp/
