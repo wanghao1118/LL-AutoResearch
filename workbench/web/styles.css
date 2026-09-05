@@ -1,0 +1,43 @@
+:root { color-scheme: light; --bg: #f4f6f7; --surface: #fff; --ink: #172126; --muted: #66747b; --line: #dce2e4; --line-strong: #c7d0d3; --teal: #087d70; font-family: Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
+.icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 70px; padding: 0 28px 0 22px; background: rgba(255, 255, 255, .97); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.brand-logo-frame { position: relative; display: block; width: 44px; height: 44px; overflow: hidden; flex: 0 0 auto; border-radius: 6px; background: white; }
+.brand-logo-frame img { position: absolute; width: 128px; max-width: none; left: -6px; top: -24px; }
+.brand > span:last-child { display: grid; }
+.brand strong { font-size: 15px; line-height: 1.25; }
+.brand small { color: var(--muted); font-size: 10px; }
+main { max-width: 1248px; margin: 0 auto; padding: 62px 40px 40px; }
+.eyebrow { color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.workspace-heading { margin-bottom: 35px; }
+h1 { margin: 10px 0 13px; font-size: 30px; line-height: 1.4; }
+.workspace-heading p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.module-card { display: flex; flex-direction: column; min-width: 0; padding: 25px 25px 0; border: 1px solid var(--line-strong); border-radius: 6px; background: white; }
+.module-card:hover { border-color: var(--teal); }
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+.module-mark { display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid var(--line); background: var(--bg); color: var(--teal); }
+.module-mark svg { width: 22px; height: 22px; }
+.module-number { color: #8b969b; font: 12px/1.4 "Cascadia Mono", Consolas, monospace; }
+.module-card h2 { margin: 9px 0 5px; font-size: 23px; }
+.module-card h3 { margin: 0 0 17px; font-size: 12px; font-weight: 600; }
+.module-card p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.9; }
+.module-card ul { display: grid; gap: 9px; margin: 24px 0 30px; padding: 0; list-style: none; color: #354349; font-size: 10px; line-height: 1.6; }
+.module-card li { display: flex; align-items: baseline; gap: 8px; }
+.module-card li::before { content: ""; width: 4px; height: 4px; flex: 0 0 auto; background: #88b3a9; }
+.card-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: auto; padding: 18px 0; border-top: 1px solid var(--line); }
+.module-status { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 9px; }
+.module-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #99a5a9; }
+.module-status.connected::before { background: var(--teal); }
+.module-status.failed { color: #b03a51; }
+.module-status.failed::before { background: #b03a51; }
+.enter { display: inline-flex; align-items: center; gap: 6px; color: var(--teal); font-size: 11px; font-weight: 700; }
+.enter svg { width: 15px; height: 15px; }
+.workspace-note { margin: 24px 0 0; color: var(--muted); font-size: 10px; line-height: 1.8; }
+@media (max-width: 960px) { main { padding: 42px 25px 30px; } .module-grid { gap: 12px; } .module-card { padding: 22px 18px 0; } .card-footer { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 760px) { .topbar { align-items: stretch; flex-direction: column; gap: 0; padding: 4px 14px 6px; } .brand { min-height: 56px; } .topbar .module-nav { min-height: 42px; justify-content: space-between; gap: 2px; } .brand-logo-frame { width: 38px; height: 38px; } .brand-logo-frame img { width: 111px; left: -5px; top: -21px; } main { padding: 30px 18px; } h1 { font-size: 24px; } .workspace-heading { margin-bottom: 25px; } .module-grid { grid-template-columns: 1fr; gap: 16px; } .module-card { padding: 24px 23px 0; } .card-top { margin-bottom: 22px; } .card-footer { align-items: center; flex-direction: row; } }

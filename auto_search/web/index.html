@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The ThAInker Auto Search research idea workspace" />
+    <title>The ThAInker · Auto Search</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="icon-folder-plus" viewBox="0 0 24 24"><path d="M12 10v6"/><path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+      <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+      <symbol id="icon-folder-open" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></symbol>
+      <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="icon-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+      <symbol id="icon-circle-stop" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><rect width="6" height="6" x="9" y="9" rx="1"/></symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="icon-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="icon-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+      <symbol id="icon-external-link" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    </svg>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="返回第一个 Idea">
+          <span class="brand-logo-frame"><img src="assets/the-thainker-logo.png" alt="The ThAInker" /></span>
+          <span>
+            <strong>The ThAInker</strong>
+            <small>Auto Search</small>
+          </span>
+        </a>
+        <button class="icon-button mobile-sidebar-toggle" id="sidebarToggle" type="button" title="调研文件夹" aria-label="打开调研文件夹">
+          <svg><use href="#icon-folder"></use></svg>
+        </button>
+      </header>
+
+      <aside class="sidebar" id="sidebar" aria-label="调研文件夹">
+        <div class="sidebar-head">
+          <div>
+            <span class="eyebrow">RESEARCH FOLDERS</span>
+            <strong id="resultCount">加载中</strong>
+          </div>
+        </div>
+        <button class="new-folder-button" id="researchLaunch" type="button">
+          <svg aria-hidden="true"><use href="#icon-folder-plus"></use></svg>
+          <span>新建调研</span>
+        </button>
+        <div class="folder-list" id="ideaList"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <strong>暂无调研文件夹</strong>
+          <span>创建调研后，结果会显示在这里。</span>
+        </div>
+      </aside>
+      <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="关闭调研文件夹" hidden></button>
+
+      <main class="workspace">
+        <div class="mobile-picker" id="mobilePicker">
+          <label for="mobileIdeaSelect">当前方案</label>
+          <select id="mobileIdeaSelect"></select>
+        </div>
+
+        <div class="loading" id="loadingState">
+          <span class="loading-line"></span>
+          <span class="loading-line short"></span>
+        </div>
+
+        <div id="ideaView" hidden>
+          <section class="idea-header">
+            <div class="idea-heading">
+              <div class="title-row">
+                <span class="idea-number" id="ideaNumber">01</span>
+                <span class="verdict-badge" id="verdictBadge">--</span>
+              </div>
+              <h1 id="ideaTitle"></h1>
+              <p class="paper-title" id="paperTitle"></p>
+              <div class="paper-meta" id="paperMeta"></div>
+            </div>
+            <div class="header-actions">
+              <a class="button secondary" id="sourceLink" href="#" target="_blank" rel="noreferrer">查看论文 ↗</a>
+            </div>
+          </section>
+
+          <nav class="view-tabs" id="viewTabs" aria-label="内容视图">
+            <button type="button" class="active" data-tab="overview">概览</button>
+            <button type="button" data-tab="method">Idea 方法</button>
+            <button type="button" data-tab="review">评审</button>
+            <button type="button" data-tab="human">人工核验</button>
+          </nav>
+
+          <section class="tab-panel active" data-panel="overview">
+            <div class="content-section weakness-section">
+              <div class="section-label">
+                <span>01</span>
+                <div><strong>Weakness</strong><small>问题定义与研究边界</small></div>
+              </div>
+              <div class="prose lead-prose" id="weaknessContent"></div>
+            </div>
+
+            <div class="content-section">
+              <div class="section-label">
+                <span>02</span>
+                <div><strong>成因分析</strong><small>三个连续的机制原因</small></div>
+              </div>
+              <div class="overview-causes" id="overviewCauses"></div>
+            </div>
+
+            <div class="content-section">
+              <div class="section-label">
+                <span>03</span>
+                <div><strong>Contribution</strong><small>逐点对应三个成因</small></div>
+              </div>
+              <div class="contribution-grid" id="contributionGrid"></div>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="method">
+            <div class="method-layout">
+              <nav class="section-nav" id="sectionNav" aria-label="Idea 板块导航"></nav>
+              <div class="method-content" id="methodContent"></div>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="review">
+            <div class="review-summary">
+              <div>
+                <span class="eyebrow">REVIEW VERDICT</span>
+                <h2 id="reviewVerdict"></h2>
+                <p>基于问题扎根、创新性、可行性、Benchmark 与验证强度的结构化评审。</p>
+              </div>
+              <div class="score-overview" id="scoreOverview"></div>
+            </div>
+            <div class="review-columns">
+              <section class="review-list positive"><h3>优势</h3><ol id="strengthList"></ol></section>
+              <section class="review-list risk"><h3>主要风险</h3><ol id="riskList"></ol></section>
+              <section class="review-list revision"><h3>必要修改</h3><ol id="revisionList"></ol></section>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="human">
+            <div class="human-review-panel">
+              <div>
+                <span class="eyebrow">HUMAN VERIFICATION</span>
+                <h2>人工核验</h2>
+                <p id="humanReviewStatus">尚未人工核验</p>
+              </div>
+              <div class="human-review-options" id="humanReviewActions" role="group" aria-label="人工核验结果">
+                <button type="button" data-human-review="approved"><svg aria-hidden="true"><use href="#icon-circle-check"></use></svg><span>通过</span></button>
+                <button type="button" data-human-review="discarded"><svg aria-hidden="true"><use href="#icon-circle-x"></use></svg><span>废弃</span></button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="fatal-error" id="errorState" hidden>
+          <strong>无法加载 Idea 数据</strong>
+          <span>请通过 <code>python web/serve.py</code> 启动本地服务。</span>
+        </div>
+      </main>
+    </div>
+
+    <dialog class="app-dialog research-dialog" id="researchDialog">
+      <form class="dialog-form" id="researchForm">
+        <header class="dialog-header">
+          <div><span class="eyebrow">NEW RESEARCH</span><h2>新建调研</h2></div>
+          <button class="icon-button dialog-close" type="button" data-close-dialog="researchDialog" title="关闭" aria-label="关闭">
+            <svg><use href="#icon-x"></use></svg>
+          </button>
+        </header>
+        <div class="dialog-body research-form">
+          <label class="field direction-field">
+            <span>研究方向</span>
+            <textarea id="directionInput" rows="5" maxlength="1000" placeholder="例如：医学 VLM 对微小病灶的识别" required></textarea>
+            <small><span id="directionLength">0</span> / 1000</small>
+          </label>
+          <fieldset class="field option-field">
+            <legend>论文数量</legend>
+            <div class="segmented-control">
+              <label><input type="radio" name="paperCount" value="2" /><span>2</span></label>
+              <label><input type="radio" name="paperCount" value="3" checked /><span>3</span></label>
+              <label><input type="radio" name="paperCount" value="5" /><span>5</span></label>
+              <label><input type="radio" name="paperCount" value="6" /><span>6</span></label>
+            </div>
+          </fieldset>
+          <label class="toggle-field">
+            <input type="checkbox" id="evaluateToggle" checked />
+            <span class="toggle-track" aria-hidden="true"><span></span></span>
+            <span><strong>独立评审</strong><small>生成后评分并整理风险</small></span>
+          </label>
+          <p class="form-error" id="researchFormError" hidden></p>
+        </div>
+        <footer class="dialog-footer">
+          <span class="api-state" id="apiState">检查服务</span>
+          <div>
+            <button class="button secondary" type="button" data-close-dialog="researchDialog">取消</button>
+            <button class="button primary" id="submitResearch" type="submit">创建调研</button>
+          </div>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog confirm-dialog" id="confirmDialog">
+      <div class="dialog-header"><div><span class="eyebrow">CONFIRM ACTION</span><h2 id="confirmTitle">确认操作</h2></div></div>
+      <div class="dialog-body"><p id="confirmMessage"></p></div>
+      <div class="dialog-footer dialog-footer-end">
+        <button class="button secondary" id="confirmCancel" type="button">返回</button>
+        <button class="button danger" id="confirmAction" type="button">确认</button>
+      </div>
+    </dialog>
+
+    <dialog class="app-dialog config-dialog" id="configDialog">
+      <header class="dialog-header">
+        <div><span class="eyebrow">RESEARCH CONFIG</span><h2>调研配置</h2></div>
+        <button class="icon-button dialog-close" type="button" data-close-dialog="configDialog" title="关闭" aria-label="关闭"><svg><use href="#icon-x"></use></svg></button>
+      </header>
+      <div class="dialog-body config-details" id="configDetails"></div>
+      <footer class="dialog-footer dialog-footer-end"><button class="button secondary" type="button" data-close-dialog="configDialog">关闭</button></footer>
+    </dialog>
+
+    <div class="context-menu" id="folderContextMenu" role="menu" hidden>
+      <button type="button" role="menuitem" data-context-action="config"><svg><use href="#icon-settings"></use></svg><span>查看配置</span></button>
+      <button type="button" role="menuitem" class="danger-item" data-context-action="delete"><svg><use href="#icon-trash"></use></svg><span>删除调研</span></button>
+    </div>
+    <script src="app.js?v=20260827-human-review-toggle"></script>
+  </body>
+</html>

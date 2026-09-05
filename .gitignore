@@ -14,3 +14,10 @@ build/
 assets/output/auto_design/
 assets/logs/auto_design_server.log
 assets/logs/auto_design_refactor/
+
+# Integrated workbench state and local module previews.
+assets/output/workbench/
+assets/output/frontend_previews/
+assets/logs/workbench/
+assets/logs/frontend_previews/
+auto_writing/writing_runs/

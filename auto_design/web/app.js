@@ -1,13 +1,14 @@
 "use strict";
 
 const $ = (selector) => document.querySelector(selector);
+const moduleBase = location.pathname.startsWith("/auto-design/") ? "/auto-design" : "";
 const state = { tasks: [], task: null, activeId: null, tab: "overview", connected: false };
 const labels = { created: "待开始", queued: "排队中", running: "执行中", pausing: "正在安全暂停", paused: "已暂停", waiting_review: "待人工审核", blocked: "存在阻塞", failed: "步骤失败", design_ready: "设计完成", completed: "已完成", abandoned: "已废弃" };
 const stages = { INPUT_READY: "输入已就绪", WAITING_FOR_R0: "等待 R0 探测", R0_PASSED: "R0 已通过", R0_FAILED_RETURN_TO_DESIGN: "R0 返回设计", EXPERIMENT_DESIGN_READY: "设计已接受", IMPLEMENTATION_READY: "实现已就绪", EXECUTION_IN_PROGRESS: "实验执行中", EXECUTION_COMPLETE: "实验执行完成", RESULT_DIAGNOSIS_READY: "结果诊断完成", WAITING_FOR_METHOD_REVISION_APPROVAL: "等待方法修改批准", INTEGRITY_AUDIT_PASS: "审计通过", COMPLETE: "流程完成", IDEA_ABANDONED: "Idea 已废弃" };
 const actionLabels = { design: "实验设计", run: "实验执行", diagnosis: "结果诊断", revision: "方法修改", audit: "独立审计" };
 
 async function api(path, body) {
-  const response = await fetch(path, body === undefined ? { cache: "no-store" } : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const response = await fetch(`${moduleBase}${path}`, body === undefined ? { cache: "no-store" } : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || `请求失败：${response.status}`);
   return data;
@@ -22,7 +23,7 @@ function icon(name) {
 }
 function empty(container, text) { container.replaceChildren(element("div", text, "empty-state")); }
 function documentText(id, text, fallback = "尚未生成。完成对应步骤后，真实产物会显示在这里。") { $(id).textContent = text || fallback; }
-function fileUrl(path) { return `/api/tasks/${state.activeId}/files/${path.split("/").map(encodeURIComponent).join("/")}`; }
+function fileUrl(path) { return `${moduleBase}/api/tasks/${state.activeId}/files/${path.split("/").map(encodeURIComponent).join("/")}`; }
 function fileLink(path, label) { const a = element("a", label); a.href = fileUrl(path); a.target = "_blank"; a.rel = "noopener"; return a; }
 function selectTab(name) { state.tab = name; document.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === name))); document.querySelectorAll("[data-panel]").forEach((p) => { p.hidden = p.dataset.panel !== name; }); }
 

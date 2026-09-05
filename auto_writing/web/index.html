@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The ThAInker Auto Writing workspace" />
+    <title>The ThAInker · Auto Writing</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="icon-folder-plus" viewBox="0 0 24 24"><path d="M12 10v6"/><path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+      <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+      <symbol id="icon-file-text" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h8"/><path d="M8 17h8"/></symbol>
+      <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></symbol>
+      <symbol id="icon-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.1L5 10l5.1 1.9L12 17l1.9-5.1L19 10l-5.1-1.9L12 3Z"/><path d="M5 3v4"/><path d="M3 5h4"/><path d="M19 17v4"/><path d="M17 19h4"/></symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 4v5h5"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 20v-5h-5"/></symbol>
+      <symbol id="icon-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+      <symbol id="icon-stop" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><rect width="6" height="6" x="9" y="9" rx="1"/></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="icon-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect width="16" height="12" x="4" y="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+      <symbol id="icon-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h5.5a3.5 3.5 0 0 0 0-7h-5a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+      <symbol id="icon-list-tree" viewBox="0 0 24 24"><path d="M21 12H9"/><path d="M21 6H9"/><path d="M21 18H9"/><path d="M5 6v.01"/><path d="M5 12v.01"/><path d="M5 18v.01"/></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
+      <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+      <symbol id="icon-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
+      <symbol id="icon-archive" viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></symbol>
+      <symbol id="icon-file-check" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></symbol>
+    </svg>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Auto Writing">
+          <span class="brand-logo-frame"><img src="assets/the-thainker-logo.png" alt="The ThAInker" /></span>
+          <span><strong>The ThAInker</strong><small>Auto Writing</small></span>
+        </a>
+        <button class="icon-button mobile-sidebar-toggle" id="sidebarToggle" type="button" title="写作项目" aria-label="打开写作项目">
+          <svg><use href="#icon-menu"></use></svg>
+        </button>
+      </header>
+
+      <aside class="sidebar" id="sidebar" aria-label="写作项目">
+        <div class="sidebar-head">
+          <div><span class="eyebrow">WRITING PROJECTS</span><strong id="projectCount">加载中</strong></div>
+        </div>
+        <button class="new-folder-button" id="newWritingButton" type="button">
+          <svg><use href="#icon-folder-plus"></use></svg><span>新建写作</span>
+        </button>
+        <div class="project-list" id="projectList"></div>
+        <div class="sidebar-empty" id="sidebarEmpty" hidden>
+          <strong>暂无写作项目</strong><span>新项目会显示在这里。</span>
+        </div>
+      </aside>
+      <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="关闭写作项目" hidden></button>
+
+      <main class="workspace">
+        <div class="loading" id="loadingState"><span></span><span></span><span></span></div>
+
+        <section class="workspace-empty" id="workspaceEmpty" hidden>
+          <div class="empty-mark"><svg><use href="#icon-file-text"></use></svg></div>
+          <span class="eyebrow">AUTO WRITING</span>
+          <h1>开始一篇新的论文写作</h1>
+          <button class="button primary" id="emptyNewWriting" type="button"><svg><use href="#icon-folder-plus"></use></svg><span>新建写作</span></button>
+        </section>
+
+        <div id="projectView" hidden>
+          <section class="project-header">
+            <div class="project-heading">
+              <div class="project-kicker"><span id="projectNumber">01</span><span id="overallStatus">0 / 6 COMPLETE</span></div>
+              <h1 id="projectTitle"></h1>
+              <div class="project-meta">
+                <span><svg><use href="#icon-file-text"></use></svg><span id="experimentName"></span></span>
+                <span id="supportCount"></span>
+              </div>
+            </div>
+            <div class="project-actions">
+              <button class="icon-button" id="editProject" type="button" title="修改项目文件" aria-label="修改项目文件"><svg><use href="#icon-pencil"></use></svg></button>
+              <button class="icon-button delete-project" id="deleteProject" type="button" title="删除写作" aria-label="删除写作"><svg><use href="#icon-trash"></use></svg></button>
+            </div>
+          </section>
+
+          <div class="completion-track" aria-label="写作进度"><span id="completionBar"></span></div>
+
+          <nav class="view-tabs" id="viewTabs" aria-label="工作区视图">
+            <button class="active" type="button" data-tab="workflow">写作流程</button>
+            <button type="button" data-tab="reference">参考文献</button>
+            <button type="button" data-tab="paths">路径约束</button>
+            <button type="button" data-tab="publication">排版发布</button>
+          </nav>
+
+          <section class="tab-panel active" data-panel="workflow">
+            <div class="writing-layout">
+              <div class="section-pipeline" id="sectionPipeline"></div>
+              <article class="manuscript-view" id="manuscriptView">
+                <header class="manuscript-toolbar">
+                  <div><span class="eyebrow" id="manuscriptKicker">SECTION 01</span><h2 id="manuscriptTitle">Introduction</h2></div>
+                  <span class="status-badge empty" id="manuscriptStatus">未生成</span>
+                </header>
+                <div class="action-workflow" id="actionWorkflow"></div>
+                <div class="manuscript-paper" id="manuscriptPaper"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="reference">
+            <div class="reference-header">
+              <div><span class="eyebrow">REFERENCE WORKSPACE</span><h2>参考文献</h2></div>
+              <span class="status-badge empty" id="referenceStatus">未生成</span>
+            </div>
+            <div class="reference-locked" id="referenceLocked" hidden></div>
+            <div class="reference-workspace" id="referenceWorkspace">
+              <div class="reference-summary">
+                <div><span class="eyebrow">VERIFIED REFERENCES</span><strong id="referenceCount">0 / 20–25</strong><p id="referenceMessage"></p></div>
+                <button class="button primary" id="insertReferences" type="button"><svg><use href="#icon-search"></use></svg><span>调研并插入参考文献</span></button>
+              </div>
+              <div class="coverage-grid" id="referenceCoverage"></div>
+              <div class="reference-list" id="referenceList"></div>
+              <code class="reference-path" id="referencePath"></code>
+            </div>
+          </section>
+
+          <section class="tab-panel" data-panel="paths">
+            <div class="path-header">
+              <div><span class="eyebrow">RUNTIME PATH CONTRACT</span><h2>动态路径清单</h2></div>
+              <code id="pathContractFile"></code>
+            </div>
+            <div class="path-table" id="pathTable"></div>
+          </section>
+
+          <section class="tab-panel" data-panel="publication">
+            <div class="publication-header">
+              <div><span class="eyebrow">LATEX PUBLICATION</span><h2>排版与下载</h2></div>
+              <span class="status-badge empty" id="publicationStatus">未生成</span>
+            </div>
+            <div class="publication-locked" id="publicationLocked" hidden></div>
+            <div class="publication-workspace" id="publicationWorkspace">
+              <div class="publication-input">
+                <div class="publication-section-heading"><strong>LaTeX 模板</strong><span>ZIP · 最大 20 MB</span></div>
+                <label class="file-picker"><svg><use href="#icon-upload"></use></svg><strong id="latexTemplateLabel">选择模板 ZIP</strong><small>压缩包内需包含可识别的主 TeX 文件</small><input id="latexTemplateFile" type="file" accept=".zip,application/zip" /></label>
+                <div class="selected-files" id="latexTemplateList" aria-live="polite"></div>
+                <button class="button primary publication-build" id="buildPublication" type="button"><svg><use href="#icon-sparkles"></use></svg><span>适配并编译</span></button>
+              </div>
+              <div class="publication-output">
+                <div class="publication-section-heading"><strong>发布产物</strong><span id="publicationEngine"></span></div>
+                <div class="publication-message" id="publicationMessage"></div>
+                <div class="download-actions">
+                  <a class="button secondary" id="downloadLatex" href="#" download><svg><use href="#icon-archive"></use></svg><span>下载 LaTeX ZIP</span></a>
+                  <a class="button secondary" id="downloadPdf" href="#" download><svg><use href="#icon-download"></use></svg><span>下载 PDF</span></a>
+                </div>
+                <code class="compile-log" id="compileLog" hidden></code>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="fatal-error" id="errorState" hidden>
+          <strong>无法加载 Auto Writing</strong><span id="errorMessage"></span>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="app-dialog" id="newWritingDialog">
+      <form id="newWritingForm">
+        <header class="dialog-header">
+          <div><span class="eyebrow">NEW WRITING</span><h2>新建写作</h2></div>
+          <button class="icon-button" type="button" data-close-dialog="newWritingDialog" title="关闭" aria-label="关闭"><svg><use href="#icon-x"></use></svg></button>
+        </header>
+        <div class="dialog-body">
+          <label class="field"><span>写作名称</span><input id="writingTitle" maxlength="120" placeholder="例如：Distributed WiFi-CSI HAR" required /></label>
+          <div class="field"><span>实验说明</span><label class="file-picker primary-file"><svg><use href="#icon-upload"></use></svg><strong id="experimentFileLabel">选择实验说明文件</strong><small>TXT、MD、JSON、PDF、Word 或 Excel，最大 20 MB</small><input id="experimentFile" type="file" accept=".txt,.md,.json,.jsonl,.pdf,.doc,.docx,.csv,.tsv,.xls,.xlsx" required /></label><div class="selected-files" id="experimentFileList" aria-live="polite"></div></div>
+          <div class="field"><span>补充资料 <small>可选</small></span><label class="file-picker"><svg><use href="#icon-folder-plus"></use></svg><strong id="supportFilesLabel">选择参考论文、表格或说明</strong><small>最多 12 个文件</small><input id="supportFiles" type="file" accept=".txt,.md,.json,.jsonl,.pdf,.doc,.docx,.csv,.tsv,.xls,.xlsx" multiple /></label><div class="selected-files" id="supportFileList" aria-live="polite"></div></div>
+          <p class="form-error" id="formError" hidden></p>
+        </div>
+        <footer class="dialog-footer">
+          <span class="api-state" id="apiState">检查 Codex CLI</span>
+          <div><button class="button secondary" type="button" data-close-dialog="newWritingDialog">取消</button><button class="button primary" id="createWriting" type="submit">创建写作</button></div>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog" id="editProjectDialog">
+      <form id="editProjectForm">
+        <header class="dialog-header">
+          <div><span class="eyebrow">EDIT WRITING</span><h2>修改项目文件</h2></div>
+          <button class="icon-button" type="button" data-close-dialog="editProjectDialog" title="关闭" aria-label="关闭"><svg><use href="#icon-x"></use></svg></button>
+        </header>
+        <div class="dialog-body">
+          <label class="field"><span>写作名称</span><input id="editWritingTitle" maxlength="120" required /></label>
+          <div class="field"><span>实验说明</span><div class="current-file" id="currentExperiment"></div><label class="file-picker"><svg><use href="#icon-upload"></use></svg><strong id="editExperimentLabel">替换实验说明</strong><small>不选择则保留当前文件</small><input id="editExperimentFile" type="file" accept=".txt,.md,.json,.jsonl,.pdf,.doc,.docx,.csv,.tsv,.xls,.xlsx" /></label><div class="selected-files" id="editExperimentList" aria-live="polite"></div></div>
+          <div class="field"><span>已有补充资料 <small>可删除</small></span><div class="selected-files" id="existingSupportList"></div></div>
+          <div class="field"><span>新增补充资料 <small>可选</small></span><label class="file-picker"><svg><use href="#icon-folder-plus"></use></svg><strong id="editSupportLabel">选择新增文件</strong><small>保留与新增文件合计最多 12 个</small><input id="editSupportFiles" type="file" accept=".txt,.md,.json,.jsonl,.pdf,.doc,.docx,.csv,.tsv,.xls,.xlsx" multiple /></label><div class="selected-files" id="editSupportList" aria-live="polite"></div></div>
+          <p class="input-change-warning">替换或增删输入文件后，已有调研、章节与排版产物会标记为需更新。</p>
+          <p class="form-error" id="editFormError" hidden></p>
+        </div>
+        <footer class="dialog-footer end"><button class="button secondary" type="button" data-close-dialog="editProjectDialog">取消</button><button class="button primary" id="saveProject" type="submit">保存修改</button></footer>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog confirm-dialog" id="confirmDialog">
+      <div class="dialog-header"><div><span class="eyebrow">CONFIRM ACTION</span><h2>删除写作</h2></div></div>
+      <div class="dialog-body"><p>项目目录、已生成内容和 resolved prompts 将一并删除。</p></div>
+      <div class="dialog-footer end"><button class="button secondary" id="confirmCancel" type="button">返回</button><button class="button danger" id="confirmDelete" type="button">删除</button></div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" hidden></div>
+    <script src="app.js"></script>
+  </body>
+</html>

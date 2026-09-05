@@ -1,14 +1,34 @@
 # AutoResearch
 
-AutoResearch is an evidence-grounded research workflow engine. The first MVP focuses only on
-Auto Search:
+AutoResearch 将 **Auto Search、Auto Design、Auto Writing** 整合到一个网页入口，保留各模块的独立任务和完整工作流。点击首页卡片或顶部导航即可切换。
+
+## 三模块工作台
+
+在仓库根目录运行（Python 3.11+）：
+
+```bash
+python3 -m workbench --port 8760
+```
+
+打开 [AutoResearch 工作台](http://127.0.0.1:8760/)。调用模型需要已安装并登录的 Codex CLI；生成 PDF 还需要 LaTeX 编译器。工作台自身只用 Python 标准库，不需要 Node、Skills 或额外前端构建。
+
+| 模块 | 本地入口 | 功能 |
+| --- | --- | --- |
+| Auto Search | [/auto-search/](http://127.0.0.1:8760/auto-search/) | 论文调研、Idea 生成、独立评审、人工核验 |
+| Auto Design | [/auto-design/](http://127.0.0.1:8760/auto-design/) | 实验设计、R0、执行、暂停恢复、结果诊断与审计 |
+| Auto Writing | [/auto-writing/](http://127.0.0.1:8760/auto-writing/) | 文献调研、六章节写作、参考文献、LaTeX 与 PDF |
+
+任务数据默认保存在 `assets/output/workbench/`。启动或切换页面不会自动启动研究任务。完整启动参数、功能范围和验收记录见 [工作台说明](workbench/README.md) 与 [开发记录](docs/README.md)。
+
+## 原有 AutoResearch CLI
+
+仓库原有的证据检索 CLI 继续保留：
 
 ```text
 research topic -> papers -> paper cards -> field map -> gap evidence report
 ```
 
-It is intentionally not a paper-writing machine. The goal is to produce a research map that can
-support group discussion and later method/benchmark design.
+该 CLI 生成支持组会讨论和后续实验设计的研究图谱；论文写作使用上面的 Auto Writing 模块。
 
 ## Auto Design
 
