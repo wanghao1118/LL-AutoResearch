@@ -10,6 +10,16 @@ research topic -> papers -> paper cards -> field map -> gap evidence report
 It is intentionally not a paper-writing machine. The goal is to produce a research map that can
 support group discussion and later method/benchmark design.
 
+## Auto Design
+
+`auto_design/` 提供实验设计与执行工作台：原生 HTML/CSS/JavaScript 前端、Python 服务端、Codex CLI 分阶段编排。无需安装 AutoDesign Skills 或 Node 依赖。
+
+```bash
+python3 -m auto_design serve --port 8767
+```
+
+需要 Python 3.11+ 和已登录的 Codex CLI。详见 [Auto Design 模块说明](auto_design/README.md)。原有 AutoResearch 搜索命令继续按下文使用。
+
 ## Quick Start
 
 ```bash

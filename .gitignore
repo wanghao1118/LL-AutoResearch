@@ -9,3 +9,8 @@ outputs/
 dist/
 build/
 *.egg-info/
+
+# Auto Design local task indexes, runs, and engineering verification logs.
+assets/output/auto_design/
+assets/logs/auto_design_server.log
+assets/logs/auto_design_refactor/

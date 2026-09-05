@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["outcome", "summary", "next_action"],
+  "properties": {
+    "outcome": {"type": "string", "enum": ["completed", "blocked", "paused", "waiting_review"]},
+    "summary": {"type": "string"},
+    "next_action": {"type": "string", "enum": ["design", "run", "diagnosis", "audit", "revision", "none"]}
+  }
+}
