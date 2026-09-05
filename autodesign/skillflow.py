@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .effects import check_design
 from .io import read_json, write_text
 
 STATE_PATTERN = re.compile(
@@ -15,6 +16,15 @@ STATE_PATTERN = re.compile(
 )
 AUDIT_VERDICT_PATTERN = re.compile(
     r"^\s*Verdict\s*:\s*(PASS|FAIL)\s*$", re.IGNORECASE | re.MULTILINE
+)
+REVISION_ID_PATTERN = re.compile(
+    r"^\s*Revision ID\s*:\s*([A-Za-z0-9._-]+)\s*$", re.MULTILINE
+)
+METHOD_REVISION_DECISION_PATTERN = re.compile(
+    r"^\s*Decision\s*:\s*"
+    r"(APPROVE_MINIMAL_METHOD_REVISION|APPROVE_EXCEPTION_METHOD_REVISION|"
+    r"REJECT_METHOD_REVISION|ABANDON_IDEA)\s*$",
+    re.MULTILINE,
 )
 STAGE_ORDER = (
     "INPUT_READY",
@@ -31,12 +41,14 @@ KNOWN_STAGES = (
     "WAITING_FOR_R0",
     "R0_PASSED",
     "R0_FAILED_RETURN_TO_DESIGN",
+    "WAITING_FOR_METHOD_REVISION_APPROVAL",
     "IMPLEMENTATION_READY",
     "EXECUTION_IN_PROGRESS",
     "EXECUTION_COMPLETE",
     "RESULT_DIAGNOSIS_READY",
     "INTEGRITY_AUDIT_PASS",
     "COMPLETE",
+    "IDEA_ABANDONED",
 )
 STAGE_REQUIREMENTS = {
     "INPUT_READY": ("AUTODESIGN_STATE.md", "input_brief.md"),
@@ -63,25 +75,32 @@ NEXT_SKILL = {
     "WAITING_FOR_R0": "autodesign-experiment-run",
     "R0_PASSED": "autodesign-experiment-design",
     "R0_FAILED_RETURN_TO_DESIGN": "autodesign-experiment-design",
+    "WAITING_FOR_METHOD_REVISION_APPROVAL": "run-autodesign",
     "IMPLEMENTATION_READY": "autodesign-experiment-run",
     "EXECUTION_IN_PROGRESS": "autodesign-experiment-run",
     "EXECUTION_COMPLETE": "autodesign-result-scientist",
     "RESULT_DIAGNOSIS_READY": "run-autodesign",
     "INTEGRITY_AUDIT_PASS": "run-autodesign",
     "COMPLETE": "none",
+    "IDEA_ABANDONED": "none",
 }
 STATE_ARTIFACTS = (
     ("input_brief.md", "normalized AutoSearch handoff"),
-    ("experiment_design.md", "accepted four-family experiment design"),
+    ("experiment_design.md", "accepted design or provisional R0-gated plan"),
     ("expected_effects.json", "design-time simulated targets and thresholds"),
-    ("r0_plan.md", "optional low-cost gate plan"),
-    ("r0_record.json", "optional observed R0 decision"),
+    ("r0_plan.md", "R0 gate plan when design readiness is provisional"),
+    ("r0_record.json", "observed R0 decision when an R0 gate was required"),
     ("implementation_notes.md", "implementation handoff"),
     ("generated_project", "runnable experiment project"),
     ("command_plan.json", "ordered execution commands"),
     ("experiment_schedule.json", "expected result cells"),
     ("result_contract.json", "primary observed result path"),
     ("execution_record.json", "literal execution evidence"),
+    ("breakpoint_recovery.md", "execution-breakpoint recovery ledger"),
+    ("method_revision_request.md", "unresolved execution breakpoint request"),
+    ("method_revision_proposal.md", "minimal method revision awaiting approval"),
+    ("method_revision_decision.md", "literal user decision for one revision ID"),
+    ("idea_abandonment.md", "terminal user decision to abandon the Idea"),
     ("result_summary.json", "validated result aggregates"),
     ("effect_comparison.md", "observed versus simulated-target outcomes"),
     ("result_diagnosis.md", "scientific interpretation"),
@@ -90,9 +109,11 @@ STATE_ARTIFACTS = (
 )
 
 LAST_COMPLETED_STAGE = {
-    "WAITING_FOR_R0": "EXPERIMENT_DESIGN_READY",
-    "R0_FAILED_RETURN_TO_DESIGN": "EXPERIMENT_DESIGN_READY",
+    "WAITING_FOR_R0": "INPUT_READY",
+    "R0_FAILED_RETURN_TO_DESIGN": "INPUT_READY",
+    "WAITING_FOR_METHOD_REVISION_APPROVAL": "EXPERIMENT_DESIGN_READY",
     "EXECUTION_IN_PROGRESS": "IMPLEMENTATION_READY",
+    "IDEA_ABANDONED": "EXPERIMENT_DESIGN_READY",
 }
 
 
@@ -130,14 +151,42 @@ def _audit_verdict(run_path: Path) -> str | None:
     return match.group(1).upper() if match else None
 
 
+def _method_revision_decision(run_path: Path) -> tuple[str, str]:
+    proposal_path = run_path / "method_revision_proposal.md"
+    decision_path = run_path / "method_revision_decision.md"
+    if not proposal_path.is_file() or not decision_path.is_file():
+        raise ValueError(
+            "method revision requires method_revision_proposal.md and "
+            "method_revision_decision.md"
+        )
+    proposal_match = REVISION_ID_PATTERN.search(
+        proposal_path.read_text(encoding="utf-8")
+    )
+    decision_text = decision_path.read_text(encoding="utf-8")
+    decision_id_match = REVISION_ID_PATTERN.search(decision_text)
+    decision_match = METHOD_REVISION_DECISION_PATTERN.search(decision_text)
+    if not proposal_match or not decision_id_match or not decision_match:
+        raise ValueError(
+            "method revision proposal and decision require literal Revision ID and Decision rows"
+        )
+    proposal_id = proposal_match.group(1)
+    decision_id = decision_id_match.group(1)
+    if proposal_id != decision_id:
+        raise ValueError(
+            f"method revision decision ID {decision_id!r} does not match proposal "
+            f"ID {proposal_id!r}"
+        )
+    return proposal_id, decision_match.group(1)
+
+
 def _render_input_brief(input_path: Path) -> str:
     """Render input_brief.md from an AutoSearch handoff file.
 
     Accepts either a JSON handoff object or free-form natural-language text. JSON must
-    carry the three required handoff fields (motivation, contribution, benchmark); any
-    additional keys are preserved verbatim in an extra section so that upstream schema
-    drift never silently drops user-supplied input. Natural-language input is passed
-    through untouched for the design Skill to normalize.
+    carry motivation and contribution; benchmark is optional and becomes a literal lock
+    when supplied. Additional keys are preserved verbatim in an extra section so that
+    upstream schema drift never silently drops user-supplied input. Natural-language
+    input is passed through untouched for the design Skill to normalize.
     """
 
     raw = input_path.read_text(encoding="utf-8").strip()
@@ -150,8 +199,9 @@ def _render_input_brief(input_path: Path) -> str:
             f"Channel: natural language file `{input_path.name}`\n\n"
             "## Original natural-language input\n\n"
             f"{raw}\n\n"
-            "Normalize this into literal Motivation, Contribution, and Benchmark sections "
-            "with the autodesign-experiment-design Skill before designing experiments.\n"
+            "Normalize this into literal Motivation and Contribution sections, preserve any "
+            "supplied Benchmark as optional input, and have the autodesign-experiment-design "
+            "Skill select or design the benchmark when it is absent.\n"
         )
     if not isinstance(payload, dict):
         raise TypeError("AutoSearch handoff JSON must contain an object")
@@ -163,13 +213,22 @@ def _render_input_brief(input_path: Path) -> str:
         for name, value in (
             ("motivation", motivation),
             ("contribution", contribution),
-            ("benchmark", benchmark),
         )
         if value in (None, "", [], {})
     ]
     if missing:
         raise ValueError(f"AutoSearch handoff is missing: {', '.join(missing)}")
     constraints = benchmark.get("constraints", {}) if isinstance(benchmark, dict) else {}
+    benchmark_section = (
+        "## Benchmark input (literal)\n\n"
+        f"```json\n{_json_block(benchmark)}\n```\n\n"
+        if benchmark not in (None, "", [], {})
+        else (
+            "## Benchmark input (not supplied)\n\n"
+            "AutoDesign must select or design a contribution-complete benchmark portfolio; "
+            "there is no user benchmark lock.\n\n"
+        )
+    )
     extra = {
         key: value
         for key, value in payload.items()
@@ -190,8 +249,7 @@ def _render_input_brief(input_path: Path) -> str:
         f"{motivation}\n\n"
         "## Contribution (literal)\n\n"
         f"```json\n{_json_block(contribution)}\n```\n\n"
-        "## Benchmark (literal)\n\n"
-        f"```json\n{_json_block(benchmark)}\n```\n\n"
+        f"{benchmark_section}"
         f"{extra_section}"
         "## Explicit user locks\n\n"
         f"```json\n{_json_block(constraints)}\n```\n\n"
@@ -213,6 +271,7 @@ def _render_state(run_name: str) -> str:
 | Accepted route | pending |
 | Execution target | pending |
 | Primary result | pending |
+| Method revision limit | 2 |
 
 ## Accepted inputs
 
@@ -236,11 +295,20 @@ def _render_state(run_name: str) -> str:
 def _refresh_state_snapshot(text: str, run_path: Path, stage: str) -> str:
     """Refresh derived state fields without turning Markdown research into a schema."""
 
-    route = (
-        "recorded in `experiment_design.md`"
-        if (run_path / "experiment_design.md").is_file()
-        else "pending"
-    )
+    if not (run_path / "experiment_design.md").is_file():
+        route = "pending"
+    elif stage == "WAITING_FOR_R0":
+        route = "provisional in `experiment_design.md`; awaiting R0"
+    elif stage == "R0_FAILED_RETURN_TO_DESIGN":
+        route = "R0 rejected; design revision required"
+    elif stage == "R0_PASSED":
+        route = "R0 outcome recorded; awaiting revised design acceptance"
+    elif stage == "WAITING_FOR_METHOD_REVISION_APPROVAL":
+        route = "accepted design retained; minimal method revision awaits human approval"
+    elif stage == "IDEA_ABANDONED":
+        route = "current Idea abandoned by user decision"
+    else:
+        route = "accepted in `experiment_design.md`"
     execution_target = (
         "`generated_project/` via `command_plan.json`"
         if (run_path / "generated_project").is_dir()
@@ -255,7 +323,9 @@ def _refresh_state_snapshot(text: str, run_path: Path, stage: str) -> str:
     blocking = {
         "WAITING_FOR_R0": "observed R0 result required",
         "R0_FAILED_RETURN_TO_DESIGN": "experiment design revision required",
+        "WAITING_FOR_METHOD_REVISION_APPROVAL": "human method-revision decision required",
         "EXECUTION_IN_PROGRESS": "remaining command stages required",
+        "IDEA_ABANDONED": "terminal: current Idea abandoned",
     }.get(stage, "none")
     replacements = {
         "Blocking condition": blocking,
@@ -337,7 +407,9 @@ def inspect_skill_run(run_dir: str | Path) -> dict[str, Any]:
         "WAITING_FOR_R0": "EXPERIMENT_DESIGN_READY",
         "R0_PASSED": "EXPERIMENT_DESIGN_READY",
         "R0_FAILED_RETURN_TO_DESIGN": "EXPERIMENT_DESIGN_READY",
+        "WAITING_FOR_METHOD_REVISION_APPROVAL": "EXPERIMENT_DESIGN_READY",
         "EXECUTION_IN_PROGRESS": "IMPLEMENTATION_READY",
+        "IDEA_ABANDONED": "EXPERIMENT_DESIGN_READY",
     }.get(stage, stage)
     for required_stage in STAGE_ORDER[: STAGE_ORDER.index(milestone) + 1]:
         for relative in STAGE_REQUIREMENTS[required_stage]:
@@ -346,11 +418,24 @@ def inspect_skill_run(run_dir: str | Path) -> dict[str, Any]:
         "WAITING_FOR_R0": ("r0_plan.md",),
         "R0_PASSED": ("r0_record.json",),
         "R0_FAILED_RETURN_TO_DESIGN": ("r0_record.json",),
+        "WAITING_FOR_METHOD_REVISION_APPROVAL": (
+            "breakpoint_recovery.md",
+            "method_revision_request.md",
+            "method_revision_proposal.md",
+        ),
+        "IDEA_ABANDONED": (
+            "breakpoint_recovery.md",
+            "method_revision_request.md",
+            "method_revision_proposal.md",
+            "method_revision_decision.md",
+            "idea_abandonment.md",
+        ),
     }.get(stage, ()):
         artifact_status[relative] = (run_path / relative).exists()
     missing = sorted(path for path, exists in artifact_status.items() if not exists)
     return {
         "status": "PASS" if not missing else "INCOMPLETE",
+        "validation_scope": "ARTIFACT_COMPLETENESS",
         "run_dir": str(run_path.resolve()),
         "current_stage": stage,
         "next_skill": NEXT_SKILL[stage],
@@ -372,6 +457,54 @@ def advance_skill_run(
         raise ValueError(f"Unknown Skill-first stage: {stage}")
     run_path = Path(run_dir)
     current = read_current_stage(run_path)
+    if stage == "WAITING_FOR_METHOD_REVISION_APPROVAL" and current not in {
+        "EXPERIMENT_DESIGN_READY",
+        "IMPLEMENTATION_READY",
+        "EXECUTION_IN_PROGRESS",
+    }:
+        raise ValueError(
+            "WAITING_FOR_METHOD_REVISION_APPROVAL requires an accepted design or active run"
+        )
+    if stage == "EXPERIMENT_DESIGN_READY" and current == (
+        "WAITING_FOR_METHOD_REVISION_APPROVAL"
+    ):
+        _, decision = _method_revision_decision(run_path)
+        if decision not in {
+            "APPROVE_MINIMAL_METHOD_REVISION",
+            "APPROVE_EXCEPTION_METHOD_REVISION",
+        }:
+            raise ValueError(
+                "EXPERIMENT_DESIGN_READY requires literal human approval for the matching "
+                f"method revision; got {decision}"
+            )
+    if stage == "IDEA_ABANDONED":
+        if current != "WAITING_FOR_METHOD_REVISION_APPROVAL":
+            raise ValueError(
+                "IDEA_ABANDONED requires current stage "
+                "WAITING_FOR_METHOD_REVISION_APPROVAL"
+            )
+        _, decision = _method_revision_decision(run_path)
+        if decision != "ABANDON_IDEA":
+            raise ValueError(
+                "IDEA_ABANDONED requires literal Decision: ABANDON_IDEA for the matching "
+                "revision"
+            )
+    if stage in {"EXPERIMENT_DESIGN_READY", "WAITING_FOR_R0"}:
+        design_check = check_design(run_path)
+        if design_check.get("status") != "PASS":
+            raise ValueError(
+                f"{stage} requires a structurally valid design: "
+                + "; ".join(str(item) for item in design_check.get("errors", []))
+            )
+        declared = design_check.get("declared_design_readiness")
+        required = {
+            "EXPERIMENT_DESIGN_READY": "PASS",
+            "WAITING_FOR_R0": "PROVISIONAL_WAITING_FOR_R0",
+        }[stage]
+        if declared != required:
+            raise ValueError(
+                f"{stage} requires coverage-audit Verdict: {required}; got {declared!r}"
+            )
     if stage == "RESULT_DIAGNOSIS_READY":
         summary_path = run_path / "result_summary.json"
         if not summary_path.is_file():
@@ -402,7 +535,13 @@ def advance_skill_run(
     text = _refresh_state_snapshot(text, run_path, stage)
     history_rows = re.findall(r"^\s*\|\s*(\d+)\s*\|", text, flags=re.MULTILINE)
     round_index = max((int(value) for value in history_rows), default=0) + 1
-    next_action = "pipeline complete" if stage == "COMPLETE" else f"run {NEXT_SKILL[stage]}"
+    next_action = (
+        "pipeline complete"
+        if stage == "COMPLETE"
+        else "idea abandoned"
+        if stage == "IDEA_ABANDONED"
+        else f"run {NEXT_SKILL[stage]}"
+    )
     text = text.rstrip() + (
         f"\n| {round_index} | {current} | {stage} | "
         f"{_markdown_table_cell(changed_input)} | "

@@ -1,4 +1,4 @@
 interface:
   display_name: "Run AutoDesign"
-  short_description: "先设计并交接 AutoWriting，再继续执行实验与结果诊断"
-  default_prompt: "使用 $run-autodesign 启动或恢复设计优先的 AutoDesign 流程，在实验执行前发布 AutoWriting 草稿交接，并继续完成真实实验。"
+  short_description: "设计、执行、诊断并生成完整实验报告"
+  default_prompt: "使用 $run-autodesign 从 Motivation 和 Contribution 启动或恢复 AutoDesign，选择或设计 benchmark，完成真实实验与诊断，并在任何终止路线下生成设计中约定的主表、消融、案例和分析产物；缺失证据必须在原产物位置明确标为 INCOMPLETE 或 N/A。"

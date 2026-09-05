@@ -1,4 +1,4 @@
 interface:
   display_name: "AutoDesign Experiment Run"
-  short_description: "把已接受的实验设计实现为可运行项目并执行，最后逐格对比实测值与模拟目标值"
-  default_prompt: "使用 $autodesign-experiment-run，把 experiment_design.md 实现为可运行项目、完成五阶段执行，并产出 observed 与 SIMULATED_TARGET 的逐格对比。"
+  short_description: "执行已登记的 R0，或实现并运行已接受的实验设计"
+  default_prompt: "使用 $autodesign-experiment-run，按当前状态执行已登记的 R0，或实现并运行已接受的 experiment_design.md。"

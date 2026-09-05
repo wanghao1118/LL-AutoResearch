@@ -116,16 +116,15 @@ def _entry_errors(index: int, entry: Any) -> list[str]:
                 f"entries[{index}].expected_shape must be one of {list(EXPECTED_SHAPES)}"
             )
     bounds = entry.get("acceptable_range")
-    if bounds is not None:
-        if (
-            not isinstance(bounds, list)
-            or len(bounds) != 2
-            or not all(_is_number(bound) for bound in bounds)
-            or bounds[0] > bounds[1]
-        ):
-            errors.append(
-                f"entries[{index}].acceptable_range must be an ordered [low, high] number pair"
-            )
+    if bounds is not None and (
+        not isinstance(bounds, list)
+        or len(bounds) != 2
+        or not all(_is_number(bound) for bound in bounds)
+        or bounds[0] > bounds[1]
+    ):
+        errors.append(
+            f"entries[{index}].acceptable_range must be an ordered [low, high] number pair"
+        )
     return errors
 
 
@@ -180,8 +179,8 @@ def _schedule_aggregate_rows(schedule: Any) -> set[tuple[str, str, str, str]]:
     return rows
 
 
-def _coverage_verdict(design_text: str) -> tuple[bool, str]:
-    """Decide whether the design's coverage audit reaches an affirmative PASS.
+def _coverage_verdict(design_text: str) -> tuple[str | None, str]:
+    """Read an accepted design-readiness declaration from the coverage audit.
 
     The gate must not be satisfied by the mere presence of the token ``PASS`` — a blocked
     design routinely writes prose like ``FAIL - cannot PASS until baselines land``, and a
@@ -189,13 +188,12 @@ def _coverage_verdict(design_text: str) -> tuple[bool, str]:
     verdict line: a line whose leading label is ``Verdict`` (or ``Coverage audit``), read
     only inside the coverage-audit section when that heading exists.
 
-    That verdict line passes only when its value is exactly the uppercase token ``PASS``
-    with no negative token (``FAIL``, ``BLOCKED``, ``BLOCKER``, ``PENDING``, ``TODO``)
-    anywhere on it — so a hedged or dual-verdict line is a blocker, not a pass. The label
-    may be bold, bulleted, backticked, or written straight onto the heading
-    (``## Coverage audit: PASS``); when several verdict lines exist the last one wins. A
-    design with no verdict line at all fails with that stated as the reason, which keeps
-    the failure legible instead of reporting a generic miss.
+    An accepted value is exactly uppercase ``PASS`` or ``PROVISIONAL_WAITING_FOR_R0``.
+    The former declares no unresolved high-impact design choice; the latter declares a
+    structurally usable design whose registered R0 must run before scientific acceptance.
+    A negative or hedged value remains a blocker. The label may be bold, bulleted,
+    backticked, or written straight onto the heading; when several verdict lines exist the
+    last one wins. A design with no verdict line at all fails with that stated as the reason.
     """
 
     section = design_text
@@ -222,7 +220,7 @@ def _coverage_verdict(design_text: str) -> tuple[bool, str]:
     if not verdict_values and inline_verdict:
         verdict_values = [inline_verdict]
     if not verdict_values:
-        return False, "no `Verdict:` line found in the coverage audit"
+        return None, "no `Verdict:` line found in the coverage audit"
 
     value = verdict_values[-1].strip().strip("*`").strip().strip("*`").strip()
     negatives = [
@@ -231,10 +229,13 @@ def _coverage_verdict(design_text: str) -> tuple[bool, str]:
         if re.search(rf"\b{token}\b", value, re.IGNORECASE)
     ]
     if negatives:
-        return False, f"verdict {value!r} carries blocking token(s) {negatives}"
-    if re.fullmatch(r"PASS", value) is None:
-        return False, f"verdict {value!r} is not the literal token PASS"
-    return True, "verdict PASS"
+        return None, f"verdict {value!r} carries blocking token(s) {negatives}"
+    if value not in {"PASS", "PROVISIONAL_WAITING_FOR_R0"}:
+        return (
+            None,
+            f"verdict {value!r} is neither PASS nor PROVISIONAL_WAITING_FOR_R0",
+        )
+    return value, f"verdict {value}"
 
 
 def _absent_family_justifications(design_text: str) -> dict[str, str]:
@@ -297,7 +298,12 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
             "autodesign-experiment-design Skill"
         )
     if errors:
-        return {"status": "FAIL", "run_dir": str(run_path.resolve()), "errors": errors}
+        return {
+            "status": "FAIL",
+            "validation_scope": "STRUCTURAL",
+            "run_dir": str(run_path.resolve()),
+            "errors": errors,
+        }
 
     effects = read_json(effects_path)
     errors.extend(validate_expected_effects(effects))
@@ -305,9 +311,14 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
     entries = entries if isinstance(entries, list) else []
 
     design_text = design_path.read_text(encoding="utf-8")
-    coverage_pass, verdict_detail = _coverage_verdict(design_text)
-    if not coverage_pass:
-        errors.append(f"experiment_design.md coverage audit is not a literal PASS: {verdict_detail}")
+    coverage_status, verdict_detail = _coverage_verdict(design_text)
+    coverage_acceptable = coverage_status is not None
+    coverage_pass = coverage_status == "PASS"
+    if not coverage_acceptable:
+        errors.append(
+            "experiment_design.md coverage audit has no accepted readiness verdict: "
+            f"{verdict_detail}"
+        )
     families_present = {
         entry.get("family")
         for entry in entries
@@ -377,6 +388,8 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
 
     return {
         "status": "PASS" if not errors else "FAIL",
+        "validation_scope": "STRUCTURAL",
+        "declared_design_readiness": coverage_status or "FAIL",
         "run_dir": str(run_path.resolve()),
         "entry_count": len(entries),
         "families_present": sorted(family for family in families_present if family),
@@ -386,6 +399,7 @@ def check_design(run_dir: str | Path) -> dict[str, Any]:
         "unscheduled_effect_rows": unscheduled_effect_rows,
         "unscheduled_reference_rows": unscheduled_reference_rows,
         "coverage_audit_pass": coverage_pass,
+        "coverage_audit_acceptable": coverage_acceptable,
         "coverage_audit_verdict": verdict_detail,
         "errors": errors,
     }

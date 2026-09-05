@@ -14,6 +14,12 @@
 - a materialized identity record for every variant and benchmark;
 - `command_plan.json`, `experiment_schedule.json`, `result_contract.json`.
 
+These surfaces apply to full implementation after a scientific design `PASS`. A run in `WAITING_FOR_R0` materializes only what its registered probes require and does not create a full experiment schedule.
+
+## R0-only execution
+
+R0-only mode requires `Verdict: PROVISIONAL_WAITING_FOR_R0`, state `WAITING_FOR_R0`, and `r0_plan.md`. Execute only the named candidate comparisons. `r0_record.json` records the covered high-impact choice ID, the direct candidate instantiation IDs for that choice, fixed controls, fit/materialization IDs and candidate-selection IDs when adaptation or data construction occurs, commands, metrics, raw observations, literal selection and kill rules, selected outcome, and exit status. Fit/materialization IDs and candidate-selection IDs are disjoint, and neither pool is later claim-bearing evaluation. A proxy comparison cannot resolve the registered choice.
+
 ## `implementation_notes.md`
 
 Record: selected route and full configuration; scientific locks and autonomous choices; selected components and source revisions; baseline configurations; family and evidence class per experiment; training or inference state; experiment-to-entrypoint map; environment file; exact five-stage commands; primary result path; schedule path; table and chart paths; resource estimate; resource adaptations, non-claim-bearing pilots, and blockers; machine-context source file when remote; execution mode `fresh_experiment`.
@@ -67,6 +73,14 @@ Read instruction context → validate → preflight → sync → bootstrap → s
 ## Resource failures
 
 Preserve exact resource errors and the first failed stage. Never turn a resource block into a scientific method verdict.
+
+## Breakpoint recovery
+
+`breakpoint_recovery.md` uses one stable record per executed repair and keeps these fields readable: current accepted method-revision ID; approved method-revision count and limit for the Idea; breakpoint ID and failed stage; literal evidence; diagnosis; repair class `boundary_only`; exact changed setting or implementation; accepted and materialized scientific identities; identity-preservation rationale; command; result; progress evidence; and next action. Boundary repair has no fixed numeric cap. A new approved method revision starts a new recovery sequence without deleting prior history or resetting the Idea-level method-revision count.
+
+A boundary-only repair may alter execution equivalence or literal implementation defects, but it does not alter the intervention, outcome-impacting component identities, data eligibility/composition, benchmark protocol, metric, seed plan, evidence class, comparison budget, or claim interpretation. If preserving those invariants cannot address the failure, stop without spending the remaining retry allowance.
+
+After a `no_admissible_boundary_repair` or `no_new_progress` decision, write `method_revision_request.md` with: request ID; breakpoint ID; accepted method-revision ID; failed stage and evidence paths; attempted repairs and outcomes; preserved Motivation/Contribution/Benchmark locks; accepted method identity; unresolved capability gap; and affected execution artifacts. This request contains no proposed method change and grants no permission to edit the design.
 
 ## `effect_comparison.md`
 

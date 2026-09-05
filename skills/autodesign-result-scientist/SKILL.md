@@ -24,26 +24,29 @@ Stop before scientific diagnosis unless current preflight, smoke, experiment, ag
 7. Treat one-seed, post-hoc slices, and position-specific effects as exploratory and state the additional runs required for confirmation.
 8. Select one route:
    - `iteration` when required evidence is incomplete;
-   - `tuning` when evidence is complete but mixed or negative and a justified single-variable action remains;
+   - `tuning` when evidence is complete but mixed or negative and a justified validation-grounded single-variable action remains;
    - `stop` when eligible claim-bearing evidence crosses a preregistered kill threshold or no diagnostic action remains;
    - `report` when contributions are adequately supported.
 9. Always write `result_route.md` with the selected route, exact reason, owner Skill, changed variable or artifact, whether new execution is required, invalidated downstream artifacts, and literal continue and stop thresholds.
 10. After selecting `iteration` or `tuning`, read `references/result_tuning_prompt.md`. Supply it with the current input brief, accepted design, execution record, raw results, deterministic summary, effect comparison, and current contribution diagnosis. Use its action schema to plan the next step.
 11. For `iteration`, use the action plan to write `next_round.md` with the missing evidence, minimum experiment cells, fixed controls, command intent, expected observation, cost, and completion threshold. Write `result_tuning.json` only when the selected route is `tuning`.
 12. Treat the action reference as a catalog, not as permission to weaken the pipeline invariants. Keep every original contribution and claim unchanged, retain every observed negative or mixed result, keep baseline and method budgets and seed sets comparable, and never convert an unexecuted expected delta or a simulated target into an observed result.
-13. For every tuning action preserve input state → one primary action → expected diagnostic change → required execution → observed output state. Classify the action as `reporting_only`, `implementation_change`, `new_evidence`, or `execution_retry`, then write `next_round.md` when any action remains unexecuted.
-14. Produce paper-ready tables and figures only from observed aggregates. Keep all claim-critical negative, mixed, and failed-slice results visible.
+13. Post-result optimization may tune the proposed method on training/validation evidence or tune a baseline to restore a strong, fair reference. It may not weaken a baseline, edit observed values, select candidates on test outcomes, or overwrite the earlier round. Freeze the search space and budget before the tuning run; use new run/round identities, preserve every candidate, and require fresh confirmation execution before any new value enters a paper-facing result.
+14. When the original test result has already influenced the proposed change, label the new evidence as a post-result revision. Prefer a previously unexamined confirmation split or external dataset; when none exists, retain the original result and disclose that the confirmation reused the test scope after method development.
+15. For every tuning action preserve input state → one primary action → expected diagnostic change → required execution → observed output state. Classify the action as `reporting_only`, `implementation_change`, `new_evidence`, or `execution_retry`, then write `next_round.md` when any action remains unexecuted.
+16. Produce paper-ready tables and figures only from observed aggregates. Keep all claim-critical negative, mixed, and failed-slice results visible.
+17. Before handing a `stop`, `report`, or reporting-only route to audit, materialize every output named by the accepted reporting plan under `reports/`. Write `reports/report_manifest.json` with source IDs and `READY`/`INCOMPLETE`/`N/A` status, plus `reports/index.html` linking the bundle. If a source is unavailable or scientifically ineligible, create the planned artifact with a visible status and exact reason instead of omitting it or filling a zero. This requirement is unchanged for conservative or negative reports.
 
 ## Route handoff
 
 - `iteration`: route the precise failure to the owner named in `result_route.md` — `autodesign-experiment-design` for a route, evidence, or experiment-set defect, `autodesign-experiment-run` for a code, data, configuration, or execution defect. After execution and ingestion, run this Skill again.
 - `tuning`: route `reporting_only` actions to the integrity auditor; route every action requiring code, data, configuration, or new observations through the named owner Skill, execution, ingestion, recomparison, and a fresh diagnosis.
-- `stop` or `report`: route to the integrity auditor with all negative and mixed evidence retained.
+- `stop` or `report`: materialize the complete report bundle, then route to the integrity auditor with all negative and mixed evidence retained.
 
 Do not send an open `iteration` or execution-required `tuning` route to the final audit.
 
 ## Output
 
-Write `result_diagnosis.md` and `result_route.md`; write `result_tuning.json` only for tuning and `next_round.md` whenever another action or run is required. Write paper-ready artifacts under `reports/` only from observed evidence.
+Write `result_diagnosis.md` and `result_route.md`; write `result_tuning.json` only for tuning and `next_round.md` whenever another action or run is required. Write paper-ready artifacts under `reports/` only from observed evidence. For every terminal reporting route, also write `reports/report_manifest.json` and `reports/index.html`; no accepted reporting-plan output may be silently absent.
 
 Update `AUTODESIGN_STATE.md` to `RESULT_DIAGNOSIS_READY` and set the next Skill to `run-autodesign`. The orchestrator must close or execute the recorded route before final audit.

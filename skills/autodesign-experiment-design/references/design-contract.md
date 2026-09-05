@@ -9,9 +9,10 @@ Use stable IDs and record these sections in `experiment_design.md`:
 1. **Claim ledger**: `claim_id`, literal contribution, mechanism, required axes, claim-bearing experiment IDs, falsifier, and status boundary. Every contribution and derived axis maps to real `CLAIM_BEARING` evidence; pilots/smokes remain visible but do not satisfy coverage.
 2. **Idea semantics**: central term, operational meaning, constraints, non-constraints, observable implication, disallowed reinterpretation, and unresolved uncertainty.
 3. **Locks and choices**: `choice_id`, choice, `high|low` outcome impact, effect on interpretation, candidates, fixed controls, resolution source, and status. Follow with a role inventory containing role, identity/protocol, purpose, outcome impact, and closure source.
-4. **Route inventory**: `route_id`, family, intervention, minimal probe, falsifier, contribution/benchmark fit, cost/data, source evidence, and status. Name the selected configuration and rejected alternatives.
-5. **Baseline inventory**: `baseline_id`, source/revision, selected/rejected, and separate role records for `causal_reference` and `contextual_baseline`. For each claimed role state the mapped claim/experiment, independence, matched or intentionally unmatched axes, defining scaffold/protocol, fairness plan, cost, and evidence gap. A dual-role baseline has two explicit role records.
-6. **R0 gate**: `required`, covered uncertainty/choice IDs, candidate IDs, changed axis, fixed outcome-impacting axes, fit/materialization/selection ID pools, literal selection and kill rules, next action, and total cost. Add an R0 execution-cell inventory with `cell_id`, arm/reference role, data IDs, budget, command intent, output, metric, and cost. Every cell cited by a rule must occur here.
+4. **Benchmark decision**: claim-to-benchmark requirements matrix; candidate inventory with source evidence, covered/missing requirements, access, protocol, metrics, baselines, adaptation cost, and provenance risk; selected route `direct_reuse|base_benchmark_adaptation|new_benchmark_construction`; selected and rejected identities; contribution coverage; pre-result selection rationale; and frozen protocol. When adapting or constructing, include the benchmark design, R0 validity gate, versioned identity, and claim-bearing validation cards required by the Skill.
+5. **Route inventory**: `route_id`, family, intervention, minimal probe, falsifier, contribution/benchmark fit, cost/data, source evidence, and status. Name the selected configuration and rejected alternatives.
+6. **Baseline inventory**: `baseline_id`, source/revision, selected/rejected, and separate role records for `causal_reference` and `contextual_baseline`. For each claimed role state the mapped claim/experiment, independence, matched or intentionally unmatched axes, defining scaffold/protocol, fairness plan, cost, and evidence gap. A dual-role baseline has two explicit role records.
+7. **R0 gate**: `required`, covered uncertainty/choice or benchmark-validity IDs, candidate IDs, changed axis, fixed outcome-impacting axes, fit/materialization/selection ID pools, literal selection and kill rules, next action, and total cost. Add an R0 execution-cell inventory with `cell_id`, arm/reference role, data IDs, budget, command intent, output, metric, and cost. Every cell cited by a rule must occur here.
 
 The selected route records each honored lock. A reduced route stays `MECHANISM_PILOT` or `ENGINEERING_SMOKE` and leaves the affected claim incomplete. A baseline selected for either role appears in a main experiment; when an external system cannot be run comparably, record the unresolved contextual evidence gap instead of silently replacing it with an internal variant.
 
@@ -66,7 +67,7 @@ List planned execution cells, aggregate keys, paper cells, and decision effects 
 
 For each table or figure record `table_id`/`figure_id`, paper question, mapped claims/experiments, row and column semantics, aggregate-result key behind every absolute position, optional derived-effect ID, uncertainty, average definition, missing-cell policy, caption claim, and `reports/` output path.
 
-The primary table contains the proposed method plus both closed baseline roles over the locked main scope and shows absolute results. Ablations show the full method and one-axis variants. Focused analyses contain only cells needed for their question; continuous curves/distributions/trajectories use figures. Averages state macro/weighted semantics and combine only commensurate cells; unavailable is not zero.
+The primary table contains the proposed method plus both closed baseline roles over the accepted main benchmark scope and shows absolute results. Ablations show the full method and one-axis variants. Focused analyses contain only cells needed for their question; continuous curves/distributions/trajectories use figures. Averages state macro/weighted semantics and combine only commensurate cells; unavailable is not zero.
 
 At design time, every numeric paper position contains only its complete typed `{{RESULT:...}}` or `{{EFFECT:...}}` placeholder. Do not put `R ± CI`, `R+CI`, `C ± CI`, `Rate ± CI`, `Δ ± CI`, `mean ± std`, a bare `CI`, or another invented value/uncertainty shorthand into table cells. The reporting plan may require uncertainty, but its final display is chosen from observed aggregates after execution rather than simulated in the shell.
 
@@ -88,7 +89,8 @@ Prefer placeholders. If numeric targets appear, label the document `DRAFT — SI
 
 End with exactly one `Verdict: PASS|PROVISIONAL_WAITING_FOR_R0|FAIL`. The audit explicitly reports:
 
-- lock and role closure; baseline role closure; unresolved high-impact choices;
+- lock and role closure; benchmark requirement coverage and source-backed selection; baseline role closure; unresolved high-impact choices;
+- for adapted/new benchmarks, construction identity, R0 measurement-validity outcome, and claim-bearing benchmark validation coverage;
 - R0 changed/fixed axes and whether every rule-referenced cell is registered and costed;
 - contribution/axis → `CLAIM_BEARING` mapping and every Claim Contract outcome;
 - family coverage or contribution-grounded reasons under literal `## Absent families` bullets shaped `- <family>: <reason>`;
@@ -96,12 +98,29 @@ End with exactly one `Verdict: PASS|PROVISIONAL_WAITING_FOR_R0|FAIL`. The audit 
 
 `skill-check-design` validates deterministic structure only. `PASS` requires no unresolved choice/gap; `PROVISIONAL_WAITING_FOR_R0` permits only registered unresolved R0 choices, not baseline, confounding, Claim Contract, taxonomy, or reference-cell gaps. A failed audit stays before design readiness.
 
+## Breakpoint-driven method revision proposal
+
+`method_revision_proposal.md` is written only after `method_revision_request.md` shows that no admissible boundary-only repair remains or repeated attempts provide no new action, evidence, or measurable progress. It records:
+
+- `Revision ID` and triggering request/breakpoint IDs;
+- literal failure evidence and prior boundary-repair outcomes;
+- original accepted method behavior and identity;
+- exactly one smallest proposed method delta;
+- preserved Motivation, Contribution, Benchmark, and unaffected method identities;
+- changed identities, claim-meaning impact, and why the change remains within the original Idea rather than replacing it;
+- affected experiment, effect, schedule, result, table, and figure IDs;
+- falsifier, any newly required R0, expected cost, and rollback condition;
+- boundary-repair history and progress evidence, `method_revision_limit`, approved method-revision count, and approval mode `WITHIN_LIMIT|LIMIT_REACHED`.
+
+The proposal does not mutate the accepted design. `method_revision_decision.md` must repeat the exact `Revision ID` and one literal decision: `APPROVE_MINIMAL_METHOD_REVISION`, `APPROVE_EXCEPTION_METHOD_REVISION`, `REJECT_METHOD_REVISION`, or `ABANDON_IDEA`. At `LIMIT_REACHED`, another revision requires the exception decision and the user interface must expose `废弃当前 Idea`. A stale decision for another revision ID grants no authority.
+
 Artifact set and ownership:
 
-- `input_brief.md` preserves the literal handoff and its lock/choice/resource classification;
+- `input_brief.md` preserves literal Motivation, Contribution, any optional Benchmark input, and the lock/choice/resource classification;
 - `experiment_design.md` owns all scientific decisions, inventories, shells, and the handoff;
 - `expected_effects.json` owns design-time decision targets only and remains byte-stable during result ingestion;
 - `r0_plan.md`, when required, owns the gate cells/rules; the observed `r0_record.json` is produced by execution and triggers a reissued design.
+- `method_revision_request.md` is produced by execution; `method_revision_proposal.md` is produced by design; `method_revision_decision.md` and `idea_abandonment.md` preserve the user's authority and terminal choice.
 
 ## `expected_effects.json`
 

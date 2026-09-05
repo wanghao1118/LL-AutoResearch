@@ -37,6 +37,11 @@ assets/output/<run>/
 ├── experiment_schedule.json
 ├── result_contract.json
 ├── execution_record.json
+├── breakpoint_recovery.md
+├── method_revision_request.md
+├── method_revision_proposal.md
+├── method_revision_decision.md
+├── idea_abandonment.md
 ├── raw_results.json
 ├── result_summary.json
 ├── effect_comparison.md
@@ -59,24 +64,32 @@ R0 files exist only when `experiment_design.md` marks R0 required. `result_tunin
 - `WAITING_FOR_R0`
 - `R0_PASSED`
 - `R0_FAILED_RETURN_TO_DESIGN`
+- `WAITING_FOR_METHOD_REVISION_APPROVAL`
 - `IMPLEMENTATION_READY`
 - `EXECUTION_IN_PROGRESS`
 - `EXECUTION_COMPLETE`
 - `RESULT_DIAGNOSIS_READY`
 - `INTEGRITY_AUDIT_PASS`
 - `COMPLETE`
+- `IDEA_ABANDONED`
 
-A failed or rejected candidate does not erase the last accepted state. Use `skill-advance` for transitions and `skill-repair-state` to canonicalize repairable Markdown table whitespace. History cell values escape Markdown delimiters before writing. `Last completed stage` names a completed milestone, never `EXECUTION_IN_PROGRESS`. `RESULT_DIAGNOSIS_READY` requires `result_summary.json.status: READY_FOR_GPT_DIAGNOSIS`. `INTEGRITY_AUDIT_PASS` requires an observed `Verdict: PASS`, and `COMPLETE` requires the current state already be `INTEGRITY_AUDIT_PASS`.
+A failed or rejected candidate does not erase the last accepted state. Use `skill-advance` for transitions and `skill-repair-state` to canonicalize repairable Markdown table whitespace. History cell values escape Markdown delimiters before writing. `Last completed stage` names an accepted milestone, never `EXECUTION_IN_PROGRESS`; while the design is `WAITING_FOR_R0`, that milestone remains `INPUT_READY`. `RESULT_DIAGNOSIS_READY` requires `result_summary.json.status: READY_FOR_GPT_DIAGNOSIS`. `INTEGRITY_AUDIT_PASS` requires an observed `Verdict: PASS`, and `COMPLETE` requires the current state already be `INTEGRITY_AUDIT_PASS`.
 
 ## Authoritative artifacts
 
-`input_brief.md` is the authoritative scientific-intent artifact. It preserves the literal Motivation, Contribution, and Benchmark from the AutoSearch handoff, every additional item the user supplied, then records scientific locks, autonomous design choices with outcome-impact classifications, resource constraints, operational definitions, and blockers. Later Skills may resolve an autonomous choice but may never rewrite a scientific lock.
+`input_brief.md` is the authoritative scientific-intent artifact. It preserves the literal Motivation and Contribution from the AutoSearch handoff, any optional Benchmark and every additional item the user supplied, then records scientific locks, autonomous design choices with outcome-impact classifications, resource constraints, operational definitions, and blockers. When Benchmark is absent, `experiment_design.md` owns its contribution-driven selection or design. Later Skills may resolve an autonomous choice but may never rewrite a scientific lock.
 
-`experiment_design.md` is the authoritative design artifact: claim ledger, Idea semantics, locks, autonomous-choice impact table, route selection, baseline decision, R0 gate, experiment cards for all four families, planned execution cells, absolute aggregate results, paper table plan, decision effects, preflight requirements, reporting plan, AutoWriting handoff, and a coverage audit ending in a literal `PASS` or a blocker list.
+`experiment_design.md` is the authoritative design artifact: claim ledger, Idea semantics, locks, autonomous-choice impact table with role closure, contribution-to-benchmark requirements, benchmark candidate and reuse/adapt/new decision, route selection, baseline decision, R0 gate, experiment cards with estimands for all four families, planned execution cells, absolute aggregate results, paper table plan, decision effects, preflight requirements, reporting plan, AutoWriting handoff, and a coverage audit declaring `PASS`, `PROVISIONAL_WAITING_FOR_R0`, or `FAIL`. A provisional declaration is structurally usable for R0 but is not an accepted scientific design.
 
 `expected_effects.json` holds read-only design-time simulated targets, one per claim-relevant decision effect. A numeric entry anchors to the target variant's absolute experiment × variant × task × metric aggregate and names a reference variant when the threshold is relative. Baseline and presentation-only aggregate rows stay out of this file. Every value carries `value_status: SIMULATED_TARGET` with a literal `decision_threshold`, a `target_basis` of `handoff_reported` / `published_baseline` / `design_estimate`, and an `on_miss` route. Observed values and threshold outcomes live in `result_summary.json` and `effect_comparison.md`, never in this file. A simulated target is never evidence. It may appear only in an explicitly marked AutoWriting draft and never in `reports/` or submission-ready results. Editing a target after seeing results is an integrity failure.
 
-`r0_record.json` records the observed resolution of each required R0: covered uncertainty or high-impact choice IDs, candidate instantiation IDs, fixed controls, commands, metrics, raw observations, the literal selection or kill rule, the selected outcome, and exit status. Every unresolved high-impact choice needs results from at least two candidate instantiations; prose acceptance or a one-candidate record cannot set `R0_PASSED`.
+`r0_record.json` records the observed resolution of each required R0: covered uncertainty or high-impact choice IDs, candidate instantiation IDs, fixed controls, disjoint fit/materialization and candidate-selection IDs when adaptation occurs, commands, metrics, raw observations, the literal selection or kill rule, the selected outcome, and exit status. Every unresolved high-impact choice needs results from at least two direct candidate instantiations of that choice; prose acceptance, a proxy comparison, or a one-candidate record cannot set `R0_PASSED`.
+
+`breakpoint_recovery.md` is the readable execution-recovery ledger. It declares `method_revision_limit`, counts approved method revisions for the current Idea, and records every breakpoint, attempted boundary-only change, identity-preservation argument, result, and escalation reason. Boundary repair has no fixed numeric cap: continue while a materially different admissible repair, new evidence, or measurable progress exists, and escalate only when none remains. The default method-revision limit is two approved revisions per Idea unless the user sets a different value before recovery begins.
+
+`method_revision_request.md` contains the unresolved breakpoint evidence after boundary recovery stops. `method_revision_proposal.md` contains one smallest revision with a stable `Revision ID`; `method_revision_decision.md` records the same ID and the user's literal `APPROVE_MINIMAL_METHOD_REVISION`, `APPROVE_EXCEPTION_METHOD_REVISION`, `REJECT_METHOD_REVISION`, or `ABANDON_IDEA` decision. Old decisions do not authorize a new proposal ID. `idea_abandonment.md` closes the Idea without deleting failed attempts or reusable artifacts.
+
+`WAITING_FOR_METHOD_REVISION_APPROVAL` preserves the last accepted design while prohibiting implementation of the proposal. `IDEA_ABANDONED` is terminal and means the user chose to stop this Idea; it does not convert an implementation/resource breakpoint into scientific evidence against the method.
 
 `experiment_schedule.json` lists explicit cells with experiment ID, variant ID, benchmark task ID, benchmark provenance, family, evidence class, integer seed, and planned metric names. Family is exactly `main`, `ablation`, `case_study`, or `analysis`. Evidence class is exactly `CLAIM_BEARING`, `MECHANISM_PILOT`, or `ENGINEERING_SMOKE`.
 
@@ -107,6 +120,8 @@ The AutoWriting handoff has no separate state transition. `ACCEPTED` permits dra
 
 `result_route.md` contains the route decision, owner Skill, required action, execution requirement, invalidation scope, thresholds, and closure condition. At `RESULT_DIAGNOSIS_READY` the next Skill is `run-autodesign`, which dispatches that route rather than sending every diagnosis directly to audit.
 
+`reports/report_manifest.json` closes the accepted reporting plan. It lists every named table, figure, case-study panel, and analysis artifact with its path, source IDs, and `READY`, `INCOMPLETE`, or `N/A` evidence status. `reports/index.html` is the human-readable entry point. Terminal, conservative, mixed, and negative routes still materialize the full plan: unavailable evidence is shown at the planned output path with its exact reason and is never silently omitted or replaced by zero or a simulated target.
+
 Unexpected cells stay explicit and make the current result summary ineligible for diagnosis until the design and schedule are deliberately revised and downstream artifacts invalidated. A later round never extends an accepted schedule silently.
 
 ## Invalidation
@@ -118,6 +133,7 @@ Invalidate downstream artifacts when their accepted input changes:
 - generated code, environment, command, or result-contract change invalidates execution and later stages;
 - a result change invalidates comparison, diagnosis, and audit;
 - an experimental tuning or iteration change invalidates the affected design or implementation plus execution, result summary, comparison, diagnosis, route, and audit;
+- an approved method revision invalidates the affected design entries, implementation, execution, comparison, diagnosis, and audit; its approval applies only to the matching revision ID;
 - reporting-only tuning invalidates reports and audit but not raw execution evidence.
 
 Directly compare the relevant artifact contents. Do not create checksum ledgers.

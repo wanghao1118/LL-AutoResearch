@@ -47,6 +47,12 @@ For every contribution record:
 
 Reporting scope can choose where results appear, but cannot rewrite the original contribution or omit claim-critical negative, mixed, failed-slice, or ablation results.
 
+## Report closure
+
+For `stop`, `report`, and reporting-only routes, the accepted reporting plan is an output contract rather than an optional suggestion. Materialize every named table, figure, case-study panel, and analysis artifact under `reports/`. A negative or conservative conclusion changes the caption and claim boundary, not whether the artifact exists.
+
+Write `reports/report_manifest.json` with one entry per planned output: output path, source experiment/effect IDs, evidence status (`READY`, `INCOMPLETE`, or `N/A`), and a literal reason when not ready. Write `reports/index.html` as the readable entry point. If evidence is missing or ineligible, the planned artifact itself must visibly say `INCOMPLETE` or `N/A` and identify the missing source; never omit it, substitute a simulated target, or encode unavailable as zero. Diagnostic-only partial values may be shown only with an explicit label and may not fill a claim-bearing paper cell.
+
 ## `result_route.md`
 
 Record all fields below:
@@ -73,6 +79,10 @@ Use the JSON schema in `result_tuning_prompt.md`. Replace available placeholders
 - no claim rewrite, hidden failed slice, omitted observed ablation, seed subset selection, or automatic upgrade from expected to observed evidence;
 - no promotion of a `simulated_target` or an unexecuted expected delta into an observed value;
 - no outcome-dependent metric, aggregation, seed-count, baseline-budget, case-selection, or table-row selection.
+- no manual edit or overwrite of an observed raw value, aggregate, uncertainty, or paper-table number;
+- tuning selection uses training/validation evidence only, with a declared search budget and fresh confirmation identity;
+- baseline tuning keeps or strengthens the fairest comparable baseline rather than selecting a weaker configuration;
+- a change motivated by already observed test results is labeled as a post-result revision, and the original result remains visible.
 
 ## `next_round.md`
 

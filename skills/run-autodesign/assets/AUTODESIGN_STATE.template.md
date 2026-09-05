@@ -11,6 +11,7 @@
 | Accepted route | pending |
 | Execution target | pending |
 | Primary result | pending |
+| Method revision limit | 2 |
 
 ## Accepted inputs
 

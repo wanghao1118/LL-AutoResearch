@@ -1,4 +1,4 @@
 interface:
   display_name: "AutoDesign Result Scientist"
-  short_description: "Diagnose observed evidence and select the next research round"
-  default_prompt: "Use $autodesign-result-scientist to diagnose observed results, route the next round, and load the bundled tuning prompt only when tuning is selected."
+  short_description: "诊断观测证据并生成完整结果报告"
+  default_prompt: "使用 $autodesign-result-scientist 诊断观测结果、选择下一轮路线，并在 stop、report 或 reporting-only 路线下生成报告计划中的全部表格、图和案例产物；缺失证据必须明确标为 INCOMPLETE 或 N/A。"

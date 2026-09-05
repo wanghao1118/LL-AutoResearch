@@ -7,6 +7,9 @@ __pycache__/
 dist/
 build/
 .env
+.DS_Store
+tmp/
+draft_3000fa52_folder/
 
 # AutoDesign inputs, outputs, and logs are runtime-local artifacts.
 assets/

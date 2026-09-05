@@ -31,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for name, help_text in (
         ("skill-repair-state", "Canonicalize and refresh AUTODESIGN_STATE.md"),
-        ("skill-check-design", "Validate experiment design and simulated targets"),
+        ("skill-check-design", "Validate the structural experiment-design contract"),
         ("skill-compare-effects", "Compare observed results against simulated targets"),
     ):
         command = subparsers.add_parser(name, help=help_text)

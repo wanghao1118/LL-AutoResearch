@@ -1,12 +1,13 @@
 # AutoDesign
 
-AutoDesign 是一个 **Skill-first 研究工作流**，接在上游 AutoSearch 之后：读取 AutoSearch 导出的 **Motivation、Contribution 和 Benchmark**，先完成实验设计，再执行实验。任何支持 Agent Skills 的智能体都可以通过五个 Skill 完成实验设计、实验执行、结果解释与独立审计；仓库中的 Python 薄运行包只负责状态推进、设计契约校验、本地命令执行、结果 cell 完整性校验和目标对比。GPU 与远端机器信息由智能体自己的 `AGENTS.md` 或 `CLAUDE.md` 提供，Python 包不读取 GPU 配置。
+AutoDesign 是一个 **Skill-first 研究工作流**，接在上游 AutoSearch 之后：读取 AutoSearch 导出的 **Motivation 和 Contribution**，由实验设计 Skill 选择或设计 benchmark，再完成实验设计与执行。用户也可以提供 Benchmark；一旦提供，它就是必须保留的科学锁。任何支持 Agent Skills 的智能体都可以通过五个 Skill 完成 benchmark/实验设计、实验执行、结果解释与独立审计；仓库中的 Python 薄运行包只负责状态推进、设计契约校验、本地命令执行、结果 cell 完整性校验和目标对比。GPU 与远端机器信息由智能体自己的 `AGENTS.md` 或 `CLAUDE.md` 提供，Python 包不读取 GPU 配置。
 
 模块流程是**先设计，发布写作交接，再执行**。AutoWriting 不属于 AutoDesign 状态机，也不会阻塞实验：
 
 ```text
-INPUT_READY → EXPERIMENT_DESIGN_READY → IMPLEMENTATION_READY → EXECUTION_COMPLETE
-                    └──→ AutoWriting（并行草稿）
+INPUT_READY ─┬→ EXPERIMENT_DESIGN_READY → IMPLEMENTATION_READY → EXECUTION_COMPLETE
+             └→ WAITING_FOR_R0 → R0_PASSED → EXPERIMENT_DESIGN_READY
+                                  └──→ AutoWriting（条件式草稿）
             → RESULT_DIAGNOSIS_READY → INTEGRITY_AUDIT_PASS → COMPLETE
 ```
 
@@ -97,8 +98,8 @@ Case study 的选择规则和类别计数必须在**任何结果出现之前**�
 
 `experiment_design.md` 末尾包含 `## AutoWriting handoff`，不新增状态或交接 Schema：
 
-- `ACCEPTED`：设计已接受，AutoWriting 可在实验运行期间并行写作；
-- `PROVISIONAL_WAITING_FOR_R0`：只写稳定章节，路线相关内容保持条件式；
+- `Verdict: PASS` 与 `handoff_status: ACCEPTED` 配对：设计已接受，AutoWriting 可在实验运行期间并行写作；
+- `Verdict: PROVISIONAL_WAITING_FOR_R0` 与同名 handoff status 配对：只写稳定章节，路线相关内容保持条件式，并进入 `WAITING_FOR_R0`；
 - 每个绝对结果格使用 `{{RESULT:<experiment_id>::<variant_id>::<benchmark_task_id>::<metric>}}` 占位；可选的派生影响列使用 `{{EFFECT:<entry_id>}}`，真实结果分别从 `result_summary.json` 和 `effect_comparison.md` 替换；
 - 数字模拟值只能出现在明显标记 `DRAFT — SIMULATED TARGETS, NO OBSERVED RESULTS` 的草稿中，并在同一单元格或图注标记 `SIMULATED_TARGET`；
 - 模拟值不得进入提交版表格、图、observed 叙述或 claim verdict。
@@ -132,22 +133,21 @@ python3 -m pip install .
 
 ## 自然语言入口
 
-输入契约**不是**固定的结构化 Schema。Skill 的真实入口就是自然语言：在任一已安装 Skill 的智能体对话中说明三项必需输入和运行目录即可。
+输入契约**不是**固定的结构化 Schema。Skill 的真实入口就是自然语言：在任一已安装 Skill 的智能体对话中说明 Motivation、Contribution 和运行目录即可。
 
 ```text
 使用 $run-autodesign。运行目录 /absolute/path/to/my_run。
 motivation: 现有 terminal agent 在长程任务上失败后无法自我恢复。
 contribution: 提出 oracle-guided 轨迹重标注，让 32B 模型在失败后重规划。
-benchmark: terminal-bench 1.0，指标 pass@1。
 另外我倾向用 qwen2.5-coder-32b-instruct 作 baseline，只有 2 张 A100，先跑一个低成本 R0。
 ```
 
 两条输入通道等价有效，都不是降级路径：
 
-- **通道 A**：规范化的 `autosearch_handoff.json`（只有 `motivation`、`contribution`、`benchmark` 必需，`benchmark.primary` 必需）；
+- **通道 A**：规范化的 `autosearch_handoff.json`（只有 `motivation`、`contribution` 必需；`benchmark` 可选，提供后作为科学锁）；
 - **通道 B**：`/run-autodesign` 后面直接跟自然语言。AutoSearch 由他人独立开发，导出格式可能漂移或以散文形式到达。
 
-用户还可能提供三项之外的更多信息——初步实验计划、倾向的 baseline、相关工作、算力限制、部分设计。这些内容全部原样吸收进 `input_brief.md` 的 `## Additional user-supplied input (literal)`。**不因为 schema 没有对应字段就丢弃用户提供的信息；三项必需输入已在散文中出现时，不要求用户改写成 JSON。**
+用户还可能提供 Benchmark、初步实验计划、倾向的 baseline、相关工作、算力限制或部分设计。这些内容全部原样吸收进 `input_brief.md` 的对应 literal 小节。**不因为 schema 没有对应字段就丢弃用户提供的信息；Motivation 和 Contribution 已在散文中出现时，不要求用户改写成 JSON。**
 
 一个 canonical run 在指定运行目录中生成：
 
@@ -196,7 +196,7 @@ R0 文件只在路线需要低成本门时出现。Markdown 保存研究推理�
 <agent_skills_dir>/autodesign-experiment-run/scripts/run_stage.py
 ```
 
-薄运行包不会替智能体选择方法、模型、baseline、训练范式、表格布局、目标值或论文结论。`skill-check-design` 只校验设计在结构上可用（schema、目标基准、字面阈值、未达标路由，以及 decision effect 的目标和相对参考是否都有 scheduled aggregate），不要求每个 baseline 展示格都有 target，也不判断某个表格或目标值在科学上是否合理——那是设计 Skill 的职责。
+薄运行包不会替智能体选择方法、模型、baseline、训练范式、表格布局、目标值或论文结论。`skill-check-design` 只校验设计在结构上可用（schema、目标基准、字面阈值、未达标路由，以及 decision effect 的目标和相对参考是否都有 scheduled aggregate），不要求每个 baseline 展示格都有 target，也不判断某个路线、estimand、表格或目标值在科学上是否合理——那是设计 Skill 的职责。命令顶层 `status: PASS` 表示结构校验通过；`declared_design_readiness` 另行报告设计自述的 `PASS` 或 `PROVISIONAL_WAITING_FOR_R0`。
 
 ## 命令一览
 

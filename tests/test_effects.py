@@ -120,6 +120,12 @@ AFFIRMATIVE_VERDICTS = [
     "## Coverage audit\n\nEvery claim has a falsifier.\n\nVerdict: PASS\n",
 ]
 
+PROVISIONAL_VERDICTS = [
+    "## Coverage audit\n\nVerdict: PROVISIONAL_WAITING_FOR_R0\n",
+    "## Coverage audit\n\n**Verdict:** **PROVISIONAL_WAITING_FOR_R0**\n",
+    "## Coverage audit: PROVISIONAL_WAITING_FOR_R0\n\nR0 plan is registered.\n",
+]
+
 BLOCKING_VERDICTS = [
     ("## Coverage audit\n\nVerdict: FAIL\n", "FAIL"),
     ("## Coverage audit\n\nVerdict: FAIL - cannot PASS until baselines land\n", "FAIL"),
@@ -140,7 +146,25 @@ def test_affirmative_coverage_verdict_passes(tmp_path: Path, design_text: str) -
     _write_design(tmp_path, _all_families(), design_text)
     result = check_design(tmp_path)
     assert result["status"] == "PASS", result["errors"]
+    assert result["validation_scope"] == "STRUCTURAL"
+    assert result["declared_design_readiness"] == "PASS"
     assert result["coverage_audit_pass"] is True
+    assert result["coverage_audit_acceptable"] is True
+
+
+@pytest.mark.parametrize("design_text", PROVISIONAL_VERDICTS)
+def test_provisional_coverage_verdict_is_structurally_usable(
+    tmp_path: Path, design_text: str
+) -> None:
+    """A registered R0 plan may proceed without being mislabeled as scientific PASS."""
+
+    _write_design(tmp_path, _all_families(), design_text)
+    result = check_design(tmp_path)
+    assert result["status"] == "PASS", result["errors"]
+    assert result["validation_scope"] == "STRUCTURAL"
+    assert result["declared_design_readiness"] == "PROVISIONAL_WAITING_FOR_R0"
+    assert result["coverage_audit_pass"] is False
+    assert result["coverage_audit_acceptable"] is True
 
 
 @pytest.mark.parametrize("design_text,token", BLOCKING_VERDICTS)
@@ -355,24 +379,30 @@ def test_families_are_reported_and_absence_needs_a_written_justification(tmp_pat
 JUSTIFIED_ABSENCES = [
     (
         "chinese",
-        "## Absent families\n\n"
-        "- ablation: 本贡献是失效规律发现，无自有模块可供拆解\n"
-        "- case_study: 主张为总体分布性质，单例无法承载\n"
-        "- analysis: 唯一自变量已在主实验中扫描完毕\n",
+        (
+            "## Absent families\n\n"
+            "- ablation: 本贡献是失效规律发现，无自有模块可供拆解\n"
+            "- case_study: 主张为总体分布性质，单例无法承载\n"
+            "- analysis: 唯一自变量已在主实验中扫描完毕\n"
+        ),
     ),
     (
         "english",
-        "## Absent families\n\n"
-        "- ablation: the contribution has no internal modules to remove\n"
-        "- case_study: the claim is distributional, no single trace can carry it\n"
-        "- analysis: the only free axis is already swept in the main experiment\n",
+        (
+            "## Absent families\n\n"
+            "- ablation: the contribution has no internal modules to remove\n"
+            "- case_study: the claim is distributional, no single trace can carry it\n"
+            "- analysis: the only free axis is already swept in the main experiment\n"
+        ),
     ),
     (
         "bold-titlecase",
-        "## Absent Families\n\n"
-        "- **Ablation**: 本贡献无自有模块可供拆解\n"
-        "- **Case Study**: 主张为总体分布性质，单例无法承载\n"
-        "- **Analysis**: 唯一自变量已在主实验中扫描完毕\n",
+        (
+            "## Absent Families\n\n"
+            "- **Ablation**: 本贡献无自有模块可供拆解\n"
+            "- **Case Study**: 主张为总体分布性质，单例无法承载\n"
+            "- **Analysis**: 唯一自变量已在主实验中扫描完毕\n"
+        ),
     ),
 ]
 
