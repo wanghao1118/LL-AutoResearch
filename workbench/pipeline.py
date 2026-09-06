@@ -1,0 +1,425 @@
+"""Persistent links between the three existing module task managers."""
+
+from __future__ import annotations
+
+import base64
+import copy
+import json
+import threading
+import uuid
+from pathlib import Path
+
+from auto_design.codex_runner import utc_now
+from auto_design.orchestration import (
+    ACTIVE_STATUSES,
+    TaskManager,
+    read_current_stage,
+    validate_handoff,
+    write_json,
+)
+from auto_search.web import serve as search
+from auto_writing.web import serve as writing
+
+
+def encoded_file(path: Path) -> dict:
+    return {"name": path.name, "content_base64": base64.b64encode(path.read_bytes()).decode()}
+
+
+class PipelineManager:
+    def __init__(self, root: Path, workspace: Path, design: TaskManager):
+        self.root, self.workspace, self.design = root, workspace, design
+        self.root.mkdir(parents=True, exist_ok=True)
+        self.lock = threading.RLock()
+        self.stop_event = threading.Event()
+        self.thread: threading.Thread | None = None
+        self.flows = {p.stem: json.loads(p.read_text()) for p in root.glob("flow-*.json")}
+        for flow in self.flows.values():
+            if flow["status"] in {"running", "waiting_review"}:
+                self.update(flow, "paused", "服务重启后已暂停，点击继续会核对原任务并恢复。")
+
+    def save(self, flow: dict) -> None:
+        write_json(self.root / f"{flow['id']}.json", flow)
+
+    def update(self, flow: dict, status: str, message: str) -> None:
+        if flow.get("status") != status or flow.get("message") != message:
+            flow.update(status=status, message=message, updated_at=utc_now())
+            flow["events"].append(
+                {"at": flow["updated_at"], "stage": flow["stage"], "message": message}
+            )
+            self.save(flow)
+
+    def list(self) -> list[dict]:
+        with self.lock:
+            return copy.deepcopy(
+                sorted(self.flows.values(), key=lambda f: f["created_at"], reverse=True)
+            )
+
+    def get(self, flow_id: str) -> dict:
+        if flow_id not in self.flows:
+            raise ValueError("全流程任务不存在。")
+        return self.flows[flow_id]
+
+    def create(self, payload: dict) -> dict:
+        with self.lock:
+            stage = str(payload.get("start_stage", "search"))
+            selection = str(payload.get("selection", "auto"))
+            if stage not in {"search", "design", "writing"} or selection not in {"auto", "manual"}:
+                raise ValueError("未知起点或选题方式。")
+            direction = str(payload.get("direction", "")).strip()
+            source = str(payload.get("source_id", "")).strip() or None
+            count = int(payload.get("paper_count", 3))
+            if not 2 <= count <= 6:
+                raise ValueError("论文数量需要在 2 到 6 之间。")
+            if stage == "search" and not source and not 3 <= len(direction) <= 1000:
+                raise ValueError("请填写 3 到 1000 个字符的研究方向。")
+            if stage != "search" and not source:
+                raise ValueError("请选择已有的模块任务。")
+            field = {"search": "search_run", "design": "design_id", "writing": "writing_id"}[stage]
+            if source and any(
+                f.get(field) == source and f["status"] != "completed" for f in self.flows.values()
+            ):
+                raise ValueError("这个任务已经关联全流程，请继续原流程。")
+            if source:
+                if stage == "search":
+                    if not (search.safe_run_directory(source) / "job.json").is_file():
+                        raise ValueError("所选调研没有任务记录。")
+                elif stage == "design":
+                    self.design.get(source)
+                else:
+                    writing.load_project(source)
+            flow_id = "flow-" + uuid.uuid4().hex[:12]
+            title = str(
+                payload.get("title")
+                or (direction if len(direction) <= 120 else "研究流程 " + utc_now())
+                or source
+            )
+            if len(title) > 120:
+                raise ValueError("任务名称不能超过 120 个字符。")
+            template = payload.get("template_file")
+            if template:
+                _, data = writing.decode_zip_file(template)
+                if not writing.zipfile.is_zipfile(writing.io.BytesIO(data)):
+                    raise ValueError("LaTeX 模板不是有效 ZIP。")
+                (self.root / flow_id).mkdir()
+                (self.root / flow_id / "latex-template.zip").write_bytes(data)
+            now = utc_now()
+            flow = {
+                "id": flow_id,
+                "title": title,
+                "direction": direction,
+                "paper_count": count,
+                "selection": selection,
+                "stage": stage,
+                "search_run": None,
+                "design_id": None,
+                "writing_id": None,
+                "idea_id": None,
+                "status": "running",
+                "message": "已授权启动全流程。",
+                "created_at": now,
+                "updated_at": now,
+                "events": [],
+                "retry": True,
+            }
+            flow[field] = source
+            self.flows[flow_id] = flow
+            self.save(flow)
+            return copy.deepcopy(flow)
+
+    def candidates(self, flow: dict) -> list[dict]:
+        if not flow.get("search_run"):
+            return []
+        directory = search.safe_run_directory(flow["search_run"])
+        if not (directory / "web-data.json").is_file():
+            return []
+        dataset = search.apply_human_reviews(
+            search.read_json_if_exists(directory / "web-data.json"), directory
+        )
+        ranking = search.read_json_if_exists(directory / "evaluation.json").get("ranking", [])
+        ideas = dataset["ideas"]
+        for idea in ideas:
+            path = directory / "papers" / idea["id"] / "idea.md"
+            idea["eligible"] = (
+                idea.get("human_review") != "discarded"
+                and path.is_file()
+                and not search.research_pipeline.generate_idea.is_pass_markdown(path.read_text())
+            )
+        return sorted(
+            ideas, key=lambda i: ranking.index(i["id"]) if i["id"] in ranking else len(ranking)
+        )
+
+    def action(self, flow_id: str, action: str, payload: dict) -> dict:
+        with self.lock:
+            flow = self.get(flow_id)
+            if action == "pause":
+                self.update(flow, "paused", "已暂停自动推进，当前模块保留已有产物。")
+                self.pause_module(flow, interrupt=False)
+            elif action == "interrupt":
+                self.update(flow, "paused", "已请求停止当前控制器；训练进程保留，停止后可继续。")
+                self.pause_module(flow, interrupt=True)
+            elif action == "resume":
+                if flow["status"] == "completed":
+                    raise ValueError("流程已完成。")
+                if flow["status"] == "running":
+                    raise ValueError("流程正在推进，无需重复启动。")
+                flow.update(retry=True, recovery_note=str(payload.get("recovery_note", "")))
+                if flow["stage"] == "writing" and flow.get("writing_id"):
+                    (writing.safe_project_dir(flow["writing_id"]) / "recovery_note.md").write_text(
+                        flow["recovery_note"], encoding="utf-8"
+                    )
+                self.update(flow, "running", "正在核对原任务与已有产物，恢复当前步骤。")
+            elif action == "select":
+                if flow["stage"] != "search" or flow.get("design_id"):
+                    raise ValueError("已交接的 Idea 不能在此替换。")
+                candidates = {i["id"]: i for i in self.candidates(flow)}
+                idea_id = str(payload.get("idea_id", ""))
+                if idea_id not in candidates or not candidates[idea_id]["eligible"]:
+                    raise ValueError("请选择一个未放弃且有有效 Idea 文档的方案。")
+                flow["idea_id"] = idea_id
+                self.update(flow, "running", "已选定 Idea，将自动交接实验。")
+                self.save(flow)
+            elif action == "template":
+                _, data = writing.decode_zip_file(payload.get("template_file", {}))
+                if not writing.zipfile.is_zipfile(writing.io.BytesIO(data)):
+                    raise ValueError("模板不是有效的 ZIP。")
+                if flow.get("writing_id"):
+                    project = writing.load_project(flow["writing_id"])
+                    if writing.GENERATION_MANAGER.has_project_job(project["id"]):
+                        raise ValueError("请先暂停并等待写作步骤停止。")
+                    if (
+                        writing.GENERATION_MANAGER.automation_state(project["id"])["status"]
+                        == "running"
+                    ):
+                        raise ValueError("请先暂停自动写作。")
+                    (
+                        writing.safe_project_dir(project["id"]) / "input/latex-template.zip"
+                    ).write_bytes(data)
+                    project["publication"].update(status="stale", error="模板已更新，请继续排版。")
+                    writing.save_project(project)
+                directory = self.root / flow_id
+                directory.mkdir(exist_ok=True)
+                (directory / "latex-template.zip").write_bytes(data)
+                self.update(flow, "paused", "模板已保存，点击继续使用新模板排版。")
+            else:
+                raise ValueError("未知流程操作。")
+            return copy.deepcopy(flow)
+
+    def pause_module(self, flow: dict, interrupt: bool) -> None:
+        if flow["stage"] == "search" and flow.get("search_run"):
+            for job in search.JOB_MANAGER.snapshots():
+                if job["run_name"] == flow["search_run"] and job["status"] not in {
+                    "ready",
+                    "failed",
+                    "cancelled",
+                }:
+                    search.JOB_MANAGER.stop(job["id"])
+        elif flow["stage"] == "design" and flow.get("design_id"):
+            task = self.design.get(flow["design_id"])
+            if task["status"] in ACTIVE_STATUSES:
+                (self.design.interrupt if interrupt else self.design.pause)(task["id"])
+        elif flow.get("writing_id"):
+            manager = writing.GENERATION_MANAGER
+            manager.pause_auto(flow["writing_id"])
+            if interrupt:
+                with manager.lock:
+                    for job in list(manager.jobs.values()):
+                        if job.project_id == flow["writing_id"]:
+                            manager.cancel(job.id)
+
+    def start(self) -> None:
+        self.stop_event.clear()
+        self.thread = threading.Thread(target=self._run, daemon=True, name="workbench-pipelines")
+        self.thread.start()
+
+    def close(self) -> None:
+        self.stop_event.set()
+        if self.thread:
+            self.thread.join(5)
+
+    def _run(self) -> None:
+        while not self.stop_event.wait(0.5):
+            self.tick()
+
+    def tick(self) -> None:
+        with self.lock:
+            for flow in self.flows.values():
+                if flow["status"] not in {"running", "waiting_review"}:
+                    continue
+                try:
+                    getattr(self, f"advance_{flow['stage']}")(flow)
+                except Exception as error:  # noqa: BLE001 - persist worker failures for browser recovery
+                    self.update(flow, "blocked", str(error))
+
+    def advance_search(self, flow: dict) -> None:
+        if not flow["search_run"]:
+            existing = next(
+                (r for r in search.list_run_summaries() if r.get("pipeline_id") == flow["id"]), None
+            )
+            if existing:
+                flow["search_run"] = existing["run_name"]
+            else:
+                job = search.JOB_MANAGER.create(
+                    flow["direction"], flow["paper_count"], True, 900, pipeline_id=flow["id"]
+                )
+                flow["search_run"] = job.run_dir.name
+            flow["retry"] = False
+            self.save(flow)
+        run = next(
+            (r for r in search.list_run_summaries() if r["run_name"] == flow["search_run"]), None
+        )
+        if run is None:
+            raise ValueError("调研任务已被删除，无法继续交接。")
+        if run["status"] in {"failed", "cancelled"}:
+            if flow.pop("retry", False):
+                search.JOB_MANAGER.resume(run["run_name"], flow.get("recovery_note", ""))
+                self.save(flow)
+                return
+            self.update(flow, "blocked", run.get("error") or "调研已停止，点击继续从已有产物恢复。")
+            return
+        if run["status"] != "ready":
+            flow["retry"] = False
+            self.update(flow, "running", run["stage"])
+            return
+        candidates = self.candidates(flow)
+        if not flow["idea_id"]:
+            eligible = [
+                i for i in candidates if i["eligible"] and i["review"]["verdict"] == "promising"
+            ]
+            if flow["selection"] == "auto" and eligible:
+                flow["idea_id"] = eligible[0]["id"]
+            else:
+                self.update(
+                    flow,
+                    "waiting_selection",
+                    "请选择 Idea；自动选题只采用评审为 promising 且未被人工放弃的方案。",
+                )
+                return
+        selected = next(
+            (i for i in candidates if i["id"] == flow["idea_id"] and i["eligible"]), None
+        )
+        if not selected:
+            raise ValueError("选定 Idea 已不可用，请重新选择。")
+        existing = next((t for t in self.design.list() if t.get("pipeline_id") == flow["id"]), None)
+        if not existing:
+            source = (
+                search.safe_run_directory(flow["search_run"])
+                / "papers"
+                / flow["idea_id"]
+                / "idea.md"
+            )
+            existing = self.design.create(
+                flow["title"], source.read_text(), str(self.workspace), pipeline_id=flow["id"]
+            )
+            write_json(
+                Path(existing["run_dir"]) / "search_handoff.json",
+                {
+                    "pipeline_id": flow["id"],
+                    "run": flow["search_run"],
+                    "idea_id": flow["idea_id"],
+                    "source": str(source),
+                    "review": selected["review"],
+                    "at": utc_now(),
+                },
+            )
+        flow.update(design_id=existing["id"], stage="design", retry=True)
+        self.update(flow, "running", "Idea 已交接 Auto Design，进入实验设计与执行。")
+        self.save(flow)
+
+    def advance_design(self, flow: dict) -> None:
+        task = self.design.get(flow["design_id"])
+        if task["status"] in ACTIVE_STATUSES:
+            flow["retry"] = False
+            self.update(flow, "running", task["summary"])
+            return
+        if task["status"] == "waiting_review":
+            self.update(flow, "waiting_review", "方法修改等待网页审批；批准后流程自动继续。")
+            return
+        if task["status"] == "abandoned":
+            self.update(flow, "blocked", "Idea 已废弃，不交接为论文结果。")
+            return
+        if task["status"] != "completed":
+            if task["status"] in {"created", "design_ready"} or flow.pop("retry", False):
+                self.design.start(
+                    task["id"], scope="full", recovery_note=flow.get("recovery_note", "")
+                )
+                flow["retry"] = False
+                self.save(flow)
+                return
+            self.update(flow, "blocked", task.get("error") or task["summary"])
+            return
+        existing = next(
+            (p for p in writing.list_projects() if p.get("pipeline_id") == flow["id"]), None
+        )
+        if not existing:
+            directory = Path(task["run_dir"])
+            # The handoff gate changes whether scientific evidence is allowed into writing.
+            if read_current_stage(directory) != "COMPLETE":
+                raise ValueError("实验磁盘状态尚未 COMPLETE，不允许交接写作。")
+            if (
+                validate_handoff(
+                    directory, "audit", {"outcome": "completed", "next_action": "none"}, "COMPLETE"
+                )
+                != "none"
+            ):
+                raise ValueError("实验仍有后续动作，不允许交接写作。")
+            names = (
+                "idea.md",
+                "experiment_design.md",
+                "result_diagnosis.md",
+                "integrity_audit.md",
+                "result_summary.json",
+                "raw_results.json",
+                "experiment_schedule.json",
+                "result_contract.json",
+                "effect_comparison.md",
+                "execution_record.json",
+            )
+            sources = [directory / name for name in names if (directory / name).is_file()]
+            brief = directory / "writing_handoff.md"
+            brief.write_text(
+                "# 实验到写作交接\n\n只能根据这些真实产物写作；保留负结果、N/A、INCOMPLETE、逐 seed 证据及审计的结论边界。\n"
+                f"\n实验任务：{task['id']}\n流程任务：{flow['id']}\n"
+                + "\n".join(f"- {p.name}: {p}" for p in sources)
+                + "\n",
+                encoding="utf-8",
+            )
+            # Large raw records remain available at their complete source paths in the brief.
+            supports = [
+                encoded_file(p) for p in sources if p.stat().st_size <= writing.MAX_FILE_BYTES
+            ]
+            for item in supports:
+                writing.decode_file(item, "evidence")
+            existing = writing.create_project(
+                flow["title"], encoded_file(brief), supports, pipeline_id=flow["id"]
+            )
+        flow.update(writing_id=existing["id"], stage="writing", retry=True)
+        self.update(flow, "running", "已核对完成状态与审计，将实验资料自动交接论文写作。")
+        self.save(flow)
+
+    def advance_writing(self, flow: dict) -> None:
+        manager = writing.GENERATION_MANAGER
+        state = manager.automation_state(flow["writing_id"])
+        if state["status"] == "completed":
+            from auto_writing.web.automation import next_step
+
+            if next_step(writing.load_project(flow["writing_id"])) is None:
+                self.update(flow, "completed", "调研、实验、论文与 PDF 全流程已完成。")
+                return
+        if flow.get("retry") and state["status"] != "running":
+            if (
+                manager.has_project_job(flow["writing_id"])
+                or flow["writing_id"] in manager.automation_threads
+            ):
+                return
+            writing.list_projects()
+            template = self.root / flow["id"] / "latex-template.zip"
+            manager.start_auto(
+                flow["writing_id"], encoded_file(template) if template.is_file() else None
+            )
+            flow["retry"] = False
+            self.save(flow)
+            return
+        if state["status"] == "running":
+            self.update(flow, "running", state["message"])
+        else:
+            self.update(flow, "blocked", state.get("message", "写作已暂停，请继续当前步骤。"))

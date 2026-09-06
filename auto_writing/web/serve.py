@@ -517,6 +517,7 @@ def create_project(
     title: str,
     experiment_file: dict[str, Any],
     support_files: list[dict[str, Any]] | None = None,
+    pipeline_id: str | None = None,
 ) -> dict[str, Any]:
     title = title.strip()
     if not 1 <= len(title) <= 120:
@@ -561,6 +562,7 @@ def create_project(
     project: dict[str, Any] = {
         "id": project_id,
         "title": title,
+        "pipeline_id": pipeline_id,
         "created_at": now,
         "updated_at": now,
         "experiment": {
@@ -1270,6 +1272,13 @@ def invoke_codex_json(
 ) -> dict[str, Any]:
     cli = resolve_codex_cli()
     run_dir = (WRITING_RUNS_ROOT / project["id"]).resolve()
+    recovery = run_dir / "recovery_note.md"
+    if recovery.is_file() and recovery.read_text().strip():
+        prompt += ("\n\nTroubleshooting context for the current step. Use it to diagnose the failure; "
+                   "preserve the supplied scientific evidence and claim boundaries:\n" + recovery.read_text())
+    previous_errors = run_dir / "previous_errors.json"
+    if previous_errors.is_file():
+        prompt += "\n\nPrevious failed step errors, diagnose before retrying:\n" + previous_errors.read_text()
     raw_output = run_dir / "prompts" / f".{task}.last-message.json"
     raw_output.unlink(missing_ok=True)
     command = [
@@ -1938,6 +1947,123 @@ class GenerationManager:
         self.jobs: dict[str, GenerationJob] = {}
         self.lock = threading.RLock()
         self.project_locks: dict[str, threading.Lock] = {}
+        self.automation_threads: dict[str, threading.Thread] = {}
+
+    def automation_state(self, project_id: str) -> dict:
+        path = safe_project_dir(project_id) / "automation.json"
+        with self.lock:
+            state = json.loads(path.read_text()) if path.is_file() else {"status": "idle"}
+            if state["status"] == "running" and project_id not in self.automation_threads:
+                state.update(status="paused", message="服务重启后已暂停，可从当前步骤继续。")
+                write_json_atomic(path, state)
+            return state
+
+    def set_automation(self, project_id: str, status: str, message: str) -> dict:
+        state = {"status": status, "message": message, "updated_at": utc_now()}
+        with self.lock:
+            write_json_atomic(safe_project_dir(project_id) / "automation.json", state)
+        return state
+
+    def start_auto(self, project_id: str, template_file: dict | None = None) -> dict:
+        with self.lock:
+            project = load_project(project_id)
+            if project_id in self.automation_threads:
+                raise ValueError("自动写作尚未停止，请稍后继续。")
+            if self.has_project_job(project_id):
+                raise ValueError("请等待当前步骤结束后再启动自动写作。")
+            failures = [r.get("error") for r in [*project["sections"].values(),
+                                                *project["research"].values(), project["publication"]]
+                        if r.get("status") in {"failed", "partial"} and r.get("error")]
+            if failures:
+                (safe_project_dir(project_id) / "previous_errors.json").write_text(
+                    json.dumps(failures, ensure_ascii=False), encoding="utf-8")
+            if template_file is not None:
+                _, data = decode_zip_file(template_file)
+                if not zipfile.is_zipfile(io.BytesIO(data)):
+                    raise ValueError("LaTeX 模板不是有效的 ZIP。")
+                write_bytes_atomic(safe_project_dir(project_id) / "input/latex-template.zip", data)
+            thread = threading.Thread(target=self._run_auto, args=(project["id"],), daemon=True)
+            self.automation_threads[project_id] = thread
+            state = self.set_automation(project_id, "running", "自动推进调研、六章节、引用与 PDF；失败时保留当前步骤。")
+            thread.start()
+            return state
+
+    def pause_auto(self, project_id: str) -> dict:
+        return self.set_automation(project_id, "paused", "已暂停自动推进，当前步骤可完成或手动停止。")
+
+    def _run_auto(self, project_id: str) -> None:
+        if __package__:
+            from .automation import next_step, template_payload
+        else:
+            from automation import next_step, template_payload
+
+        retry_current = True
+        try:
+            while True:
+                with self.lock:
+                    if self.automation_state(project_id)["status"] != "running":
+                        return
+                    if not self.has_project_job(project_id):
+                        project = load_project(project_id)
+                        step = next_step(project)
+                        if step is None:
+                            self.set_automation(project_id, "completed", "论文、参考文献、LaTeX 与 PDF 已生成。")
+                            return
+                        kind, key, record = step
+                        if record.get("status") in {"failed", "partial"} and not retry_current:
+                            self.set_automation(project_id, "blocked", record.get("error") or "当前步骤失败，请查看日志并重试。")
+                            return
+                        retry_current = False
+                        if kind == "section":
+                            self.start(project_id, key)
+                        elif kind == "research":
+                            self.start_research(project_id, key)
+                        elif record.get("status") == "partial":
+                            self.start_recompile(project_id)
+                        else:
+                            self.start_publication(project_id, template_payload(safe_project_dir(project_id)))
+                threading.Event().wait(0.5)
+        except Exception as error:
+            self.set_automation(project_id, "blocked", str(error))
+        finally:
+            with self.lock:
+                self.automation_threads.pop(project_id, None)
+
+    def start_recompile(self, project_id: str) -> GenerationJob:
+        with self.lock:
+            project = load_project(project_id)
+            if project_has_running_task(project):
+                raise ValueError("请等待当前步骤结束。")
+            if project["publication"]["status"] not in {"partial", "ready"}:
+                raise ValueError("需要先生成当前版本的 LaTeX 源码。")
+            job = GenerationJob(project_id, "publication", project["publication"]["status"])
+            self.jobs[job.id] = job
+            project["publication"].update(status="running", job_id=job.id, error=None)
+            save_project(project)
+            threading.Thread(target=self._run_recompile, args=(job,), daemon=True).start()
+            return job
+
+    def _run_recompile(self, job: GenerationJob) -> None:
+        try:
+            project = load_project(job.project_id)
+            directory = publication_dir(safe_project_dir(job.project_id))
+            main = directory / "source" / project["publication"]["template"]["main_tex"]
+            compiler, pdf = compile_latex(main, directory / "build", directory / "compile.log",
+                                          process_callback=job.set_process)
+            if job.cancelled.is_set():
+                raise RuntimeError("编译已停止，可再次编译。")
+            write_bytes_atomic(directory / "manuscript.pdf", pdf.read_bytes())
+            project = load_project(job.project_id)
+            project["publication"].update(status="ready", error=None, job_id=None, compiler=compiler,
+                                           pdf={"name": "manuscript.pdf", "size": pdf.stat().st_size})
+            save_project(project)
+        except Exception as error:
+            project = load_project(job.project_id)
+            project["publication"].update(status="partial", error=str(error), job_id=None)
+            save_project(project)
+        finally:
+            with self.lock:
+                self.jobs.pop(job.id, None)
 
     def start(self, project_id: str, section: str) -> GenerationJob:
         with self.lock:
@@ -2283,6 +2409,7 @@ class GenerationManager:
             job = self.jobs.get(job_id)
             if job is None:
                 return False
+            self.pause_auto(job.project_id)
             job.cancel()
             return True
 
@@ -2372,6 +2499,8 @@ def project_view(project: dict[str, Any], include_content: bool = True) -> dict[
     return {
         "id": project["id"],
         "title": project["title"],
+        "pipeline_id": project.get("pipeline_id"),
+        "automation": GENERATION_MANAGER.automation_state(project["id"]),
         "created_at": project["created_at"],
         "updated_at": project["updated_at"],
         "experiment": {
@@ -2470,6 +2599,19 @@ class AppHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = unquote(urlparse(self.path).path).rstrip("/")
+        logs_match = re.fullmatch(r"/api/writings/(writing-\d{8}-\d{6}-[a-f0-9]{6})/logs", path)
+        if logs_match:
+            try:
+                directory = safe_project_dir(logs_match.group(1))
+                files = sorted((directory / "prompts").glob("*.log"))
+                if (directory / "publication/compile.log").is_file():
+                    files.append(directory / "publication/compile.log")
+                self.send_json({"logs": [{"name": str(p.relative_to(directory)),
+                                          "text": p.read_text(encoding="utf-8", errors="replace")}
+                                         for p in files]})
+            except (ValueError, OSError) as error:
+                self.send_error_json(error, HTTPStatus.NOT_FOUND)
+            return
         if path == "/api/health":
             cli_available = False
             try:
@@ -2523,6 +2665,23 @@ class AppHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = unquote(urlparse(self.path).path).rstrip("/")
+        auto_match = re.fullmatch(r"/api/writings/(writing-\d{8}-\d{6}-[a-f0-9]{6})/(auto-start|auto-pause|recompile)", path)
+        if auto_match:
+            try:
+                project_id, action = auto_match.groups()
+                payload = self.read_json()
+                if action == "auto-start":
+                    list_projects()  # Recover records left running by a previous service instance.
+                    result = GENERATION_MANAGER.start_auto(project_id, payload.get("template_file"))
+                elif action == "auto-pause":
+                    result = GENERATION_MANAGER.pause_auto(project_id)
+                else:
+                    GENERATION_MANAGER.start_recompile(project_id)
+                    result = {"status": "running"}
+                self.send_json(result, HTTPStatus.ACCEPTED)
+            except (ValueError, OSError, TypeError) as error:
+                self.send_error_json(error, HTTPStatus.CONFLICT)
+            return
         if path == "/api/writings":
             try:
                 payload = self.read_json()

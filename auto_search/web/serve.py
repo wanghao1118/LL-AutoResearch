@@ -42,7 +42,8 @@ def utc_now() -> str:
 
 
 class ResearchJob:
-    def __init__(self, direction: str, paper_count: int, evaluate: bool, timeout: int):
+    def __init__(self, direction: str, paper_count: int, evaluate: bool, timeout: int,
+                 run_dir: Path | None = None, pipeline_id: str | None = None):
         self.id = uuid.uuid4().hex[:12]
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         self.run_dir = RUNS_ROOT / f"direction-{timestamp}-{self.id[:6]}"
@@ -58,11 +59,19 @@ class ResearchJob:
         self.error: str | None = None
         self.papers: list[dict[str, Any]] = []
         self.events: list[dict[str, str]] = []
+        self.pipeline_id = pipeline_id
+        if run_dir is not None:
+            saved = read_json_if_exists(run_dir / "job.json")
+            self.run_dir = run_dir
+            for field in ("id", "created_at", "papers", "events", "pipeline_id"):
+                if field in saved:
+                    setattr(self, field, saved[field])
         self._lock = threading.RLock()
         self.cancel_event = threading.Event()
         self.finished_event = threading.Event()
         self.active_process: Any | None = None
-        self.add_event("任务已进入队列")
+        self.run_dir.mkdir(parents=True, exist_ok=True)
+        self.add_event("从已有产物继续" if run_dir else "任务已进入队列")
 
     def add_event(self, message: str) -> None:
         with self._lock:
@@ -115,6 +124,8 @@ class ResearchJob:
     def register_process(self, process: Any | None) -> None:
         with self._lock:
             self.active_process = process
+            if process is not None and self.cancel_event.is_set() and process.poll() is None:
+                process.terminate()
 
     def request_cancel(self) -> None:
         self.cancel_event.set()
@@ -137,6 +148,8 @@ class ResearchJob:
                 "direction": self.direction,
                 "paper_count": self.paper_count,
                 "evaluate": self.evaluate,
+                "timeout": self.timeout,
+                "pipeline_id": self.pipeline_id,
                 "status": self.status,
                 "stage": self.stage,
                 "progress": self.progress,
@@ -170,12 +183,40 @@ class JobManager:
         self.lock = threading.RLock()
         self.worker_slot = threading.Semaphore(1)
 
-    def create(self, direction: str, paper_count: int, evaluate: bool, timeout: int) -> ResearchJob:
-        job = ResearchJob(direction, paper_count, evaluate, timeout)
+    def create(self, direction: str, paper_count: int, evaluate: bool, timeout: int,
+               pipeline_id: str | None = None) -> ResearchJob:
+        job = ResearchJob(direction, paper_count, evaluate, timeout, pipeline_id=pipeline_id)
         with self.lock:
             self.jobs[job.id] = job
         thread = threading.Thread(target=self._run, args=(job,), daemon=True, name=f"w2c-{job.id}")
         thread.start()
+        return job
+
+    def resume(self, run_name: str, recovery_note: str = "") -> ResearchJob:
+        with self.lock:
+            directory = safe_run_directory(run_name)
+            saved = read_json_if_exists(directory / "job.json")
+            if not saved:
+                raise ValueError("没有可恢复的调研记录。")
+            live = self.jobs.get(saved["id"])
+            if live and not live.finished_event.is_set():
+                raise ValueError("当前任务尚未停止，请等待当前调用结束。")
+            if saved["status"] == "ready":
+                raise ValueError("调研已完成，无需重试。")
+            (directory / "recovery_note.md").write_text(
+                f"Previous error: {saved.get('error') or ''}\nUser troubleshooting context: {recovery_note}\n",
+                encoding="utf-8")
+            job = ResearchJob(saved["direction"], saved["paper_count"], saved["evaluate"],
+                              saved.get("timeout", 900), run_dir=directory)
+            self.jobs[job.id] = job
+            threading.Thread(target=self._run, args=(job,), daemon=True).start()
+            return job
+
+    def stop(self, job_id: str) -> ResearchJob:
+        job = self.get(job_id)
+        if job is None:
+            raise ValueError("任务已中断，请刷新后继续。")
+        job.request_cancel()
         return job
 
     def get(self, job_id: str) -> ResearchJob | None:
@@ -223,15 +264,19 @@ class JobManager:
                     return
                 job.run_dir.mkdir(parents=True, exist_ok=True)
                 job.update("researching", "检索并核验论文", 5, "Codex 正在搜索论文与公开 Benchmark")
-                manifest = direction_research.execute_research_agent(
-                    job.direction,
-                    job.paper_count,
-                    timeout=job.timeout,
-                    cancel_event=job.cancel_event,
-                    process_callback=job.register_process,
-                )
                 manifest_path = job.run_dir / "manifest.snapshot.json"
-                research_pipeline.write_json_atomic(manifest_path, manifest)
+                if manifest_path.is_file():
+                    manifest = read_json_if_exists(manifest_path)
+                else:
+                    manifest = direction_research.execute_research_agent(
+                        job.direction,
+                        job.paper_count,
+                        timeout=job.timeout,
+                        cancel_event=job.cancel_event,
+                        process_callback=job.register_process,
+                        workspace=job.run_dir,
+                    )
+                    research_pipeline.write_json_atomic(manifest_path, manifest)
                 job.set_papers(manifest["papers"])
                 job.update(
                     "generating",
@@ -254,7 +299,7 @@ class JobManager:
                     job.run_dir,
                     model=None,
                     timeout=job.timeout,
-                    force=True,
+                    force=False,
                     progress_callback=generation_progress,
                     cancel_event=job.cancel_event,
                     process_callback=job.register_process,
@@ -266,7 +311,7 @@ class JobManager:
                         job.run_dir,
                         model=None,
                         timeout=job.timeout,
-                        force=True,
+                        force=False,
                         cancel_event=job.cancel_event,
                         process_callback=job.register_process,
                     )
@@ -415,6 +460,9 @@ def list_run_summaries() -> list[dict[str, Any]]:
                 "progress": int(job.get("progress", 100 if status == "ready" else 0)),
                 "created_at": created_at,
                 "updated_at": str(job.get("updated_at") or created_at),
+                "error": job.get("error"),
+                "events": job.get("events", []),
+                "pipeline_id": job.get("pipeline_id"),
                 "ideas": ideas,
                 "deletable": True,
             }
@@ -514,6 +562,16 @@ class AppHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = urlparse(self.path).path.rstrip("/")
+        resume_match = re.fullmatch(r"/api/runs/(direction-[0-9-]+[a-f0-9]{6})/resume", path)
+        stop_match = re.fullmatch(r"/api/jobs/([a-f0-9]{12})/stop", path)
+        if resume_match or stop_match:
+            try:
+                job = (JOB_MANAGER.resume(resume_match.group(1)) if resume_match
+                       else JOB_MANAGER.stop(stop_match.group(1)))
+                self.send_json(job.snapshot(), HTTPStatus.ACCEPTED)
+            except (ValueError, OSError) as error:
+                self.send_api_error(str(error), HTTPStatus.CONFLICT)
+            return
         cancel_match = re.fullmatch(r"/api/jobs/([a-f0-9]{12})/cancel", path)
         if cancel_match:
             try:

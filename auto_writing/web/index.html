@@ -86,6 +86,8 @@
           </section>
 
           <div class="completion-track" aria-label="写作进度"><span id="completionBar"></span></div>
+          <div class="auto-writing-controls"><button class="button primary" id="autoWriting" type="button">自动完成全文与 PDF</button><button class="button secondary" id="writingLogs" type="button">查看运行日志</button><p id="autoWritingState"></p><p>自动推进调研、六章节、引用与排版；使用已选模板，未选择时使用通用 article 模板。失败后保留进度。</p></div>
+          <div id="writingLogContent" hidden></div>
 
           <nav class="view-tabs" id="viewTabs" aria-label="工作区视图">
             <button class="active" type="button" data-tab="workflow">写作流程</button>
@@ -145,6 +147,7 @@
                 <label class="file-picker"><svg><use href="#icon-upload"></use></svg><strong id="latexTemplateLabel">选择模板 ZIP</strong><small>压缩包内需包含可识别的主 TeX 文件</small><input id="latexTemplateFile" type="file" accept=".zip,application/zip" /></label>
                 <div class="selected-files" id="latexTemplateList" aria-live="polite"></div>
                 <button class="button primary publication-build" id="buildPublication" type="button"><svg><use href="#icon-sparkles"></use></svg><span>适配并编译</span></button>
+                <button class="button secondary" id="recompilePublication" type="button" hidden>只重试 PDF 编译</button>
               </div>
               <div class="publication-output">
                 <div class="publication-section-heading"><strong>发布产物</strong><span id="publicationEngine"></span></div>

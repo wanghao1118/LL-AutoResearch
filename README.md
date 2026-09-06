@@ -1,6 +1,6 @@
 # AutoResearch
 
-AutoResearch 将 **Auto Search、Auto Design、Auto Writing** 整合到一个网页入口，保留各模块的独立任务和完整工作流。点击首页卡片或顶部导航即可切换。
+AutoResearch 将 **Auto Search、Auto Design、Auto Writing** 整合到一个网页入口，支持从调研自动交接到实验和论文，同时保留各模块的独立任务。首页可管理全流程、恢复失败步骤并重启研究服务。
 
 ## 三模块工作台
 
@@ -17,6 +17,8 @@ python3 -m workbench --port 8760
 | Auto Search | [/auto-search/](http://127.0.0.1:8760/auto-search/) | 论文调研、Idea 生成、独立评审、人工核验 |
 | Auto Design | [/auto-design/](http://127.0.0.1:8760/auto-design/) | 实验设计、R0、执行、暂停恢复、结果诊断与审计 |
 | Auto Writing | [/auto-writing/](http://127.0.0.1:8760/auto-writing/) | 文献调研、六章节写作、参考文献、LaTeX 与 PDF |
+
+首页点击“新建全流程”可从研究方向开始，或接续已有调研、实验、写作任务。选题、方法审批、暂停、错误日志、局部重试和模板更换均可在网页处理。设计与恢复边界见 [全流程说明](docs/frontend_workflow.md)。
 
 任务数据默认保存在 `assets/output/workbench/`。启动或切换页面不会自动启动研究任务。完整启动参数、功能范围和验收记录见 [工作台说明](workbench/README.md) 与 [开发记录](docs/README.md)。
 

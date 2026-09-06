@@ -34,6 +34,8 @@ def build_prompt(task: dict, action: str) -> str:
         "resume": bool(task.get("attempts")),
         "instruction_files": [str(p) for p in instruction_files if p.is_file()],
         "last_summary": task.get("summary", ""),
+        "previous_error": task.get("previous_error"),
+        "recovery_note": task.get("recovery_note", ""),
         "references": str(MODULE_ROOT / "prompts" / "references"),
         "stage_recorder": str(MODULE_ROOT / "scripts" / "run_stage.py"),
     }

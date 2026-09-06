@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import os
+import queue
 import shutil
 import subprocess
+import threading
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,7 +24,7 @@ def resolve_codex_cli() -> str:
     executable = shutil.which(configured)
     if not executable:
         raise RuntimeError("找不到 Codex CLI，请安装并登录，或设置 CODEX_CLI。")
-    return executable
+    return str(Path(executable).resolve())
 
 
 class CodexRunner:
@@ -84,8 +86,30 @@ class CodexRunner:
                 assert process.stdin is not None and process.stdout is not None
                 process.stdin.write(prompt)
                 process.stdin.close()
-                with (log_dir / "events.jsonl").open("w", encoding="utf-8") as events:
+                lines: queue.Queue[str | None] = queue.Queue()
+
+                def read_lines() -> None:
                     for line in process.stdout:
+                        lines.put(line)
+                    lines.put(None)
+
+                threading.Thread(target=read_lines, daemon=True).start()
+                interrupted = False
+                with (log_dir / "events.jsonl").open("w", encoding="utf-8") as events:
+                    while True:
+                        if (workspace / "controller_stop_requested.json").exists() and not interrupted:
+                            interrupted = True
+                            if process.poll() is None:
+                                # Stop only this CLI controller. Remote training is preserved.
+                                process.terminate()
+                        try:
+                            line = lines.get(timeout=0.2)
+                        except queue.Empty:
+                            if process.poll() is not None:
+                                break
+                            continue
+                        if line is None:
+                            break
                         events.write(line)
                         events.flush()
                         try:
@@ -95,6 +119,8 @@ class CodexRunner:
                         if isinstance(event, dict):
                             on_event(event)
                 record["exit_status"] = process.wait()
+            if interrupted:
+                raise ControllerInterrupted("控制器已停止；训练进程保持原状，继续前将核对在途执行与已有结果。")
             if record["exit_status"] != 0:
                 raise RuntimeError(f"Codex CLI 退出码 {record['exit_status']}；日志：{log_dir}")
             if not output.is_file():
@@ -110,6 +136,10 @@ class CodexRunner:
             (log_dir / "execution.json").write_text(
                 json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8"
             )
+
+
+class ControllerInterrupted(RuntimeError):
+    """The user stopped the CLI controller without terminating experiment processes."""
 
 
 def validate_response(response: object) -> None:

@@ -16,6 +16,8 @@ from auto_design.web.serve import create_server as create_design_server
 from auto_search.web import serve as search
 from auto_writing.web import serve as writing
 
+from .pipeline import PipelineManager
+
 WEB_ROOT = Path(__file__).resolve().parent / "web"
 MODULES = ("auto-search", "auto-design", "auto-writing")
 MAX_REQUEST_BYTES = writing.MAX_REQUEST_BYTES
@@ -35,8 +37,9 @@ def add_navigation(content: bytes, module: str) -> bytes:
 
 
 class WorkbenchHandler(SimpleHTTPRequestHandler):
-    def __init__(self, *args, modules: dict[str, ThreadingHTTPServer], **kwargs):
+    def __init__(self, *args, modules: dict[str, ThreadingHTTPServer], workbench=None, **kwargs):
         self.modules = modules
+        self.workbench = workbench
         super().__init__(*args, directory=str(WEB_ROOT), **kwargs)
 
     def end_headers(self) -> None:
@@ -45,6 +48,9 @@ class WorkbenchHandler(SimpleHTTPRequestHandler):
 
     def route(self) -> None:
         url = urlsplit(self.path)
+        if url.path.startswith("/api/") and self.workbench is not None:
+            self.workbench_api(url.path.rstrip("/"))
+            return
         module = url.path.split("/")[1]
         if module not in self.modules:
             if self.command == "GET":
@@ -130,6 +136,48 @@ class WorkbenchHandler(SimpleHTTPRequestHandler):
     do_PUT = route
     do_DELETE = route
 
+    def workbench_api(self, path: str) -> None:
+        app = self.workbench
+        status = 200
+        try:
+            payload = {}
+            if self.command == "POST":
+                size = int(self.headers.get("Content-Length", "0"))
+                if not 0 < size <= MAX_REQUEST_BYTES:
+                    raise ValueError("请求为空或超过 32 MB。")
+                payload = json.loads(self.rfile.read(size))
+                if not isinstance(payload, dict):
+                    raise ValueError("请求必须是 JSON 对象。")
+            parts = path.split("/")
+            if path == "/api/pipelines" and self.command == "GET":
+                result = {"pipelines": app.pipeline.list()}
+            elif path == "/api/pipelines" and self.command == "POST":
+                result, status = app.pipeline.create(payload), 201
+            elif len(parts) == 4 and parts[1:3] == ["api", "pipelines"] and self.command == "GET":
+                with app.pipeline.lock:
+                    flow = app.pipeline.get(parts[3])
+                    result = {**flow, "candidates": app.pipeline.candidates(flow)}
+            elif len(parts) == 5 and parts[1:3] == ["api", "pipelines"] and self.command == "POST":
+                result = app.pipeline.action(parts[3], parts[4], payload)
+            elif path == "/api/runtime" and self.command == "GET":
+                result = app.runtime_state()
+            elif path == "/api/runtime/prepare-restart" and self.command == "POST":
+                app.prepare_restart()
+                result = app.runtime_state()
+            elif path == "/api/runtime/activate" and self.command == "POST":
+                app.pipeline.start()
+                result = app.runtime_state()
+            else:
+                result, status = {"error": "接口不存在。"}, 404
+        except (ValueError, OSError, TypeError, KeyError) as error:
+            result, status = {"error": str(error)}, 400
+        data = json.dumps(result, ensure_ascii=False).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
     def log_message(self, format: str, *args: object) -> None:
         if "/api/" not in self.path:
             super().log_message(format, *args)
@@ -147,6 +195,7 @@ class Workbench:
         writing.WRITING_RUNS_ROOT.mkdir(parents=True, exist_ok=True)
         writing.migrate_existing_research_references()
         self.design = TaskManager(self.data_dir / "auto_design")
+        self.pipeline = PipelineManager(self.data_dir / "pipelines", self.workspace, self.design)
         try:
             self.modules["auto-search"] = ThreadingHTTPServer(
                 ("127.0.0.1", 0), partial(search.AppHandler, directory=str(search.WEB_ROOT))
@@ -158,7 +207,7 @@ class Workbench:
                 ("127.0.0.1", 0), partial(writing.AppHandler, directory=str(writing.WEB_ROOT))
             )
             self.server = ThreadingHTTPServer(
-                (host, port), partial(WorkbenchHandler, modules=self.modules)
+                (host, port), partial(WorkbenchHandler, modules=self.modules, workbench=self)
             )
         except OSError:
             for server in self.modules.values():
@@ -170,8 +219,10 @@ class Workbench:
             thread = threading.Thread(target=server.serve_forever, daemon=True, name=name)
             thread.start()
             self.threads.append(thread)
+        self.pipeline.start()
 
     def close(self) -> None:
+        self.pipeline.close()
         self.server.server_close()
         for server in self.modules.values():
             if self.threads:
@@ -179,6 +230,47 @@ class Workbench:
             server.server_close()
         for thread in self.threads:
             thread.join()
+
+    def runtime_state(self) -> dict:
+        searches = [
+            j
+            for j in search.JOB_MANAGER.snapshots()
+            if not search.JOB_MANAGER.get(j["id"]).finished_event.is_set()
+        ]
+        with writing.GENERATION_MANAGER.lock:
+            writing_jobs = [j.id for j in writing.GENERATION_MANAGER.jobs.values()]
+        with self.design.lock:
+            design_jobs = [
+                t["id"]
+                for t in self.design.list()
+                if t["status"] in {"running", "queued", "pausing"}
+            ]
+        return {
+            "status": "ok",
+            "active_searches": [j["id"] for j in searches],
+            "active_designs": design_jobs,
+            "active_writing": writing_jobs,
+            "idle": not (searches or design_jobs or writing_jobs),
+        }
+
+    def prepare_restart(self) -> None:
+        self.pipeline.close()
+        with self.pipeline.lock:
+            for flow in self.pipeline.flows.values():
+                if flow["status"] in {"running", "waiting_review"}:
+                    self.pipeline.update(flow, "paused", "正在重启服务；恢复连接后可继续原流程。")
+        for task in self.design.list():
+            if task["status"] in {"queued", "running", "pausing"}:
+                self.design.interrupt(task["id"])
+        for job in search.JOB_MANAGER.snapshots():
+            if job["status"] not in {"ready", "failed", "cancelled"}:
+                search.JOB_MANAGER.stop(job["id"])
+        manager = writing.GENERATION_MANAGER
+        with manager.lock:
+            for project_id in list(manager.automation_threads):
+                manager.pause_auto(project_id)
+            for job in list(manager.jobs.values()):
+                manager.cancel(job.id)
 
 
 def main(argv: list[str] | None = None) -> None:

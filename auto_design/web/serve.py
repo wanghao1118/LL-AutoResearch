@@ -120,9 +120,11 @@ class AppHandler(SimpleHTTPRequestHandler):
             if len(parts) == 5 and parts[1:3] == ["api", "tasks"]:
                 task_id, action = parts[3:5]
                 if action in {"start", "resume"}:
-                    task = self.manager.start(task_id, payload.get("scope"))
+                    task = self.manager.start(task_id, payload.get("scope"), str(payload.get("recovery_note", "")))
                 elif action == "pause":
                     task = self.manager.pause(task_id)
+                elif action == "interrupt":
+                    task = self.manager.interrupt(task_id)
                 elif action == "decision":
                     task = self.manager.decide(
                         task_id,

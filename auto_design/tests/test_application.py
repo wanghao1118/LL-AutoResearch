@@ -46,12 +46,14 @@ class DesignRunner:
         self, entered: threading.Event | None = None, release: threading.Event | None = None
     ):
         self.actions = []
+        self.workspaces = []
         self.entered = entered
         self.release = release
 
     def invoke(self, prompt, workspace, log_dir, on_event):
         context = json.loads(prompt.split("TASK_CONTEXT_JSON=\n")[-1])
         self.actions.append(context["action"])
+        self.workspaces.append(workspace)
         if self.entered:
             self.entered.set()
             assert self.release.wait(5)
@@ -83,6 +85,29 @@ def test_design_only_requires_explicit_execution_start(tmp_path):
     manager.start(task["id"], scope="full")
     assert wait_idle(manager, task["id"])["status"] == "blocked"
     assert runner.actions == ["design", "run"]
+    assert runner.workspaces == [Path(task["run_dir"])] * 2
+
+
+def test_task_directories_and_imports_preserve_project_instruction_source(tmp_path):
+    workspace = tmp_path / "selected project"
+    workspace.mkdir()
+    instruction = workspace / "AGENTS.md"
+    instruction.write_text("Engineering fixture only. Do not launch scientific experiments.")
+    runner = DesignRunner()
+    manager = TaskManager(tmp_path / "index", runner)
+    tasks = [create_task(manager, workspace, "design_only") for _ in range(2)]
+    external = TaskManager(tmp_path / "external-index", runner)
+    existing = create_task(external, tmp_path, "design_only")
+    tasks.append(manager.import_run("Imported fixture", existing["run_dir"], str(workspace)))
+    for task in tasks:
+        manager.start(task["id"], scope="design_only")
+        assert wait_idle(manager, task["id"])["status"] == "design_ready"
+        assert runner.workspaces[-1] == Path(task["run_dir"])
+        context = json.loads(build_prompt(task, "design").split("TASK_CONTEXT_JSON=\n")[-1])
+        assert context["workspace"] == str(workspace)
+        assert str(instruction) in context["instruction_files"]
+        assert Path(context["references"]).is_dir()
+    assert len(set(runner.workspaces)) == 3
 
 
 def test_model_success_without_artifacts_stops_pipeline(tmp_path):
@@ -273,18 +298,20 @@ def test_cli_subprocess_records_prompt_stream_stderr_and_response(tmp_path, monk
         f"#!{sys.executable}\n"
         "import json,sys\nfrom pathlib import Path\n"
         "prompt=sys.stdin.read()\n"
+        "Path('cwd-probe.txt').write_text(str(Path.cwd()))\n"
         "output=Path(sys.argv[sys.argv.index('--output-last-message')+1])\n"
         "output.write_text(json.dumps({'outcome':'blocked','summary':prompt,'next_action':'none'}))\n"
         "print(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':'fixture event'}}))\n"
         "print('fixture stderr',file=sys.stderr)\n"
     )
     executable.chmod(0o755)
-    monkeypatch.setenv("CODEX_CLI", str(executable))
+    monkeypatch.setenv("CODEX_CLI", os.path.relpath(executable))
     events = []
     response = CodexRunner().invoke(
         "engineering-only fixture", tmp_path, tmp_path / "logs", events.append
     )
     assert response["summary"] == "engineering-only fixture"
+    assert (tmp_path / "cwd-probe.txt").read_text() == str(tmp_path.resolve())
     assert events[0]["item"]["text"] == "fixture event"
     assert "fixture stderr" in (tmp_path / "logs/stderr.log").read_text()
     record = read_json(tmp_path / "logs/execution.json")
@@ -346,105 +373,106 @@ def test_prompt_paths_work_outside_source_repository(tmp_path):
     assert str(tmp_path) in context["run_dir"]
 
 
-def test_full_workflow_reaches_completion_only_after_independent_audit(tmp_path):
-    class FullRunner(DesignRunner):
-        def invoke(self, prompt, workspace, log_dir, on_event):
-            context = json.loads(prompt.split("TASK_CONTEXT_JSON=\n")[-1])
-            action = context["action"]
-            if action == "design":
-                return super().invoke(prompt, workspace, log_dir, on_event)
-            self.actions.append(action)
-            directory = Path(context["run_dir"])
-            if action == "run":
-                (directory / "generated_project").mkdir()
-                (directory / "implementation_notes.md").write_text("Engineering-only test fixture")
-                write_json(directory / "result_contract.json", {"primary_result": "fixture.json"})
-                write_json(
-                    directory / "experiment_schedule.json",
-                    {
-                        "schema_version": "1.0",
-                        "cells": [
-                            {
-                                "experiment_id": "E1",
-                                "variant_id": "ours",
-                                "benchmark_task_id": "task-1",
-                                "seed": 1,
-                                "metrics": ["reward"],
-                            }
-                        ],
-                    },
-                )
-                command = shlex.join([sys.executable, "-c", "print('engineering fixture')"])
-                write_json(
-                    directory / "command_plan.json",
-                    {
-                        stage: [command]
-                        for stage in ("preflight", "smoke", "experiment", "aggregate", "collect")
-                    },
-                )
-                advance_run(
-                    directory,
-                    "IMPLEMENTATION_READY",
-                    changed_input="fixture",
-                    literal_result="ready",
-                )
-                assert run_local_commands(directory)["workflow_complete"]
-                write_json(
-                    directory / "fixture.json",
-                    {
-                        "schema_version": "1.0",
-                        "runs": [
-                            {
-                                "experiment_id": "E1",
-                                "variant_id": "ours",
-                                "benchmark_task_id": "task-1",
-                                "seed": 1,
-                                "status": "completed",
-                                "metrics": {"reward": 0.5},
-                            }
-                        ],
-                    },
-                )
-                ingest_results(directory, directory / "fixture.json")
-                compare_effects(directory)
-                advance_run(
-                    directory,
-                    "EXECUTION_COMPLETE",
-                    changed_input="fixture results",
-                    literal_result="PASS",
-                )
-                return {
-                    "outcome": "completed",
-                    "summary": "工程测试命令结束",
-                    "next_action": "diagnosis",
-                }
-            if action == "diagnosis":
-                (directory / "result_diagnosis.md").write_text(
-                    "Engineering fixture, no scientific claim"
-                )
-                (directory / "result_route.md").write_text(
-                    "route: report\nowner_stage: run\nexecution_required: no\n"
-                )
-                write_json(directory / "reports/report_manifest.json", {"outputs": []})
-                (directory / "reports/index.html").write_text("Engineering-only report fixture")
-                advance_run(
-                    directory,
-                    "RESULT_DIAGNOSIS_READY",
-                    changed_input="diagnosis",
-                    literal_result="ready",
-                )
-                return {
-                    "outcome": "completed",
-                    "summary": "工程测试诊断结束",
-                    "next_action": "audit",
-                }
-            (directory / "integrity_audit.md").write_text("Verdict: PASS\nEngineering fixture only")
-            advance_run(
-                directory, "INTEGRITY_AUDIT_PASS", changed_input="audit", literal_result="PASS"
+class FullRunner(DesignRunner):
+    def invoke(self, prompt, workspace, log_dir, on_event):
+        context = json.loads(prompt.split("TASK_CONTEXT_JSON=\n")[-1])
+        action = context["action"]
+        if action == "design":
+            return super().invoke(prompt, workspace, log_dir, on_event)
+        self.actions.append(action)
+        directory = Path(context["run_dir"])
+        if action == "run":
+            (directory / "generated_project").mkdir()
+            (directory / "implementation_notes.md").write_text("Engineering-only test fixture")
+            write_json(directory / "result_contract.json", {"primary_result": "fixture.json"})
+            write_json(
+                directory / "experiment_schedule.json",
+                {
+                    "schema_version": "1.0",
+                    "cells": [
+                        {
+                            "experiment_id": "E1",
+                            "variant_id": "ours",
+                            "benchmark_task_id": "task-1",
+                            "seed": 1,
+                            "metrics": ["reward"],
+                        }
+                    ],
+                },
             )
-            advance_run(directory, "COMPLETE", changed_input="audit", literal_result="PASS")
-            return {"outcome": "completed", "summary": "完整调用链验收结束", "next_action": "none"}
+            command = shlex.join([sys.executable, "-c", "print('engineering fixture')"])
+            write_json(
+                directory / "command_plan.json",
+                {
+                    stage: [command]
+                    for stage in ("preflight", "smoke", "experiment", "aggregate", "collect")
+                },
+            )
+            advance_run(
+                directory,
+                "IMPLEMENTATION_READY",
+                changed_input="fixture",
+                literal_result="ready",
+            )
+            assert run_local_commands(directory)["workflow_complete"]
+            write_json(
+                directory / "fixture.json",
+                {
+                    "schema_version": "1.0",
+                    "runs": [
+                        {
+                            "experiment_id": "E1",
+                            "variant_id": "ours",
+                            "benchmark_task_id": "task-1",
+                            "seed": 1,
+                            "status": "completed",
+                            "metrics": {"reward": 0.5},
+                        }
+                    ],
+                },
+            )
+            ingest_results(directory, directory / "fixture.json")
+            compare_effects(directory)
+            advance_run(
+                directory,
+                "EXECUTION_COMPLETE",
+                changed_input="fixture results",
+                literal_result="PASS",
+            )
+            return {
+                "outcome": "completed",
+                "summary": "工程测试命令结束",
+                "next_action": "diagnosis",
+            }
+        if action == "diagnosis":
+            (directory / "result_diagnosis.md").write_text(
+                "Engineering fixture, no scientific claim"
+            )
+            (directory / "result_route.md").write_text(
+                "route: report\nowner_stage: run\nexecution_required: no\n"
+            )
+            write_json(directory / "reports/report_manifest.json", {"outputs": []})
+            (directory / "reports/index.html").write_text("Engineering-only report fixture")
+            advance_run(
+                directory,
+                "RESULT_DIAGNOSIS_READY",
+                changed_input="diagnosis",
+                literal_result="ready",
+            )
+            return {
+                "outcome": "completed",
+                "summary": "工程测试诊断结束",
+                "next_action": "audit",
+            }
+        (directory / "integrity_audit.md").write_text("Verdict: PASS\nEngineering fixture only")
+        advance_run(
+            directory, "INTEGRITY_AUDIT_PASS", changed_input="audit", literal_result="PASS"
+        )
+        advance_run(directory, "COMPLETE", changed_input="audit", literal_result="PASS")
+        return {"outcome": "completed", "summary": "完整调用链验收结束", "next_action": "none"}
 
+
+def test_full_workflow_reaches_completion_only_after_independent_audit(tmp_path):
     runner = FullRunner()
     manager = TaskManager(tmp_path / "index", runner)
     task = create_task(manager, tmp_path)

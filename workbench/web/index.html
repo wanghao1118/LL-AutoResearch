@@ -6,9 +6,10 @@
   <meta name="description" content="The ThAInker AutoResearch：调研、实验与论文写作工作台">
   <title>The ThAInker · AutoResearch</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/module-nav.css">
-  <script src="/app.js" defer></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="module-nav.css">
+  <script src="app.js" defer></script>
+  <script src="pipelines.js" defer></script>
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true">
@@ -20,7 +21,7 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="AutoResearch 工作台">
       <span class="brand-logo-frame"><img src="/auto-design/assets/the-thainker-logo.png" alt="The ThAInker"></span>
-      <span><strong>The ThAInker</strong><small>AutoResearch</small></span>
+      <span><strong>The ThAInker</strong></span>
     </a>
     <nav class="module-nav" aria-label="研究模块">
       <a href="/" aria-current="page">工作台</a>
@@ -31,9 +32,27 @@
   </header>
   <main>
     <section class="workspace-heading">
-      <span class="eyebrow">RESEARCH WORKSPACE</span>
-      <h1>从研究问题，到实验与论文</h1>
-      <p>选择当前要开展的工作。每个模块保留独立项目，可随时切换。</p>
+      <h1>面向科学发现的智能研究平台</h1>
+      <p>从一个研究方向走到实验与论文。每一步保留进度，遇到阻塞可在这里处理并继续。</p>
+    </section>
+    <section class="pipeline-console" aria-label="全流程任务">
+      <div class="console-title"><div><span class="eyebrow">RESEARCH WORKFLOW</span><h2>全流程工作台</h2></div><button id="toggle-create" type="button">新建全流程</button></div>
+      <p id="workflow-notice" role="status" hidden></p>
+      <details class="service-panel"><summary>服务连接与恢复 · <span id="service-status">正在连接</span></summary>
+        <p id="service-message"></p><p>工作服务断开时，此入口仍可启动或重启服务。重启会暂停流程、停止任务控制器，并保留实验训练与产物。</p>
+        <div class="form-grid"><label>Codex 可执行文件（留空自动发现）<input id="codex-path" placeholder="codex 或绝对路径"></label><label>LaTeX 编译器（留空自动发现）<input id="latex-path" placeholder="latexmk 或绝对路径"></label></div>
+        <div class="button-row"><button id="restart-service" type="button">启动 / 重启服务</button><button id="save-service" class="secondary" type="button">保存路径并重启</button><a href="/api/service/log" target="_blank" rel="noopener">查看完整服务日志 ↗</a></div>
+      </details>
+      <form id="pipeline-form" hidden>
+        <div class="form-grid"><label>任务名称<input name="title" maxlength="120" placeholder="可选，默认使用研究方向"></label><label>起点<select name="start_stage" id="pipeline-stage"><option value="search">Auto Search · 从调研开始</option><option value="design">Auto Design · 接续已有实验</option><option value="writing">Auto Writing · 接续已有写作</option></select></label></div>
+        <label>已有任务<select name="source_id" id="pipeline-source"><option value="">新建调研任务</option></select></label>
+        <label id="direction-field">研究方向<textarea name="direction" rows="3" maxlength="1000" placeholder="输入研究问题、关注的机制或任务"></textarea></label>
+        <div class="form-grid"><label>调研论文数<select name="paper_count"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label><label>选题方式<select name="selection"><option value="auto">自动选择评审通过且排名最高的 Idea</option><option value="manual">调研完成后由我选择 Idea</option></select></label></div>
+        <label>论文模板 ZIP（可选，默认使用通用 article 模板）<input id="pipeline-template" type="file" accept=".zip"></label>
+        <p class="scope-note">启动后将执行调研 → 实验设计与执行 → 诊断与审计 → 六章节写作 → 引用 → LaTeX / PDF。没有合格选题、需要方法审批或步骤失败时暂停；不会自动批准方法修改或将未完成实验当作论文证据。</p>
+        <button type="submit" id="create-pipeline">启动全流程</button>
+      </form>
+      <div class="pipeline-layout"><div id="pipeline-list" aria-label="全流程列表"><p class="empty-copy">正在读取任务</p></div><article id="pipeline-detail"><p class="empty-copy">选择一个全流程查看进展，或新建任务。</p></article></div>
     </section>
     <section class="module-grid" aria-label="选择研究模块">
       <a class="module-card" href="/auto-search/">
@@ -58,7 +77,7 @@
         <div class="card-footer"><span class="module-status" data-module="auto-writing">正在连接服务</span><span class="enter">进入写作 <svg aria-hidden="true"><use href="#arrow"></use></svg></span></div>
       </a>
     </section>
-    <p class="workspace-note">切换模块不会停止正在运行的任务。调研、实验和写作均在各自模块中明确启动。</p>
+    <p class="workspace-note">模块内仍可独立操作。全流程任务在后台衔接，关闭或切换网页不停止执行；服务重启后需点击继续。</p>
   </main>
 </body>
 </html>

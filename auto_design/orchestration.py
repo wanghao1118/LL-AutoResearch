@@ -10,7 +10,7 @@ import threading
 import uuid
 from pathlib import Path
 
-from .codex_runner import CodexRunner, utc_now
+from .codex_runner import CodexRunner, ControllerInterrupted, utc_now
 from .effects import check_design
 from .prompting import build_prompt
 from .results import summarize_results
@@ -244,7 +244,8 @@ class TaskManager:
                 sorted(self.tasks.values(), key=lambda t: t["created_at"], reverse=True)
             )
 
-    def create(self, title: str, idea: str, workspace: str, scope: str = "full") -> dict:
+    def create(self, title: str, idea: str, workspace: str, scope: str = "full",
+               pipeline_id: str | None = None) -> dict:
         if not idea.strip():
             raise ValueError("请输入或上传包含 Motivation 和 Contribution 的 Idea。")
         if re.match(r"(?im)^#\s+PASS:", idea):
@@ -260,7 +261,7 @@ class TaskManager:
         input_path = run_dir / "idea.md"
         input_path.write_text(idea, encoding="utf-8")
         initialize_run(input_path, run_dir)
-        return self._register(task_id, title, working_dir.resolve(), run_dir, scope, "created")
+        return self._register(task_id, title, working_dir.resolve(), run_dir, scope, "created", pipeline_id)
 
     def import_run(self, title: str, run_dir: str, workspace: str) -> dict:
         directory = Path(run_dir).expanduser().resolve()
@@ -284,7 +285,8 @@ class TaskManager:
         )
 
     def _register(
-        self, task_id: str, title: str, workspace: Path, run_dir: Path, scope: str, status: str
+        self, task_id: str, title: str, workspace: Path, run_dir: Path, scope: str, status: str,
+        pipeline_id: str | None = None,
     ) -> dict:
         stage = read_current_stage(run_dir)
         task = {
@@ -301,13 +303,14 @@ class TaskManager:
             "updated_at": utc_now(),
             "attempts": [],
             "error": None,
+            "pipeline_id": pipeline_id,
         }
         with self.lock:
             self.tasks[task_id] = task
             self._save()
         return copy.deepcopy(task)
 
-    def start(self, task_id: str, scope: str | None = None) -> dict:
+    def start(self, task_id: str, scope: str | None = None, recovery_note: str = "") -> dict:
         with self.lock:
             task = self.get(task_id)
             if task["status"] in ACTIVE_STATUSES or task["status"] in {"completed", "abandoned"}:
@@ -327,10 +330,22 @@ class TaskManager:
             if scope is not None and scope not in {"full", "design_only"}:
                 raise ValueError("未知执行范围。")
             (Path(task["run_dir"]) / "pause_requested.json").unlink(missing_ok=True)
-            self.update(task_id, status="queued", error=None, scope=scope or task["scope"])
+            (Path(task["run_dir"]) / "controller_stop_requested.json").unlink(missing_ok=True)
+            self.update(task_id, status="queued", error=None, scope=scope or task["scope"],
+                        recovery_note=recovery_note.strip(), previous_error=task.get("error"))
             thread = threading.Thread(target=self._run, args=(task_id,), daemon=True)
             self.threads[task_id] = thread
             thread.start()
+            return self.get(task_id)
+
+    def interrupt(self, task_id: str) -> dict:
+        with self.lock:
+            task = self.get(task_id)
+            if task["status"] not in ACTIVE_STATUSES:
+                raise ValueError("当前没有运行中的控制器。")
+            self.pause(task_id)
+            write_json(Path(task["run_dir"]) / "controller_stop_requested.json", {"at": utc_now()})
+            self.update(task_id, summary="正在停止本任务的 Codex 控制器；保留训练和已有产物，停止后可恢复。")
             return self.get(task_id)
 
     def pause(self, task_id: str) -> dict:
@@ -400,94 +415,102 @@ class TaskManager:
             return self.get(task_id)
 
     def _run(self, task_id: str) -> None:
+        acquired = False
         try:
-            with self.worker_slot:
-                while True:
-                    task = self.get(task_id)
-                    run_dir = Path(task["run_dir"])
-                    if (run_dir / "pause_requested.json").exists():
-                        self.update(
-                            task_id, status="paused", summary="任务已暂停；继续时会从现有证据恢复。"
-                        )
-                        return
-                    stage = read_current_stage(run_dir)
-                    if task["scope"] == "design_only" and stage in {
-                        "EXPERIMENT_DESIGN_READY",
-                        "WAITING_FOR_R0",
-                    }:
-                        self.update(
-                            task_id,
-                            status="design_ready",
-                            stage=stage,
-                            next_action="run",
-                            summary="设计阶段已完成；实验尚未启动。",
-                        )
-                        return
-                    action = (
-                        task["next_action"] if stage == task["stage"] else ACTION_FOR_STAGE[stage]
+            while not acquired:
+                task = self.get(task_id)
+                if (Path(task["run_dir"]) / "pause_requested.json").exists():
+                    self.update(task_id, status="paused", summary="排队任务已暂停，尚未启动新调用。")
+                    return
+                acquired = self.worker_slot.acquire(timeout=0.2)
+            while True:
+                task = self.get(task_id)
+                run_dir = Path(task["run_dir"])
+                if (run_dir / "pause_requested.json").exists():
+                    self.update(
+                        task_id, status="paused", summary="任务已暂停；继续时会从现有证据恢复。"
                     )
-                    if action == "none":
-                        if stage == "COMPLETE":
-                            validate_handoff(
-                                run_dir,
-                                "audit",
-                                {"outcome": "completed", "next_action": "none"},
-                                stage,
-                            )
-                        self.update(
-                            task_id,
-                            status="completed" if stage == "COMPLETE" else "abandoned",
-                            stage=stage,
-                        )
-                        return
-                    if stage == "WAITING_FOR_METHOD_REVISION_APPROVAL" and not read_text(
-                        run_dir / "method_revision_decision.md"
-                    ):
-                        self.update(task_id, status="waiting_review", stage=stage)
-                        return
-                    attempts = task["attempts"]
-                    log_dir = run_dir / "assets" / "logs" / f"{len(attempts) + 1:04d}-{action}"
-                    attempt = {"action": action, "started_at": utc_now(), "log_dir": str(log_dir)}
-                    attempts.append(attempt)
+                    return
+                stage = read_current_stage(run_dir)
+                if task["scope"] == "design_only" and stage in {
+                    "EXPERIMENT_DESIGN_READY",
+                    "WAITING_FOR_R0",
+                }:
                     self.update(
                         task_id,
-                        status="running",
+                        status="design_ready",
                         stage=stage,
-                        next_action=action,
-                        attempts=attempts,
-                        summary=f"正在执行 {action}，运行产物将保存到当前任务目录。",
+                        next_action="run",
+                        summary="设计阶段已完成；实验尚未启动。",
                     )
-                    response = self.runner.invoke(
-                        build_prompt(task, action),
-                        Path(task["workspace"]),
-                        log_dir,
-                        lambda event: self._event(task_id, event),
-                    )
-                    attempt.update(finished_at=utc_now(), response=response)
-                    next_action = validate_handoff(run_dir, action, response, stage)
-                    new_stage = read_current_stage(run_dir)
+                    return
+                action = (
+                    task["next_action"] if stage == task["stage"] else ACTION_FOR_STAGE[stage]
+                )
+                if action == "none":
+                    if stage == "COMPLETE":
+                        validate_handoff(
+                            run_dir,
+                            "audit",
+                            {"outcome": "completed", "next_action": "none"},
+                            stage,
+                        )
                     self.update(
                         task_id,
-                        stage=new_stage,
-                        next_action=next_action,
-                        attempts=attempts,
-                        summary=response["summary"],
+                        status="completed" if stage == "COMPLETE" else "abandoned",
+                        stage=stage,
                     )
-                    if new_stage == "COMPLETE" and action == "audit" and next_action == "none":
-                        self.update(task_id, status="completed")
-                        return
-                    if (
-                        new_stage == "WAITING_FOR_METHOD_REVISION_APPROVAL"
-                        and not review_details(run_dir)["approved"]
-                    ):
-                        self.update(task_id, status="waiting_review")
-                        return
-                    if response["outcome"] != "completed":
-                        status = "paused" if response["outcome"] == "paused" else "blocked"
-                        self.update(task_id, status=status)
-                        return
-                    if new_stage == stage and next_action == action:
-                        raise ValueError("步骤没有推进，也没有新的修复路线；已停止重复调用。")
+                    return
+                if stage == "WAITING_FOR_METHOD_REVISION_APPROVAL" and not read_text(
+                    run_dir / "method_revision_decision.md"
+                ):
+                    self.update(task_id, status="waiting_review", stage=stage)
+                    return
+                attempts = task["attempts"]
+                log_dir = run_dir / "assets" / "logs" / f"{len(attempts) + 1:04d}-{action}"
+                attempt = {"action": action, "started_at": utc_now(), "log_dir": str(log_dir)}
+                attempts.append(attempt)
+                self.update(
+                    task_id,
+                    status="running",
+                    stage=stage,
+                    next_action=action,
+                    attempts=attempts,
+                    summary=f"正在执行 {action}，运行产物将保存到当前任务目录。",
+                )
+                response = self.runner.invoke(
+                    build_prompt(task, action),
+                    run_dir,
+                    log_dir,
+                    lambda event: self._event(task_id, event),
+                )
+                attempt.update(finished_at=utc_now(), response=response)
+                next_action = validate_handoff(run_dir, action, response, stage)
+                new_stage = read_current_stage(run_dir)
+                self.update(
+                    task_id,
+                    stage=new_stage,
+                    next_action=next_action,
+                    attempts=attempts,
+                    summary=response["summary"],
+                )
+                if new_stage == "COMPLETE" and action == "audit" and next_action == "none":
+                    self.update(task_id, status="completed")
+                    return
+                if (
+                    new_stage == "WAITING_FOR_METHOD_REVISION_APPROVAL"
+                    and not review_details(run_dir)["approved"]
+                ):
+                    self.update(task_id, status="waiting_review")
+                    return
+                if response["outcome"] != "completed":
+                    status = "paused" if response["outcome"] == "paused" else "blocked"
+                    self.update(task_id, status=status)
+                    return
+                if new_stage == stage and next_action == action:
+                    raise ValueError("步骤没有推进，也没有新的修复路线；已停止重复调用。")
+        except ControllerInterrupted as error:
+            self.update(task_id, status="paused", error=None, summary=str(error))
         except Exception as error:
             logger.exception("AutoDesign task %s stopped", task_id)
             self.update(
@@ -497,6 +520,8 @@ class TaskManager:
                 summary="本步骤未完成，请查看错误和日志后继续。",
             )
         finally:
+            if acquired:
+                self.worker_slot.release()
             with self.lock:
                 self.threads.pop(task_id, None)
 

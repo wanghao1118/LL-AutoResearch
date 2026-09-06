@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
 import tempfile
 import unicodedata
 from datetime import date
@@ -166,6 +165,7 @@ def execute_research_agent(
     timeout: int = 900,
     cancel_event: Event | None = None,
     process_callback: Callable[[Any | None], None] | None = None,
+    workspace: Path | None = None,
 ) -> dict[str, Any]:
     if not direction.strip():
         raise ValueError("Research direction cannot be empty.")
@@ -174,7 +174,9 @@ def execute_research_agent(
     if timeout <= 0:
         raise ValueError("Timeout must be greater than zero.")
 
+    workspace = (workspace or Path.cwd()).resolve()
     prompt = render_research_prompt(direction, paper_count)
+    prompt = generate_idea.with_recovery_context(prompt, workspace)
     codex_cli = generate_idea.resolve_codex_cli()
     with tempfile.TemporaryDirectory(prefix="w2c-research-") as temporary_dir:
         raw_output = Path(temporary_dir) / "research.json"
@@ -183,7 +185,7 @@ def execute_research_agent(
         for attempt in range(1, MAX_RESEARCH_ATTEMPTS + 1):
             if raw_output.exists():
                 raw_output.unlink()
-            command = generate_idea.build_codex_command(codex_cli, raw_output, model)
+            command = generate_idea.build_codex_command(codex_cli, raw_output, model, workspace)
             command.insert(1, "--search")
             command[-1:-1] = ["--output-schema", str(SCHEMA_PATH)]
             result = generate_idea.run_command(
@@ -192,6 +194,7 @@ def execute_research_agent(
                 timeout,
                 cancel_event=cancel_event,
                 process_callback=process_callback,
+                cwd=workspace,
             )
             if result.returncode != 0:
                 raise RuntimeError(

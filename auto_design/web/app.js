@@ -63,9 +63,11 @@ function renderTask() {
   $("#run-task").textContent = task.status === "created" ? "开始执行" : task.status === "design_ready" ? "开始实验" : "继续执行";
   $("#pause-task").hidden = !active; $("#pause-task").disabled = task.status === "pausing";
   $("#pause-task").textContent = task.status === "pausing" ? "等待安全收尾" : "安全暂停";
+  $("#interrupt-task").hidden = !active; $("#interrupt-help").hidden = !active;
+  $("#recovery-field").hidden = active || pendingReview || ["completed", "abandoned"].includes(task.status);
   $("#task-scope").textContent = task.scope === "design_only" ? "本轮仅设计" : "完整实验流程";
   const paths = $("#task-paths"); paths.replaceChildren();
-  [["工作目录", task.workspace], ["运行目录", task.run_dir], ["任务编号", task.id]].forEach(([key, value]) => paths.append(element("dt", key), element("dd", value)));
+  [["项目根目录", task.workspace], ["任务工作目录", task.run_dir], ["任务编号", task.id]].forEach(([key, value]) => paths.append(element("dt", key), element("dd", value)));
   const docs = task.documents;
   documentText("#input-document", docs["input_brief.md"]); documentText("#state-document", docs["AUTODESIGN_STATE.md"]);
   documentText("#plan-document", docs["experiment_design.md"]); documentText("#diagnosis-document", docs["result_diagnosis.md"]);
@@ -105,6 +107,7 @@ function renderTask() {
 
 async function selectTask(id) { state.activeId = id; state.task = await api(`/api/tasks/${id}`); renderList(); renderTask(); }
 async function refresh() {
+  const reconnecting = !state.connected;
   try {
     const health = await api("/api/health"); state.connected = true;
     $("#connection").textContent = health.codex_cli ? "本地服务已连接" : "服务已连接 · Codex 未配置";
@@ -112,6 +115,7 @@ async function refresh() {
     for (const form of [$("#task-form"), $("#import-form")]) if (!form.elements.workspace.value) form.elements.workspace.value = health.workspace;
     state.tasks = (await api("/api/tasks")).tasks; renderList();
     if (state.activeId) { state.task = await api(`/api/tasks/${state.activeId}`); renderTask(); }
+    if (reconnecting) notice();
   } catch (error) { state.connected = false; $("#connection").textContent = "本地服务未连接"; $("#connection-dot").classList.remove("connected"); notice(error.message); }
 }
 
@@ -122,29 +126,38 @@ function setSidebar(open) {
   $("#sidebar-scrim").hidden = !open;
   $("#sidebar-toggle").setAttribute("aria-expanded", String(open));
 }
-$("#sidebar-toggle").addEventListener("click", () => setSidebar(!$("#sidebar").classList.contains("open")));
-$("#sidebar-scrim").addEventListener("click", () => setSidebar(false));
-document.addEventListener("keydown", (event) => { if (event.key === "Escape") setSidebar(false); });
-window.matchMedia("(max-width: 760px)").addEventListener("change", () => setSidebar(false));
-for (const id of ["#new-task", "#welcome-create"]) $(id).addEventListener("click", () => { setSidebar(false); $("#task-dialog").showModal(); });
-$("#import-task").addEventListener("click", () => { setSidebar(false); $("#import-dialog").showModal(); });
-document.querySelectorAll("[data-close]").forEach((button) => button.addEventListener("click", () => document.getElementById(button.dataset.close).close()));
-document.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => selectTab(button.dataset.tab)));
-$("#idea-file").addEventListener("change", async (event) => {
-  const file = event.target.files[0];
-  if (file) { $("#task-form").elements.idea.value = await file.text(); $("#idea-file-label").textContent = file.name; }
-});
-for (const [formId, endpoint, dialogId] of [["#task-form", "/api/tasks", "#task-dialog"], ["#import-form", "/api/tasks/import", "#import-dialog"]]) {
-  $(formId).addEventListener("submit", async (event) => {
-    event.preventDefault(); const button = event.target.querySelector("button[type=submit]"); button.disabled = true;
-    try { const task = await api(endpoint, Object.fromEntries(new FormData(event.target))); $(dialogId).close(); notice(); await refresh(); await selectTask(task.id); }
-    catch (error) { notice(error.message); } finally { button.disabled = false; }
+function init() {
+  if (location.protocol === "file:") {
+    document.body.innerHTML = '<main style="max-width:640px;margin:12vh auto;padding:28px;line-height:1.8"><h1>请从本地服务打开 Auto Design</h1><p>当前是 HTML 文件预览，无法连接任务接口。</p><p><a class="button primary" href="http://127.0.0.1:8760/auto-design/">打开 Auto Design 工作台</a></p><p>默认服务地址为 http://127.0.0.1:8760/。如果启动时设置了其他端口，请使用终端显示的地址。</p></main>';
+    return;
+  }
+  $("#sidebar-toggle").addEventListener("click", () => setSidebar(!$("#sidebar").classList.contains("open")));
+  state.activeId = new URLSearchParams(location.search).get("task");
+  $("#sidebar-scrim").addEventListener("click", () => setSidebar(false));
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape") setSidebar(false); });
+  window.matchMedia("(max-width: 760px)").addEventListener("change", () => setSidebar(false));
+  for (const id of ["#new-task", "#welcome-create"]) $(id).addEventListener("click", () => { setSidebar(false); $("#task-dialog").showModal(); });
+  $("#import-task").addEventListener("click", () => { setSidebar(false); $("#import-dialog").showModal(); });
+  document.querySelectorAll("[data-close]").forEach((button) => button.addEventListener("click", () => document.getElementById(button.dataset.close).close()));
+  document.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => selectTab(button.dataset.tab)));
+  $("#idea-file").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (file) { $("#task-form").elements.idea.value = await file.text(); $("#idea-file-label").textContent = file.name; }
   });
+  for (const [formId, endpoint, dialogId] of [["#task-form", "/api/tasks", "#task-dialog"], ["#import-form", "/api/tasks/import", "#import-dialog"]]) {
+    $(formId).addEventListener("submit", async (event) => {
+      event.preventDefault(); const button = event.target.querySelector("button[type=submit]"); button.disabled = true;
+      try { const task = await api(endpoint, Object.fromEntries(new FormData(event.target))); $(dialogId).close(); notice(); await refresh(); await selectTask(task.id); }
+      catch (error) { notice(error.message); } finally { button.disabled = false; }
+    });
+  }
+  handle($("#run-task"), () => action(`/api/tasks/${state.activeId}/start`, { ...(state.task.status === "design_ready" ? { scope: "full" } : {}), recovery_note: $("#recovery-note").value }));
+  handle($("#pause-task"), () => action(`/api/tasks/${state.activeId}/pause`));
+  handle($("#interrupt-task"), () => action(`/api/tasks/${state.activeId}/interrupt`));
+  handle($("#approve-revision"), () => action(`/api/tasks/${state.activeId}/decision`, { revision_id: state.task.review.revision_id, decision: state.task.review.limit_reached ? "APPROVE_EXCEPTION_METHOD_REVISION" : "APPROVE_MINIMAL_METHOD_REVISION" }));
+  handle($("#reject-revision"), () => action(`/api/tasks/${state.activeId}/decision`, { revision_id: state.task.review.revision_id, decision: "REJECT_METHOD_REVISION" }));
+  handle($("#abandon-idea"), () => action(`/api/tasks/${state.activeId}/decision`, { revision_id: state.task.review.revision_id, decision: "ABANDON_IDEA" }));
+  async function poll() { await refresh(); window.setTimeout(poll, 3000); }
+  poll();
 }
-handle($("#run-task"), () => action(`/api/tasks/${state.activeId}/start`, state.task.status === "design_ready" ? { scope: "full" } : {}));
-handle($("#pause-task"), () => action(`/api/tasks/${state.activeId}/pause`));
-handle($("#approve-revision"), () => action(`/api/tasks/${state.activeId}/decision`, { revision_id: state.task.review.revision_id, decision: state.task.review.limit_reached ? "APPROVE_EXCEPTION_METHOD_REVISION" : "APPROVE_MINIMAL_METHOD_REVISION" }));
-handle($("#reject-revision"), () => action(`/api/tasks/${state.activeId}/decision`, { revision_id: state.task.review.revision_id, decision: "REJECT_METHOD_REVISION" }));
-handle($("#abandon-idea"), () => action(`/api/tasks/${state.activeId}/decision`, { revision_id: state.task.review.revision_id, decision: "ABANDON_IDEA" }));
-async function poll() { await refresh(); window.setTimeout(poll, 3000); }
-poll();
+init();

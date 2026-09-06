@@ -4,7 +4,6 @@ import argparse
 import json
 from pathlib import Path
 import re
-import subprocess
 import tempfile
 from threading import Event
 from typing import Any, Callable
@@ -185,6 +184,8 @@ def generate_portfolio(
 ) -> list[dict[str, Any]]:
     portfolio: list[dict[str, Any]] = []
     for paper in manifest["papers"]:
+        if cancel_event is not None and cancel_event.is_set():
+            raise RuntimeError("调研已停止，已完成产物保留。")
         paper_dir = run_dir / "papers" / paper["id"]
         idea_path = paper_dir / "idea.md"
         prompt_path = paper_dir / "prompt.md"
@@ -207,6 +208,7 @@ def generate_portfolio(
                 timeout=timeout,
                 cancel_event=cancel_event,
                 process_callback=process_callback,
+                workspace=run_dir,
             )
             if paper.get("feasibility_status") == "blocked" and not generate_idea.is_pass_markdown(idea):
                 raise ValueError(
@@ -256,11 +258,14 @@ def execute_json_agent(
     timeout: int,
     cancel_event: Event | None = None,
     process_callback: Callable[[Any | None], None] | None = None,
+    workspace: Path | None = None,
 ) -> dict[str, Any]:
+    workspace = (workspace or Path.cwd()).resolve()
+    prompt = generate_idea.with_recovery_context(prompt, workspace)
     codex_cli = generate_idea.resolve_codex_cli()
     with tempfile.TemporaryDirectory(prefix="w2c-eval-") as temporary_dir:
         raw_output = Path(temporary_dir) / "evaluation.json"
-        command = generate_idea.build_codex_command(codex_cli, raw_output, model)
+        command = generate_idea.build_codex_command(codex_cli, raw_output, model, workspace)
         command[-1:-1] = ["--output-schema", str(schema_path)]
         result = generate_idea.run_command(
             command,
@@ -268,6 +273,7 @@ def execute_json_agent(
             timeout,
             cancel_event=cancel_event,
             process_callback=process_callback,
+            cwd=workspace,
         )
         if result.returncode != 0:
             raise RuntimeError(
@@ -412,6 +418,7 @@ def evaluate_portfolio(
             timeout,
             cancel_event=cancel_event,
             process_callback=process_callback,
+            workspace=run_dir,
         )
         write_json_atomic(json_path, response)
         generate_idea.write_text_atomic(prompt_path, prompt, force=True)

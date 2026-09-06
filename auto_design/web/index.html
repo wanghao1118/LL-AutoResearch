@@ -48,7 +48,7 @@
     </section>
     <section id="workspace" hidden>
       <div class="task-heading"><div><div class="eyebrow">EXPERIMENT WORKSPACE</div><h1 id="task-title"></h1><div class="task-meta"><span class="badge" id="task-status"></span><span id="task-stage"></span></div></div><div class="task-actions"><button id="run-task" class="primary">开始执行</button><button id="pause-task" class="secondary" hidden>安全暂停</button></div></div>
-      <div class="summary-card"><span class="summary-label">当前进展</span><p id="task-summary"></p><p id="task-error" class="error-text" hidden></p></div>
+      <div class="summary-card"><span class="summary-label">当前进展</span><p id="task-summary"></p><p id="task-error" class="error-text" hidden></p><button id="interrupt-task" class="secondary" hidden>停止卡住的控制器</button><p id="interrupt-help" hidden>仅停止本任务的 Codex 控制器，保留训练与产物；停止后继续会先核对已有执行。</p><label id="recovery-field" hidden>恢复说明（可选）<textarea id="recovery-note" rows="2" placeholder="描述问题或已完成的修复，继续时会读取本说明与错误日志"></textarea></label></div>
       <div class="tabs" role="tablist">
         <button role="tab" aria-selected="true" data-tab="overview">任务概览</button>
         <button role="tab" aria-selected="false" data-tab="plan">实验方案</button>
@@ -69,7 +69,7 @@
       <header class="dialog-header"><div><span class="eyebrow">NEW EXPERIMENT</span><h2 id="new-task-title">新建实验</h2></div><button type="button" class="icon-button" data-close="task-dialog" aria-label="关闭"><svg aria-hidden="true"><use href="#icon-x"></use></svg></button></header>
       <div class="dialog-body">
         <label class="field"><span>任务名称</span><input name="title" required placeholder="为这项研究起一个便于识别的名称"></label>
-        <label class="field"><span>实验工作目录</span><input name="workspace" required placeholder="项目绝对路径"></label>
+        <label class="field"><span>实验项目根目录</span><input name="workspace" required placeholder="自动创建任务目录所在的项目绝对路径"></label>
         <label class="field"><span>执行范围</span><select name="scope"><option value="full">完整流程：设计、执行、诊断与审计</option><option value="design_only">仅完成实验设计，暂不启动 R0 或正式实验</option></select></label>
         <label class="field"><span>Idea 文档 <small>包含 Motivation 与 Contribution</small></span><textarea name="idea" rows="5" required placeholder="粘贴研究动机、核心贡献，以及已确定的数据、方法或资源约束"></textarea></label>
         <label class="file-picker"><svg aria-hidden="true"><use href="#icon-upload"></use></svg><strong id="idea-file-label">或选择本地 Idea 文档</strong><small>Markdown、TXT 或 JSON</small><input type="file" id="idea-file" accept=".md,.txt,.json" aria-label="选择本地 Idea 文档"></label>
@@ -82,7 +82,7 @@
       <header class="dialog-header"><div><span class="eyebrow">CONTINUE RESEARCH</span><h2 id="import-title">接续已有实验</h2></div><button type="button" class="icon-button" data-close="import-dialog" aria-label="关闭"><svg aria-hidden="true"><use href="#icon-x"></use></svg></button></header>
       <div class="dialog-body">
         <label class="field"><span>任务名称 <small>可选</small></span><input name="title" placeholder="为已有实验设置名称"></label>
-        <label class="field"><span>原实验工作目录</span><input name="workspace" required placeholder="项目绝对路径"></label>
+        <label class="field"><span>原实验项目根目录</span><input name="workspace" required placeholder="项目绝对路径"></label>
         <label class="field"><span>已有运行目录</span><input name="run_dir" required placeholder="包含 AUTODESIGN_STATE.md 的绝对路径"></label>
         <p>导入只登记已有产物。点击继续后，系统先核对在途进程和已完成结果，再恢复未完成的工作。</p>
       </div>

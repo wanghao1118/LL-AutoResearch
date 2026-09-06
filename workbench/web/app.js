@@ -16,4 +16,8 @@ async function refreshModules() {
   }));
   window.setTimeout(refreshModules, 10000);
 }
-refreshModules();
+if (location.protocol === "file:") {
+  document.body.innerHTML = '<main style="max-width:640px;margin:12vh auto;padding:28px;line-height:1.8"><h1>请从本地服务打开 AutoResearch</h1><p>当前是 HTML 文件预览，无法连接任务接口。</p><p><a style="color:#087d70;text-decoration:underline" href="http://127.0.0.1:8760/">打开 AutoResearch 工作台</a></p><p>默认服务地址为 http://127.0.0.1:8760/。如果启动时设置了其他端口，请使用终端显示的地址。</p></main>';
+} else {
+  refreshModules();
+}

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import io
 import json
+import os
+import sys
 import threading
 import time
 import zipfile
@@ -340,6 +342,75 @@ def test_search_cancel_and_cli_missing_are_reported(app, monkeypatch):
 
     monkeypatch.setattr(search.direction_research.generate_idea, "resolve_codex_cli", missing_cli)
     assert json_request(app, "/auto-search/api/health")["codex_cli"] is None
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX executable fixture")
+def test_search_processes_use_each_task_directory(app, tmp_path, monkeypatch):
+    papers = [search_examples.paper_record(f"Directory fixture {i}") for i in range(2)]
+    research = {"scope_summary": "Engineering fixture only", "papers": papers}
+    manifest = search.direction_research.build_manifest("Directory check", research, 2)
+    responses = tmp_path / "fixture-responses.json"
+    responses.write_text(
+        json.dumps(
+            {
+                "direction_research.schema.json": research,
+                "idea": idea_examples.VALID_MARKDOWN,
+                "evaluation.schema.json": evaluation_examples.evaluation(
+                    [paper["id"] for paper in manifest["papers"]]
+                ),
+            }
+        )
+    )
+    executable = tmp_path / "codex-directory-fixture"
+    executable.write_text(
+        f"#!{sys.executable}\n"
+        "import json,sys\nfrom pathlib import Path\n"
+        "if '--version' in sys.argv:\n"
+        "    print('codex engineering fixture'); sys.exit(0)\n"
+        "sys.stdin.read()\n"
+        "stage = Path(sys.argv[sys.argv.index('--output-schema')+1]).name "
+        "if '--output-schema' in sys.argv else 'idea'\n"
+        f"responses = json.loads(Path({str(responses)!r}).read_text())\n"
+        "record = {'stage':stage, 'cwd':str(Path.cwd()), "
+        "'cd':sys.argv[sys.argv.index('--cd')+1]}\n"
+        "with Path('directory-observations.jsonl').open('a') as log:\n"
+        "    log.write(json.dumps(record)+'\\n')\n"
+        "output = Path(sys.argv[sys.argv.index('--output-last-message')+1])\n"
+        "value = responses[stage]\n"
+        "output.write_text(value if isinstance(value,str) else json.dumps(value))\n"
+    )
+    executable.chmod(0o755)
+    monkeypatch.setattr(
+        search.direction_research.generate_idea,
+        "codex_candidates",
+        lambda: [Path(os.path.relpath(executable))],
+    )
+    directories = []
+    for _ in range(2):
+        job = json_request(
+            app,
+            "/auto-search/api/jobs",
+            {"direction": "执行目录工程验收", "paper_count": 2, "evaluate": True},
+            status=202,
+        )
+        live_job = search.JOB_MANAGER.get(job["id"])
+        assert live_job.finished_event.wait(8)
+        assert live_job.status == "ready", live_job.error
+        directory = live_job.run_dir.resolve()
+        directories.append(directory)
+        observed = [
+            json.loads(line)
+            for line in (directory / "directory-observations.jsonl").read_text().splitlines()
+        ]
+        assert [item["stage"] for item in observed] == [
+            "direction_research.schema.json",
+            "idea",
+            "idea",
+            "evaluation.schema.json",
+        ]
+        assert all(item["cwd"] == item["cd"] == str(directory) for item in observed)
+        assert (directory / "web-data.json").is_file()
+    assert directories[0] != directories[1]
 
 
 def test_writing_cli_uses_isolated_config_by_default(tmp_path, monkeypatch):

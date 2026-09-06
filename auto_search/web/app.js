@@ -125,7 +125,7 @@ function renderFolderTree() {
           ${icon("loader", "run-spinner")}
           <button class="stop-run" type="button" data-stop-job="${escapeHtml(run.job_id || "")}" data-run="${escapeHtml(run.run_name)}" title="中止调研" aria-label="中止调研" ${run.job_id && run.status !== "cancelling" ? "" : "disabled"}>${icon("circle-stop")}</button>
         </span>`
-      : `<span class="folder-count">${run.status === "ready" ? run.ideas.length : "!"}</span>`;
+      : run.status === "ready" ? `<span class="folder-count">${run.ideas.length}</span>` : `<button type="button" class="button secondary" data-resume-run="${escapeHtml(run.run_name)}">继续</button>`;
     const children = expanded ? `<div class="folder-children">${run.ideas.map((idea) => {
       const stateMarker = idea.human_review === "approved"
         ? icon("circle-check", "human-state-icon approved")
@@ -150,6 +150,7 @@ function renderFolderTree() {
         ${action}
       </div>
       ${children}
+      ${run.error || run.status === "failed" || run.status === "cancelled" ? `<details style="padding:10px;font-size:12px"><summary>错误与恢复记录</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(run.error || run.stage)}\n${escapeHtml((run.events || []).map((e) => `${e.at} ${e.message}`).join("\n"))}</pre></details>` : ""}
     </div>`;
   }).join("");
 }
@@ -514,12 +515,11 @@ function requestStop(runName, jobId) {
   const run = state.runs.find((item) => item.run_name === runName);
   if (!run || !jobId) return;
   openConfirm({
-    title: "取消调研",
-    message: `确认取消“${runLabel(run)}”？正在运行的 Codex 任务会被中止，调研文件夹及已有产物将被删除。`,
-    actionLabel: "取消并删除",
+    title: "停止调研并保留进度",
+    message: `停止“${runLabel(run)}”的当前调用，保留论文、Idea 与评审产物，之后可以继续。`,
+    actionLabel: "停止并保留",
     action: async () => {
-      await fetchJson(`/api/jobs/${jobId}/cancel`, { method: "POST" });
-      state.runs = state.runs.filter((item) => item.run_name !== runName);
+      await fetchJson(`/api/jobs/${jobId}/stop`, { method: "POST" });
       state.datasets.delete(runName);
       renderFolderTree();
       await refreshRuns(true);
@@ -655,6 +655,13 @@ function wireEvents() {
     if (button) saveHumanReview(button.dataset.humanReview);
   });
   $("#ideaList").addEventListener("click", (event) => {
+    const resume = event.target.closest("[data-resume-run]");
+    if (resume) {
+      resume.disabled = true;
+      fetchJson(`/api/runs/${encodeURIComponent(resume.dataset.resumeRun)}/resume`, { method: "POST" })
+        .then(() => refreshRuns(true)).catch((error) => showFatalError(error.message)).finally(() => { resume.disabled = false; });
+      return;
+    }
     const stop = event.target.closest("[data-stop-job]");
     if (stop) {
       event.stopPropagation();
@@ -712,6 +719,10 @@ function wireEvents() {
 }
 
 async function init() {
+  if (location.protocol === "file:") {
+    document.body.innerHTML = '<main style="max-width:640px;margin:12vh auto;padding:28px;line-height:1.8"><h1>请从本地服务打开 Auto Search</h1><p>当前是 HTML 文件预览，无法连接任务接口。</p><p><a class="button primary" href="http://127.0.0.1:8760/auto-search/">打开 Auto Search 工作台</a></p><p>默认服务地址为 http://127.0.0.1:8760/。如果启动时设置了其他端口，请使用终端显示的地址。</p></main>';
+    return;
+  }
   wireEvents();
   try {
     const requestedRun = new URLSearchParams(location.search).get("run");

@@ -431,6 +431,7 @@ function resetPublicationInput() {
 
 function renderPublication() {
   const publication = state.activeProject.publication;
+  $("#recompilePublication").hidden = publication.status !== "partial";
   const badge = $("#publicationStatus");
   badge.className = `status-badge ${publication.status}`;
   badge.textContent = statusLabels[publication.status] || publication.status;
@@ -476,6 +477,9 @@ function renderProject() {
   $("#projectView").hidden = !project;
   $("#errorState").hidden = true;
   if (!project) return;
+  const automatic = project.automation?.status === "running";
+  $("#autoWriting").textContent = automatic ? "暂停自动推进" : "自动完成 / 继续全文与 PDF";
+  $("#autoWritingState").textContent = project.automation?.message || "尚未启动自动写作。";
   const projectIndex = Math.max(0, state.projects.findIndex((item) => item.id === project.id));
   $("#projectNumber").textContent = String(projectIndex + 1).padStart(2, "0");
   $("#overallStatus").textContent = `${project.completed} / ${project.total} COMPLETE`;
@@ -525,7 +529,7 @@ async function loadProjects() {
       renderProject();
       return;
     }
-    const remembered = localStorage.getItem("auto-writing-active-project");
+    const remembered = new URLSearchParams(location.search).get("project") || localStorage.getItem("auto-writing-active-project");
     const selected = state.projects.find((item) => item.id === remembered) || state.projects[0];
     await loadProject(selected.id);
   } catch (error) {
@@ -543,7 +547,7 @@ function showFatal(message) {
 
 function schedulePolling() {
   clearTimeout(state.pollTimer);
-  if (!projectRunning(state.activeProject)) return;
+  if (!projectRunning(state.activeProject) && state.activeProject?.automation?.status !== "running") return;
   state.pollTimer = setTimeout(async () => {
     if (state.activeProject) await loadProject(state.activeProject.id, true);
   }, 1400);
@@ -900,6 +904,29 @@ function closeSidebar() {
 }
 
 function bindEvents() {
+  $("#autoWriting").addEventListener("click", async (event) => {
+    const project = state.activeProject; if (!project) return;
+    event.currentTarget.disabled = true;
+    try {
+      const pausing = project.automation?.status === "running";
+      const template = $("#latexTemplateFile").files[0];
+      const body = !pausing && template ? { template_file: await filePayload(template) } : {};
+      await api(`/api/writings/${project.id}/${pausing ? "auto-pause" : "auto-start"}`, { method: "POST", body: JSON.stringify(body) });
+      await loadProject(project.id);
+    } catch (error) { showToast(error.message, true); }
+    finally { $("#autoWriting").disabled = false; }
+  });
+  $("#recompilePublication").addEventListener("click", async () => {
+    try { await api(`/api/writings/${state.activeProject.id}/recompile`, { method: "POST", body: "{}" }); await loadProject(state.activeProject.id); }
+    catch (error) { showToast(error.message, true); }
+  });
+  $("#writingLogs").addEventListener("click", async () => {
+    try {
+      const data = await api(`/api/writings/${state.activeProject.id}/logs`);
+      $("#writingLogContent").hidden = false;
+      $("#writingLogContent").innerHTML = data.logs.map((l) => `<details><summary>${escapeHtml(l.name)}</summary><pre>${escapeHtml(l.text)}</pre></details>`).join("") || "尚无运行日志。";
+    } catch (error) { showToast(error.message, true); }
+  });
   $("#newWritingButton").addEventListener("click", openNewWriting);
   $("#emptyNewWriting").addEventListener("click", openNewWriting);
   $("#newWritingForm").addEventListener("submit", submitNewWriting);
@@ -1004,6 +1031,10 @@ async function checkHealth() {
 }
 
 async function init() {
+  if (location.protocol === "file:") {
+    document.body.innerHTML = '<main style="max-width:640px;margin:12vh auto;padding:28px;line-height:1.8"><h1>请从本地服务打开 Auto Writing</h1><p>当前是 HTML 文件预览，无法连接任务接口。</p><p><a class="button primary" href="http://127.0.0.1:8760/auto-writing/">打开 Auto Writing 工作台</a></p><p>默认服务地址为 http://127.0.0.1:8760/。如果启动时设置了其他端口，请使用终端显示的地址。</p></main>';
+    return;
+  }
   bindEvents();
   checkHealth();
   await loadProjects();

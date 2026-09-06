@@ -31,10 +31,12 @@ def run_command(
     timeout: int,
     cancel_event: Event | None = None,
     process_callback: Callable[[Any | None], None] | None = None,
+    cwd: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     if cancel_event is None:
         return subprocess.run(
             command,
+            cwd=cwd,
             input=prompt,
             capture_output=True,
             text=True,
@@ -49,6 +51,7 @@ def run_command(
     creationflags = subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == "win32" else 0
     process = subprocess.Popen(
         command,
+        cwd=cwd,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -136,7 +139,7 @@ def resolve_codex_cli() -> Path:
             failures.append(f"{candidate}: {error}")
             continue
         if result.returncode == 0:
-            return candidate
+            return Path(shutil.which(str(candidate)) or candidate).resolve()
         detail = result.stderr.strip() or result.stdout.strip() or "exit code " + str(result.returncode)
         failures.append(f"{candidate}: {detail}")
 
@@ -165,7 +168,9 @@ def render_prompt(weakness: str, language: str) -> str:
     return prompt.strip() + "\n"
 
 
-def build_codex_command(codex_cli: Path, raw_output: Path, model: str | None) -> list[str]:
+def build_codex_command(
+    codex_cli: Path, raw_output: Path, model: str | None, workspace: Path | None = None
+) -> list[str]:
     command = [str(codex_cli)]
     if model:
         command.extend(["--model", model])
@@ -176,7 +181,7 @@ def build_codex_command(codex_cli: Path, raw_output: Path, model: str | None) ->
             "--ask-for-approval",
             "never",
             "--cd",
-            str(ROOT),
+            str((workspace or Path.cwd()).resolve()),
             "exec",
             "--ephemeral",
             "--skip-git-repo-check",
@@ -544,13 +549,24 @@ def validate_markdown(content: str) -> None:
         raise ValueError("Complete Implementation Process must contain six to ten end-to-end steps.")
 
 
+def with_recovery_context(prompt: str, workspace: Path) -> str:
+    path = workspace / "recovery_note.md"
+    if path.is_file():
+        prompt += ("\n\nTroubleshooting context for this resumed step. Diagnose the previous error "
+                   "and preserve the requested research scope and evidence rules:\n" + path.read_text())
+    return prompt
+
+
 def run_codex(
     prompt: str,
     model: str | None,
     timeout: int,
     cancel_event: Event | None = None,
     process_callback: Callable[[Any | None], None] | None = None,
+    workspace: Path | None = None,
 ) -> str:
+    workspace = (workspace or Path.cwd()).resolve()
+    prompt = with_recovery_context(prompt, workspace)
     codex_cli = resolve_codex_cli()
     with tempfile.TemporaryDirectory(prefix="w2c-") as temporary_dir:
         raw_output = Path(temporary_dir) / "last-message.md"
@@ -559,7 +575,7 @@ def run_codex(
         for attempt in range(1, MAX_GENERATION_ATTEMPTS + 1):
             if raw_output.exists():
                 raw_output.unlink()
-            command = build_codex_command(codex_cli, raw_output, model)
+            command = build_codex_command(codex_cli, raw_output, model, workspace)
             command.insert(1, "--search")
             result = run_command(
                 command,
@@ -567,6 +583,7 @@ def run_codex(
                 timeout,
                 cancel_event=cancel_event,
                 process_callback=process_callback,
+                cwd=workspace,
             )
             if result.returncode != 0:
                 raise RuntimeError(
@@ -673,7 +690,8 @@ def main() -> int:
         [path for path in (output_path, saved_prompt_path) if path is not None],
         args.force,
     )
-    markdown = run_codex(prompt, args.model, args.timeout)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown = run_codex(prompt, args.model, args.timeout, workspace=output_path.parent)
     write_text_atomic(output_path, markdown, force=args.force)
     if saved_prompt_path is not None:
         write_text_atomic(saved_prompt_path, prompt, force=args.force)

@@ -25,11 +25,13 @@ $env:AUTORESEARCH_PYTHON = "C:\path\to\python.exe"
 
 打开 [工作台](http://127.0.0.1:8760/)。工作台服务和三个模块只依赖 Python 标准库；模型调用需要已安装并登录的 Codex CLI。PDF 编译使用 Auto Writing 原有的编译器发现逻辑，支持 Tectonic、latexmk、XeLaTeX 或 pdfLaTeX。
 
+请使用服务的 HTTP 地址。直接打开 `index.html` 只会进入本地文件预览，四个页面现在都会展示对应服务入口，不会从 `file://` 发起任务接口请求。自定义端口或单独启动模块时，使用启动终端打印的地址。
+
 | 参数 | 默认值 | 作用 |
 | --- | --- | --- |
 | `--host` | `127.0.0.1` | 对外监听地址 |
 | `--port` | `8760` | 唯一浏览器入口端口 |
-| `--workspace` | 当前目录 | 新建 Auto Design 任务的默认工作目录 |
+| `--workspace` | 当前目录 | 新建 Auto Design 任务的默认项目根目录，同时决定默认数据根目录 |
 | `--data-dir` | `<workspace>/assets/output/workbench` | 三模块任务索引与运行数据根目录 |
 
 首页的连接状态来自真实健康接口。没有任务时显示空状态；打开页面和切换模块均不启动研究任务。浏览器切换不停止后台任务，退出服务则应先在模块内完成停止或安全暂停。
@@ -44,7 +46,7 @@ $env:AUTORESEARCH_PYTHON = "C:\path\to\python.exe"
 
 Auto Search 的 Weakness 直达 Idea 和批量生成命令仍保存在模块目录，原有 `src/autoresearch` CLI 也完整保留。单模块用法见 [Auto Search](../auto_search/README.md)、[Auto Design](../auto_design/README.md)、[Auto Writing](../auto_writing/README.md)。
 
-模块之间继续通过明确的输入文档衔接：在 Auto Search 查看 Idea，将其内容或文件交给 Auto Design；再将实验说明和真实结果资料上传到 Auto Writing。此次整合统一入口和导航，模块切换不会自动选定 Idea、触发下一阶段或更改研究设置。
+首页“新建全流程”支持 Search → Design → Writing 自动交接，也可从已有模块任务接续。自动选题仅采用独立评审为 `promising` 且未被人工废弃的首选 Idea；可改为手动选题。实验完成后检查磁盘 `COMPLETE`、审计 PASS 和原始证据，再复制写作资料并自动运行全部写作步骤。失败时停止自动推进，由网页继续当前步骤；方法审批仍需明确决定。详见 [全流程设计与恢复说明](../docs/frontend_workflow.md)。
 
 ## 数据与运行结构
 
@@ -57,7 +59,9 @@ assets/output/workbench/
 
 Auto Design 的具体运行产物仍写入用户选定工作目录下的 `assets/output/auto_design/<task-id>/`；工作台索引记录其实际路径。现有独立模块的数据不自动复制到工作台；接续已有 Auto Design 实验使用页面里的导入功能。工程验收数据和日志写入 `assets/logs/workbench/`，不进入正常任务索引，也不提交到 Git。
 
-服务在一个 Python 进程内启动三个绑定到 `127.0.0.1` 临时端口的原模块 HTTP 服务，由公共入口按路径前缀转发请求。GET、HEAD、POST、PUT、DELETE、查询参数、上传请求体和二进制下载均由原模块处理；原 32 MB 请求上限保留。只在模块主页注入共享导航，生成的 HTML 报告维持原内容和相对资源路径。
+三个模块均以独立任务目录作为 Codex 工作目录。Auto Search 使用 `auto_search/direction-<时间戳>-<ID>/`；Auto Writing 使用 `auto_writing/writing-<时间戳>-<ID>/`；Auto Design 使用任务索引中已登记的 `run_dir`。Auto Design 的 `workspace` 继续表示用户选择的项目根目录，用于定位机器指令和创建任务目录，不再作为 Codex 的执行目录。已有目录及任务编号保留，正式实验命令继续使用执行计划和运行器规定的工作目录。
+
+`python3 -m workbench` 启动独立网页入口及一个研究工作进程；入口在工作进程退出时仍保留首页、日志、启动与重启接口。研究工作进程内启动三个绑定到 `127.0.0.1` 临时端口的原模块 HTTP 服务，由入口按路径前缀转发请求。GET、HEAD、POST、PUT、DELETE、查询参数、上传请求体和二进制下载均由原模块处理；原 32 MB 请求上限保留。只在模块主页注入共享导航，生成的 HTML 报告维持原内容和相对资源路径。开发时可用 `python3 -m workbench.server` 直接运行工作进程，但此方式没有独立服务恢复入口。
 
 前端只为 API 和下载地址增加模块前缀，因此独立启动时仍使用原路径。桌面与 390px 窄屏均可使用统一导航和原模块侧栏。
 
@@ -76,6 +80,10 @@ Auto Writing 默认传入 `--ignore-user-config`，与另外两个模块保持�
 
 没有启动远端 GPU、科研训练或正式数据集评估。模型服务、网络和实际科研输入带来的运行结果仍以各模块执行日志及科学契约为准。
 
+2026-09-06 统一任务执行目录后的回归为 **236 passed、4 skipped、3 subtests passed**。新增真实子进程验收覆盖两个调研任务的全部阶段，以及 Auto Design 的新建、导入和项目指令来源；详细结果与本轮目录变更见 [Round 4 开发记录](../docs/README.md)。
+
+同日补充了文件预览入口与连接恢复处理：`node --test workbench/tests/test_file_entry.mjs` 的 5 项前端启动测试通过，并在 Edge 的 HTTP 页面确认三模块的新建表单及首页连接状态正常。这些前端开发测试使用 Node 内置测试工具，不增加工作台运行依赖。
+
 复现自动测试：
 
 ```bash
@@ -92,3 +100,9 @@ PYTHONPATH=auto_search python3 -m pytest --import-mode=importlib tests auto_desi
 | `assets/logs/workbench/cli-smoke/` | 原始提示、返回、事件、编译日志与最小 PDF/ZIP |
 | `assets/logs/workbench/ui-qa/` | 独立界面测试服务、任务与工程 fixture |
 | `assets/logs/workbench/server.log` | 正常工作台服务日志 |
+
+## 前端自动流程与恢复验收（2026-09-06）
+
+新增全流程入口、Search 同目录恢复、Design 控制器中断、Writing 自动推进与单独 PDF 重编译，以及独立网页服务恢复入口。设计、使用方式和实现映射见 [前端全流程说明](../docs/frontend_workflow.md)。
+
+全仓库回归为 **249 passed、4 skipped、3 subtests passed**；日志位于 `assets/logs/workbench/workflow-tests-final.log`。浏览器工程验收产物位于 `assets/logs/workbench/workflow-ui/`，正常任务索引保持独立。正式 8760 已运行新入口，可从首页恢复工作进程。没有运行真实科研实验。

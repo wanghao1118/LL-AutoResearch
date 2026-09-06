@@ -85,7 +85,7 @@ class DirectionResearchTests(unittest.TestCase):
         self.assertNotIn("benchmark_candidates", manifest["papers"][0])
         self.assertEqual(manifest["papers"][0]["feasibility_status"], "blocked")
 
-    @mock.patch("direction_research.subprocess.run")
+    @mock.patch("direction_research.generate_idea.subprocess.run")
     @mock.patch("direction_research.generate_idea.resolve_codex_cli")
     def test_execute_agent_enables_live_search(self, resolve_cli, run):
         resolve_cli.return_value = direction_research.Path("codex.exe")
@@ -106,7 +106,7 @@ class DirectionResearchTests(unittest.TestCase):
         self.assertEqual(command[1], "--search")
         self.assertIn("--output-schema", command)
 
-    @mock.patch("direction_research.subprocess.run")
+    @mock.patch("direction_research.generate_idea.subprocess.run")
     @mock.patch("direction_research.generate_idea.resolve_codex_cli")
     def test_execute_agent_repairs_invalid_research_response(self, resolve_cli, run):
         resolve_cli.return_value = direction_research.Path("codex.exe")
