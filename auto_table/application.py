@@ -151,6 +151,8 @@ class Application:
             "id": project_id,
             "title": title,
             "mode": mode,
+            "pipeline_id": payload.get("pipeline_id"),
+            "writing_project_id": payload.get("writing_project_id"),
             "inputs": inputs,
             "requirements": str(payload.get("requirements", "")),
             "config": config,
@@ -173,6 +175,32 @@ class Application:
         with self.lock:
             self.save(project)
         return project
+
+    def import_writing(self, payload):
+        from auto_writing.web import serve as writing
+
+        source = writing.load_project(str(payload.get("project_id", "")))
+        publication = writing.publication_dir(writing.safe_project_dir(source["id"]))
+        archive = publication / "manuscript-latex.zip"
+        if not archive.is_file():
+            raise ValueError("该写作任务尚未生成 LaTeX ZIP。")
+        paths = [("manuscript.zip", archive)]
+        pdf = publication / "manuscript.pdf"
+        if pdf.is_file() and source.get("publication", {}).get("status") == "ready":
+            paths.append(("manuscript.pdf", pdf))
+        return self.create(
+            {
+                "title": payload.get("title") or source["title"],
+                "mode": "manuscript",
+                "files": [
+                    {"name": name, "content_base64": base64.b64encode(path.read_bytes()).decode()}
+                    for name, path in paths
+                ],
+                "requirements": payload.get("requirements", ""),
+                "pipeline_id": payload.get("pipeline_id"),
+                "writing_project_id": source["id"],
+            }
+        )
 
     def start(self, project_id, payload=None):
         payload = payload or {}
@@ -280,8 +308,6 @@ class Application:
                 shutil.rmtree(target)
             archive, pdf = self.manuscript_inputs(project)
             manifest = inspect_manuscript(archive, target, pdf, project["main_file"])
-            if not manifest["tables"]:
-                raise ValueError("未发现 table/table* 环境，请检查主文件或输入工程。")
         else:
             try:
                 observations = load_inputs(
@@ -314,7 +340,14 @@ class Application:
         return archive, pdf
 
     def _design(self, project, directory, logs, job):
-        if project["manual_config"]:
+        if project["mode"] == "manuscript" and not project["inspection"]["tables"]:
+            response = {
+                "rationale": "论文未包含 table/table* 环境，保持源码不变并编译复核完整 PDF。",
+                "tables": [],
+                "replacements": [],
+                "preamble": "",
+            }
+        elif project["manual_config"]:
             response = {
                 "rationale": "按用户提供的明确配置生成，保留确定性聚合与校验。",
                 "tables": [
@@ -346,7 +379,8 @@ class Application:
             raise TypeError("设计结果缺少说明。")
         names = set()
         key = "tables" if project["mode"] == "results" else "replacements"
-        if not isinstance(plan.get(key), list) or not plan[key]:
+        no_tables = project["mode"] == "manuscript" and not project["inspection"]["tables"]
+        if not isinstance(plan.get(key), list) or (not plan[key] and not no_tables):
             raise ValueError("没有生成可用的表格方案。请检查输入或补充要求。")
         for item in plan[key]:
             name = item["id"] if key == "tables" else item["filename"]

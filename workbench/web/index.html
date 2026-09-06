@@ -50,7 +50,7 @@
         <label id="direction-field">研究方向<textarea name="direction" rows="3" maxlength="1000" placeholder="输入研究问题、关注的机制或任务"></textarea></label>
         <div class="form-grid"><label>调研论文数<select name="paper_count"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label><label>选题方式<select name="selection"><option value="auto">自动选择评审通过且排名最高的 Idea</option><option value="manual">调研完成后由我选择 Idea</option></select></label></div>
         <label>论文模板 ZIP（可选，默认使用通用 article 模板）<input id="pipeline-template" type="file" accept=".zip"></label>
-        <p class="scope-note">启动后将执行调研 → 实验设计与执行 → 诊断与审计 → 六章节写作 → 引用 → LaTeX / PDF。没有合格选题、需要方法审批或步骤失败时暂停；不会自动批准方法修改或将未完成实验当作论文证据。</p>
+        <p class="scope-note">启动后将执行调研 → 实验设计与执行 → 诊断与审计 → 六章节写作 → 引用 → LaTeX / PDF → AutoTable 表格整理与复核。没有合格选题、需要方法审批或步骤失败时暂停；不会自动批准方法修改或将未完成实验当作论文证据。</p>
         <button type="submit" id="create-pipeline">启动全流程</button>
       </form>
       <div class="pipeline-layout"><div id="pipeline-list" aria-label="全流程列表"><p class="empty-copy">正在读取任务</p></div><article id="pipeline-detail"><p class="empty-copy">选择一个全流程查看进展，或新建任务。</p></article></div>

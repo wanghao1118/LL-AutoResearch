@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import json
 import mimetypes
 import os
@@ -121,35 +120,7 @@ class AppHandler(SimpleHTTPRequestHandler):
             if path == "/api/projects":
                 return self.send_json(self.app.create(payload), 201)
             if path == "/api/import-writing":
-                p = writing.load_project(str(payload.get("project_id", "")))
-                publication = writing.publication_dir(writing.safe_project_dir(p["id"]))
-                archive = publication / "manuscript-latex.zip"
-                if not archive.is_file():
-                    raise ValueError("该写作任务尚未生成 LaTeX ZIP。")
-                files = [
-                    {
-                        "name": "manuscript.zip",
-                        "content_base64": base64.b64encode(archive.read_bytes()).decode(),
-                    }
-                ]
-                pdf = publication / "manuscript.pdf"
-                if pdf.is_file() and p.get("publication", {}).get("status") == "ready":
-                    files.append(
-                        {
-                            "name": "manuscript.pdf",
-                            "content_base64": base64.b64encode(pdf.read_bytes()).decode(),
-                        }
-                    )
-                project = self.app.create(
-                    {
-                        "title": payload.get("title") or p["title"],
-                        "mode": "manuscript",
-                        "files": files,
-                        "requirements": payload.get("requirements", ""),
-                    }
-                )
-                project["writing_project_id"] = p["id"]
-                self.app.save(project)
+                project = self.app.import_writing(payload)
                 return self.send_json(project, 201)
             if len(parts) == 5 and parts[1:3] == ["api", "projects"]:
                 if parts[4] == "start":

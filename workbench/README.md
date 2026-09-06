@@ -1,6 +1,6 @@
-# AutoResearch 三模块工作台
+# AutoResearch 四模块工作台
 
-一个网页入口分别进入 Auto Search、Auto Design 和 Auto Writing。三个模块保留各自的完整前端、后台任务管理器、提示词、Schema、科学约束和独立启动方式。
+一个网页入口分别进入 Auto Search、Auto Design、Auto Writing 和 Auto Table。四个模块保留各自的完整前端、后台任务管理器、提示词、Schema、科学约束和独立启动方式。
 
 ## 启动
 
@@ -23,16 +23,16 @@ $env:AUTORESEARCH_PYTHON = "C:\path\to\python.exe"
 .\run_workbench.ps1 -Port 8760
 ```
 
-打开 [工作台](http://127.0.0.1:8760/)。工作台服务和三个模块只依赖 Python 标准库；模型调用需要已安装并登录的 Codex CLI。PDF 编译使用 Auto Writing 原有的编译器发现逻辑，支持 Tectonic、latexmk、XeLaTeX 或 pdfLaTeX。
+打开 [工作台](http://127.0.0.1:8760/)。工作台服务使用 Python 标准库；Auto Table 的 PDF 页面渲染使用仓库依赖 PyMuPDF；模型调用需要已安装并登录的 Codex CLI。PDF 编译使用 Auto Writing 原有的编译器发现逻辑，支持 Tectonic、latexmk、XeLaTeX 或 pdfLaTeX。
 
-请使用服务的 HTTP 地址。直接打开 `index.html` 只会进入本地文件预览，四个页面现在都会展示对应服务入口，不会从 `file://` 发起任务接口请求。自定义端口或单独启动模块时，使用启动终端打印的地址。
+请使用服务的 HTTP 地址。直接打开 `index.html` 只会进入本地文件预览，五个页面现在都会展示对应服务入口，不会从 `file://` 发起任务接口请求。自定义端口或单独启动模块时，使用启动终端打印的地址。
 
 | 参数 | 默认值 | 作用 |
 | --- | --- | --- |
 | `--host` | `127.0.0.1` | 对外监听地址 |
 | `--port` | `8760` | 唯一浏览器入口端口 |
 | `--workspace` | 当前目录 | 新建 Auto Design 任务的默认项目根目录，同时决定默认数据根目录 |
-| `--data-dir` | `<workspace>/assets/output/workbench` | 三模块任务索引与运行数据根目录 |
+| `--data-dir` | `<workspace>/assets/output/workbench` | 四模块任务索引与运行数据根目录 |
 
 首页的连接状态来自真实健康接口。没有任务时显示空状态；打开页面和切换模块均不启动研究任务。浏览器切换不停止后台任务，退出服务则应先在模块内完成停止或安全暂停。
 
@@ -61,7 +61,7 @@ Auto Design 的具体运行产物仍写入用户选定工作目录下的 `assets
 
 三个模块均以独立任务目录作为 Codex 工作目录。Auto Search 使用 `auto_search/direction-<时间戳>-<ID>/`；Auto Writing 使用 `auto_writing/writing-<时间戳>-<ID>/`；Auto Design 使用任务索引中已登记的 `run_dir`。Auto Design 的 `workspace` 继续表示用户选择的项目根目录，用于定位机器指令和创建任务目录，不再作为 Codex 的执行目录。已有目录及任务编号保留，正式实验命令继续使用执行计划和运行器规定的工作目录。
 
-`python3 -m workbench` 启动独立网页入口及一个研究工作进程；入口在工作进程退出时仍保留首页、日志、启动与重启接口。研究工作进程内启动三个绑定到 `127.0.0.1` 临时端口的原模块 HTTP 服务，由入口按路径前缀转发请求。GET、HEAD、POST、PUT、DELETE、查询参数、上传请求体和二进制下载均由原模块处理；原 32 MB 请求上限保留。只在模块主页注入共享导航，生成的 HTML 报告维持原内容和相对资源路径。开发时可用 `python3 -m workbench.server` 直接运行工作进程，但此方式没有独立服务恢复入口。
+`python3 -m workbench` 启动独立网页入口及一个研究工作进程；入口在工作进程退出时仍保留首页、日志、启动与重启接口。研究工作进程内启动四个绑定到 `127.0.0.1` 临时端口的原模块 HTTP 服务，由入口按路径前缀转发请求。GET、HEAD、POST、PUT、DELETE、查询参数、上传请求体和二进制下载均由原模块处理；原 32 MB 请求上限保留。只在模块主页注入共享导航，生成的 HTML 报告维持原内容和相对资源路径。开发时可用 `python3 -m workbench.server` 直接运行工作进程，但此方式没有独立服务恢复入口。
 
 前端只为 API 和下载地址增加模块前缀，因此独立启动时仍使用原路径。桌面与 390px 窄屏均可使用统一导航和原模块侧栏。
 
@@ -110,8 +110,13 @@ PYTHONPATH=auto_search python3 -m pytest --import-mode=importlib tests auto_desi
 
 ## Auto Table 接入
 
-`auto_table` 分支在原三个模块之外新增 `/auto-table/`，沿用相同导航、灰白/青绿色视觉系统和任务式交互。主页提供第四个入口；其他模块的完整流程保持可用。表格任务独立管理，在页面中可以上传论文 ZIP 或实验数据，也可复制已有 Auto Writing 的 LaTeX ZIP / PDF 开始整理。
+`test-v1` 已合入 `auto_table` 分支，在原三个模块之外新增 `/auto-table/`，沿用相同导航、灰白/青绿色视觉系统和任务式交互。主页提供第四个入口；其他模块的完整流程保持可用。表格任务独立管理，在页面中可以上传论文 ZIP 或实验数据，也可复制已有 Auto Writing 的 LaTeX ZIP / PDF 开始整理。
 
 表格后台使用 `auto_table.application.Application`，复用原编译器配置，设计与复核提示词随代码版本化；不依赖安装 Paper2Table Skill。表格任务状态纳入 `/api/runtime` 的 `active_tables` 与 `idle`，服务重启时会停止本任务的 Codex/编译进程并保留可恢复的进度。
 
 源码、输入/输出目录、配置与 API 详见 [Auto Table](../auto_table/README.md)。工作台默认的表格状态目录为 `assets/output/workbench/auto_table/`。测试示例和实测验收项目与正常任务目录隔离，不自动填充网页示例任务。
+
+
+首页全流程已接入 AutoTable：写作完整完成后复制 LaTeX ZIP 和 PDF 到独立表格任务，整理、编译、逐页复核通过后才结束流程。最终下载入口指向 AutoTable，原写作源码保留。没有表格的论文保持源码不变并编译复核，不自动添加表格。编译失败复用源码；复核不通过会阻塞流程，点击继续开启同任务下一轮并携带复核意见。替换论文模板会回到写作，并重新交接新的表格任务；此前的表格产物保留。历史已完成的三阶段流程不会自动启动额外工作，可从其 Writing 任务新建流程接续。
+
+可选真实末段验收：`PYTHONPATH=src:auto_search .venv/bin/python3 -m workbench.tests.smoke_pipeline_live --serve`。它在独立的 `assets/output/pipeline-table-smoke/` 目录使用明确的调研、实验和写作工程响应，运行真实 TeX 编译及 AutoTable Codex 设计/复核，不启动科研 GPU。默认验收端口 8769；中断后使用 `--resume <原验收目录>`，保留原任务继续。

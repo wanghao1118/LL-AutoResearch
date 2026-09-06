@@ -1,6 +1,6 @@
 # AutoResearch 开发交接
 
-当前分支为 `auto_table`，已将 Auto Search、Auto Design、Auto Writing、Auto Table 整合到 [同一个工作台](http://127.0.0.1:8760/)。完整说明见 [workbench/README.md](../workbench/README.md)。启动命令为 `.venv/bin/python3 -m workbench --port 8760`，首页可明确启动三模块自动流程，模块页仍支持独立操作。设计、恢复语义与接口见 [前端全流程说明](frontend_workflow.md)。
+当前分支为 `test-v1`，已将 Auto Search、Auto Design、Auto Writing、Auto Table 整合到 [同一个工作台](http://127.0.0.1:8760/)。完整说明见 [workbench/README.md](../workbench/README.md)。启动命令为 `.venv/bin/python3 -m workbench --port 8760`，首页可明确启动四模块自动流程，模块页仍支持独立操作。设计、恢复语义与接口见 [前端全流程说明](frontend_workflow.md)。
 
 此前的独立 Auto Design 已提交并推送到 GitHub：`49da8d80c738259bad1fb7b88668b945606878b7`，远端分支 [auto_design](https://github.com/wanghao1118/LL-AutoResearch/tree/auto_design)。该分支基于 `main` 的 `01615b8`；旧 `autodesign` 分支 `af51260` 是科学规则和运行工具的迁移来源。以下 Round 1、Round 2 记录其重构过程，Round 3 记录三模块整合。
 
@@ -130,3 +130,19 @@
 **核心发现与失败原因。** 原 Skill 的论文工具只扫描主文件，系统上传常见分文件工程时会漏表；现已支持静态子文件和主文件选择。异步上传表单在等待 API 后必须保留 form 引用，否则不能可靠执行后续启动；已修正并通过真实网页上传。编译阶段需同步更新 manifest 的 PDF/编译器字段，避免产物已生成但记录仍显示未编译；已加入回归。负面复核、编译错误、取消和重启恢复均有持久化状态测试，未用样例状态替代实际后端。
 
 **下一步洞察。** 模块现可接续实际论文或实验结果进入使用。完整 LaTeX 解析并非当前范围：动态宏构造的引用需提供可直接解析的工程；特殊模板依赖仍需安装并选择相应编译器。独立复核是 Agent 判断，数值规格验证不是科学结论认证，原始输入与来源记录持续保留以便人工核对。未来应根据实际论文中的具体失败扩展支持，而不是预先堆叠兼容层。
+
+### Round 8：在 test-v1 接通 AutoTable 全流程（2026-09-06）
+
+**设计动机。** 用户要求切回 `test-v1`，确认 AutoTable 已接入，并把首页 Pipeline 的自动交接推进到表格整理和最终交付。原远端 `test-v1` 停留在 `49bb2d14`，本轮先将其快进到 `auto_table` 的 `599ed0dc`，再补齐第四阶段。
+
+**具体方案与关键参数。** Pipeline 顺序为 Search → Design → Writing → Table。原选题与实验科学门槛保持有效；写作步骤完整且仍有效后，复制 LaTeX ZIP 和已就绪 PDF，表格任务创建时一次保存 `pipeline_id` 与 `writing_project_id`。重启或交接中断后复用原任务。表格整理、编译、所有 PDF 页面的复核通过后才标记流程完成。暂停会停止本表格任务的当前步骤；编译失败复用源码，复核不通过时显式继续会在原任务开启下一轮并带入复核意见。无表格的论文保持源码不变，仍编译并复核。更新写作模板会回到 Writing，并重新交接后续表格任务，旧产物保留。历史三阶段已完成流程不自动追加执行。
+
+首页展示四个阶段、AutoTable 项目直达链接与当前表格诊断；最终下载入口指向表格任务。独立模块入口继续可用。另修复 Writing 的重编译交付：用修复后的源码重新生成 ZIP，使下载源码与新 PDF 一致。
+
+**结果数据。** 四模块完整回归 **313 passed、4 skipped、3 subtests passed**，耗时 86.58 秒；记录在 `assets/logs/pipeline-table/tests.xml`。之后修复 ZIP 同步问题，相关写作失败恢复回归 **1 passed**，记录在 `assets/logs/pipeline-table/recompile-regression.xml`。文件预览 Node 测试 **6 passed**。工程回归覆盖四模块交接、PDF 实际下载、编译失败复用、审阅否决阻止完成、同任务重新设计、模板重置与中断恢复不重复创建。
+
+**核心发现与失败原因。** 第一次真实末段验收使用的写作工程样例漏写 BibTeX 样式及引用命令，真实 latexmk 正确报错；补齐样例后恢复发现 PDF 更新而 ZIP 未更新，AutoTable 因而再次编译旧源码失败。该问题已修复并加入测试。失败现场保存在 `assets/output/pipeline-table-smoke/20260906-160650/`。后续验收从完整四阶段重新运行，以真实 TeX 与 AutoTable CLI 验证新交接；调研、实验和写作内容仍明确标为工程响应，不构成科研结果。
+
+**真实末段与当前运行现况。** 新验收 `flow-3131ac5af603` 已达到 `completed`，对应表格任务 `table-3d5404a73952` 的五步均完成、复核 `passed: true`。真实 latexmk 输出 2 页 PDF，独立 Codex 复核确认 Baseline 81.0、Candidate 85.0 与输入一致，标题、标签、正文和参考文献保留。最终汇总在 `assets/output/pipeline-table-smoke/20260906-161039/summary.json`；PDF、LaTeX ZIP、替换表格、逐页 PNG 和 `deliverables.zip` 位于该目录下 `assets/output/workbench/auto_table/table-3d5404a73952/attempt-1/`。浏览器已验证四阶段完成状态、AutoTable 项目直达、PDF 与源码下载入口。常用 `http://127.0.0.1:8760/` 已重载当前 `test-v1` 代码，四模块均已连接；正常任务列表没有混入工程样例。
+
+**下一步洞察。** 表格模块已经成为交付链路的一部分，后续真实论文使用应保留现有失败恢复与科学审批边界；任何正式科研效果仍需对应设计契约下的真实实验和独立审计，工程验收不替代这些证据。

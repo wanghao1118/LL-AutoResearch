@@ -37,7 +37,7 @@
     ["compile", "编译 PDF", "生成论文或独立表格预览"],
     ["review", "视觉与数据复核", "逐页检查排版与证据一致性"],
   ];
-  let selected = null;
+  let selected = new URLSearchParams(location.search).get("project");
   let project = null;
   let renderedAt = "";
   let refreshing = false;

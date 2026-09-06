@@ -252,7 +252,7 @@ def _load_replacements(directory: Path, tables: list[TableBlock]) -> dict[int, s
                 f"replacement {path.name} must preserve label {table.label!r}; found {found[0].label!r}"
             )
         replacements[table.index] = code
-    if not replacements:
+    if tables and not replacements:
         raise ManuscriptError(f"no matching .tex replacements found in {directory}")
     return replacements
 

@@ -21,7 +21,7 @@ python3 -m workbench --port 8760
 
 首页点击“新建全流程”可从研究方向开始，或接续已有调研、实验、写作任务。选题、方法审批、暂停、错误日志、局部重试和模板更换均可在网页处理。设计与恢复边界见 [全流程说明](docs/frontend_workflow.md)。
 
-Auto Table 支持上传论文 ZIP、上传结构化实验结果，或接续 Auto Writing 已生成的论文。保持原始数值、方法名与来源，提供模板规划、失败恢复、表格源码和 PDF 下载。完整说明见 [Auto Table](auto_table/README.md)。原三模块自动研究流程保持原有顺序，表格整理可独立启动。
+Auto Table 支持上传论文 ZIP、上传结构化实验结果，或接续 Auto Writing 已生成的论文。保持原始数值、方法名与来源，提供模板规划、失败恢复、表格源码和 PDF 下载。完整说明见 [Auto Table](auto_table/README.md)。首页全流程自动执行 Auto Search → Auto Design → Auto Writing → Auto Table，最后以表格编译与复核通过作为交付完成条件；四个模块也可独立启动。
 
 任务数据默认保存在 `assets/output/workbench/`。启动或切换页面不会自动启动研究任务。完整启动参数、功能范围和验收记录见 [工作台说明](workbench/README.md) 与 [开发记录](docs/README.md)。
 

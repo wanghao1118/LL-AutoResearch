@@ -1,4 +1,4 @@
-"""Persistent links between the three existing module task managers."""
+"""Persistent links between the four existing module task managers."""
 
 from __future__ import annotations
 
@@ -26,8 +26,9 @@ def encoded_file(path: Path) -> dict:
 
 
 class PipelineManager:
-    def __init__(self, root: Path, workspace: Path, design: TaskManager):
+    def __init__(self, root: Path, workspace: Path, design: TaskManager, table):
         self.root, self.workspace, self.design = root, workspace, design
+        self.table = table
         self.root.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
         self.stop_event = threading.Event()
@@ -113,6 +114,7 @@ class PipelineManager:
                 "search_run": None,
                 "design_id": None,
                 "writing_id": None,
+                "table_id": None,
                 "idea_id": None,
                 "status": "running",
                 "message": "已授权启动全流程。",
@@ -182,6 +184,8 @@ class PipelineManager:
                 _, data = writing.decode_zip_file(payload.get("template_file", {}))
                 if not writing.zipfile.is_zipfile(writing.io.BytesIO(data)):
                     raise ValueError("模板不是有效的 ZIP。")
+                if flow.get("table_id") and flow["table_id"] in self.table.jobs:
+                    raise ValueError("请先暂停并等待表格步骤停止。")
                 if flow.get("writing_id"):
                     project = writing.load_project(flow["writing_id"])
                     if writing.GENERATION_MANAGER.has_project_job(project["id"]):
@@ -199,6 +203,11 @@ class PipelineManager:
                 directory = self.root / flow_id
                 directory.mkdir(exist_ok=True)
                 (directory / "latex-template.zip").write_bytes(data)
+                if flow.get("table_id"):
+                    previous = self.table.load(flow["table_id"])
+                    previous["pipeline_id"] = None
+                    self.table.save(previous)
+                    flow.update(table_id=None, stage="writing")
                 self.update(flow, "paused", "模板已保存，点击继续使用新模板排版。")
             else:
                 raise ValueError("未知流程操作。")
@@ -217,7 +226,9 @@ class PipelineManager:
             task = self.design.get(flow["design_id"])
             if task["status"] in ACTIVE_STATUSES:
                 (self.design.interrupt if interrupt else self.design.pause)(task["id"])
-        elif flow.get("writing_id"):
+        elif flow["stage"] == "table" and flow.get("table_id"):
+            self.table.stop(flow["table_id"])
+        elif flow["stage"] == "writing" and flow.get("writing_id"):
             manager = writing.GENERATION_MANAGER
             manager.pause_auto(flow["writing_id"])
             if interrupt:
@@ -403,7 +414,22 @@ class PipelineManager:
             from auto_writing.web.automation import next_step
 
             if next_step(writing.load_project(flow["writing_id"])) is None:
-                self.update(flow, "completed", "调研、实验、论文与 PDF 全流程已完成。")
+                existing = next(
+                    (p for p in self.table.list() if p.get("pipeline_id") == flow["id"]), None
+                )
+                if not existing:
+                    existing = self.table.import_writing(
+                        {
+                            "project_id": flow["writing_id"],
+                            "pipeline_id": flow["id"],
+                            "requirements": "整理论文表格并复核完整 PDF；保持原始数值、均值和样本标准差、N/A、INCOMPLETE、引用与科学结论边界。",
+                        }
+                    )
+                flow.update(table_id=existing["id"], stage="table", retry=True)
+                self.update(
+                    flow, "running", "论文源码与 PDF 已复制交接 AutoTable，开始表格整理与复核。"
+                )
+                self.save(flow)
                 return
         if flow.get("retry") and state["status"] != "running":
             if (
@@ -423,3 +449,26 @@ class PipelineManager:
             self.update(flow, "running", state["message"])
         else:
             self.update(flow, "blocked", state.get("message", "写作已暂停，请继续当前步骤。"))
+
+    def advance_table(self, flow: dict) -> None:
+        project = self.table.load(flow["table_id"])
+        if project["status"] == "ready":
+            self.update(
+                flow,
+                "completed",
+                "论文表格已整理、编译并通过复核；最终 LaTeX 与 PDF 可在 AutoTable 下载。",
+            )
+        elif project["status"] == "running" or project["id"] in self.table.jobs:
+            flow["retry"] = False
+            self.update(flow, "running", project["message"])
+        elif flow.pop("retry", False):
+            self.table.start(
+                project["id"],
+                {
+                    "revise": project["status"] == "needs_revision",
+                    "feedback": flow.get("recovery_note", ""),
+                },
+            )
+            self.save(flow)
+        else:
+            self.update(flow, "blocked", project.get("error") or project["message"])

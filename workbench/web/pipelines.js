@@ -41,11 +41,11 @@
     if (key === detailKey || $("#pipeline-detail").contains(document.activeElement) && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
     const note = $("#recovery-note")?.value || "";
     detailKey = key;
-    const links = [f.search_run && `<a href="/auto-search/?run=${encodeURIComponent(f.search_run)}${f.idea_id ? `#${encodeURIComponent(f.idea_id)}` : ""}">调研与 Idea ↗</a>`, f.design_id && `<a href="/auto-design/?task=${encodeURIComponent(f.design_id)}">实验、日志与审批 ↗</a>`, f.writing_id && `<a href="/auto-writing/?project=${encodeURIComponent(f.writing_id)}">论文与下载 ↗</a>`].filter(Boolean).join("　");
+    const links = [f.search_run && `<a href="/auto-search/?run=${encodeURIComponent(f.search_run)}${f.idea_id ? `#${encodeURIComponent(f.idea_id)}` : ""}">调研与 Idea ↗</a>`, f.design_id && `<a href="/auto-design/?task=${encodeURIComponent(f.design_id)}">实验、日志与审批 ↗</a>`, f.writing_id && `<a href="/auto-writing/?project=${encodeURIComponent(f.writing_id)}">写作源码 ↗</a>`, f.table_id && `<a href="/auto-table/?project=${encodeURIComponent(f.table_id)}">最终表格、PDF 与下载 ↗</a>`].filter(Boolean).join("　");
     $("#pipeline-detail").innerHTML = `<h3>${esc(f.title)}</h3><small>${esc(f.id)} · ${esc(labels[f.status])}</small>
-      <ol class="flow-stages"><li class="${f.stage === "search" ? "current" : ""}">01 调研与选题</li><li class="${f.stage === "design" ? "current" : ""}">02 实验与审计</li><li class="${f.stage === "writing" ? "current" : ""}">03 论文与 PDF</li></ol>
+      <ol class="flow-stages"><li class="${f.stage === "search" ? "current" : ""}">01 调研与选题</li><li class="${f.stage === "design" ? "current" : ""}">02 实验与审计</li><li class="${f.stage === "writing" ? "current" : ""}">03 论文与 PDF</li><li class="${f.stage === "table" ? "current" : ""}">04 表格与复核</li></ol>
       <p class="flow-message ${esc(f.status)}">${esc(f.message)}</p><div class="button-row">${links}</div>
-      ${f.status !== "completed" ? `<label>恢复说明（可选，将传给当前步骤排查）<textarea id="recovery-note" rows="2" placeholder="描述遇到的问题或已经修复的环境；科学修改仍需专门审批">${esc(note)}</textarea></label><div class="button-row">${["running", "waiting_review"].includes(f.status) ? '<button type="button" data-flow-action="pause" class="secondary">暂停流程</button>' : '<button type="button" data-flow-action="resume">重试 / 继续当前步骤</button>'}<button type="button" data-flow-action="interrupt" class="secondary">停止卡住的控制器</button><button type="button" data-diagnostics class="secondary">查看错误与日志</button></div>` : '<p>全部阶段已完成，可打开论文下载 LaTeX 与 PDF。</p>'}
+      ${f.status !== "completed" ? `<label>恢复说明（可选，将传给当前步骤排查）<textarea id="recovery-note" rows="2" placeholder="描述遇到的问题或已经修复的环境；科学修改仍需专门审批">${esc(note)}</textarea></label><div class="button-row">${["running", "waiting_review"].includes(f.status) ? '<button type="button" data-flow-action="pause" class="secondary">暂停流程</button>' : '<button type="button" data-flow-action="resume">重试 / 继续当前步骤</button>'}<button type="button" data-flow-action="interrupt" class="secondary">停止卡住的控制器</button><button type="button" data-diagnostics class="secondary">查看错误与日志</button></div>` : `<p>${f.table_id ? "全部阶段已完成，可打开 AutoTable 下载最终 LaTeX 与 PDF。" : "历史写作流程已完成；可从已有写作任务新建流程接续 AutoTable。"}</p>`}
       ${f.status === "waiting_selection" ? '<div id="flow-candidates"></div>' : ""}
       ${f.status === "waiting_review" ? '<div id="flow-review"></div>' : ""}
       <div id="flow-diagnostics"></div>
@@ -75,6 +75,9 @@
         const dir = `assets/logs/${String(i + 1).padStart(4, "0")}-${a.action}`;
         return `<p>${esc(a.action)} · ${esc(a.started_at)}　<a target="_blank" rel="noopener" href="/auto-design/api/tasks/${f.design_id}/files/${dir}/stderr.log">错误日志</a>　<a target="_blank" rel="noopener" href="/auto-design/api/tasks/${f.design_id}/files/${dir}/events.jsonl">完整事件</a></p>`;
       }).join("");
+    } else if (f.stage === "table" && f.table_id) {
+      const project = await api(`/auto-table/api/projects/${f.table_id}`);
+      html = `<h4>表格诊断与复核</h4><pre>${esc(project.error || project.message)}</pre><pre>${esc(JSON.stringify(project.review, null, 2))}</pre><a href="/auto-table/?project=${encodeURIComponent(f.table_id)}">查看完整日志、修改要求与下载产物 ↗</a>`;
     } else if (f.writing_id) {
       const logs = await api(`/auto-writing/api/writings/${f.writing_id}/logs`);
       html = '<h4>写作调用与编译日志</h4>' + (logs.logs.map((l) => `<details><summary>${esc(l.name)}</summary><pre>${esc(l.text)}</pre></details>`).join("") || '<p>尚无调用日志。</p>');

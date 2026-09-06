@@ -2052,8 +2052,11 @@ class GenerationManager:
                                           process_callback=job.set_process)
             if job.cancelled.is_set():
                 raise RuntimeError("编译已停止，可再次编译。")
+            latex_zip = directory / "manuscript-latex.zip"
+            create_latex_zip(directory / "source", latex_zip)
             write_bytes_atomic(directory / "manuscript.pdf", pdf.read_bytes())
             project = load_project(job.project_id)
+            project["publication"]["latex_zip"] = {"name": latex_zip.name, "size": latex_zip.stat().st_size}
             project["publication"].update(status="ready", error=None, job_id=None, compiler=compiler,
                                            pdf={"name": "manuscript.pdf", "size": pdf.stat().st_size})
             save_project(project)

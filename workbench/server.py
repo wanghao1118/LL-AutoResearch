@@ -198,7 +198,9 @@ class Workbench:
         writing.migrate_existing_research_references()
         self.design = TaskManager(self.data_dir / "auto_design")
         self.table = TableApplication(self.workspace, self.data_dir / "auto_table")
-        self.pipeline = PipelineManager(self.data_dir / "pipelines", self.workspace, self.design)
+        self.pipeline = PipelineManager(
+            self.data_dir / "pipelines", self.workspace, self.design, self.table
+        )
         try:
             self.modules["auto-search"] = ThreadingHTTPServer(
                 ("127.0.0.1", 0), partial(search.AppHandler, directory=str(search.WEB_ROOT))
