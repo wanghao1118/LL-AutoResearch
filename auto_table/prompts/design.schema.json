@@ -1,0 +1,60 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "rationale": {
+      "type": "string"
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "config_json": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "config_json"
+        ]
+      }
+    },
+    "replacements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "content"
+        ]
+      }
+    },
+    "preamble": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "rationale",
+    "tables",
+    "replacements",
+    "preamble"
+  ]
+}

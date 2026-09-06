@@ -9,6 +9,7 @@ for (const [directory, modulePath] of [
   ["auto_search", "auto-search/"],
   ["auto_design", "auto-design/"],
   ["auto_writing", "auto-writing/"],
+  ["auto_table", "auto-table/"],
 ]) {
   test(`${directory}: file preview offers an HTTP entry without starting requests`, async () => {
     const sourceUrl = new URL(`../../${directory}/web/app.js`, import.meta.url);

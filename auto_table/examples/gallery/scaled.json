@@ -1,0 +1,8 @@
+{
+  "template": "scaled-variants",
+  "title": "Accuracy across architecture scale",
+  "label": "tab:scale-main",
+  "metrics": {"top1_error": {"label": "Top-1 error", "direction": "min", "unit": "%", "precision": 2}},
+  "selection": {"datasets": ["ImageNet"], "metrics": ["top1_error"]},
+  "context_notes": ["Family, depth, and parameter count are displayed as separate comparison fields."]
+}

@@ -21,3 +21,9 @@ assets/output/frontend_previews/
 assets/logs/workbench/
 assets/logs/frontend_previews/
 auto_writing/writing_runs/
+
+# Auto Table local inputs, generated outputs and execution logs.
+assets/input/auto_table/
+assets/output/auto_table/
+assets/logs/auto_table/
+auto_writing/tmp/

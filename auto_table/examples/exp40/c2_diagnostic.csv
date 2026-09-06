@@ -1,0 +1,5 @@
+evidence_status,method,dataset,metric,mean,sd,n,protocol,source_type
+INCOMPLETE - seed 67 diagnostic only,Global bypass,Seed 67 diagnostic,matched_stmt_error,2.391,,1,seeds 53/79 zero matched coverage; seed 67 only,formal_c2_v2
+INCOMPLETE - seed 67 diagnostic only,Global bypass,Seed 67 diagnostic,common_coverage,80.369,,1,seeds 53/79 zero matched coverage; seed 67 only,formal_c2_v2
+INCOMPLETE - seed 67 diagnostic only,Ours,Seed 67 diagnostic,matched_stmt_error,2.097,,1,seeds 53/79 zero matched coverage; seed 67 only,formal_c2_v2
+INCOMPLETE - seed 67 diagnostic only,Ours,Seed 67 diagnostic,common_coverage,80.369,,1,seeds 53/79 zero matched coverage; seed 67 only,formal_c2_v2

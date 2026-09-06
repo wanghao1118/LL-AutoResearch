@@ -443,3 +443,60 @@ def test_writing_cli_uses_isolated_config_by_default(tmp_path, monkeypatch):
     monkeypatch.setenv("CODEX_IGNORE_USER_CONFIG", "0")
     writing.invoke_codex_json(project, "smoke", "Engineering fixture", tmp_path / "schema.json")
     assert "--ignore-user-config" not in commands[-1]
+
+
+def test_table_upload_generate_preview_and_download_under_prefix(app):
+    from auto_table.tests.test_application import Runner, fake_compile, payload
+
+    app.table.runner = Runner()
+    app.table.compiler = fake_compile
+    project = json_request(app, "/auto-table/api/projects", payload(), status=201)
+    assert project["status"] == "idle"
+    assert json_request(app, "/auto-table/api/catalog")["templates"]
+    json_request(app, f"/auto-table/api/projects/{project['id']}/start", {}, status=202)
+    await_condition(lambda: app.table.load(project["id"])["status"] == "ready")
+    detail = json_request(app, f"/auto-table/api/projects/{project['id']}")
+    paths = [f["path"] for f in detail["artifacts"] if f["kind"] == "output"]
+    for name in ("attempt-1/tables/main/table.html", "attempt-1/deliverables.zip", "attempt-1/tables/main/preview.pdf"):
+        assert name in paths
+        status, headers, body = request(app, f"/auto-table/api/projects/{project['id']}/files/output/{name}")
+        assert status == 200 and body
+        if name.endswith("pdf"):
+            assert body.startswith(b"%PDF")
+    assert json_request(app, "/auto-writing/api/writings")["writings"] == []
+    assert json_request(app, "/auto-table/api/projects")["projects"][0]["id"] == project["id"]
+
+
+def test_table_imports_writing_zip_as_separate_immutable_input(app):
+    from auto_table.tests.test_application import manuscript_zip
+
+    paper = new_writing(app)
+    publication = writing.publication_dir(writing.safe_project_dir(paper["id"]))
+    publication.mkdir(parents=True, exist_ok=True)
+    source = manuscript_zip()
+    (publication / "manuscript-latex.zip").write_bytes(source)
+    listing = json_request(app, "/auto-table/api/writing-projects")
+    assert listing["projects"][0]["id"] == paper["id"]
+    table = json_request(app, "/auto-table/api/import-writing", {"project_id": paper["id"]}, status=201)
+    assert table["writing_project_id"] == paper["id"]
+    assert Path(table["inputs"][0]["path"]).read_bytes() == source
+    assert (publication / "manuscript-latex.zip").read_bytes() == source
+    assert table["status"] == "idle"
+
+
+def test_runtime_accounts_for_and_stops_table_job(app):
+    from auto_table.tests.test_application import payload
+
+    entered = threading.Event()
+    def blocking(prompt, schema, directory, logs, name, job):
+        entered.set()
+        job.cancelled.wait(3)
+        job.check()
+    app.table.runner = blocking
+    project = app.table.create(payload())
+    app.table.start(project["id"])
+    assert entered.wait(2)
+    assert app.runtime_state()["active_tables"] == [project["id"]]
+    assert not app.runtime_state()["idle"]
+    app.prepare_restart()
+    assert app.table.load(project["id"])["status"] == "paused"

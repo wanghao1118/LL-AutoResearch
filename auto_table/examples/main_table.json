@@ -1,0 +1,18 @@
+{
+  "template": "benchmark-wide",
+  "title": "Main results",
+  "label": "tab:main-results",
+  "claim": "AutoResearch improves predictive quality while reducing inference latency.",
+  "input": {"metric_columns": ["accuracy", "f1", "latency_ms"]},
+  "metrics": {
+    "accuracy": {"label": "Accuracy", "direction": "max", "unit": "%", "precision": 1, "priority": 1},
+    "f1": {"label": "F1", "direction": "max", "unit": "%", "precision": 1, "priority": 2},
+    "latency_ms": {"label": "Latency", "direction": "min", "unit": "ms", "precision": 1, "priority": 3}
+  },
+  "selection": {
+    "methods": ["ERM", "StrongAug", "AutoResearch"],
+    "datasets": ["CIFAR-10", "CIFAR-100"],
+    "metrics": ["accuracy", "f1", "latency_ms"]
+  },
+  "context_notes": ["All methods use the same backbone and evaluation protocol."]
+}

@@ -1,6 +1,6 @@
 # AutoResearch 开发交接
 
-当前分支为 `test-v1`，已将 Auto Search、Auto Design、Auto Writing 整合到 [同一个工作台](http://127.0.0.1:8760/)。完整说明见 [workbench/README.md](../workbench/README.md)。启动命令为 `.venv/bin/python3 -m workbench --port 8760`，首页可明确启动三模块自动流程，模块页仍支持独立操作。设计、恢复语义与接口见 [前端全流程说明](frontend_workflow.md)。
+当前分支为 `auto_table`，已将 Auto Search、Auto Design、Auto Writing、Auto Table 整合到 [同一个工作台](http://127.0.0.1:8760/)。完整说明见 [workbench/README.md](../workbench/README.md)。启动命令为 `.venv/bin/python3 -m workbench --port 8760`，首页可明确启动三模块自动流程，模块页仍支持独立操作。设计、恢复语义与接口见 [前端全流程说明](frontend_workflow.md)。
 
 此前的独立 Auto Design 已提交并推送到 GitHub：`49da8d80c738259bad1fb7b88668b945606878b7`，远端分支 [auto_design](https://github.com/wanghao1118/LL-AutoResearch/tree/auto_design)。该分支基于 `main` 的 `01615b8`；旧 `autodesign` 分支 `af51260` 是科学规则和运行工具的迁移来源。以下 Round 1、Round 2 记录其重构过程，Round 3 记录三模块整合。
 
@@ -109,3 +109,24 @@
 **当前执行现况。** 正式 <http://127.0.0.1:8760/> 已切换为独立入口，浏览器已实际操作空闲后台重启并恢复连接。切换前核对三模块任务列表为空；正常索引没有混入工程验收任务。没有启动远端 GPU、科研训练或正式评估，未提交或推送本轮代码。
 
 **下一步洞察。** 日常推进与常见任务/工作进程故障已可在前端处理。真实科研链路下一步应使用用户选择的研究方向和既定资源运行，保留失败证据；不以本轮工程 fixture 宣称研究效果。账号重新登录、机器关闭、独立入口自身未启动，以及真实 GPU/网络资源不可用仍属于外部条件，不能由一个静态网页保证消除。
+
+
+### Round 7：将 Paper2Table 重构为 Auto Table 系统模块（2026-09-06）
+
+**设计动机。** 用户希望把 `goya4140/AutoTable` 的 Skill 能力接入 AutoResearch，采用与现有三个模块一致的系统代码、前端形式和配色，并交付到 `auto_table` 分支。用户随后要求先保存当前 `test-v1` 工作；该批源码与文档已提交为 `49bb2d14` 并推送。输入、日志、实验输出和临时文件保留在本机。
+
+**具体方案与关键参数。** `auto_table` 从远端 `auto_writing` 的 `8aae3dc7` 创建，随后以 `b1bcb954` 合入已保存的 `test-v1` 三模块工作台。Paper2Table 引擎基于上游 `5c59714` / `0.11.0` 迁入 `auto_table/engine/`，保留 MIT 许可、七类模板、六类科学角色、原始观测与已报告汇总的区分。Skill 中的科学口径、保留数值/名称、层级与高亮规则转为 `prompts/system.md` 及设计/复核 Schema；运行不依赖安装 Skill。
+
+后端使用持久化项目与五个阶段：读取 → 设计 → 生成/替换 → 编译 → 独立复核。支持论文 ZIP（可附 PDF）、结构化结果文件，以及从 Auto Writing 复制已生成论文。论文扫描扩展到静态 `\input{...}` / `\include{...}` 子文件，可显式选择主 TeX；按全工程唯一替换名定位表格，保留 label 和非表格正文。CSV/TSV/JSON/JSONL 保留逐次来源、mean、sample SD 与 n。Codex 在独立任务目录中返回结构化计划；服务器执行确定性代码与 LaTeX 编译。每轮产物与日志独立保存，失败只重试未完成步骤；重新设计保留前轮。状态只有在真实 PDF 生成且复核覆盖全部渲染页后才为 `ready`。
+
+前端新增 `/auto-table/`、第四张首页卡片与所有模块的导航入口，使用同一灰白背景、青绿色操作、侧边项目列表、步骤进度、结果页和运行文件页。提供网页上传、要求修改、停止/继续、源码/PDF/ZIP 下载及实际 PDF 页面。Auto Table 任务纳入工作台的 `active_tables` / `idle` 和服务重启停止流程。原三个模块的自动研究顺序保持原有语义，表格整理可独立启动。
+
+**结果数据。** 四模块完整回归为 **311 passed、4 skipped、3 subtests passed**，耗时 74.14 秒；跳过项仍是缺少历史调研样本，SWIG 警告沿用现有环境。文件预览入口 Node 测试为 **6 passed**。后续编译 manifest 同步修复的局部回归为 **8 passed**；新业务代码 Ruff、JavaScript 语法和 diff 检查通过。
+
+真实 Codex 与 LaTeX 验收使用明确标注的合成工程数据，与正常任务索引隔离。数据制表任务 `table-c1266d26c97a` 从 16 个指标观测生成 8 个单元格，保留 2 次运行的均值和样本 SD，产出 1 页 PDF 并复核通过。论文任务 `table-45b1054e273a` 由网页实际上传 ZIP 启动，在 `sections/results.tex` 中发现、替换 2 张表格，保留正文、标签、数值与不确定性，产出 1 页论文 PDF 并复核通过。桌面布局、手机 390px 页面和文件下载入口已在浏览器核对；390px 文档宽度为 390px。上述为软件验收，不是本次产生的科学实验结果。
+
+可核查记录：`assets/logs/auto_table/full-tests.xml`、`targeted-tests.xml`、`live-results.json`、`live-manuscript.json`；真实任务输入、提示词、CLI 日志、表格、PDF 和复核记录在 `assets/output/auto_table/qa-workspace/assets/`。它们不提交 Git，也不填充正常使用的项目列表。可用 `auto_table/tests/smoke_live.py` 显式重跑真实工具验收。
+
+**核心发现与失败原因。** 原 Skill 的论文工具只扫描主文件，系统上传常见分文件工程时会漏表；现已支持静态子文件和主文件选择。异步上传表单在等待 API 后必须保留 form 引用，否则不能可靠执行后续启动；已修正并通过真实网页上传。编译阶段需同步更新 manifest 的 PDF/编译器字段，避免产物已生成但记录仍显示未编译；已加入回归。负面复核、编译错误、取消和重启恢复均有持久化状态测试，未用样例状态替代实际后端。
+
+**下一步洞察。** 模块现可接续实际论文或实验结果进入使用。完整 LaTeX 解析并非当前范围：动态宏构造的引用需提供可直接解析的工程；特殊模板依赖仍需安装并选择相应编译器。独立复核是 Agent 判断，数值规格验证不是科学结论认证，原始输入与来源记录持续保留以便人工核对。未来应根据实际论文中的具体失败扩展支持，而不是预先堆叠兼容层。

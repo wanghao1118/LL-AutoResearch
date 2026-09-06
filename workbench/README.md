@@ -106,3 +106,12 @@ PYTHONPATH=auto_search python3 -m pytest --import-mode=importlib tests auto_desi
 新增全流程入口、Search 同目录恢复、Design 控制器中断、Writing 自动推进与单独 PDF 重编译，以及独立网页服务恢复入口。设计、使用方式和实现映射见 [前端全流程说明](../docs/frontend_workflow.md)。
 
 全仓库回归为 **249 passed、4 skipped、3 subtests passed**；日志位于 `assets/logs/workbench/workflow-tests-final.log`。浏览器工程验收产物位于 `assets/logs/workbench/workflow-ui/`，正常任务索引保持独立。正式 8760 已运行新入口，可从首页恢复工作进程。没有运行真实科研实验。
+
+
+## Auto Table 接入
+
+`auto_table` 分支在原三个模块之外新增 `/auto-table/`，沿用相同导航、灰白/青绿色视觉系统和任务式交互。主页提供第四个入口；其他模块的完整流程保持可用。表格任务独立管理，在页面中可以上传论文 ZIP 或实验数据，也可复制已有 Auto Writing 的 LaTeX ZIP / PDF 开始整理。
+
+表格后台使用 `auto_table.application.Application`，复用原编译器配置，设计与复核提示词随代码版本化；不依赖安装 Paper2Table Skill。表格任务状态纳入 `/api/runtime` 的 `active_tables` 与 `idle`，服务重启时会停止本任务的 Codex/编译进程并保留可恢复的进度。
+
+源码、输入/输出目录、配置与 API 详见 [Auto Table](../auto_table/README.md)。工作台默认的表格状态目录为 `assets/output/workbench/auto_table/`。测试示例和实测验收项目与正常任务目录隔离，不自动填充网页示例任务。

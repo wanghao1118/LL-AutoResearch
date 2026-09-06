@@ -1,0 +1,25 @@
+group,method,dataset,seed,accuracy,latency_ms
+Baselines,CompactNet,D1,1,78.1,16.2
+Baselines,CompactNet,D1,2,78.3,15.8
+Baselines,CompactNet,D2,1,74.0,17.1
+Baselines,CompactNet,D2,2,74.4,16.9
+Baselines,CompactNet,D3,1,70.2,18.4
+Baselines,CompactNet,D3,2,70.0,18.0
+Baselines,LargeNet,D1,1,81.0,24.4
+Baselines,LargeNet,D1,2,81.4,24.0
+Baselines,LargeNet,D2,1,77.5,25.1
+Baselines,LargeNet,D2,2,77.7,24.9
+Baselines,LargeNet,D3,1,73.5,26.3
+Baselines,LargeNet,D3,2,73.9,26.1
+Baselines,Strong Baseline,D1,1,82.0,20.2
+Baselines,Strong Baseline,D1,2,82.4,19.8
+Baselines,Strong Baseline,D2,1,78.4,21.1
+Baselines,Strong Baseline,D2,2,78.8,20.9
+Baselines,Strong Baseline,D3,1,75.0,22.2
+Baselines,Strong Baseline,D3,2,75.4,21.8
+Ours,PaperTable-Ours,D1,1,84.5,17.9
+Ours,PaperTable-Ours,D1,2,84.7,17.7
+Ours,PaperTable-Ours,D2,1,81.0,18.7
+Ours,PaperTable-Ours,D2,2,81.4,18.5
+Ours,PaperTable-Ours,D3,1,78.2,19.3
+Ours,PaperTable-Ours,D3,2,78.4,19.1

@@ -1,0 +1,17 @@
+{
+  "template_id": "hierarchical-method-budget",
+  "description": "Separates model family, method variant, and resource budget before task metrics.",
+  "inspired_by": ["LoRA Table 2 (ICLR 2022)"],
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [
+      {"key": "model", "label": "Model", "suppress_repeat": true, "separator": true},
+      {"key": "method", "label": "Method"},
+      {"key": "trainable_params", "label": "# Trainable"}
+    ],
+    "column_order": ["dataset", "metric"]
+  },
+  "style": {
+    "row_separator_style": "space"
+  }
+}

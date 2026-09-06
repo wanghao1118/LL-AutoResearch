@@ -1,0 +1,33 @@
+{
+  "template": "family-banded-benchmark",
+  "table_type": "ablation",
+  "focal_methods": ["Full"],
+  "title": "Single-axis ablations",
+  "label": "tab:exp40-ablations",
+  "caption": "Single-axis ablation results.",
+  "description": "This table compares the Full configuration with five single-axis ablations across coordinate alignment, local attribute quality, statement error, inertia, and joint AOPC response. Its purpose is to show which registered components affect predictive and mechanism-facing behavior while retaining unfavorable or non-uniform outcomes.",
+  "input": {"dimensions": ["protocol", "source_type"]},
+  "metrics": {
+    "coord_top1": {"label": "Coord. top-1", "direction": "max", "precision": 3},
+    "local_attr_f1": {"label": "Local attr. F1", "direction": "max", "precision": 3},
+    "stmt_error": {"label": "Stmt. error", "direction": "min", "precision": 3},
+    "inertia": {"label": "Inertia", "direction": "min", "precision": 3},
+    "joint_aopc_gap": {"label": "Joint AOPC gap", "direction": "max", "precision": 3}
+  },
+  "selection": {
+    "datasets": ["Primary", "Mechanism"],
+    "metrics": ["coord_top1", "local_attr_f1", "stmt_error", "inertia", "joint_aopc_gap"]
+  },
+  "emphasis": {},
+  "style": {
+    "highlight_methods": ["Full"],
+    "fit_width": true,
+    "font_size": "footnotesize",
+    "tabcolsep": 2.7
+  },
+  "context_notes": [
+    "Values are reported mean ± sample standard deviation over seeds 17, 29, and 43.",
+    "Numerical best/second-best markers are omitted because the ablations do not provide uniform causal support.",
+    "All unfavorable ablation outcomes are retained."
+  ]
+}

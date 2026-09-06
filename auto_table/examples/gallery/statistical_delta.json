@@ -1,0 +1,30 @@
+{
+  "template": "benchmark-wide",
+  "title": "Main results with uncertainty and paired auxiliary deltas",
+  "label": "tab:statistical-delta",
+  "input": {"metric_columns": ["accuracy", "latency_ms"]},
+  "metrics": {
+    "accuracy": {"label": "Accuracy", "direction": "max", "unit": "%", "precision": 1},
+    "latency_ms": {"label": "Latency", "direction": "min", "unit": "ms", "precision": 1}
+  },
+  "selection": {
+    "datasets": ["D1", "D2", "D3"],
+    "metrics": ["accuracy", "latency_ms"]
+  },
+  "auxiliary": {
+    "delta": {
+      "baseline": {"method": "Strong Baseline"},
+      "targets": [{"method": "PaperTable-Ours"}],
+      "kind": "absolute",
+      "precision": 1
+    }
+  },
+  "style": {
+    "highlight_methods": ["PaperTable-Ours"],
+    "fit_width": true,
+    "highlight_color": "E8F1FF"
+  },
+  "context_notes": [
+    "Mean ± sample SD over two illustrative runs; parenthesized values compare PaperTable-Ours with Strong Baseline."
+  ]
+}

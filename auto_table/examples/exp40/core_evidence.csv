@@ -1,0 +1,34 @@
+group,method,dataset,metric,mean,sd,n,protocol,source_type
+Baselines and references,Global ViT,Acevedo,acevedo_wf1,87.107,1.557,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,MTL global,WBCAtt,attr_f1,87.020,1.972,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,MTL global,WBCAtt,local_attr_f1,87.193,1.895,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,MTL global,WBCAtt,stmt_error,2.719,0.309,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,MTL global,WBCAtt,stmt_coverage,82.099,1.407,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,MTL global,Acevedo,acevedo_wf1,87.480,1.564,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,MTL global,Dependency,joint_aopc_gap,0.820,0.841,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,High-res + attr auxiliary,WBCAtt,attr_f1,89.215,0.215,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,High-res + attr auxiliary,WBCAtt,local_attr_f1,89.405,0.381,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,High-res + attr auxiliary,WBCAtt,stmt_error,2.510,0.234,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,High-res + attr auxiliary,WBCAtt,stmt_coverage,84.886,0.953,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,High-res + attr auxiliary,Acevedo,acevedo_wf1,87.276,1.521,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,High-res + attr auxiliary,Dependency,joint_aopc_gap,5.589,0.674,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Direct combination,WBCAtt,attr_f1,88.978,0.054,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Direct combination,WBCAtt,local_attr_f1,89.324,0.434,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Direct combination,WBCAtt,stmt_error,2.193,0.222,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Direct combination,WBCAtt,stmt_coverage,84.004,0.550,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Direct combination,Acevedo,acevedo_wf1,89.973,1.257,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Direct combination,Dependency,joint_aopc_gap,6.474,0.046,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Sequential CBM,WBCAtt,attr_f1,89.138,0.336,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Sequential CBM,WBCAtt,local_attr_f1,89.660,0.135,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Sequential CBM,WBCAtt,stmt_error,2.297,0.060,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Sequential CBM,WBCAtt,stmt_coverage,83.730,0.640,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Sequential CBM,Acevedo,acevedo_wf1,84.218,0.494,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Sequential CBM,Dependency,joint_aopc_gap,9.598,0.675,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Official WBCAtt-R50,WBCAtt,attr_f1,89.897,0.142,3,seeds 17/29/43,formal_v1 M1
+Baselines and references,Official WBCAtt-R50,WBCAtt,local_attr_f1,89.887,0.158,3,seeds 17/29/43,formal_v1 M1
+Proposed method,Ours,WBCAtt,attr_f1,87.412,1.273,3,seeds 17/29/43,formal_v1 M1
+Proposed method,Ours,WBCAtt,local_attr_f1,88.560,0.581,3,seeds 17/29/43,formal_v1 M1
+Proposed method,Ours,WBCAtt,stmt_error,2.597,0.240,3,seeds 17/29/43,formal_v1 M1
+Proposed method,Ours,WBCAtt,stmt_coverage,80.588,2.590,3,seeds 17/29/43,formal_v1 M1
+Proposed method,Ours,Acevedo,acevedo_wf1,89.525,2.350,3,seeds 17/29/43,formal_v1 M1
+Proposed method,Ours,Dependency,joint_aopc_gap,10.047,2.929,3,seeds 17/29/43,formal_v1 M1

@@ -1,0 +1,9 @@
+{
+  "template": "transposed-benchmark",
+  "title": "Transfer across image benchmarks",
+  "label": "tab:transfer-main",
+  "input": {"metric_columns": ["accuracy"]},
+  "metrics": {"accuracy": {"label": "Accuracy", "direction": "max", "unit": "%", "precision": 2}},
+  "selection": {"metrics": ["accuracy"]},
+  "context_notes": ["Point estimates shown for layout demonstration; pre-training data is displayed above each system group."]
+}

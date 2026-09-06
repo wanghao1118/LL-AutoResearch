@@ -17,7 +17,7 @@ main { max-width: 1248px; margin: 0 auto; padding: 62px 40px 40px; }
 .workspace-heading { margin-bottom: 35px; }
 h1 { margin: 10px 0 13px; font-size: 30px; line-height: 1.4; }
 .workspace-heading p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
-.module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.module-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .module-card { display: flex; flex-direction: column; min-width: 0; padding: 25px 25px 0; border: 1px solid var(--line-strong); border-radius: 6px; background: white; }
 .module-card:hover { border-color: var(--teal); }
 .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }

@@ -1,0 +1,21 @@
+method,pretrain_data,dataset,accuracy
+Ours-H,JFT-300M,ImageNet,88.55
+Ours-L,JFT-300M,ImageNet,87.76
+Ours-L,ImageNet-21k,ImageNet,85.30
+BiT-L,JFT-300M,ImageNet,87.54
+Ours-H,JFT-300M,CIFAR-10,99.50
+Ours-L,JFT-300M,CIFAR-10,99.42
+Ours-L,ImageNet-21k,CIFAR-10,99.15
+BiT-L,JFT-300M,CIFAR-10,99.37
+Ours-H,JFT-300M,CIFAR-100,94.55
+Ours-L,JFT-300M,CIFAR-100,93.90
+Ours-L,ImageNet-21k,CIFAR-100,93.25
+BiT-L,JFT-300M,CIFAR-100,93.51
+Ours-H,JFT-300M,Oxford Pets,97.56
+Ours-L,JFT-300M,Oxford Pets,97.32
+Ours-L,ImageNet-21k,Oxford Pets,94.67
+BiT-L,JFT-300M,Oxford Pets,96.62
+Ours-H,JFT-300M,VTAB,77.63
+Ours-L,JFT-300M,VTAB,76.28
+Ours-L,ImageNet-21k,VTAB,72.72
+BiT-L,JFT-300M,VTAB,76.29

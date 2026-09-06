@@ -1,0 +1,10 @@
+{
+  "template_id": "quality-efficiency",
+  "description": "Places predictive quality and measured cost in explicit metric blocks instead of a single composite score.",
+  "inspired_by": ["Attention Is All You Need Table 2 (NeurIPS 2017)", "FlashAttention Tables 2–3 (NeurIPS 2022)"],
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [{"key": "method", "label": "Method"}],
+    "column_order": ["metric", "dataset"]
+  }
+}

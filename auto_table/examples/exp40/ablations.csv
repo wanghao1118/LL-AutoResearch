@@ -1,0 +1,31 @@
+group,method,dataset,metric,mean,sd,n,protocol,source_type
+Reference configuration,Full,Primary,coord_top1,98.338,0.031,3,seeds 17/29/43,formal_v1 M1
+Reference configuration,Full,Primary,local_attr_f1,88.560,0.581,3,seeds 17/29/43,formal_v1 M1
+Reference configuration,Full,Primary,stmt_error,2.597,0.240,3,seeds 17/29/43,formal_v1 M1
+Reference configuration,Full,Mechanism,inertia,4.830,4.292,3,seeds 17/29/43,formal_v1 M1
+Reference configuration,Full,Mechanism,joint_aopc_gap,10.047,2.929,3,seeds 17/29/43,formal_v1 M1
+Single-axis ablations,No coordinate alignment,Primary,coord_top1,59.625,1.007,3,seeds 17/29/43,formal_v1 AB1
+Single-axis ablations,No coordinate alignment,Primary,local_attr_f1,88.809,0.843,3,seeds 17/29/43,formal_v1 AB1
+Single-axis ablations,No coordinate alignment,Primary,stmt_error,2.355,0.264,3,seeds 17/29/43,formal_v1 AB1
+Single-axis ablations,No coordinate alignment,Mechanism,inertia,5.314,2.035,3,seeds 17/29/43,formal_v1 AB1
+Single-axis ablations,No coordinate alignment,Mechanism,joint_aopc_gap,9.073,1.574,3,seeds 17/29/43,formal_v1 AB1
+Single-axis ablations,Pooled local interface,Primary,coord_top1,98.065,0.082,3,seeds 17/29/43,formal_v1 AB2
+Single-axis ablations,Pooled local interface,Primary,local_attr_f1,88.453,0.219,3,seeds 17/29/43,formal_v1 AB2
+Single-axis ablations,Pooled local interface,Primary,stmt_error,2.120,0.186,3,seeds 17/29/43,formal_v1 AB2
+Single-axis ablations,Pooled local interface,Mechanism,inertia,18.857,2.089,3,seeds 17/29/43,formal_v1 AB2
+Single-axis ablations,Pooled local interface,Mechanism,joint_aopc_gap,0.665,0.396,3,seeds 17/29/43,formal_v1 AB2
+Single-axis ablations,Global bypass,Primary,coord_top1,98.101,0.108,3,seeds 17/29/43,formal_v1 AB3
+Single-axis ablations,Global bypass,Primary,local_attr_f1,88.703,0.240,3,seeds 17/29/43,formal_v1 AB3
+Single-axis ablations,Global bypass,Primary,stmt_error,2.426,0.159,3,seeds 17/29/43,formal_v1 AB3
+Single-axis ablations,Global bypass,Mechanism,inertia,8.139,3.085,3,seeds 17/29/43,formal_v1 AB3
+Single-axis ablations,Global bypass,Mechanism,joint_aopc_gap,6.427,2.044,3,seeds 17/29/43,formal_v1 AB3
+Single-axis ablations,Independent output projections,Primary,coord_top1,98.116,0.099,3,seeds 17/29/43,formal_v1 AB4
+Single-axis ablations,Independent output projections,Primary,local_attr_f1,88.933,0.310,3,seeds 17/29/43,formal_v1 AB4
+Single-axis ablations,Independent output projections,Primary,stmt_error,2.417,0.159,3,seeds 17/29/43,formal_v1 AB4
+Single-axis ablations,Independent output projections,Mechanism,inertia,7.481,3.141,3,seeds 17/29/43,formal_v1 AB4
+Single-axis ablations,Independent output projections,Mechanism,joint_aopc_gap,9.869,2.426,3,seeds 17/29/43,formal_v1 AB4
+Single-axis ablations,No intervention consistency,Primary,coord_top1,98.357,0.012,3,seeds 17/29/43,formal_v1 AB5
+Single-axis ablations,No intervention consistency,Primary,local_attr_f1,88.567,0.639,3,seeds 17/29/43,formal_v1 AB5
+Single-axis ablations,No intervention consistency,Primary,stmt_error,2.421,0.255,3,seeds 17/29/43,formal_v1 AB5
+Single-axis ablations,No intervention consistency,Mechanism,inertia,5.509,1.389,3,seeds 17/29/43,formal_v1 AB5
+Single-axis ablations,No intervention consistency,Mechanism,joint_aopc_gap,9.923,2.101,3,seeds 17/29/43,formal_v1 AB5

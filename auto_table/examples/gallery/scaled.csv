@@ -1,0 +1,8 @@
+family,method,depth,params,dataset,metric,value
+Prior,VGG-16,16,138M,ImageNet,top1_error,28.07
+Prior,GoogLeNet,22,6.8M,ImageNet,top1_error,26.70
+Plain,PlainNet-34,34,21.8M,ImageNet,top1_error,28.54
+ResNet,ResNet-34,34,21.8M,ImageNet,top1_error,24.19
+ResNet,ResNet-50,50,25.6M,ImageNet,top1_error,22.85
+ResNet,ResNet-101,101,44.5M,ImageNet,top1_error,21.75
+ResNet,ResNet-152,152,60.2M,ImageNet,top1_error,21.43

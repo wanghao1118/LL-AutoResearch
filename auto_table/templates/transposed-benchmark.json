@@ -1,0 +1,11 @@
+{
+  "template_id": "transposed-benchmark",
+  "description": "Benchmarks in rows and systems in columns; best when benchmarks outnumber compared systems.",
+  "inspired_by": ["Vision Transformer Table 2 (ICLR 2021)"],
+  "layout": {
+    "orientation": "datasets_rows",
+    "row_fields": [{"key": "dataset", "label": "Benchmark"}],
+    "column_fields": [{"key": "method", "label": "System"}],
+    "column_group_field": "pretrain_data"
+  }
+}

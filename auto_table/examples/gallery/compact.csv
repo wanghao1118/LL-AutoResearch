@@ -1,0 +1,13 @@
+regime,method,dataset,metric,value
+Prompting,Standard,HotpotQA,em,28.7
+Prompting,Standard,FEVER,accuracy,57.1
+Prompting,Chain-of-thought,HotpotQA,em,29.4
+Prompting,Chain-of-thought,FEVER,accuracy,56.3
+Acting,Act,HotpotQA,em,25.7
+Acting,Act,FEVER,accuracy,58.9
+Acting,ReAct,HotpotQA,em,27.4
+Acting,ReAct,FEVER,accuracy,60.9
+Combined,ReAct + CoT-SC,HotpotQA,em,35.1
+Combined,ReAct + CoT-SC,FEVER,accuracy,62.0
+Supervised,Supervised SOTA,HotpotQA,em,67.5
+Supervised,Supervised SOTA,FEVER,accuracy,89.5

@@ -1,0 +1,46 @@
+{
+  "template": "family-banded-benchmark",
+  "title": "Main results on WISE and HumanitiesBench",
+  "label": "tab:family-banded-main",
+  "input": {
+    "metric_columns": [
+      "culture", "time", "space", "biology", "physics", "chemistry",
+      "art", "ancient", "asia", "europe", "north_america", "oceania",
+      "south_america", "avg"
+    ]
+  },
+  "metrics": {
+    "culture": {"label": "Cul.", "direction": "max", "precision": 2},
+    "time": {"label": "Time", "direction": "max", "precision": 2},
+    "space": {"label": "Space", "direction": "max", "precision": 2},
+    "biology": {"label": "Bio.", "direction": "max", "precision": 2},
+    "physics": {"label": "Phys.", "direction": "max", "precision": 2},
+    "chemistry": {"label": "Chem.", "direction": "max", "precision": 2},
+    "art": {"label": "Art", "direction": "max", "precision": 2},
+    "ancient": {"label": "Anc.", "direction": "max", "precision": 2},
+    "asia": {"label": "Asia", "direction": "max", "precision": 2},
+    "europe": {"label": "Eur.", "direction": "max", "precision": 2},
+    "north_america": {"label": "N.A.", "direction": "max", "precision": 2},
+    "oceania": {"label": "Oce.", "direction": "max", "precision": 2},
+    "south_america": {"label": "S.A.", "direction": "max", "precision": 2},
+    "avg": {"label": "Avg.", "direction": "max", "precision": 2}
+  },
+  "selection": {
+    "datasets": ["WISE", "HumanitiesBench"],
+    "metrics": [
+      "culture", "time", "space", "biology", "physics", "chemistry",
+      "art", "ancient", "asia", "europe", "north_america", "oceania",
+      "south_america", "avg"
+    ]
+  },
+  "comparison": {
+    "rank_exclude_groups": ["Frontier Proprietary Models"],
+    "rank_scope_label": "non-proprietary systems"
+  },
+  "style": {
+    "highlight_methods": ["PaperTable-Agent"]
+  },
+  "context_notes": [
+    "Illustrative values for layout testing; ranking excludes the proprietary reference block."
+  ]
+}

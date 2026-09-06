@@ -1,0 +1,28 @@
+{
+  "template": "family-banded-benchmark",
+  "table_type": "analysis",
+  "title": "Paired failure taxonomy",
+  "label": "tab:exp40-failure-taxonomy",
+  "caption": "Paired failure taxonomy.",
+  "description": "This table reports the rates and counts of recovered, unrecovered, and side-effect outcomes across 5,247 eligible pairs, together with the recovery-minus-side-effect balance. Its purpose is to evaluate the registered benefit-harm criterion and keep adverse outcomes visible in the paper's evidence record.",
+  "input": {"dimensions": ["protocol", "source_type"]},
+  "metrics": {
+    "rate_or_difference": {"label": "Rate / difference", "direction": "max", "show_direction": false, "precision": 3},
+    "count": {"label": "Count", "direction": "max", "show_direction": false, "precision": 0}
+  },
+  "selection": {
+    "datasets": ["Eligible outcomes"],
+    "metrics": ["rate_or_difference", "count"]
+  },
+  "emphasis": {},
+  "style": {
+    "missing_marker": "N/A",
+    "fit_width": false,
+    "font_size": "small"
+  },
+  "context_notes": [
+    "The taxonomy covers 5,247 eligible paired outcomes.",
+    "Category values are rates in percent; recovery minus side effect is a percentage-point difference.",
+    "Side effects exceed recoveries, so the registered benefit-over-harm criterion is missed."
+  ]
+}

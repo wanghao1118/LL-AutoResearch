@@ -1,0 +1,8 @@
+group,method,dataset,metric,mean,sd,n,protocol,source_type
+Paired outcomes,Recovered,Eligible outcomes,rate_or_difference,25.443,,1,5247 eligible paired outcomes,formal_v1 AN2
+Paired outcomes,Recovered,Eligible outcomes,count,1335,,1,5247 eligible paired outcomes,formal_v1 AN2
+Paired outcomes,Unrecovered,Eligible outcomes,rate_or_difference,32.952,,1,5247 eligible paired outcomes,formal_v1 AN2
+Paired outcomes,Unrecovered,Eligible outcomes,count,1729,,1,5247 eligible paired outcomes,formal_v1 AN2
+Paired outcomes,Side effect,Eligible outcomes,rate_or_difference,41.605,,1,5247 eligible paired outcomes,formal_v1 AN2
+Paired outcomes,Side effect,Eligible outcomes,count,2183,,1,5247 eligible paired outcomes,formal_v1 AN2
+Net balance,Recovery - side effect,Eligible outcomes,rate_or_difference,-16.162,,1,5247 eligible paired outcomes,formal_v1 AN2

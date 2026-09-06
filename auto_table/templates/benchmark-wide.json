@@ -1,0 +1,10 @@
+{
+  "template_id": "benchmark-wide",
+  "description": "Methods in rows and benchmark × metric in columns; suited to dense multi-task main results.",
+  "inspired_by": ["BERT Table 1 (NAACL 2019)", "LoRA Table 2 (ICLR 2022)"],
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [{"key": "method", "label": "Method"}],
+    "column_order": ["dataset", "metric"]
+  }
+}

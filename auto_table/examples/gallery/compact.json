@@ -1,0 +1,11 @@
+{
+  "template": "compact-regime-comparison",
+  "title": "Reasoning and acting across knowledge tasks",
+  "label": "tab:reasoning-main",
+  "metrics": {
+    "em": {"label": "EM", "direction": "max", "precision": 1},
+    "accuracy": {"label": "Accuracy", "direction": "max", "precision": 1}
+  },
+  "selection": {"datasets": ["HotpotQA", "FEVER"], "metrics": ["em", "accuracy"]},
+  "context_notes": ["The supervised system is an oracle-style reference and is separated from prompting regimes."]
+}

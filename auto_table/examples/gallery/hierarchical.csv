@@ -1,0 +1,21 @@
+model,method,trainable_params,dataset,seed,accuracy
+RoBERTa-base,Full FT,125M,MNLI,1,87.4
+RoBERTa-base,Full FT,125M,MNLI,2,87.8
+RoBERTa-base,Full FT,125M,SST-2,1,94.6
+RoBERTa-base,Full FT,125M,SST-2,2,95.0
+RoBERTa-base,Adapter,0.9M,MNLI,1,87.0
+RoBERTa-base,Adapter,0.9M,MNLI,2,87.2
+RoBERTa-base,Adapter,0.9M,SST-2,1,93.9
+RoBERTa-base,Adapter,0.9M,SST-2,2,94.3
+RoBERTa-base,LoRA,0.3M,MNLI,1,87.7
+RoBERTa-base,LoRA,0.3M,MNLI,2,87.9
+RoBERTa-base,LoRA,0.3M,SST-2,1,94.7
+RoBERTa-base,LoRA,0.3M,SST-2,2,95.1
+RoBERTa-large,Full FT,355M,MNLI,1,90.0
+RoBERTa-large,Full FT,355M,MNLI,2,90.4
+RoBERTa-large,Full FT,355M,SST-2,1,96.2
+RoBERTa-large,Full FT,355M,SST-2,2,96.6
+RoBERTa-large,LoRA,0.8M,MNLI,1,90.4
+RoBERTa-large,LoRA,0.8M,MNLI,2,90.8
+RoBERTa-large,LoRA,0.8M,SST-2,1,96.3
+RoBERTa-large,LoRA,0.8M,SST-2,2,96.7

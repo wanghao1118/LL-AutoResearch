@@ -1,0 +1,11 @@
+{
+  "template": "quality-efficiency",
+  "title": "Translation quality and training cost",
+  "label": "tab:quality-cost",
+  "metrics": {
+    "bleu": {"label": "BLEU", "direction": "max", "precision": 2, "priority": 1},
+    "training_flops": {"label": "Training cost", "direction": "min", "unit": "10^18 FLOPs", "precision": 1, "priority": 2}
+  },
+  "selection": {"metrics": ["bleu", "training_flops"], "datasets": ["EN-DE", "EN-FR"]},
+  "context_notes": ["Missing costs remain unreported; quality and compute are not collapsed into a composite score."]
+}

@@ -1,0 +1,16 @@
+{
+  "template_id": "compact-regime-comparison",
+  "description": "Compact two-to-four-task comparison with explicit method regimes and an optional oracle/supervised block.",
+  "inspired_by": ["ReAct Table 1 (ICLR 2023)"],
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [
+      {"key": "regime", "label": "Regime", "suppress_repeat": true, "separator": true},
+      {"key": "method", "label": "Method"}
+    ],
+    "column_order": ["dataset", "metric"]
+  },
+  "style": {
+    "row_separator_style": "space"
+  }
+}

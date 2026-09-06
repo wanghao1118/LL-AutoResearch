@@ -1,0 +1,36 @@
+{
+  "template": "benchmark-wide",
+  "table_type": "main_benchmark",
+  "focal_methods": ["Ours"],
+  "title": "Core evidence on WBCAtt and Acevedo",
+  "label": "tab:exp40-core-evidence",
+  "caption": "Main results on WBCAtt and Acevedo.",
+  "description": "This table compares Ours with six baseline and reference systems on WBCAtt attribute and statement metrics, Acevedo weighted F1, and intervention-dependency response. Its purpose is to provide the main quantitative evidence for assessing predictive performance, statement behavior, and decision response under the shared three-seed protocol.",
+  "input": {"dimensions": ["protocol", "source_type"]},
+  "metrics": {
+    "attr_f1": {"label": "Attr. F1", "direction": "max", "precision": 3},
+    "local_attr_f1": {"label": "Local attr. F1", "direction": "max", "precision": 3},
+    "stmt_error": {"label": "Stmt. error", "direction": "min", "precision": 3},
+    "stmt_coverage": {"label": "Stmt. coverage", "direction": "max", "precision": 3},
+    "acevedo_wf1": {"label": "Weighted F1", "direction": "max", "precision": 3},
+    "joint_aopc_gap": {"label": "Joint AOPC gap", "direction": "max", "precision": 3}
+  },
+  "selection": {
+    "datasets": ["WBCAtt", "Acevedo", "Dependency"],
+    "metrics": ["attr_f1", "local_attr_f1", "stmt_error", "stmt_coverage", "acevedo_wf1", "joint_aopc_gap"]
+  },
+  "style": {
+    "highlight_methods": ["Ours"],
+    "missing_marker": "N/A",
+    "fit_width": true,
+    "font_size": "scriptsize",
+    "tabcolsep": 2.4
+  },
+  "context_notes": [
+    "Values are reported mean ± sample standard deviation over seeds 17, 29, and 43.",
+    "N/A denotes an unsupported method-output contract, not zero.",
+    "Best and second-best available results are bolded and underlined; the proposed method is shaded.",
+    "C1 is mixed; C3 has directional support but remains mixed because registered margins and harm balance are unfavorable.",
+    "Dependency measures decision response and must not be interpreted as medical localization evidence."
+  ]
+}

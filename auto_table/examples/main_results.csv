@@ -1,0 +1,13 @@
+group,method,dataset,seed,accuracy,f1,latency_ms
+Baselines,ERM,CIFAR-10,1,91.2,90.8,12.4
+Baselines,ERM,CIFAR-10,2,91.6,91.0,12.1
+Baselines,StrongAug,CIFAR-10,1,92.0,91.7,14.8
+Baselines,StrongAug,CIFAR-10,2,92.2,91.9,14.5
+Ours,AutoResearch,CIFAR-10,1,93.1,92.7,10.2
+Ours,AutoResearch,CIFAR-10,2,93.3,92.9,10.0
+Baselines,ERM,CIFAR-100,1,72.4,71.8,12.6
+Baselines,ERM,CIFAR-100,2,72.8,72.0,12.3
+Baselines,StrongAug,CIFAR-100,1,74.1,73.5,15.0
+Baselines,StrongAug,CIFAR-100,2,74.3,73.7,14.7
+Ours,AutoResearch,CIFAR-100,1,76.0,75.4,10.4
+Ours,AutoResearch,CIFAR-100,2,76.2,75.6,10.1

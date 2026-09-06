@@ -1,0 +1,32 @@
+{
+  "template": "benchmark-wide",
+  "table_type": "diagnostic",
+  "title": "Incomplete C2 matched-coverage diagnostic",
+  "label": "tab:exp40-c2-diagnostic",
+  "caption": "Matched-coverage diagnostic for C2.",
+  "description": "This table compares Global bypass and Ours on matched statement error and common coverage for diagnostic seed 67. Its purpose is to document the incomplete C2 measurement without treating seed 67 as a formal three-seed aggregate; seeds 53 and 79 have no matched nucleus-shape coverage.",
+  "input": {"dimensions": ["evidence_status", "protocol", "source_type"]},
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [
+      {"key": "evidence_status", "label": "Evidence status", "suppress_repeat": true},
+      {"key": "method", "label": "Method"}
+    ],
+    "column_order": ["dataset", "metric"]
+  },
+  "metrics": {
+    "matched_stmt_error": {"label": "Matched stmt. error", "direction": "min", "precision": 3},
+    "common_coverage": {"label": "Common coverage", "direction": "max", "unit": "%", "precision": 3}
+  },
+  "selection": {
+    "datasets": ["Seed 67 diagnostic"],
+    "metrics": ["matched_stmt_error", "common_coverage"]
+  },
+  "emphasis": {},
+  "style": {"fit_width": true, "font_size": "footnotesize"},
+  "context_notes": [
+    "This table is a limitation/diagnostic artifact, not a formal three-seed result.",
+    "Seeds 53 and 79 have zero matched nucleus-shape coverage; seed 67 is diagnostic only.",
+    "The registered 2.0 pp C2 decision effect is not evaluable, and unavailable seeds are not encoded as zero."
+  ]
+}

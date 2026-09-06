@@ -1,0 +1,15 @@
+group,method,dataset,metric,value
+Single model,GNMT + RL,EN-DE,bleu,24.60
+Single model,GNMT + RL,EN-FR,bleu,39.92
+Single model,GNMT + RL,EN-DE,training_flops,23.0
+Single model,GNMT + RL,EN-FR,training_flops,140.0
+Single model,ConvS2S,EN-DE,bleu,25.16
+Single model,ConvS2S,EN-FR,bleu,40.46
+Single model,ConvS2S,EN-DE,training_flops,9.6
+Single model,ConvS2S,EN-FR,training_flops,150.0
+Ours,Transformer base,EN-DE,bleu,27.30
+Ours,Transformer base,EN-FR,bleu,38.10
+Ours,Transformer base,EN-DE,training_flops,3.3
+Ours,Transformer big,EN-DE,bleu,28.40
+Ours,Transformer big,EN-FR,bleu,41.80
+Ours,Transformer big,EN-DE,training_flops,23.0

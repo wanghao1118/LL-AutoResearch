@@ -1,0 +1,9 @@
+{
+  "template": "hierarchical-method-budget",
+  "title": "Parameter-efficient adaptation",
+  "label": "tab:peft-main",
+  "input": {"metric_columns": ["accuracy"]},
+  "metrics": {"accuracy": {"label": "Accuracy", "direction": "max", "unit": "%", "precision": 1}},
+  "selection": {"datasets": ["MNLI", "SST-2"], "metrics": ["accuracy"]},
+  "context_notes": ["Mean ± sample SD over two illustrative runs; all methods use the same evaluation protocol."]
+}

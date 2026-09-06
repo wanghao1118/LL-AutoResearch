@@ -1,0 +1,22 @@
+{
+  "template_id": "family-banded-benchmark",
+  "description": "Dense multi-benchmark matrix with full-width method-family bands, scoped ranking, and an optional highlighted focal method.",
+  "inspired_by": [
+    "Visual Instruction Tuning Table 7 (NeurIPS 2023)",
+    "BLIP-2 Tables 1-2 (ICML 2023)",
+    "ToolArtist Table 1 (arXiv 2026)"
+  ],
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [{"key": "method", "label": "Method"}],
+    "column_order": ["dataset", "metric"]
+  },
+  "style": {
+    "row_group_style": "band",
+    "group_band_color": "EFEFEF",
+    "highlight_color": "E8F1FF",
+    "fit_width": true,
+    "font_size": "scriptsize",
+    "tabcolsep": 2.5
+  }
+}

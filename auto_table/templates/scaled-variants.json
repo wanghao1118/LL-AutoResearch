@@ -1,0 +1,18 @@
+{
+  "template_id": "scaled-variants",
+  "description": "Makes architecture family, depth/scale, and parameter count separate comparison fields.",
+  "inspired_by": ["ResNet Tables 3 and 6 (CVPR 2016)", "MAE Table 3 (CVPR 2022)"],
+  "layout": {
+    "orientation": "methods_rows",
+    "row_fields": [
+      {"key": "family", "label": "Family", "suppress_repeat": true, "separator": true},
+      {"key": "method", "label": "Variant"},
+      {"key": "depth", "label": "Depth"},
+      {"key": "params", "label": "# Params"}
+    ],
+    "column_order": ["dataset", "metric"]
+  },
+  "style": {
+    "row_separator_style": "space"
+  }
+}
