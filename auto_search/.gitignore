@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+ideas/
+research_runs/
+web/data/
+server.stdout.log
+server.stderr.log
+*.tmp

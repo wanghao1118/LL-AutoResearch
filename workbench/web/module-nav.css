@@ -1,0 +1,15 @@
+.module-nav { display: flex; align-items: center; gap: 5px; }
+.module-nav a { display: flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 13px; border: 1px solid transparent; border-radius: 5px; color: #66747b; font: 600 11px/1.4 Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif; text-decoration: none; white-space: nowrap; }
+.module-nav a:hover { background: #eef1f2; color: #172126; text-decoration: none; }
+.module-nav a[aria-current="page"] { border-color: #c7ded8; background: #e3f3ef; color: #087d70; }
+.module-nav a:focus-visible { outline: 2px solid #087d70; outline-offset: 2px; }
+.workbench-module .topbar { gap: 16px; }
+
+@media (max-width: 760px) {
+  .workbench-module { --topbar: 108px; }
+  .workbench-module .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 56px 42px; gap: 0 12px; height: var(--topbar); padding: 4px 14px 6px; }
+  .workbench-module .topbar .brand { grid-column: 1; grid-row: 1; }
+  .workbench-module .topbar .mobile-sidebar-toggle { grid-column: 2; grid-row: 1; }
+  .workbench-module .module-nav { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: space-between; gap: 2px; }
+  .module-nav a { flex: 1; padding: 0 7px; font-size: 10px; }
+}

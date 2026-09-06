@@ -59,7 +59,7 @@ To run in the foreground, omit `-Detached`. On macOS or Linux, or when using a s
 interpreter:
 
 ```bash
-python auto_writing/web/serve.py --host 127.0.0.1 --port 8766
+python3 auto_writing/web/serve.py --host 127.0.0.1 --port 8766
 ```
 
 Useful environment variables:
@@ -67,6 +67,7 @@ Useful environment variables:
 | Variable | Purpose |
 | --- | --- |
 | `CODEX_CLI` | Explicit path to the Codex CLI executable |
+| `CODEX_IGNORE_USER_CONFIG` | Defaults to `1`; set `0` to read the global Codex config |
 | `CODEX_MODEL` | Optional model override for writing and research agents |
 | `CODEX_REASONING_EFFORT` | Optional reasoning-effort override |
 | `CODEX_TIMEOUT_SECONDS` | Writing timeout in seconds |
@@ -116,8 +117,14 @@ auto_writing/
 Run from the repository root:
 
 ```bash
-python -m unittest discover -s auto_writing/tests -v
+python3 -m unittest discover -s auto_writing/tests -v
 ```
 
 The tests cover project lifecycle, dependency gates, prompt path injection, Abstract refinement,
 reference migration and citation coverage, safe LaTeX extraction, and publication fallback behavior.
+
+## 自动写作与失败恢复
+
+网页新增“自动完成 / 继续全文与 PDF”，按原依赖自动推进文献调研、六章节、引用与排版。使用已上传模板，未上传使用通用 article 模板。失败时停止自动推进并保留章节，之后可在网页只重试当前步骤；PDF 失败可单独重新编译已有源码。可查看完整调用及编译日志。
+
+统一工作台支持接收已完成且通过原审计/证据检查的实验产物，并自动创建关联写作任务。说明见 [前端全流程设计](../docs/frontend_workflow.md)。

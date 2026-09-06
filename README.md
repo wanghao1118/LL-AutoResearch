@@ -1,29 +1,46 @@
 # AutoResearch
 
-AutoResearch is an evidence-grounded research workflow engine. It currently includes an Auto
-Search pipeline and an Auto Writing workspace. Auto Search maps a research field from primary
-sources:
+AutoResearch 将 **Auto Search、Auto Design、Auto Writing** 整合到一个网页入口，支持从调研自动交接到实验和论文，同时保留各模块的独立任务。首页可管理全流程、恢复失败步骤并重启研究服务。
+
+## 三模块工作台
+
+在仓库根目录运行（Python 3.11+）：
+
+```bash
+python3 -m workbench --port 8760
+```
+
+打开 [AutoResearch 工作台](http://127.0.0.1:8760/)。调用模型需要已安装并登录的 Codex CLI；生成 PDF 还需要 LaTeX 编译器。工作台自身只用 Python 标准库，不需要 Node、Skills 或额外前端构建。
+
+| 模块 | 本地入口 | 功能 |
+| --- | --- | --- |
+| Auto Search | [/auto-search/](http://127.0.0.1:8760/auto-search/) | 论文调研、Idea 生成、独立评审、人工核验 |
+| Auto Design | [/auto-design/](http://127.0.0.1:8760/auto-design/) | 实验设计、R0、执行、暂停恢复、结果诊断与审计 |
+| Auto Writing | [/auto-writing/](http://127.0.0.1:8760/auto-writing/) | 文献调研、六章节写作、参考文献、LaTeX 与 PDF |
+
+首页点击“新建全流程”可从研究方向开始，或接续已有调研、实验、写作任务。选题、方法审批、暂停、错误日志、局部重试和模板更换均可在网页处理。设计与恢复边界见 [全流程说明](docs/frontend_workflow.md)。
+
+任务数据默认保存在 `assets/output/workbench/`。启动或切换页面不会自动启动研究任务。完整启动参数、功能范围和验收记录见 [工作台说明](workbench/README.md) 与 [开发记录](docs/README.md)。
+
+## 原有 AutoResearch CLI
+
+仓库原有的证据检索 CLI 继续保留：
 
 ```text
 research topic -> papers -> paper cards -> field map -> gap evidence report
 ```
 
-The research map supports group discussion and later method or benchmark design. Auto Writing can
-then turn experiment documentation and supporting evidence into a structured manuscript through
-manually controlled Codex agents.
+该 CLI 生成支持组会讨论和后续实验设计的研究图谱；论文写作使用上面的 Auto Writing 模块。
 
-## Auto Writing
+## Auto Design
 
-The `auto_writing` branch includes the complete local Auto Writing web application, including its
-HTML/CSS/JavaScript frontend, Python API server, prompt templates, output schemas, and tests.
+`auto_design/` 提供实验设计与执行工作台：原生 HTML/CSS/JavaScript 前端、Python 服务端、Codex CLI 分阶段编排。无需安装 AutoDesign Skills 或 Node 依赖。
 
-```powershell
-cd auto_writing
-.\run_web.ps1 -Detached
+```bash
+python3 -m auto_design serve --port 8767
 ```
 
-Open `http://127.0.0.1:8766/`. See [auto_writing/README.md](auto_writing/README.md) for the full
-workflow, requirements, runtime layout, and test instructions.
+需要 Python 3.11+ 和已登录的 Codex CLI。详见 [Auto Design 模块说明](auto_design/README.md)。原有 AutoResearch 搜索命令继续按下文使用。
 
 ## Quick Start
 

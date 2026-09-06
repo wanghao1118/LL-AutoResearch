@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The ThAInker Auto Design workspace">
+  <title>The ThAInker · Auto Design</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-folder-plus" viewBox="0 0 24 24"><path d="M12 10v6M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="icon-experiment" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-6 10a1.3 1.3 0 0 0 1.1 2h13.8a1.3 1.3 0 0 0 1.1-2L14 9V3M7 15h10"/><path d="M10 18h.01M13 12h.01"/></symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+    <symbol id="icon-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h5.5a3.5 3.5 0 0 0 0-7h-5a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  </svg>
+  <div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Auto Design 首页">
+      <span class="brand-logo-frame"><img src="assets/the-thainker-logo.png" alt="The ThAInker"></span>
+      <span><strong>The ThAInker</strong><small>Auto Design</small></span>
+    </a>
+    <button class="icon-button mobile-sidebar-toggle" id="sidebar-toggle" type="button" aria-label="打开实验任务" aria-controls="sidebar" aria-expanded="false"><svg aria-hidden="true"><use href="#icon-menu"></use></svg></button>
+  </header>
+  <aside class="sidebar" id="sidebar" aria-label="实验任务">
+    <div class="sidebar-head"><span class="eyebrow">EXPERIMENT PROJECTS</span><strong id="task-count">加载中</strong></div>
+    <div class="sidebar-actions">
+      <button class="new-folder-button" id="new-task"><svg aria-hidden="true"><use href="#icon-folder-plus"></use></svg><span>新建实验</span></button>
+      <button class="new-folder-button import-button" id="import-task"><svg aria-hidden="true"><use href="#icon-route"></use></svg><span>接续已有实验</span></button>
+    </div>
+    <nav id="task-list" aria-label="实验任务列表"></nav>
+    <div class="sidebar-empty" id="sidebar-empty" hidden><strong>暂无实验任务</strong><span>新实验会显示在这里。</span></div>
+    <div class="sidebar-footer"><span class="connection-dot" id="connection-dot"></span><span id="connection">正在连接本地服务</span></div>
+  </aside>
+  <button class="sidebar-scrim" id="sidebar-scrim" type="button" aria-label="关闭实验任务" hidden></button>
+  <main class="workspace">
+    <div id="notice" role="alert" hidden></div>
+    <section class="workspace-empty" id="welcome">
+      <div class="empty-mark"><svg aria-hidden="true"><use href="#icon-experiment"></use></svg></div>
+      <span class="eyebrow">AUTO DESIGN</span>
+      <h1>开始一项新的实验研究</h1>
+      <button class="primary" id="welcome-create"><svg aria-hidden="true"><use href="#icon-folder-plus"></use></svg><span>新建实验</span></button>
+    </section>
+    <section id="workspace" hidden>
+      <div class="task-heading"><div><div class="eyebrow">EXPERIMENT WORKSPACE</div><h1 id="task-title"></h1><div class="task-meta"><span class="badge" id="task-status"></span><span id="task-stage"></span></div></div><div class="task-actions"><button id="run-task" class="primary">开始执行</button><button id="pause-task" class="secondary" hidden>安全暂停</button></div></div>
+      <div class="summary-card"><span class="summary-label">当前进展</span><p id="task-summary"></p><p id="task-error" class="error-text" hidden></p><button id="interrupt-task" class="secondary" hidden>停止卡住的控制器</button><p id="interrupt-help" hidden>仅停止本任务的 Codex 控制器，保留训练与产物；停止后继续会先核对已有执行。</p><label id="recovery-field" hidden>恢复说明（可选）<textarea id="recovery-note" rows="2" placeholder="描述问题或已完成的修复，继续时会读取本说明与错误日志"></textarea></label></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="overview">任务概览</button>
+        <button role="tab" aria-selected="false" data-tab="plan">实验方案</button>
+        <button role="tab" aria-selected="false" data-tab="execution">执行记录</button>
+        <button role="tab" aria-selected="false" data-tab="results">结果与报告</button>
+        <button role="tab" aria-selected="false" data-tab="review">人工审核 <span id="review-count"></span></button>
+      </div>
+      <section class="tab-panel" data-panel="overview"><div class="section-title"><h2>实验上下文</h2><span id="task-scope"></span></div><dl id="task-paths"></dl><h3>输入与科学约束</h3><pre id="input-document" class="document"></pre><details><summary>状态与推进记录</summary><pre id="state-document" class="document"></pre></details></section>
+      <section class="tab-panel" data-panel="plan" hidden><div class="section-title"><h2>实验设计</h2><span>以已保存的设计文档为准</span></div><pre id="plan-document" class="document"></pre></section>
+      <section class="tab-panel" data-panel="execution" hidden><div class="section-title"><h2>执行证据</h2><span>当前命令、退出状态与完整日志</span></div><div id="execution-content"></div><h3>工作流调用记录</h3><div id="attempt-content"></div></section>
+      <section class="tab-panel" data-panel="results" hidden><div class="section-title"><h2>结果与科学诊断</h2><a id="report-link" target="_blank" rel="noopener" hidden>打开报告 ↗</a></div><div id="result-content"></div><h3>结果诊断</h3><pre id="diagnosis-document" class="document"></pre><details><summary>目标对比</summary><pre id="effects-document" class="document"></pre></details><details><summary>完整性审计</summary><pre id="audit-document" class="document"></pre></details></section>
+      <section class="tab-panel" data-panel="review" hidden><div class="section-title"><h2>方法修改审核</h2><span id="revision-id"></span></div><p class="muted">普通执行故障由工作流按既定边界修复。方法修改需要针对当前提案明确决定。</p><pre id="review-document" class="document"></pre><div id="review-actions" hidden><button class="primary" id="approve-revision">批准指定修改</button><button class="secondary" id="reject-revision">暂不批准</button><button class="danger" id="abandon-idea">废弃当前 Idea</button></div></section>
+    </section>
+  </main>
+  </div>
+  <dialog class="app-dialog" id="task-dialog" aria-labelledby="new-task-title">
+    <form id="task-form">
+      <header class="dialog-header"><div><span class="eyebrow">NEW EXPERIMENT</span><h2 id="new-task-title">新建实验</h2></div><button type="button" class="icon-button" data-close="task-dialog" aria-label="关闭"><svg aria-hidden="true"><use href="#icon-x"></use></svg></button></header>
+      <div class="dialog-body">
+        <label class="field"><span>任务名称</span><input name="title" required placeholder="为这项研究起一个便于识别的名称"></label>
+        <label class="field"><span>实验项目根目录</span><input name="workspace" required placeholder="自动创建任务目录所在的项目绝对路径"></label>
+        <label class="field"><span>执行范围</span><select name="scope"><option value="full">完整流程：设计、执行、诊断与审计</option><option value="design_only">仅完成实验设计，暂不启动 R0 或正式实验</option></select></label>
+        <label class="field"><span>Idea 文档 <small>包含 Motivation 与 Contribution</small></span><textarea name="idea" rows="5" required placeholder="粘贴研究动机、核心贡献，以及已确定的数据、方法或资源约束"></textarea></label>
+        <label class="file-picker"><svg aria-hidden="true"><use href="#icon-upload"></use></svg><strong id="idea-file-label">或选择本地 Idea 文档</strong><small>Markdown、TXT 或 JSON</small><input type="file" id="idea-file" accept=".md,.txt,.json" aria-label="选择本地 Idea 文档"></label>
+      </div>
+      <footer class="dialog-footer"><span>创建后可检查输入，再点击开始执行。</span><div><button type="button" class="secondary" data-close="task-dialog">取消</button><button class="primary" type="submit">创建任务</button></div></footer>
+    </form>
+  </dialog>
+  <dialog class="app-dialog" id="import-dialog" aria-labelledby="import-title">
+    <form id="import-form">
+      <header class="dialog-header"><div><span class="eyebrow">CONTINUE RESEARCH</span><h2 id="import-title">接续已有实验</h2></div><button type="button" class="icon-button" data-close="import-dialog" aria-label="关闭"><svg aria-hidden="true"><use href="#icon-x"></use></svg></button></header>
+      <div class="dialog-body">
+        <label class="field"><span>任务名称 <small>可选</small></span><input name="title" placeholder="为已有实验设置名称"></label>
+        <label class="field"><span>原实验项目根目录</span><input name="workspace" required placeholder="项目绝对路径"></label>
+        <label class="field"><span>已有运行目录</span><input name="run_dir" required placeholder="包含 AUTODESIGN_STATE.md 的绝对路径"></label>
+        <p>导入只登记已有产物。点击继续后，系统先核对在途进程和已完成结果，再恢复未完成的工作。</p>
+      </div>
+      <footer class="dialog-footer end"><button type="button" class="secondary" data-close="import-dialog">取消</button><button type="submit" class="primary">导入实验</button></footer>
+    </form>
+  </dialog>
+</body>
+</html>
