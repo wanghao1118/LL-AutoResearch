@@ -1,38 +1,231 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The ThAInker · Auto Table</title><link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css"><script src="app.js" defer></script>
-</head>
-<body>
-<div class="app-shell">
-  <header class="topbar"><a class="brand" href="./"><span class="brand-logo-frame"><img src="assets/the-thainker-logo.png" alt="The ThAInker"></span><span><strong>The ThAInker</strong><small>Auto Table</small></span></a><button class="mobile-sidebar-toggle secondary" id="sidebarToggle" aria-label="打开表格项目">项目</button></header>
-  <aside class="sidebar" id="sidebar"><div class="sidebar-head"><span class="eyebrow">TABLE PROJECTS</span><strong id="projectCount">正在读取</strong></div><button id="newProject" class="new-folder-button">＋ 新建表格项目</button><div id="projectList" class="project-list"></div><p class="connection" id="connection" role="status">正在连接服务</p></aside>
-  <main class="workspace">
-    <p id="notice" role="alert" hidden></p>
-    <section id="empty" class="workspace-empty"><div class="empty-mark">▦</div><span class="eyebrow">AUTO TABLE</span><h1>让实验结果清晰地呈现</h1><p>整理已有论文的实验表格，或从结果文件生成可直接使用的表格。</p><button class="primary" id="emptyNew">新建表格项目</button><div class="entry-options"><article><strong>论文表格整理</strong><p>LaTeX ZIP · 可附参考 PDF</p><small>保留数值与引用，调整层级、对齐和重点</small></article><article><strong>实验数据制表</strong><p>CSV · TSV · JSON · JSONL</p><small>聚合重复实验，生成表格、说明与预览</small></article></div></section>
-    <section id="projectView" hidden>
-      <header class="project-header"><div><span class="eyebrow" id="projectMode"></span><h1 id="projectTitle"></h1><p class="muted" id="projectMeta"></p></div><span id="status" class="badge"></span></header>
-      <div class="completion-track"><span id="progress"></span></div>
-      <div class="toolbar"><button class="primary" id="start">开始整理</button><button class="secondary" id="stop" hidden>停止当前任务</button><button class="secondary" id="revise">修改要求 / 重新设计</button><a id="bundle" class="button secondary" hidden download>下载完整产物</a></div>
-      <p id="message" class="message" role="status"></p>
-      <nav class="view-tabs" aria-label="工作区视图"><button data-tab="workflow" class="active">整理流程</button><button data-tab="outputs">表格与 PDF</button><button data-tab="files">输入与运行记录</button></nav>
-      <section data-panel="workflow" class="panel active"><div class="workflow-layout"><div id="steps" class="steps"></div><article class="detail-card"><span class="eyebrow">TABLE DESIGN</span><h2>设计与复核</h2><div id="summary"></div><div id="review"></div></article></div></section>
-      <section data-panel="outputs" class="panel"><div id="outputs"></div></section>
-      <section data-panel="files" class="panel"><div id="events"></div><div id="files"></div></section>
-    </section>
-  </main>
-</div>
-<dialog id="createDialog"><form id="createForm"><header class="dialog-header"><div><span class="eyebrow">NEW TABLE PROJECT</span><h2>新建表格项目</h2></div><button type="button" class="close secondary" data-close="createDialog" aria-label="关闭">×</button></header>
-  <label>项目名称<input name="title" required maxlength="120" placeholder="例如：主实验表格整理"></label>
-  <div class="mode-picker"><label><input type="radio" name="mode" value="manuscript" checked>论文 ZIP</label><label><input type="radio" name="mode" value="results">实验数据</label><label><input type="radio" name="mode" value="writing">接续 Auto Writing</label></div>
-  <label id="uploadLabel" class="file-picker"><strong id="uploadHint">选择 LaTeX ZIP，可同时选择参考 PDF</strong><small>每个文件最大 20 MB；总请求最大 32 MB</small><input id="inputFiles" type="file" multiple accept=".zip,.pdf"></label><div id="selectedFiles" class="selected-files"></div>
-  <label id="writingLabel" hidden>已生成论文的写作项目<select id="writingProject"><option value="">请选择</option></select></label>
-  <label>整理要求<textarea name="requirements" rows="3" placeholder="可说明焦点方法、目标表格、比较范围或版式要求。留空时依据输入规划。"></textarea></label>
-  <details id="advanced"><summary>高级设置</summary><label id="mainFileLabel">主 TeX 文件（存在多个主文件时填写）<input name="main_file" placeholder="例如：paper/main.tex"></label><div id="resultSettings" hidden><label>JSON 配置覆盖<textarea name="config" rows="6" spellcheck="false">{}</textarea></label><label class="checkbox"><input name="manual_config" type="checkbox">直接使用配置生成，跳过自动设计</label><p class="muted">可声明方法字段、指标方向、表格角色和模板；复核仍由 Codex 执行。</p></div></details>
-  <p id="formError" role="alert" hidden></p><footer><button type="button" class="secondary" data-close="createDialog">取消</button><button type="submit" class="primary" id="createSubmit">创建并开始整理</button></footer>
-</form></dialog>
-<dialog id="reviseDialog"><form id="reviseForm"><header class="dialog-header"><h2>修改要求并重新设计</h2><button type="button" class="close secondary" data-close="reviseDialog" aria-label="关闭">×</button></header><p class="muted">原始输入和上一轮产物会保留，新一轮重新完成设计与复核。</p><label>整理要求<textarea name="requirements" rows="4"></textarea></label><label>本轮修改说明<textarea name="feedback" rows="3" placeholder="例如：调整表头层级，保留所有标准差"></textarea></label><label id="reviseMainLabel">主 TeX 文件<input name="main_file"></label><label id="reviseConfigLabel">JSON 配置覆盖<textarea name="config" rows="6" spellcheck="false"></textarea></label><p id="reviseError" role="alert" hidden></p><footer><button type="submit" class="primary" id="reviseSubmit">开始新一轮</button></footer></form></dialog>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The ThAInker · Auto Table</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./"
+          ><span class="brand-logo-frame"
+            ><img src="assets/the-thainker-logo.png" alt="The ThAInker" /></span
+          ><span
+            ><strong>The ThAInker</strong><small>Auto Table</small></span
+          ></a
+        ><button
+          class="mobile-sidebar-toggle secondary"
+          id="sidebarToggle"
+          aria-label="打开表格项目"
+        >
+          项目
+        </button>
+      </header>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-head">
+          <span class="eyebrow">TABLE PROJECTS</span
+          ><strong id="projectCount">正在读取</strong>
+        </div>
+        <button id="newProject" class="new-folder-button">
+          ＋ 新建表格项目
+        </button>
+        <div id="projectList" class="project-list"></div>
+        <p class="connection" id="connection" role="status">正在连接服务</p>
+      </aside>
+      <main class="workspace">
+        <p id="notice" role="alert" hidden></p>
+        <section id="empty" class="workspace-empty">
+          <div class="empty-mark">▦</div>
+          <span class="eyebrow">AUTO TABLE</span>
+          <h1>让实验结果清晰地呈现</h1>
+          <p>整理已有论文的实验表格，或从结果文件生成可直接使用的表格。</p>
+          <button class="primary" id="emptyNew">新建表格项目</button>
+          <div class="entry-options">
+            <article>
+              <strong>论文表格整理</strong>
+              <p>LaTeX ZIP · 可附参考 PDF</p>
+              <small>保留数值与引用，调整层级、对齐和重点</small>
+            </article>
+            <article>
+              <strong>实验数据制表</strong>
+              <p>CSV · TSV · JSON · JSONL</p>
+              <small>聚合重复实验，生成表格、说明与预览</small>
+            </article>
+          </div>
+        </section>
+        <section id="projectView" hidden>
+          <header class="project-header">
+            <div>
+              <span class="eyebrow" id="projectMode"></span>
+              <h1 id="projectTitle"></h1>
+              <p class="muted" id="projectMeta"></p>
+            </div>
+            <span id="status" class="badge"></span>
+          </header>
+          <div class="completion-track"><span id="progress"></span></div>
+          <div class="toolbar">
+            <button class="primary" id="start">开始整理</button
+            ><button class="secondary" id="stop" hidden>停止当前任务</button
+            ><button class="secondary" id="revise">修改要求 / 重新设计</button
+            ><a id="bundle" class="button secondary" hidden download
+              >下载完整产物</a
+            >
+          </div>
+          <p id="message" class="message" role="status"></p>
+          <nav class="view-tabs" aria-label="工作区视图">
+            <button data-tab="workflow" class="active">整理流程</button
+            ><button data-tab="outputs">表格与 PDF</button
+            ><button data-tab="files">输入与运行记录</button>
+          </nav>
+          <section data-panel="workflow" class="panel active">
+            <div class="workflow-layout">
+              <div id="steps" class="steps"></div>
+              <article class="detail-card">
+                <span class="eyebrow">TABLE DESIGN</span>
+                <h2>设计与复核</h2>
+                <div id="summary"></div>
+                <div id="review"></div>
+              </article>
+            </div>
+          </section>
+          <section data-panel="outputs" class="panel">
+            <div id="outputs"></div>
+          </section>
+          <section data-panel="files" class="panel">
+            <div id="events"></div>
+            <div id="files"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <dialog id="createDialog">
+      <form id="createForm">
+        <header class="dialog-header">
+          <div>
+            <span class="eyebrow">NEW TABLE PROJECT</span>
+            <h2>新建表格项目</h2>
+          </div>
+          <button
+            type="button"
+            class="close secondary"
+            data-close="createDialog"
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </header>
+        <label
+          >项目名称<input
+            name="title"
+            required
+            maxlength="120"
+            placeholder="例如：主实验表格整理"
+        /></label>
+        <div class="mode-picker">
+          <label
+            ><input type="radio" name="mode" value="manuscript" checked />论文
+            ZIP</label
+          ><label
+            ><input type="radio" name="mode" value="results" />实验数据</label
+          ><label
+            ><input type="radio" name="mode" value="writing" />接续 Auto
+            Writing</label
+          >
+        </div>
+        <label id="uploadLabel" class="file-picker"
+          ><strong id="uploadHint">选择 LaTeX ZIP，可同时选择参考 PDF</strong
+          ><small>每个文件最大 20 MB；总请求最大 32 MB</small
+          ><input id="inputFiles" type="file" multiple accept=".zip,.pdf"
+        /></label>
+        <div id="selectedFiles" class="selected-files"></div>
+        <label id="writingLabel" hidden
+          >已生成论文的写作项目<select id="writingProject">
+            <option value="">请选择</option>
+          </select></label
+        >
+        <label
+          >整理要求<textarea
+            name="requirements"
+            rows="3"
+            placeholder="可说明焦点方法、目标表格、比较范围或版式要求。留空时依据输入规划。"
+          ></textarea>
+        </label>
+        <details id="advanced">
+          <summary>高级设置</summary>
+          <label id="mainFileLabel"
+            >主 TeX 文件（存在多个主文件时填写）<input
+              name="main_file"
+              placeholder="例如：paper/main.tex"
+          /></label>
+          <div id="resultSettings" hidden>
+            <label
+              >JSON 配置覆盖<textarea name="config" rows="6" spellcheck="false">
+{}</textarea
+              ></label
+            ><label class="checkbox"
+              ><input
+                name="manual_config"
+                type="checkbox"
+              />直接使用配置生成，跳过自动设计</label
+            >
+            <p class="muted">
+              可声明方法字段、指标方向、表格角色和模板；复核仍由 Codex 执行。
+            </p>
+          </div>
+        </details>
+        <p id="formError" role="alert" hidden></p>
+        <footer>
+          <button type="button" class="secondary" data-close="createDialog">
+            取消</button
+          ><button type="submit" class="primary" id="createSubmit">
+            创建并开始整理
+          </button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog id="reviseDialog">
+      <form id="reviseForm">
+        <header class="dialog-header">
+          <h2>修改要求并重新设计</h2>
+          <button
+            type="button"
+            class="close secondary"
+            data-close="reviseDialog"
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </header>
+        <p class="muted">
+          原始输入和上一轮产物会保留，新一轮重新完成设计与复核。
+        </p>
+        <label>整理要求<textarea name="requirements" rows="4"></textarea></label
+        ><label
+          >本轮修改说明<textarea
+            name="feedback"
+            rows="3"
+            placeholder="例如：调整表头层级，保留所有标准差"
+          ></textarea></label
+        ><label id="reviseMainLabel"
+          >主 TeX 文件<input name="main_file" /></label
+        ><label id="reviseConfigLabel"
+          >JSON 配置覆盖<textarea
+            name="config"
+            rows="6"
+            spellcheck="false"
+          ></textarea>
+        </label>
+        <p id="reviseError" role="alert" hidden></p>
+        <footer>
+          <button type="submit" class="primary" id="reviseSubmit">
+            开始新一轮
+          </button>
+        </footer>
+      </form>
+    </dialog>
+  </body>
 </html>
